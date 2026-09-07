@@ -28,7 +28,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 | M5.1 | Free room construction flag and Debug option in the left sidebar | Complete |
 | M6 | Dormitory | Complete |
 | M7 | Kitchen | Complete |
-| M8 | Workshop | Not started |
+| M8 | Workshop | Complete |
 
 ## M1 — Grid level and terrain
 
@@ -210,3 +210,6 @@ Added Dormitory definition, two-cell beds with rotated fitting, personal assignm
 
 ### M7 — 2026-09-07
 Added Kitchen growing trays, cooking hearths, tables and brewing barrels; connected usable facilities produce finite stored meals and optional ale. Hungry residents reserve meals, reach tables, eat and resume work. Added stock/access feedback and hungry studio residents. Seventeen tests pass, including all room layouts/costs, production, blocked access, and an irregular-Kitchen traffic regression. Browser verified all three hungry residents complete meals in an L-shaped Kitchen. Fixed idle parking in facility aisles and stalled approaches. Production and need rates are provisional; no Cook role, separate ale need, or departure penalties were added.
+
+### M8 — 2026-09-07
+Added Workshop benches, anvils and assembly tables, editable character/recipe definitions, the female Engineer, and queued door/trap manufacturing. Accessible stations require a capable worker; inputs are charged once at work start, and interrupted paid work resumes without charging again. Settlement attraction eligibility reports craft, bed and food support. Twenty simulation checks pass, including all room layouts and costs, staffed/unfunded/unstaffed production and interrupted work. Browser verified an L-shaped Workshop produces one reinforced door and one bolt trap, spending exactly 95 gold, with no console errors. An explicit Debug/Studio Engineer fixture exercises production; automatic recruitment and placing the manufactured defenses remain pending gameplay integrations, as allowed by M8. No combat or repair system was added.

@@ -1,6 +1,6 @@
 import { type World, type LevelDefinition, type Point, tileAt } from './types.ts';
 export function createWorld(level: LevelDefinition): World {
-  const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],elapsed:0,allowance:400,spent:0,freeRoomBuilding:false};
+  const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],elapsed:0,allowance:400,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{}};
   for(let z=0;z<w.height;z++) for(let x=0;x<w.width;x++) {
     const border=x===0||z===0||x===w.width-1||z===w.height-1;
     w.tiles.push({x,z,terrain:border?'bedrock':'dirt',known:false,claimed:false,designated:false,core:false,gold:0,loose:0});

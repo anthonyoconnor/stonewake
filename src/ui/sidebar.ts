@@ -5,7 +5,9 @@ import type {Selection} from './selection';
 import {roomDefinitions} from '../content/rooms';
 import {goldTotal,roomStats} from '../game/rooms';
 import {labShapes} from '../content/room-lab';
-import {addMiners} from '../game/simulation';
+import {addMiners,addResidents} from '../game/simulation';
+import {queueCraft,attractionStatus} from '../game/crafting';
+import {recipes,recipeById} from '../content/recipes';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
@@ -60,6 +62,13 @@ export class Sidebar {
       this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
     }else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="residents-list"></div>';
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
+    if(['rooms','lab','debug'].includes(category)){
+      const production=document.createElement('details');production.className='production';production.innerHTML=`<summary>Workshop production</summary><div id="craft-status" class="muted"></div>${recipes.map(r=>`<button class="wide" data-recipe="${r.id}">Queue ${r.name.toLowerCase()} · ${r.cost} gold</button>`).join('')}<div id="craft-orders"></div><div id="craft-outputs"></div>`;this.panel.append(production);
+      production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.update();});
+    }
+    if(['lab','debug'].includes(category)){
+      const engineer=document.createElement('button');engineer.className='wide';engineer.textContent='Add test Engineer';engineer.onclick=()=>{addResidents(this.view.world,'engineer');engineer.disabled=true;};this.panel.append(engineer);
+    }
   }
   drawMap(){
     const c=this.minimap.getContext('2d')!,w=this.view.world,sx=this.minimap.width/w.width,sz=this.minimap.height/w.height;
@@ -93,5 +102,10 @@ export class Sidebar {
       }}
     }
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
+    const craftStatus=this.panel.querySelector('#craft-status');if(craftStatus){
+      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft').length} craft positions · ${w.agents.filter(a=>a.capabilities.includes('craft')).length} Engineers. ${attractionStatus(w,'engineer')}`;
+      this.panel.querySelector('#craft-orders')!.innerHTML=w.craftOrders.filter(o=>o.state!=='done').map(o=>`<p>${recipeById(o.recipe)!.name} · ${o.state==='working'?Math.round(o.progress/recipeById(o.recipe)!.seconds*100)+'%':'Queued'}</p>`).join('');
+      this.panel.querySelector('#craft-outputs')!.textContent=recipes.map(r=>`${w.outputs[r.id]??0} ${r.name.toLowerCase()}s`).join(' · ');
+    }
   }
 }

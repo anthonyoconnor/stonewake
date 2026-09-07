@@ -110,6 +110,20 @@ export class GameScene {
         }
         continue;
       }
+      if(f.room==='workshop'){
+        const root=new TransformNode(f.id,this.scene);root.parent=this.furnitureRoot;
+        root.position.set(f.x+(f.kind==='assembly'&&!f.rotation?.5:0),0,f.z+(f.kind==='assembly'&&f.rotation?.5:0));root.rotation.y=f.rotation?Math.PI/2:0;
+        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{this.box(n,x,y,z,w,h,d,m,root).isPickable=false;};
+        const iron=this.material('workshop iron','#57626a');
+        if(f.kind==='anvil'){part('anvil plinth',0,.15,0,.65,.3,.65,wood);part('anvil waist',0,.42,0,.25,.3,.27,iron);part('anvil top',0,.59,0,.7,.12,.32,iron);}
+        else{
+          const width=f.kind==='assembly'?1.7:.78;
+          part('work bench',0,.55,0,width,.17,.7,wood);for(const x of [-width/2+.08,width/2-.08])for(const z of [-.25,.25])part('bench leg',x,.25,z,.09,.5,.09,wood);
+          part('vice',.21,.7,0,.16,.18,.23,iron);part('parts tray',-.2,.66,.05,.24,.03,.28,metal);
+        }
+        if(f.outputCount){part('finished assembly',0,.73,.13,.42,.09,.34,f.output==='bolt-trap'?iron:wood);part('assembly brace',0,.79,.13,.05,.02,.34,metal);}
+        continue;
+      }
       this.box('chest',f.x,.23,f.z,.68,.44,.65,wood,this.furnitureRoot).isPickable=false;
       for(const dx of [-.23,.23])this.box('chest band',f.x+dx,.46,f.z,.05,.035,.66,metal,this.furnitureRoot).isPickable=false;
       if(f.stored>0)for(let i=0;i<Math.min(7,Math.ceil(f.stored/20));i++)this.box('stored gold',f.x-.2+i%3*.18,.51+Math.floor(i/3)*.075,f.z-.12+Math.floor(i/3)*.12,.15,.07,.1,this.material('gold metal','#ffbf4d'),this.furnitureRoot).isPickable=false;

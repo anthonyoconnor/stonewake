@@ -19,16 +19,19 @@ export interface LevelDefinition {
 export interface World {
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
   agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
+  craftOrders:CraftOrder[];outputs:Record<string,number>;
 }
 export interface Furnishing extends Point {
-  id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;
+  id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
 }
-export interface Job { kind:'mine'|'claim'|'collect'|'deliver'|'idle'|'sleep'|'eat'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number }
+export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
+export interface Job { kind:'mine'|'claim'|'collect'|'deliver'|'idle'|'sleep'|'eat'|'craft'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
 export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;
   energy:number;rested:number;hunger:number;meals:number;meal:boolean;
   avoidFacility?:string;avoidUntil?:number;
+  crafted:number;
 }
 export const key = (p: Point) => `${p.x},${p.z}`;
 export const tileAt = (w: World, x: number, z: number): Tile | undefined =>

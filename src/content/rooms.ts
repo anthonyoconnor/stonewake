@@ -12,8 +12,12 @@ export const roomDefinitions:RoomDefinition[]=[
     {kind:'table',width:1,depth:1,capacity:1,service:'dining'},
     {kind:'barrel',width:1,depth:1,capacity:6,service:'brewing'}
   ]},
+  {id:'workshop',name:'Workshop',color:'#537e82',cost:24,description:'Engineers manufacture doors and traps at accessible craft stations.',implemented:true,furnishings:[
+    {kind:'bench',width:1,depth:1,capacity:1,service:'craft'},
+    {kind:'anvil',width:1,depth:1,capacity:1,service:'craft'},
+    {kind:'assembly',width:2,depth:1,capacity:1,service:'craft'}
+  ]},
   ...[
-    ['workshop','Workshop','#537e82'],
     ['training','Training Room','#985d44'],['library','Library','#546f96'],['guard','Guard Post','#7f7770']
   ].map(([id,name,color])=>({id,name,color,cost:20,description:'Planned room',implemented:false,furnishings:[]}))
 ];

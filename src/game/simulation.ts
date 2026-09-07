@@ -3,10 +3,15 @@ import {canStand,findPath} from './navigation.ts';
 import {reveal} from './world.ts';
 import {tuning} from '../content/tuning.ts';
 import {foodFacilities,produceFood} from './food.ts';
-export function addMiners(w:World,count=3) {
+import {characterById} from '../content/characters.ts';
+import {recipeById} from '../content/recipes.ts';
+import {spendGold,goldTotal} from './rooms.ts';
+export const addMiners=(w:World,count=3)=>addResidents(w,'miner',count);
+export function addResidents(w:World,type:string,count=1) {
+  const def=characterById(type);if(!def)return;
   const positions=w.tiles.filter(t=>t.claimed&&canStand(w,t)&&!w.agents.some(a=>Math.hypot(a.x-t.x,a.z-t.z)<.6)).sort((a,b)=>Math.hypot(a.x-w.hearth.x,a.z-w.hearth.z)-Math.hypot(b.x-w.hearth.x,b.z-w.hearth.z));
   const firstId=Math.max(0,...w.agents.map(a=>a.id))+1;
-  for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:['Brokk','Orin','Thora'][i]??`Miner ${i+1}`,type:'miner',capabilities:['mine','haul','claim'],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false});}
+  for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:def.names[i%def.names.length],type,capabilities:[...def.capabilities],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false,crafted:0});}
 }
 export function designate(w:World,points:Point[],value=true) {
   for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&t.known&&['dirt','rock','gold','gem'].includes(t.terrain))t.designated=value;}
@@ -33,6 +38,13 @@ function choose(w:World,a:Resident){
     const food=foodFacilities(w,table).find(f=>f.service==='cooking'&&f.stored>0);
     if((a.meal||food)&&take(w,a,'eat',table,table.access,table.id)){if(!a.meal){food!.stored--;a.meal=true;w.revision++;}return;}
   }
+  for(const order of w.craftOrders.filter(o=>o.state==='queued')){
+    const recipe=recipeById(order.recipe)!;if(!a.capabilities.includes(recipe.capability))continue;
+    if(!order.paid&&goldTotal(w)<recipe.cost){a.activity='Waiting for production gold';a.retry=1;return;}
+    for(const f of nearest(a,w.furnishings.filter(f=>f.service==='craft'&&!w.agents.some(o=>o.job?.furnishing===f.id)))){
+      if(take(w,a,'craft',f,f.access,f.id)){a.job!.order=order.id;order.worker=a.id;order.state='working';return;}
+    }
+  }
   if(a.capabilities.includes('haul')&&availableStorage(w,a))for(const t of nearest(a,w.tiles.filter(t=>t.loose&&!reserved(w,'collect',t)))){
     for(const p of t.terrain==='floor'?[t]:neighbors(w,t))if(take(w,a,'collect',t,p))return;
   }
@@ -58,7 +70,12 @@ function valid(w:World,a:Resident){
   if(j.kind==='idle')return canStand(w,j.work);
   if(j.kind==='sleep')return w.furnishings.some(f=>f.id===j.furnishing&&f.assigned===a.id)&&canStand(w,j.work);
   if(j.kind==='eat')return a.meal&&w.furnishings.some(f=>f.id===j.furnishing)&&canStand(w,j.work);
+  if(j.kind==='craft')return w.furnishings.some(f=>f.id===j.furnishing)&&w.craftOrders.some(o=>o.id===j.order&&o.state==='working'&&o.worker===a.id)&&canStand(w,j.work);
   return w.furnishings.some(f=>f.id===j.furnishing&&f.stored<f.capacity);
+}
+function releaseJob(w:World,a:Resident){
+  if(a.job?.kind==='craft'){const order=w.craftOrders.find(o=>o.id===a.job!.order);if(order?.state==='working'){order.state='queued';order.worker=undefined;}}
+  a.job=undefined;a.path=[];
 }
 function move(w:World,a:Resident,dt:number){
   const target=a.path[0];if(!target)return true;
@@ -66,7 +83,7 @@ function move(w:World,a:Resident,dt:number){
   if(d<.055){a.path.shift();if(a.job){a.job.lastDistance=undefined;a.job.stalled=0;}return !a.path.length;}
   if(a.job){
     a.job.stalled=a.job.lastDistance!==undefined&&d>a.job.lastDistance-.002?(a.job.stalled??0)+dt:0;a.job.lastDistance=d;
-    if((a.job.stalled??0)>1.5){a.avoidFacility=a.job.furnishing;a.avoidUntil=w.elapsed+8;a.job=undefined;a.path=[];a.retry=.25;return false;}
+    if((a.job.stalled??0)>1.5){a.avoidFacility=a.job.furnishing;a.avoidUntil=w.elapsed+8;releaseJob(w,a);a.retry=.25;return false;}
   }
   let vx=dx/d,vz=dz/d;
   for(const other of w.agents)if(other!==a){const ox=a.x-other.x,oz=a.z-other.z,dist=Math.hypot(ox,oz);if(dist>0&&dist<.55){vx+=ox/dist*(.55-dist)*2;vz+=oz/dist*(.55-dist)*2;}}
@@ -75,7 +92,7 @@ function move(w:World,a:Resident,dt:number){
   if(!clear(next)){
     const side=a.id%2?1:-1;
     next={x:a.x-vz/norm*step*side,z:a.z+vx/norm*step*side};
-    if(!clear(next)){a.retry+=dt;if(a.retry>2){a.job=undefined;a.path=[];a.retry=.25;}return false;}
+    if(!clear(next)){a.retry+=dt;if(a.retry>2){releaseJob(w,a);a.retry=.25;}return false;}
   }
   a.x=next.x;a.z=next.z;a.facing=Math.atan2(vx,vz);a.retry=0;a.activity=a.carrying?'Carrying gold':'Walking to work';return false;
 }
@@ -85,7 +102,7 @@ export function tick(w:World,dt:number){
   for(const a of w.agents){
     if(a.job?.kind!=='sleep')a.energy=Math.max(0,a.energy-dt/tuning.restInterval);
     if(a.job?.kind!=='eat')a.hunger=Math.max(0,a.hunger-dt/85);
-    if(a.job&&!valid(w,a)){a.job=undefined;a.path=[];}
+    if(a.job&&!valid(w,a))releaseJob(w,a);
     if(!a.job){a.retry-=dt;if(a.retry<=0)choose(w,a);}
     if(!a.job)continue;
     if(!move(w,a,dt))continue;
@@ -96,6 +113,12 @@ export function tick(w:World,dt:number){
       if(t.terrain==='gem'){t.loose+=tuning.gemYield;t.source='gem';}
       else {if(t.terrain==='gold'){t.loose+=t.gold;t.gold=0;t.source='gold';}t.terrain='floor';t.claimed=false;t.designated=false;}
       reveal(w,j.work);w.revision++;
+    }else if(j.kind==='craft'){
+      const order=w.craftOrders.find(o=>o.id===j.order)!,recipe=recipeById(order.recipe)!;
+      if(!order.paid){if(!spendGold(w,recipe.cost)){releaseJob(w,a);a.retry=1;continue;}order.paid=true;w.revision++;}
+      a.activity=`Crafting ${recipe.name.toLowerCase()}`;order.progress+=dt;if(order.progress<recipe.seconds)continue;
+      order.state='done';order.worker=undefined;w.outputs[recipe.id]=(w.outputs[recipe.id]??0)+1;a.crafted++;
+      const f=w.furnishings.find(f=>f.id===j.furnishing)!;f.output=recipe.id;f.outputCount=(f.outputCount??0)+1;w.revision++;
     }else if(j.kind==='eat'){
       a.activity='Eating';if(j.progress<4)continue;a.hunger=1;a.meals++;a.meal=false;
       const table=w.furnishings.find(f=>f.id===j.furnishing)!;const ale=foodFacilities(w,table).find(f=>f.service==='brewing'&&f.stored>0);if(ale)ale.stored--;w.revision++;
