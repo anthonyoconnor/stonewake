@@ -1,0 +1,181 @@
+# Rooms and structures
+
+Working design for the dwarven stronghold game. Companion documents: [Characters](characters.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
+
+## Status
+
+The grid, adaptable room shapes and furnishings, distinctive floors and walls, fixed Hearthstone, treasure storage, shared food and bedding, doors, traps, and spell research are established parts of the design. The simplified facilities are a Workshop that attracts Engineers and makes doors and traps, a Library that attracts Runesmiths and researches spells, and a Training Room that attracts Warriors while letting all dwarfs improve their stats. Kitchen is the working name for the combined food and brewing room. Exact art treatments, production handling, defensive examples, prices, furnishing footprints, rates, and capacities remain proposals or balancing decisions.
+
+## Placement and capacity
+
+- The world uses a square grid. Players select tiles to excavate and designate room footprints on usable, claimed floor.
+- All rooms occupy the level's common floor plane. Intact terrain is one full layer above it; excavation creates floor space rather than intermediate shelves, terraces, or another storey.
+- Rooms can be any size or shape formed from those tiles: rectangles, narrow strips, bends, branching areas, or shapes following bedrock seams and wrapping retained earth tiles. A single tile can be designated even if it cannot yet accommodate a functional furnishing.
+- Proposed grouping rule: tiles of the same room type that share an edge form a connected room. Disconnected patches operate separately; touching only at a corner does not connect them.
+- Rooms must be reachable for dwarfs to use them. An isolated room does not satisfy a need simply because it exists.
+- Usable capacity depends on the size and shape of the room, the furnishings that fit, and access to their working positions. Total tile count alone does not guarantee a particular number of beds or workstations.
+- The player designates and expands the room; its floor, wall treatments, and furnishings adapt automatically. Individual furniture placement is not required.
+- Floors and available wall faces identify the room immediately. Furnishings appear only where their footprints and access space fit.
+- A specialist room attracts its associated dwarf type only when the settlement also has support capacity.
+- The same room must remain useful on later levels. Unlocks remain available across the campaign.
+- Players place facilities and defenses; dwarfs operate them automatically.
+
+## Bedrock seams and retained earth
+
+Bedrock usually forms continuous seams or bands through the surrounding terrain. These shape the edges of an excavation and can project into a room as connected, stepped sections. The standard room example should show that connection to the wider geology rather than an isolated heap of boulders in the middle of a finished floor.
+
+Both bedrock and ordinary earth occupy whole terrain tiles. Their boundaries against usable floor follow square-grid edges, with right-angle steps where the outline changes. Rock textures, cracks, and surface relief can look natural while preserving that readable footprint. Solid terrain has no room floor or usable capacity underneath it.
+
+The player can leave individual squares or small groups of ordinary earth unmined within an excavated room. These create square holes in the room's usable footprint and remain diggable. They are terrain cells, not placed furniture or automatically classified as bedrock. Mining them later creates new space that can be claimed and designated for the room.
+
+Furnishings and continuous movement must respect both kinds of occupied terrain. Keep access around a retained earth block or along a bedrock seam; do not place beds or workstations on blocked cells. Earth, reinforced earth, and indestructible bedrock must remain visually distinguishable.
+
+## How rooms adapt to their footprint
+
+Every room uses three visual layers:
+
+1. **Floor identity:** a distinctive material, pattern, border, and room motif on every designated tile. Even a tiny or unfurnished room must be recognizable.
+2. **Wall identity:** suitable trims, banners, racks, or other fittings on existing wall faces bordering the room. Room decoration does not create new walls or reinforce earth; structural reinforcement remains a miner job.
+3. **Furnishings:** beds, workstations, storage, and larger arrangements added automatically wherever there is sufficient usable space.
+
+Rooms in open caverns or directly beside another room may have few walls. Their floor patterns and boundary treatments must still identify them. Adjacent room types can share an open edge without automatically adding a dividing wall. Wall treatments must preserve the visible distinction between ordinary earth, reinforced walls, and bedrock.
+
+Each room type needs compact furnishings and larger arrangements rather than one complete room model scaled to fit. Furniture keeps a consistent physical size. A Library can use short wall shelves in a narrow wing, then add free-standing shelf rows and research tables in a wider area. A Dormitory adds accessible beds, while a Training Room adds practice stations only where the equipment and activity space fit.
+
+### Placement and circulation rules
+
+- Fit each furnishing to actual available floor or wall space, considering its orientation and the space a dwarf needs to use it.
+- Dwarfs and enemies move freely within the open floor space rather than stepping between tile centers. Furnishing clearance must support their physical size and continuous routes around objects; an unoccupied grid square alone does not guarantee access.
+- Preserve entrances, door movement, routes through narrow connections, and access to beds, workstations, and storage. Furnishings must not seal off part of a room or block a passage through it.
+- Give functional furnishings priority over decorative objects. Open space can remain open if no suitable object fits.
+- Judge each part of an irregular room locally. A narrow arm must not prevent a spacious part of the same room from receiving larger furnishings.
+- Add more objects or larger arrangements as suitable space becomes available. Do not require the whole room to become a particular rectangle or purchase a room upgrade.
+- Retain existing valid furnishings when expanding where practical, especially occupied beds and stations. Avoid unnecessary rearrangement on every added tile.
+- Recalculate after floor changes, wall excavation, or new doorways make an old arrangement invalid. Keep stored contents and resident assignments associated with surviving or relocated furnishings where possible.
+
+Exact placement rules are still to be prototyped. If a later room removal or damage system reduces capacity, excess stored gold or items must be preserved and any lost bed or workstation capacity clearly reported; remodeling must not silently delete residents' resources.
+
+### Capacity and feedback
+
+Beds represent real sleeping places. Working positions represent real specialist capacity. Treasure storage and food facilities represent their respective capacities. Decorative books or barrels alone do not create an extra worker position or extra stored inventory.
+
+Show the room's current usable capacity in the left sidebar when selected and preview changes there while the player expands it. If nothing functional fits yet, retain the room designation and explain the limitation in the sidebar or a dismissible message, such as "Needs space for a research station" or "Bed access blocked." Such a room does not attract specialists merely because its floor has been painted. Room names, capacity numbers, and progress bars never float above the room, including on hover or selection; floors, walls, furnishings, and activity provide its world feedback. See [Gameplay interface](gameplay-interface.md).
+
+Two rooms with the same tile count can support different arrangements. Avoid imposing a universal square-room bonus: the benefit should come from actual objects and accessible working space. Thin sections can still serve as circulation space or accept suitable compact fittings.
+
+## Visual identity and furnishing plan
+
+The following art treatments and object sets are proposals. Every growable room requires an identity that reads before it contains furniture, and furnishings that remain legible from all camera directions.
+
+The [room concept gallery](concept-art/rooms/README.md) illustrates each growable room in compact, expanded, L-shaped, and bedrock-seam layouts, plus a terrain reference distinguishing continuous bedrock from retained earth tiles and placement examples for the Stone Hearth and bridges. These are visual studies, not mandatory footprints, capacity values, or upgrade tiers. Exact prompts are stored with the images in the concept-art folder.
+
+| Room or structure | Floor identity | Available wall faces | Furnishings or details added where space permits |
+|---|---|---|---|
+| Stone Hearth | Radial rune markings around the fixed core | Carved stone and runic accents where walls already exist | The core keeps its fixed footprint and statistics; expanding the surrounding cavern creates space for other rooms, with no Hearth upgrades |
+| Treasure Room | Geometric vault tiles with gold-colored inlays | Vault bands and embossed coin motifs | Small storage positions, then larger groups of chests and gold-storage bays with clear collection access; visible gold reflects actual stored wealth |
+| Dormitory | Warm stone with woven floor borders | Timber trim and simple personal-storage fittings | Individual beds, then repeated bed arrangements and small lockers wherever access remains clear |
+| Kitchen | Earthy food-service tiles with mushroom and tankard motifs | Cookware, timber trim, and barrel-end signs | Compact growing, preparation, and serving fittings, then more mushroom beds, tables, benches, and casks as space permits; capacity reflects working facilities rather than decorative barrels |
+| Workshop | Fitted dark stone with brass geometric markings | Tool boards, metal braces, and mechanical fittings | Compact craft benches and anvils, then larger assembly tables, mechanism racks, and repair positions for doors and traps |
+| Training Room | Marked practice lanes and clear training emblems on flagstones | Practice equipment, banners, and target motifs | Compact practice stations, then dummies, targets, weights, and larger exercise areas with safe clearance; all dwarf types can use the room |
+| Library | Blue rune-inlaid stone with book or script motifs | Short bookshelves, carved script, and reading lights | Compact shelves and lecterns, then research tables and rows of free-standing shelves only where aisles fit |
+| Guard Post | Clearly marked defensive floor emblem | Guard insignia where walls are present | Standing guard positions first, then a signal fitting or equipment rack if circulation allows |
+| Bridge | Repeating deck tiles and visible edges | No room wall treatment required | Edges and supports adapt to connected bridge tiles; doors or other permitted fixtures must preserve a usable crossing |
+
+The Stone Hearth is a fixed structure, and doors and traps retain their individual footprints. They are exceptions to expandable room furnishing. Bridge surfaces follow their placed tiles rather than using interior furniture. Details of bridge routing and eligible fixtures remain open.
+
+## Room catalog
+
+| Room or structure | Purpose | Dwarfs attracted | Output or continuing service |
+|---|---|---|---|
+| Stone Hearth | Protects the awakened Hearthstone; anchors the base and receives new dwarfs | Arrival point for eligible specialists and purchased miners | Dwarf arrival access and the fixed structure enemies must destroy to win |
+| Treasure Room | Stores delivered gold and provides wage collection points | None directly | Gold storage capacity; does not generate money |
+| Dormitory | Provides sleeping and resting space | Supports every resident type | Bed capacity and rest |
+| Kitchen | Combines food growing, preparation, brewing, and eating for every dwarf | None directly; supports all arrivals | Standard meals and eating capacity; enlarge it or build several to support the population |
+| Workshop | Makes the stronghold's defensive fixtures | Engineers | Doors and traps; repairs and replacement mechanisms are proposed ongoing work |
+| Training Room | Provides shared training for every dwarf type | Warriors | Stat increases for the dwarfs using its accessible training positions |
+| Library | Houses spell research | Runesmiths | Research progress and researched spells |
+| Guard Post | Establishes a place for available defenders to gather and guard | None directly | Local defensive presence and quicker response |
+| Bridge | Connects traversable floor across a suitable water or lava gap | None | A route for dwarfs and enemies; crossing rules remain to be defined |
+
+## Stone Hearth and Hearthstone
+
+The Hearthstone is the natural magical crystal. The Stone Hearth is the protective structure erected around it at the start of the level. Together they form the base's core.
+
+- The starting mining crew awakens the crystal and establishes the protective structure automatically during the arrival sequence.
+- The structure has a fixed, map-defined location and footprint. A 3 by 3 footprint is a candidate, not a locked dimension.
+- It cannot be moved and has no upgrades.
+- Enemies must reach and attack it. Its destruction defeats the player.
+- New dwarfs emerge beside it and walk into the settlement.
+- Its connection to the ancient runic network explains arrivals without a surface corridor.
+- No separate power distribution, fuel, or electricity management system is required.
+
+Core health and whether the damaged structure can be repaired remain open.
+
+## Treasure Room
+
+Miners extract gold from finite gold deposits and renewable gem deposits, then carry it to storage. Gems provide the same gold currency rather than a second spendable resource.
+
+Usable storage positions within the room's size and shape limit its capacity. Gold piles should show actual stored wealth rather than appear full merely because the room was expanded. Undelivered gold is not yet part of the spendable treasury. Construction and recruitment use stored funds, while dwarfs physically visit an accessible Treasure Room to collect their wages on payday.
+
+Storage and route problems need clear feedback: no free capacity, no reachable room, or insufficient stored gold. Treasure Rooms near mines reduce hauling distance; rooms near residents make wage collection more convenient. Exact withdrawal behavior across multiple rooms remains to be specified.
+
+## Accommodation and food
+
+Dormitories provide beds for every dwarf type, including Warriors. Beds appear automatically where their footprints and access space fit. The proposed baseline is one claimed bed per resident, counted only once. The Training Room provides training capacity, while sleeping capacity comes from Dormitories. Exact furnishing footprints remain to be set.
+
+The Kitchen combines mushroom growing, food preparation, brewing, and eating in one shared room. All dwarfs get their food here. One sufficiently large Kitchen or several accessible Kitchens must support the entire population. Food production, storage, and eating throughput depend on the functional furnishings and access space that fit, not just the number of designated tiles.
+
+Proposed simple production model: food replenishes on site up to the capacity of the growing and serving facilities, without requiring a dedicated Cook dwarf or separate processing rooms. Casks and brewing fittings belong to the same room; they do not create a separate compulsory ale need or production chain. Growth rate, stock capacity, and meal consumption remain tuning decisions.
+
+Food production, eating capacity, and bed spaces must serve existing residents as well as qualify the base for new arrivals. Multiple Kitchens contribute to total provision only where residents can reach them. The interface should distinguish too little food, insufficient eating capacity, and blocked access. Walking distance and queues affect how quickly dwarfs return to work.
+
+## Work and training facilities
+
+| Facility | Staffing and inputs | Proposed output handling | What keeps it useful |
+|---|---|---|---|
+| Workshop | Engineer working time and gold | Manufactured items support player-selected door and trap placements | New defenses, repairs, and replacement mechanisms |
+| Training Room | Any dwarf's time and an accessible training position; training cost remains open | Stat increases applied to the dwarf training | Developing the fresh population in every stronghold, across all roles |
+| Library | Runesmith working time and research capacity; research costs remain open | Progress toward spells | Spell research across the campaign; availability on later levels and use after all available research is complete still need definition |
+
+The Workshop combines metalworking and mechanism assembly in one facility. The Library is the single spell-research facility. Gold, labor, room capacity, and food support this simplified draft; separate equipment production, ore processing, and magical currencies are not established systems.
+
+Training is available to Miners, Engineers, Warriors, and Runesmiths. The player supplies room capacity, and dwarfs train autonomously. Training must share time with work, needs, and defense; scheduling, stat gains, and progression limits remain open. Capacity feedback should show occupied and available training positions rather than beds or Warrior-only slots.
+
+The current room catalog supports the four core dwarf types. Additional rooms and more powerful dwarf types can be introduced later, after the core gameplay works.
+
+## Adding room types later
+
+Room definitions should describe their visual identity, compact and large furnishings, placement and access requirements, usable capacities, services or outputs, and eligible worker capabilities. The shared grid designation, automatic furnishing, navigation, capacity reporting, and recruitment systems should consume these definitions. A new room can then reuse those systems and introduce a new service only if needed. Recruitment relationships must allow shared rooms and multiple conditions rather than assume every room exists for exactly one dwarf type. See the [architecture requirements](game-rules.md#14-extensible-character-and-room-definitions).
+
+## Doors and traps
+
+These are fixtures placed on the grid, not additional specialist rooms. Engineers and the Workshop provide their manufacture and upkeep.
+
+| Proposed fixture | Purpose | Recurring requirement |
+|---|---|---|
+| Reinforced door or gate | Controls access and delays attackers | Repairs after damage |
+| Bolt trap | Provides ranged damage along an approach | Replacement firing supplies or mechanisms; exact model open |
+| Stonefall trap | Damages enemies in a confined passage | Reset or replacement after triggering |
+| Slowing trap | Holds attackers in a defended area for longer | Reset or repair |
+
+Door access settings influence civilian routes as well as enemy movement. A locked gate can protect a district while preventing residents from reaching food or pay. The final interface and whether doors support separate access modes remain to be designed.
+
+Traps should offer different tactical uses throughout the campaign, not serve only one map or enemy species. Friendly-fire, ammunition, and trap-reset rules are still open.
+
+## Reinforced walls
+
+Reinforcement is a miner terrain job, not a room or a paid upgrade tree. Available miners reinforce exposed earth walls bordering claimed territory after higher-priority excavation, resource, and hauling work.
+
+The proposed wall model has one visible reinforced state. Reinforced earth is harder for enemies capable of digging to breach; bedrock is completely indestructible. Reinforcement strength, time, and the treatment of reinforced walls when the player later excavates them remain to be finalized.
+
+## Decisions still open
+
+- Per-tile room costs, furnishing footprints and access space, placement priorities, and production capacities. Rooms have no fixed footprint requirement; individual functions need enough space for their furnishings.
+- Placement of compact and large furnishing variants in narrow, irregular, expanding, or divided rooms.
+- Treatment of displaced furniture or stored contents after later room changes.
+- Exact specialist attraction thresholds and migration rate.
+- Kitchen food production, storage, serving throughput, and support across multiple rooms.
+- Spell research list, progression across levels, and Library use after available research is complete.
+- Training stat gains, costs, limits, and scheduling for every dwarf type.
+- Door, trap, bridge, and core repair rules.
+- Room selling, refunds, and rebuilding damaged facilities.
