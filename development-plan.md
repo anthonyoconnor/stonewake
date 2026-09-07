@@ -1,6 +1,6 @@
 # Browser game development plan
 
-Status: **planning only; development has not started.** TypeScript and Babylon.js are confirmed. This document records the user's requested M1–M8 sequence, including M5.1, and replaces the earlier proposed roadmap. Do not begin implementation until the user asks to start.
+Status: **implementation authorized on 2026-09-07.** TypeScript and Babylon.js are confirmed. This document records the user's requested M1–M8 sequence, including M5.1, and replaces the earlier proposed roadmap. The user authorized all milestones on 2026-09-07; proceed in sequence.
 
 Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [Rooms](rooms.md), [Levels](levels.md), and [Gameplay interface](gameplay-interface.md). This plan defines development order; systems outside the listed milestones remain part of the broader design where documented, without becoming requirements for these milestones. Every new room follows the [room development checklist](room-development-checklist.md).
 

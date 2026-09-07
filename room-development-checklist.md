@@ -1,6 +1,6 @@
 # Room development checklist
 
-Use this checklist for every room added to the browser game, beginning with the Treasure Room's shared-system review in M5 and then the Dormitory (M6), Kitchen (M7), and Workshop (M8). It is the reusable room-adding procedure requested in the [development plan](development-plan.md). No implementation has started.
+Use this checklist for every room added to the browser game, beginning with the Treasure Room's shared-system review in M5 and then the Dormitory (M6), Kitchen (M7), and Workshop (M8). It is the reusable room-adding procedure requested in the [development plan](development-plan.md). Implementation is authorized; see the development plan for progress.
 
 The current [room rules](rooms.md) define gameplay. The [room gallery](concept-art/rooms/README.md) and [approved terrain reference](concept-art/terrain/resource-terrain-v2.png) guide appearance; illustrated counts and footprints are not fixed templates. Keep unresolved sizes, costs, rates, and balance explicitly provisional.
 

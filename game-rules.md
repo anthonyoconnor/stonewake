@@ -8,7 +8,7 @@ Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Levels](le
 
 This document records the agreed direction and the current working rules. Proposals and unresolved mechanics are identified explicitly. Numerical balance values are not final. The companion documents expand the inventories without committing to an implementation or a final campaign roster.
 
-The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records the agreed M1–M8 sequence, including M5.1, and guidelines for rapid iteration and extensible content. The planned room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Development has not started.
+The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records the agreed M1–M8 sequence, including M5.1, and guidelines for rapid iteration and extensible content. The planned room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Implementation is authorized; progress is tracked in the development plan.
 
 ## 1. Player role and core loop
 

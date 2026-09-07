@@ -151,7 +151,7 @@ Room definitions should describe their visual identity, compact and large furnis
 
 ## Room development and debugging
 
-The [development plan](development-plan.md) schedules shared room support and a Room Debug View in M5, a sidebar Debug menu and free room construction flag in M5.1, then the Dormitory, Kitchen, and Workshop in M6–M8. These are planned features; no implementation exists yet.
+The [development plan](development-plan.md) schedules shared room support and a Room Debug View in M5, a sidebar Debug menu and free room construction flag in M5.1, then the Dormitory, Kitchen, and Workshop in M6–M8. These are planned features; implementation progress is tracked in the development plan.
 
 Every room addition follows the [room development checklist](room-development-checklist.md), which covers definitions, placement, automatic furnishings, capacity, access, services, sidebar feedback, and varied layout checks. Review the existing Treasure Room against the same checklist when establishing shared room support.
 
