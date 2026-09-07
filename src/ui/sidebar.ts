@@ -27,7 +27,7 @@ export class Sidebar {
       <div class="work-tools"><button data-tool="dig">⚒ Excavate</button><button data-tool="erase" aria-label="Remove excavation marks">⌫</button></div>
       <div id="panel" class="panel"></div>
       <div id="feedback" class="feedback" role="status">Choose a task for your stronghold.</div>
-      <div class="camera-tools"><button data-camera="left" aria-label="Rotate left">↶</button><button data-camera="home" aria-label="Return to Hearthstone">⌂</button><button data-camera="right" aria-label="Rotate right">↷</button><button data-camera="in" aria-label="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out">−</button></div>
+      <div class="camera-tools"><button data-camera="home" aria-label="Return to Hearthstone">⌂</button><button data-camera="in" aria-label="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out">−</button></div>
       <footer><button id="help" aria-label="Help">?</button><span>THE HEARTH IS ALIGHT</span><span class="live-dot"></span></footer>`;
     document.querySelector('#app')!.prepend(this.root);
     this.panel=this.root.querySelector('#panel')!;this.minimap=this.root.querySelector('#minimap')!;
@@ -35,7 +35,7 @@ export class Sidebar {
     this.root.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>selection.setTool(b.dataset.tool!));
     selection.onChange=message=>{this.root.querySelector('#feedback')!.textContent=message;this.root.querySelectorAll<HTMLElement>('[data-tool],[data-room]').forEach(b=>b.classList.toggle('active',(b.dataset.tool??b.dataset.room)===selection.tool));};
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera]').forEach(b=>b.onclick=()=>{
-      switch(b.dataset.camera){case'left':controls.rotate(-Math.PI/8);break;case'right':controls.rotate(Math.PI/8);break;case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
+      switch(b.dataset.camera){case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
     });
     this.root.querySelector<HTMLButtonElement>('#help')!.onclick=()=>this.show('help');
     this.minimap.onclick=e=>{const r=this.minimap.getBoundingClientRect();controls.center((e.clientX-r.left)/r.width*view.world.width,(e.clientY-r.top)/r.height*view.world.height);};
@@ -45,7 +45,7 @@ export class Sidebar {
     if(category==='rooms'&&this.lab)category='lab';
     this.category=category;
     this.root.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',(b as HTMLElement).dataset.category===(category==='lab'?'rooms':category)));
-    if(category==='help')this.panel.innerHTML='<p class="eyebrow">FIELD GUIDE</p><h2>Find your foothold.</h2><p>Explore the stone halls around your Hearthstone.</p><dl><dt>W A S D</dt><dd>Move camera</dd><dt>Q / E</dt><dd>Rotate view</dd><dt>Mouse wheel</dt><dd>Zoom</dd><dt>Middle drag</dt><dd>Pan</dd><dt>Home</dt><dd>Return to hearth</dd></dl>';
+    if(category==='help')this.panel.innerHTML='<p class="eyebrow">FIELD GUIDE</p><h2>Find your foothold.</h2><p>Explore the stone halls around your Hearthstone.</p><dl><dt>W A S D / edges</dt><dd>Pan camera</dd><dt>Left Ctrl + A/D</dt><dd>Orbit viewed point (also Q/E)</dd><dt>Mouse wheel</dt><dd>Zoom</dd><dt>Middle drag</dt><dd>Orbit viewed point horizontally</dd><dt>Home</dt><dd>Return to hearth</dd></dl>';
     else if(category==='debug'){
       this.panel.innerHTML=`<p class="eyebrow">DEVELOPMENT TOOLS</p><label class="toggle"><input id="free-rooms" type="checkbox" ${this.view.world.freeRoomBuilding?'checked':''}/> Free room construction</label><p class="muted">${this.view.world.freeRoomBuilding?'Room construction and expansion cost no gold.':'Normal room costs are active.'} Placement and access rules still apply.</p><button id="debug-lab" class="wide">Room layouts</button><button id="restart" class="wide">Restart stronghold</button>`;
       this.panel.querySelector<HTMLInputElement>('#free-rooms')!.onchange=e=>{const value=(e.target as HTMLInputElement).checked;this.onFreeBuild(value);this.selection.draw();this.show('debug');};

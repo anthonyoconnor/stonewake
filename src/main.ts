@@ -15,6 +15,11 @@ world.freeRoomBuilding=import.meta.env.VITE_FREE_ROOM_BUILDING==='true';
 addMiners(world);
 const view=new GameScene(document.querySelector<HTMLCanvasElement>('#world')!,world);
 const controls=new CameraControls(view);
+// A browser owns Ctrl+W; protect the in-memory session at the point of leaving.
+window.addEventListener('beforeunload',event=>{
+  event.preventDefault();
+  event.returnValue=true;
+});
 const selection=new Selection(view);
 const sidebar=new Sidebar(view,controls,selection);
 const residents=new ResidentView(view);

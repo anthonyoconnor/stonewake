@@ -16,11 +16,11 @@ Project-wide development instructions are in [AGENTS.md](AGENTS.md).
 
 Choose **Excavate** and drag across visible dirt, rock, gold or gems. Miners find reachable work, clear terrain and claim the floor. Choose a room and drag claimed squares to build; right-click or Escape cancels the current gesture. Start with a Treasure Room to receive mined riches. There is a provisional 400-gold starting allowance. Room capacity comes from accessible furnishings, so narrow or tiny layouts may not function yet.
 
-Pan with **WASD** or middle drag, rotate with **Q/E**, zoom with the wheel, and press **Home** to return to the Hearthstone. The minimap also moves the camera. Camera movement does not reveal hidden terrain.
+Pan with **WASD** or by moving the mouse to a window edge. Hold **Left Ctrl+A/D** or drag horizontally with the **middle mouse button** to orbit the viewed point at a fixed tilt; **Q/E** also rotates. Both panning methods preserve the camera angle. Zoom with the wheel, and press **Home** to return to the Hearthstone. The minimap also moves the camera. Camera movement does not reveal hidden terrain.
 
 Open **Debug → Room layouts** to build and inspect all implemented rooms with the normal grid tools. Example footprints, tired/hungry residents and a test Engineer make services easy to exercise. **Load visual showcase** creates all four rooms with actual test stocks, four residents and queued crafting jobs. Click Rooms to return to the studio controls after inspecting Dwarfs; Return to stronghold restores the game you left in memory.
 
-**Free room construction** applies to room creation and expansion in both worlds. Set `VITE_FREE_ROOM_BUILDING=true` in an untracked `.env.local` to enable it on launch, or use the Debug toggle. Production inputs still cost gold. **Restart stronghold** starts a fresh prototype; refreshing also resets the session.
+**Free room construction** applies to room creation and expansion in both worlds. Set `VITE_FREE_ROOM_BUILDING=true` in an untracked `.env.local` to enable it on launch, or use the Debug toggle. Production inputs still cost gold. **Restart stronghold** starts a fresh prototype; refreshing also resets the session. After interacting with the game, closing, refreshing or navigating away asks for browser confirmation where supported, protecting against accidental Ctrl+W.
 
 Workshop production is under Rooms or Debug. Normal Engineer recruitment and placing manufactured doors/traps are pending; **Add test Engineer** verifies the staffed production service. Training Room, Library, Guard Post, Bridge, combat and campaign progression remain broader design work.
 

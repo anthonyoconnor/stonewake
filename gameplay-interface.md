@@ -88,12 +88,12 @@ Proposed mouse and keyboard defaults:
 | Left click or drag with excavation/room tool active | Designate the affected grid cells |
 | Left click with a fixture, targeted spell, or rally tool active | Apply the selected action at a valid position |
 | Right click or Escape | Cancel an active preview/tool and return to inspection; Escape can open pause when no action is active |
-| WASD or middle-mouse drag | Pan the camera |
-| Q / E | Rotate the overhead camera |
+| WASD or mouse at a window edge | Pan relative to the view, preserving angle and zoom |
+| Left Ctrl + A / D, horizontal middle-mouse drag, or Q / E | Orbit around the viewed point at a fixed tilt |
 | Mouse wheel over the world | Zoom in or out |
 | Click the minimap | Recenter the camera |
 
-Bindings are proposals and should be remappable. Provide visible icon access for camera actions as well. Input over the sidebar must never excavate, build, or cast into the world behind it; scrolling a panel must not zoom the camera. Establish a reliable gesture for removing excavation designations during prototyping, with the same clear cell preview before applying it.
+Bindings are proposals and should be remappable. The sidebar provides Home and zoom icons; rotation uses the keyboard or middle drag. Closing, refreshing or leaving an active game requests browser confirmation to protect its in-memory session; Ctrl+W itself remains browser-controlled. Input over the sidebar must never excavate, build, or cast into the world behind it; scrolling a panel must not zoom the camera. Establish a reliable gesture for removing excavation designations during prototyping, with the same clear cell preview before applying it.
 
 Camera rotation preserves the world-grid alignment of selections. Dwarfs and enemies still move continuously within the free space rather than following selection squares. Camera motion never grants visibility through concealed terrain.
 
