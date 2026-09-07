@@ -18,7 +18,7 @@ export interface LevelDefinition {
 }
 export interface World {
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
-  agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number;
+  agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
 }
 export interface Furnishing extends Point {
   id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number;

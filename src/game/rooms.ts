@@ -14,7 +14,7 @@ export function roomQuote(w:World,type:string,points:Point[]) {
   if(!def?.implemented)return {valid:false,cost:0,tiles:[],reason:'This room is not available.'};
   if(tiles.some(t=>!t||!t.known||t.terrain!=='floor'||!t.claimed||t.core||t.room&&t.room!==type))return {valid:false,cost:0,tiles:[],reason:'Select clear, claimed floor.'};
   const fresh=tiles.filter(t=>t&&!t.room) as NonNullable<typeof tiles[number]>[];
-  const cost=fresh.length*def.cost;
+  const cost=w.freeRoomBuilding?0:fresh.length*def.cost;
   return {valid:cost<=goldTotal(w),cost,tiles:fresh,reason:cost>goldTotal(w)?'Not enough stored gold.':fresh.length?'Ready to build.':'This floor already belongs to the room.'};
 }
 export function buildRoom(w:World,type:string,points:Point[]) {

@@ -4,6 +4,16 @@ import {createRoomLab,labLayout,labShapes} from '../src/content/room-lab.ts';
 import {buildRoom,furnish,roomStats} from '../src/game/rooms.ts';
 import {reachable} from '../src/game/navigation.ts';
 import {tileAt,key} from '../src/game/types.ts';
+import {goldTotal,roomQuote} from '../src/game/rooms.ts';
+test('free build waives creation and expansion costs but preserves placement rules',()=>{
+ const w=createRoomLab();w.allowance=0;
+ assert.equal(roomQuote(w,'treasure',labLayout(w,'Compact')).valid,false);
+ w.freeRoomBuilding=true;assert.equal(roomQuote(w,'treasure',labLayout(w,'Compact')).cost,0);
+ buildRoom(w,'treasure',labLayout(w,'Compact'));buildRoom(w,'treasure',labLayout(w,'Large hall'));assert(w.furnishings.length>0);assert.equal(goldTotal(w),0);assert.equal(w.spent,0);
+ assert.equal(roomQuote(w,'treasure',[{x:12,z:12}]).valid,false);
+ w.freeRoomBuilding=false;assert.equal(roomQuote(w,'treasure',[{x:19,z:19}]).valid,false);
+ w.allowance=20;buildRoom(w,'treasure',[{x:19,z:19}]);assert.equal(goldTotal(w),8);
+});
 test('Treasure Room layout matrix preserves circulation and real capacity',()=>{
  for(const shape of labShapes){const w=createRoomLab();const start={x:2,z:2},before=reachable(w,start);buildRoom(w,'treasure',labLayout(w,shape));
    const after=reachable(w,start);assert.equal(after.size,before.size-w.furnishings.reduce((s,f)=>s+f.cells.length,0),shape);

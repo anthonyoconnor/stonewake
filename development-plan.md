@@ -25,7 +25,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 | M3 | Basic left sidebar and minimap, with gameplay controls left blank | Complete |
 | M4 | Autonomous miners, excavation, claiming, Treasure Room construction, and resource hauling | Complete |
 | M5 | Shared room rules, reusable room checklist, and room catalog/layout debugging view | Complete |
-| M5.1 | Free room construction flag and Debug option in the left sidebar | Not started |
+| M5.1 | Free room construction flag and Debug option in the left sidebar | Complete |
 | M6 | Dormitory | Not started |
 | M7 | Kitchen | Not started |
 | M8 | Workshop | Not started |
@@ -198,3 +198,7 @@ Implemented three autonomous miners, click/drag excavation and cancellation, con
 
 ### M5 — 2026-09-07
 Generalized room definitions, variants/orientations, edge-connected room grouping, usable-facility inspection, wall trims, and furnishing preservation. Added a separate resettable 24 × 24 Room Layout Studio with the full room catalog and eight example footprints using normal construction and selection. Main-game state stays in memory when visiting the studio. Ten tests pass, including the layout matrix, circulation, one-cell capacity, expansion, and displaced gold; TypeScript passes. Browser verified the catalog and a 45-square L-shaped room with 23 reachable chests. The M5 checklist is satisfied for Treasure Room; services for subsequent rooms follow their milestones.
+
+
+### M5.1 — 2026-09-07
+Added Debug to the left sidebar with free room construction, Room Layout Studio access, and a quick stronghold restart. The shared construction quote handles both creation and expansion; invalid terrain still fails. Optional VITE_FREE_ROOM_BUILDING config defaults to false. Eleven tests pass, including zero-fund free construction, unchanged balances, and restored normal pricing; TypeScript passes. Browser verified enabling the flag and constructing a studio room with its 50,000-gold debug allowance unchanged.
