@@ -21,7 +21,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 | Milestone | Outcome | Status |
 |---|---|---|
 | M1 | Fixed-size grid level with core, terrain, resources, and open spaces | Complete |
-| M2 | Camera scrolling/panning, zoom, and rotation | Not started |
+| M2 | Camera scrolling/panning, zoom, and rotation | Complete |
 | M3 | Basic left sidebar and minimap, with gameplay controls left blank | Not started |
 | M4 | Autonomous miners, excavation, claiming, Treasure Room construction, and resource hauling | Not started |
 | M5 | Shared room rules, reusable room checklist, and room catalog/layout debugging view | Not started |
@@ -182,3 +182,7 @@ Prototype values remain provisional. Milestone commits are identifiable by their
 
 ### M1 — 2026-09-07
 Implemented a 48 × 48 authored map, fixed Stone Hearth, six terrain types, hidden pre-opened caverns, camera-independent sight, and procedural stone/resource meshes. Verified the browser scene with no console errors, TypeScript/build, and two map/sight tests. Geometry and texture detail are prototype assets. Run with npm run dev.
+
+
+### M2 — 2026-09-07
+Added camera-relative WASD pan, middle-drag pan, Q/E rotation, wheel zoom with bounds, and Home to the Hearthstone. Verified rotation/pan/zoom and Home in the browser, with no console errors; TypeScript passes. Camera controls do not modify discovery.
