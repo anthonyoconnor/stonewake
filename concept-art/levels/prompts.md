@@ -1,5 +1,7 @@
 # Level and region concept prompts
 
+Reference history: room and terrain-study images marked superseded below are available in Git history at `26bf924`. The original prompt text and source filenames remain unchanged; the current sheets are in the [room gallery](../rooms/README.md).
+
 Generated with the built-in image generation tool. These are new environment concepts using the approved terrain image as a reference, rather than edits to that saved image. Return to the [gallery](README.md).
 
 ## Scope and references
@@ -7,8 +9,8 @@ Generated with the built-in image generation tool. These are new environment con
 The set covers the five candidate strongholds in [Levels](../../levels.md), plus Fungal Caves and Volcanic Depths regional studies. Upper workings appear in Border Foothold, ancient halls in Fallen City, and crystal caverns in Crystal Divide. Flooded Workings shows water-constrained mining; Royal Deep combines several regional approaches. These are representative explored areas, not complete map designs or a finalized campaign order.
 
 1. [Approved terrain reference](../terrain/resource-terrain-v2.png): primary reference for every image; controls terrain appearance, grid scale, camera, materials, and single-layer excavation.
-2. [Stone Hearth](../rooms/stone-hearth-v1.png): object reference for the five candidate strongholds only; does not override the primary terrain reference.
-3. [Bridge](../rooms/bridge-v1.png): supporting object reference for Flooded Workings only.
+2. `stone-hearth-v1.png` (superseded): object reference for the five candidate strongholds only; does not override the primary terrain reference.
+3. `bridge-v1.png` (superseded): supporting object reference for Flooded Workings only.
 
 The references were inspected before generation. The five stronghold requests use references 1 and 2 in that order; Flooded Workings also uses reference 3. The two region studies use reference 1 only.
 
@@ -44,7 +46,7 @@ Output one finished landscape concept, matching the primary reference's visual q
 
 Scope: Candidate stronghold. Output: [border-foothold-v1.png](border-foothold-v1.png).
 
-References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); [`stone-hearth-v1.png`](../rooms/stone-hearth-v1.png).
+References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); `stone-hearth-v1.png` (superseded).
 
 ### Scene block
 
@@ -57,7 +59,7 @@ Show an intimate early foothold in the UPPER WORKINGS. A small warm occupied cav
 
 Scope: Candidate stronghold. Output: [flooded-workings-v1.png](flooded-workings-v1.png).
 
-References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); [`stone-hearth-v1.png`](../rooms/stone-hearth-v1.png); [`bridge-v1.png`](../rooms/bridge-v1.png).
+References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); `stone-hearth-v1.png` (superseded); `bridge-v1.png` (superseded).
 
 ### Scene block
 
@@ -70,7 +72,7 @@ Show FLOODED WORKINGS: several dry former mining chambers separated by cool dark
 
 Scope: Candidate stronghold. Output: [fallen-city-v1.png](fallen-city-v1.png).
 
-References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); [`stone-hearth-v1.png`](../rooms/stone-hearth-v1.png).
+References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); `stone-hearth-v1.png` (superseded).
 
 ### Scene block
 
@@ -83,7 +85,7 @@ Show the FALLEN CITY in the ANCIENT HALLS region: an explored portion of a burie
 
 Scope: Candidate stronghold. Output: [crystal-divide-v1.png](crystal-divide-v1.png).
 
-References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); [`stone-hearth-v1.png`](../rooms/stone-hearth-v1.png).
+References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); `stone-hearth-v1.png` (superseded).
 
 ### Scene block
 
@@ -96,7 +98,7 @@ Show CRYSTAL DIVIDE in the CRYSTAL CAVERNS region. Preserve the exact approved k
 
 Scope: Candidate stronghold. Output: [royal-deep-v1.png](royal-deep-v1.png).
 
-References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); [`stone-hearth-v1.png`](../rooms/stone-hearth-v1.png).
+References, in order: [`resource-terrain-v2.png`](../terrain/resource-terrain-v2.png); `stone-hearth-v1.png` (superseded).
 
 ### Scene block
 

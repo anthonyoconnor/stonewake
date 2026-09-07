@@ -1,12 +1,14 @@
 # Room and structure concept prompts
 
+Reference history: room and terrain-study images marked superseded below are available in Git history at `26bf924`. The original prompt text and source filenames remain unchanged; the current sheets are in the [room gallery](../rooms/README.md).
+
 Cleanup note: superseded concept images and drafts have been removed from the project. This document retains the original prompt wording and source filenames as generation history; references marked removed are not available image files. See the [current gallery](README.md) for the retained concepts.
 
-Historical generation record. The seven expandable room sheets have been revised to replace isolated bedrock mounds with continuous seams that follow the terrain grid. See the [current gallery](README.md) and [correction prompts](prompts-v2.md). Stone Hearth and Bridge v1 remain current. Original prompt wording below is preserved for provenance, not as the current terrain specification.
+Historical generation record. The seven expandable room sheets have been revised to replace isolated bedrock mounds with continuous seams that follow the terrain grid. See the [current gallery](README.md) and [correction prompts](prompts-v2.md). Stone Hearth and Bridge v1 have also been superseded by the [terrain-style revision](prompts-v3.md). Original prompt wording below is preserved for provenance, not as the current terrain specification.
 
 Generated with the built-in image generation tool. Each section preserves the exact prompt and reference inputs for one concept sheet. The [gallery](README.md) explains the current set; [Rooms](../../rooms.md) remains the gameplay specification.
 
-The original style-comparison sheet was inspected before use, and only its stylized 3D quadrant was used as a style reference. The Library sheet was generated and visually inspected first, then used as an additional presentation reference for the other sheets. The current room revisions, Stone Hearth, and Bridge images are saved in this folder; superseded room sheets have been removed.
+The original style-comparison sheet was inspected before use, and only its stylized 3D quadrant was used as a style reference. The Library sheet was generated and visually inspected first, then used as an additional presentation reference for the other sheets. The current terrain-style revisions are saved in this folder; superseded sheets have been removed from the working gallery.
 
 ## Library
 
@@ -191,7 +193,7 @@ Prioritize open defensive and transit space over decor. Show adjoining plain cor
 
 ## Stone Hearth
 
-Output: [stone-hearth-v1.png](stone-hearth-v1.png).
+Output: `stone-hearth-v1.png` (superseded).
 
 References: [style-comparison-v1.png](../../concept-art/style-comparison-v1.png); `library-v1.png` (removed).
 
@@ -212,7 +214,7 @@ Back wall treatments use restrained carved runes on existing stone faces; no new
 
 ## Bridge
 
-Output: [bridge-v1.png](bridge-v1.png).
+Output: `bridge-v1.png` (superseded).
 
 References: [style-comparison-v1.png](../../concept-art/style-comparison-v1.png); `library-v1.png` (removed).
 

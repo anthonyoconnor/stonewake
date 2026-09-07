@@ -1,5 +1,7 @@
 # Gold seam and gem column concept prompt
 
+Reference history: room and terrain-study images marked superseded below are available in Git history at `26bf924`. The original prompt text and source filenames remain unchanged; the current sheets are in the [room gallery](../rooms/README.md).
+
 Cleanup note: superseded concept images and drafts have been removed from the project. This document retains the original prompt wording and source filenames as generation history; references marked removed are not available image files. See the [current gallery](README.md) for the retained concepts.
 
 Historical first version. The user approved the gem columns and gold treatment, but requested one terrain layer and removal of the lower selected ledge. See the [current gallery](README.md) and [revision prompt](prompts-v2.md). The original wording below is retained as generation provenance.
@@ -11,7 +13,7 @@ Selected output: `resource-terrain-v1.png` (removed).
 ## References
 
 1. [dungeon-keeper-excavation-reference.png](../../concept-art/terrain/references/dungeon-keeper-excavation-reference.png)
-2. [terrain-grid-v2.png](../../concept-art/rooms/terrain-grid-v2.png)
+2. `terrain-grid-v2.png` (superseded)
 3. [miner-v1.png](../../concept-art/dwarfs/miner-v1.png)
 
 The Dungeon Keeper screenshot was supplied by the user and retained unmodified as a reference for excavation-cell scale, selection, and top/side visibility. The terrain study and Miner concept provide project continuity. All input images were inspected before generation.

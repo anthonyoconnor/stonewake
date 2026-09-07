@@ -1,14 +1,16 @@
 # Grid terrain correction prompts
 
+Reference history: room and terrain-study images marked superseded below are available in Git history at `26bf924`. The original prompt text and source filenames remain unchanged; the current sheets are in the [room gallery](../rooms/README.md).
+
 Cleanup note: superseded concept images and drafts have been removed from the project. This document retains the original prompt wording and source filenames as generation history; references marked removed are not available image files. See the [current gallery](README.md) for the retained concepts.
 
 Created with the built-in image generation tool to reflect the user's correction: bedrock generally continues as a seam through the level, all terrain occupies the square grid, and isolated squares of unmined earth can remain inside rooms.
 
-The [current gallery](README.md) uses the selected images below. The original room sheets have been removed; their [prompts](prompts.md) remain as generation history. Image edits target the fourth room panel; the other layout examples and each room's identity are preserved as visual references.
+The [current gallery](README.md) now uses the [terrain-style revisions](prompts-v3.md). This document records the preceding grid corrections. The original room sheets have been removed; their [prompts](prompts.md) remain as generation history. Image edits target the fourth room panel; the other layout examples and each room's identity are preserved as visual references.
 
 ## Library v2
 
-Selected output: [library-v2.png](library-v2.png).
+Selected output: `library-v2.png` (superseded).
 
 Inputs: `library-v1.png` (removed).
 
@@ -26,9 +28,9 @@ No isolated central rock island, decorative rocky peak, round boulder, floating 
 
 ## Kitchen v2
 
-Selected output: [kitchen-v2.png](kitchen-v2.png).
+Selected output: `kitchen-v2.png` (superseded).
 
-Inputs: `kitchen-v1.png` (removed); [library-v2.png](../../concept-art/rooms/library-v2.png).
+Inputs: `kitchen-v1.png` (removed); `library-v2.png` (superseded).
 
 ```text
 Use case: stylized-concept.
@@ -46,9 +48,9 @@ For the corrected rock, preserve the whole-cell rectilinear geometry demonstrate
 
 ## Workshop v2
 
-Selected output: [workshop-v2.png](workshop-v2.png).
+Selected output: `workshop-v2.png` (superseded).
 
-Inputs: `workshop-v1.png` (removed); [library-v2.png](../../concept-art/rooms/library-v2.png).
+Inputs: `workshop-v1.png` (removed); `library-v2.png` (superseded).
 
 ```text
 Use case: stylized-concept.
@@ -66,9 +68,9 @@ For the corrected rock, preserve the whole-cell rectilinear geometry demonstrate
 
 ## Training Room v2
 
-Selected output: [training-room-v2.png](training-room-v2.png).
+Selected output: `training-room-v2.png` (superseded).
 
-Inputs: `training-room-v1.png` (removed); [library-v2.png](../../concept-art/rooms/library-v2.png).
+Inputs: `training-room-v1.png` (removed); `library-v2.png` (superseded).
 
 ```text
 Use case: stylized-concept.
@@ -86,9 +88,9 @@ For the corrected rock, preserve the whole-cell rectilinear geometry demonstrate
 
 ## Treasure Room v2
 
-Selected output: [treasure-room-v2.png](treasure-room-v2.png).
+Selected output: `treasure-room-v2.png` (superseded).
 
-Inputs: `treasure-room-v1.png` (removed); [library-v2.png](../../concept-art/rooms/library-v2.png).
+Inputs: `treasure-room-v1.png` (removed); `library-v2.png` (superseded).
 
 ```text
 Use case: stylized-concept.
@@ -106,9 +108,9 @@ For the corrected rock, preserve the whole-cell rectilinear geometry demonstrate
 
 ## Dormitory v2
 
-Selected output: [dormitory-v2.png](dormitory-v2.png).
+Selected output: `dormitory-v2.png` (superseded).
 
-Inputs: `dormitory-v1.png` (removed); [library-v2.png](../../concept-art/rooms/library-v2.png).
+Inputs: `dormitory-v1.png` (removed); `library-v2.png` (superseded).
 
 ```text
 Use case: stylized-concept.
@@ -126,9 +128,9 @@ For the corrected rock, preserve the whole-cell rectilinear geometry demonstrate
 
 ## Guard Post v2
 
-Selected output: [guard-post-v2.png](guard-post-v2.png).
+Selected output: `guard-post-v2.png` (superseded).
 
-Inputs: `guard-post-v1.png` (removed); [library-v2.png](../../concept-art/rooms/library-v2.png).
+Inputs: `guard-post-v1.png` (removed); `library-v2.png` (superseded).
 
 ```text
 Use case: stylized-concept.
@@ -161,7 +163,7 @@ Match the established polished stylized 3D look with chunky readable forms, rest
 
 ## Terrain reference: grid refinement
 
-Selected output: [terrain-grid-v2.png](terrain-grid-v2.png). Edit target: `terrain-grid-v1.png` (removed).
+Selected output: `terrain-grid-v2.png` (superseded). Edit target: `terrain-grid-v1.png` (removed).
 
 ```text
 Use case: stylized-concept.

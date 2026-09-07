@@ -67,7 +67,7 @@ Two rooms with the same tile count can support different arrangements. Avoid imp
 
 The following art treatments and object sets are proposals. Every growable room requires an identity that reads before it contains furniture, and furnishings that remain legible from all camera directions.
 
-The [room concept gallery](concept-art/rooms/README.md) illustrates each growable room in compact, expanded, L-shaped, and bedrock-seam layouts, plus a terrain reference distinguishing continuous bedrock from retained earth tiles and placement examples for the Stone Hearth and bridges. These are visual studies, not mandatory footprints, capacity values, or upgrade tiers. Exact prompts are stored with the images in the concept-art folder.
+The [room concept gallery](concept-art/rooms/README.md) illustrates each growable room in compact, expanded, bent or irregular, and bedrock-seam layouts, plus a terrain reference and placement examples for the Stone Hearth and bridges. The sheets use the approved gold-and-gem terrain style: excavations within continuous earth and bedrock, a single terrain height, dense weathered materials, and warm practical lighting. Each room keeps its distinctive floor and wall treatment. These are visual studies, not mandatory footprints, capacity values, or upgrade tiers. Exact [revision prompts](concept-art/rooms/prompts-v3.md) are stored with the images.
 
 | Room or structure | Floor identity | Available wall faces | Furnishings or details added where space permits |
 |---|---|---|---|

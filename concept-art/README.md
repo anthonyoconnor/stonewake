@@ -33,11 +33,11 @@ The gallery contains the current four-role roster shown above. Superseded sheets
 
 [View the room and structure gallery](rooms/README.md).
 
-Seven room sheets each explore compact, expanded, L-shaped, and continuous bedrock-seam layouts: [Library](rooms/library-v2.png), [Kitchen](rooms/kitchen-v2.png), [Workshop](rooms/workshop-v2.png), [Training Room](rooms/training-room-v2.png), [Treasure Room](rooms/treasure-room-v2.png), [Dormitory](rooms/dormitory-v2.png), and [Guard Post](rooms/guard-post-v2.png). Their revised terrain boundaries follow the square grid.
+Seven room sheets each explore compact, expanded, bent or irregular, and continuous bedrock-seam layouts: [Library](rooms/library-v3.png), [Kitchen](rooms/kitchen-v3.png), [Workshop](rooms/workshop-v3.png), [Training Room](rooms/training-room-v3.png), [Treasure Room](rooms/treasure-room-v3.png), [Dormitory](rooms/dormitory-v3.png), and [Guard Post](rooms/guard-post-v3.png). Their excavated footprints follow the square grid within the approved terrain's continuous earth and bedrock banks.
 
-[Stone Hearth](rooms/stone-hearth-v1.png) and [Bridge](rooms/bridge-v1.png) sheets each explore four terrain or placement contexts. The Hearth remains the same fixed structure in every example. All sheets and their [generation prompts](rooms/prompts.md) are stored in `rooms/`.
+[Stone Hearth](rooms/stone-hearth-v2.png) and [Bridge](rooms/bridge-v2.png) sheets each explore four terrain or placement contexts. The Hearth remains the same fixed structure in every example. All sheets and their [terrain-style revision prompts](rooms/prompts-v3.md) are stored in `rooms/`.
 
-The [terrain reference](rooms/terrain-grid-v2.png) distinguishes connected bedrock seams from individual unmined earth tiles left inside rooms. The current [terrain and room correction prompts](rooms/prompts-v2.md) are stored with the current images; earlier images have been removed.
+The [terrain reference](rooms/terrain-grid-v3.png) distinguishes connected bedrock seams from individual unmined earth tiles left inside rooms. The current [terrain and room revision prompts](rooms/prompts-v3.md) are stored with the images. Superseded sheets are available in Git history.
 
 ## Enemies
 

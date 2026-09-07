@@ -1,6 +1,6 @@
 # Terrain and resource concept art
 
-Environment concepts for the dwarf stronghold game. Return to [all concept art](../README.md). Related design: [Levels](../../levels.md), [Game rules](../../game-rules.md), and the [terrain grid comparison](../rooms/terrain-grid-v2.png).
+Environment concepts for the dwarf stronghold game. Return to [all concept art](../README.md). Related design: [Levels](../../levels.md), [Game rules](../../game-rules.md), and the [terrain grid comparison](../rooms/terrain-grid-v3.png).
 
 ## Gold seams and gem columns
 
@@ -21,7 +21,7 @@ The user approved this image as a representation of the overall terrain appearan
 
 Created using the built-in image generation tool. The [revision prompt](prompts-v2.md) records the user's terrain-height corrections and the approved features to preserve. The [original prompt](prompts.md) records the first composition and source roles.
 
-The user supplied a [Dungeon Keeper excavation screenshot](references/dungeon-keeper-excavation-reference.png) to demonstrate the large action cells and top/side readability. It is retained as reference material, separate from the original game concept above. The existing [terrain study](../rooms/terrain-grid-v2.png) and [Miner concept](../dwarfs/miner-v1.png) supplied project continuity.
+The user supplied a [Dungeon Keeper excavation screenshot](references/dungeon-keeper-excavation-reference.png) to demonstrate the large action cells and top/side readability. It is retained as reference material, separate from the original game concept above. The earlier `terrain-grid-v2.png` study (available in Git history at `26bf924:concept-art/rooms/terrain-grid-v2.png`) and [Miner concept](../dwarfs/miner-v1.png) supplied project continuity. The [current terrain study](../rooms/terrain-grid-v3.png) is a later revision.
 
 
 The superseded terrain image and intermediate draft have been removed. Their prompt records preserve the corrections that produced the current single-layer concept.
