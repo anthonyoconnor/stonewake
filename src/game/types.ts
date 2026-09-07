@@ -26,10 +26,11 @@ export interface Furnishing extends Point {
   id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
 }
 export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
-export interface Job { kind:'mine'|'reinforce'|'claim'|'collect'|'deliver'|'idle'|'sleep'|'eat'|'craft'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
+export interface Job { kind:'mine'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
 export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;
+  cargoOrigin?:Point; resumeMine?:Point;
   energy:number;rested:number;hunger:number;meals:number;meal:boolean;
   avoidFacility?:string;avoidUntil?:number;
   crafted:number;

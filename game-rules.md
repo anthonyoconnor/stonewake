@@ -253,3 +253,5 @@ Build these boundaries while implementing the core types. Additional types, excl
 - Reinforcement strength, core repairs, doors, traps, and bridges.
 - Campaign objectives, unlock order, enemy behavior, and attack pacing.
 - Camera projection, tilt, zoom limits, input bindings, and foreground wall treatment.
+
+Finite gold seams are mined into the miner's bag in small batches (currently 15 gold per half-second, with a 45-gold bag). The pillar stays solid and designated until its remaining gold reaches zero. A full bag is delivered to reachable treasury storage, then the miner returns to the unfinished seam; an exhausted or cancelled seam sends any partial bag for delivery. With no reachable storage space, extraction leaves gold at the seam. If storage fills during travel, miners try another chest or return undelivered gold to the extraction site. Gold never becomes spendable while carried or on the ground. Renewable gem extraction retains its existing yield-and-collection behavior.

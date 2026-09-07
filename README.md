@@ -117,3 +117,5 @@ Room placement skips ineligible squares within a drag (terrain, hidden or unclai
 Excavated, unclaimed ground looks like bare earth with scattered stones; miners replace it with paving when claiming it. Spare miners reinforce ordinary walls bordering claimed floor, turning raw earth/rock into visible masonry. Room wall fittings appear after reinforcement. Enemy breaching is still future work.
 
 After development checks, leave the local Vite server running so the game remains available to play.
+
+Gold seams now fill miners' bags directly. A full 45-gold bag triggers a treasury trip while the remaining pillar stays intact; miners return to finish it. Gold is left at the mining site only when no reachable treasury has space. The Stone Hearth chest participates in the same delivery system as Treasure Rooms.

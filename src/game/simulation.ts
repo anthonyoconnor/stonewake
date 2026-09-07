@@ -28,7 +28,9 @@ function availableStorage(w:World,a:Resident){return storage(w,a).find(f=>findPa
 function choose(w:World,a:Resident){
   if(a.carrying){
     for(const f of storage(w,a))if(take(w,a,'deliver',f,f.access,f.id))return;
-    const t=tileAt(w,Math.round(a.x),Math.round(a.z))!;t.loose+=a.carrying;a.carrying=0;w.revision++;
+    const origin=a.cargoOrigin&&tileAt(w,a.cargoOrigin.x,a.cargoOrigin.z);
+    if(origin)for(const p of origin.terrain==='floor'?[origin]:nearest(a,neighbors(w,origin)))if(take(w,a,'drop',origin,p))return;
+    a.activity='Waiting for a route to storage or the mining site';a.retry=.8;return;
   }
   if(a.energy<.3){
     const beds=nearest(a,w.furnishings.filter(f=>f.service==='rest'&&(!f.assigned||f.assigned===a.id))).sort((f,g)=>Number(g.assigned===a.id)-Number(f.assigned===a.id));
@@ -44,6 +46,13 @@ function choose(w:World,a:Resident){
     for(const f of nearest(a,w.furnishings.filter(f=>f.service==='craft'&&!w.agents.some(o=>o.job?.furnishing===f.id)))){
       if(take(w,a,'craft',f,f.access,f.id)){a.job!.order=order.id;order.worker=a.id;order.state='working';return;}
     }
+  }
+  if(a.resumeMine){
+    const t=tileAt(w,a.resumeMine.x,a.resumeMine.z);
+    if(t?.known&&t.designated&&t.terrain==='gold'&&a.capabilities.includes('mine')&&!reserved(w,'mine',t)){
+      for(const p of nearest(a,neighbors(w,t)))if(take(w,a,'mine',t,p))return;
+    }
+    a.resumeMine=undefined;
   }
   if(a.capabilities.includes('haul')&&availableStorage(w,a))for(const t of nearest(a,w.tiles.filter(t=>t.loose&&!reserved(w,'collect',t)))){
     for(const p of t.terrain==='floor'?[t]:neighbors(w,t))if(take(w,a,'collect',t,p))return;
@@ -71,6 +80,7 @@ function valid(w:World,a:Resident){
   if(j.kind==='claim')return t.terrain==='floor'&&!t.claimed;
   if(j.kind==='reinforce')return t.known&&!t.reinforced&&!t.designated&&['dirt','rock'].includes(t.terrain)&&!!tileAt(w,j.work.x,j.work.z)?.claimed&&canStand(w,j.work);
   if(j.kind==='collect')return t.loose>0;
+  if(j.kind==='drop')return a.carrying>0&&canStand(w,j.work);
   if(j.kind==='idle')return canStand(w,j.work);
   if(j.kind==='sleep')return w.furnishings.some(f=>f.id===j.furnishing&&f.assigned===a.id)&&canStand(w,j.work);
   if(j.kind==='eat')return a.meal&&w.furnishings.some(f=>f.id===j.furnishing)&&canStand(w,j.work);
@@ -112,10 +122,21 @@ export function tick(w:World,dt:number){
     if(!move(w,a,dt))continue;
     const j=a.job,t=tileAt(w,j.target.x,j.target.z)!;j.progress+=dt;
     if(j.kind==='mine'){
-      a.activity=t.terrain==='gem'?'Extracting gems':'Excavating';const duration=t.terrain==='gem'?tuning.gemSeconds:t.terrain==='rock'?tuning.rockSeconds:tuning.mineSeconds;
+      a.activity=t.terrain==='gem'?'Extracting gems':t.terrain==='gold'?'Mining gold':'Excavating';const duration=t.terrain==='gem'?tuning.gemSeconds:t.terrain==='gold'?tuning.goldSeconds:t.terrain==='rock'?tuning.rockSeconds:tuning.mineSeconds;
       if(j.progress<duration)continue;
       if(t.terrain==='gem'){t.loose+=tuning.gemYield;t.source='gem';}
-      else {if(t.terrain==='gold'){t.loose+=t.gold;t.gold=0;t.source='gold';}t.terrain='floor';t.claimed=false;t.designated=false;t.reinforced=false;}
+      else if(t.terrain==='gold'){
+        const amount=Math.min(t.gold,tuning.goldYield,tuning.carry-a.carrying);t.gold-=amount;t.source='gold';
+        if(availableStorage(w,a)){
+          a.carrying+=amount;a.cargoOrigin={...j.target};
+        }else {t.loose+=amount+a.carrying;a.carrying=0;a.cargoOrigin=undefined;}
+        w.revision++;
+        if(t.gold>0){
+          if(a.carrying>=tuning.carry){a.resumeMine={...j.target};}
+          else {j.progress=0;continue;}
+        }else {t.terrain='floor';t.claimed=false;t.designated=false;t.reinforced=false;a.resumeMine=undefined;}
+      }
+      else {t.terrain='floor';t.claimed=false;t.designated=false;t.reinforced=false;}
       reveal(w,j.work);w.revision++;
     }else if(j.kind==='reinforce'){
       a.activity='Reinforcing wall';if(j.progress<tuning.reinforceSeconds)continue;t.reinforced=true;w.revision++;
@@ -133,9 +154,12 @@ export function tick(w:World,dt:number){
     }else if(j.kind==='claim'){
       a.activity='Claiming floor';if(j.progress<tuning.claimSeconds)continue;t.claimed=true;reveal(w,t);w.revision++;
     }else if(j.kind==='collect'){
-      const f=availableStorage(w,a);if(f){const amount=Math.min(t.loose,tuning.carry,f.capacity-f.stored);t.loose-=amount;a.carrying+=amount;w.revision++;}
+      const f=availableStorage(w,a);if(f){const amount=Math.min(t.loose,tuning.carry-a.carrying,f.capacity-f.stored);t.loose-=amount;a.carrying+=amount;a.cargoOrigin={...j.target};w.revision++;}
     }else if(j.kind==='deliver'){
-      const f=w.furnishings.find(f=>f.id===j.furnishing)!;const amount=Math.min(a.carrying,f.capacity-f.stored);f.stored+=amount;a.carrying-=amount;w.revision++;
+      const f=w.furnishings.find(f=>f.id===j.furnishing)!;const amount=Math.min(a.carrying,f.capacity-f.stored);f.stored+=amount;a.carrying-=amount;if(!a.carrying)a.cargoOrigin=undefined;w.revision++;
+    }else if(j.kind==='drop'){
+      // Capacity can reopen on the return trip; avoid making an unnecessary loose pile.
+      if(!availableStorage(w,a)){t.loose+=a.carrying;a.carrying=0;a.cargoOrigin=undefined;w.revision++;}
     }
     a.job=undefined;a.path=[];
   }
