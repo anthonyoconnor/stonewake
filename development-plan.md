@@ -13,23 +13,27 @@ Last checked: **2026-09-07** against the room and character definitions and the 
 | Treasure Room | Implemented: construction, automatic chests, gold storage and hauling | Wage collection |
 | Dormitory | Implemented: automatic beds and autonomous rest | — |
 | Kitchen | Implemented: growing, cooking, brewing and autonomous meals | — |
-| Workshop | Implemented: staffed door/trap production and Engineer attraction | Placing and using manufactured defenses; repairs/replenishment |
+| Workshop | Implemented: Engineer attraction, staffed production of all three door tiers and both traps, shared finished stock for placement | Door repairs; upkeep for future fixture types |
 | Training Room | Implemented: automatic practice stations, shared capped work-speed training and Warrior attraction | Combat progression/balance |
 | Library | Implemented: automatic research stations, spell research/preparation/casting and Runesmith attraction | Broader spell catalog and campaign research progression |
 | Guard Post | Not implemented; disabled catalog placeholder | Guard positions and defensive behavior |
 | Stone Hearth | Implemented: fixed core, arrival location and starter treasury chest | Enemy attacks, core destruction and defeat |
 | Bridge | Not implemented | Crossing rules, construction and navigation across gaps |
+| Timber / Reinforced / Steel doors | Implemented in normal play: manufacture, placement, increasing health, Open/Closed/Locked access, dwarf passage, sight blocking and breakage | Repairs and upgrades in place; natural enemy encounters |
+| Spike trap | Implemented in normal play: manufacture, placement, enemy damage, brief pinning and automatic cooldown reset | Natural enemy encounters |
+| Bolt trap | Implemented in normal play: manufacture, placement, directional first-target shots, line of sight and automatic cooldown reset | Natural enemy encounters |
+| Goblin Raider | Debug-only: continuous movement, alternate routes, door breaking, trap damage, pinning and defeat in the defense yard | Normal spawning/raids, dwarf combat and Hearth attacks |
 
 | Dwarf type | Current status | Remaining integration |
 |---|---|---|
 | Miner | Implemented: starting crew, mining, hauling, claiming, reinforcement and wall construction; shared food/rest/training | Normal paid recruitment; wages; threat response |
-| Engineer | Implemented: normal Workshop-based arrivals, crafting and shared food/rest/training; also in Debug | Wages; proposed repairs/replenishment |
+| Engineer | Implemented: normal Workshop-based arrivals, crafting and shared food/rest/training; also in Debug | Wages; proposed repairs |
 | Warrior | Implemented: normal Training Room-based arrivals, appearance and shared food/rest/training; also in Debug | Wages; guarding and combat |
 | Runesmith | Implemented: normal Library-based arrivals, appearance, research/preparation and shared food/rest/training; also in Debug | Wages; personal combat abilities and campaign progression |
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-Other broad systems still pending include combat/enemies, rallying, dissatisfaction/departure and campaign progression. Detailed behavior and unresolved choices remain in the design documents; completed checks remain in the development record below.
+Other broad systems still pending include dwarf combat, natural enemy encounters/raids, Hearth damage/defeat, rallying, dissatisfaction/departure and campaign progression. Debug raiders now exercise the implemented defense interactions. Detailed behavior and unresolved choices remain in the design documents; completed checks remain in the development record below.
 
 ### Keeping status current
 
@@ -348,3 +352,15 @@ Provisional rules: Training Room 22 gold/square, Library 26; 12 seconds per trai
 Verification: all 60 tests pass, plus the final TypeScript/Vite build (existing Babylon bundle-size advisory). Both rooms pass the shared eight-layout matrix and focused checks for paid/free expansion, reclaim/refunds, separate components, blocked/restored access, narrow enclosed corridors, shared work squares, reservation release and retained progress. New dwarf checks cover shared meals/rest/training, capability exclusion, actual work bonuses, research pause/resume, casting costs/reuse, blocked sight and normal arrival limits. Review found and fixed food eligibility pooling across disconnected room sections.
 
 Browser review covered six-room construction, new geometry at different camera distances/angles, shared needs/training for all four types, research completion, pause/resume, Haste costing exactly 30 gold and queuing preparation, an ineffective Prospect cast spending zero, 9 training positions / 7 research positions in the showcase, and automatic arrivals stopping at 8 residents when beds filled. Browser console checks reported no errors. A longer browser run exposed a resident repeatedly clipping the first corner of a route from a fractional position. A failing movement regression now passes after adding a safe first leg through the current tile center. The exact 600-second showcase replay then kept all 8 residents eating/resting, reached training 5 for everyone and completed both spells and crafting outputs; the previously stuck Engineer completed 7 meals and 6 rests. Documentation links and git diff --check pass. The local Vite server remains available for play.
+
+### Door tiers, access controls and automatic traps — 2026-09-07
+
+Implemented the requested three door tiers and Open/Closed/Locked modes, spike damage with temporary pinning, and directional bolt firing. Both traps automatically reset after cooldown, as the user specified. Editable defense definitions supply health, damage, ranges and timings; five Workshop recipes supply finished items. Placement consumes one stock item, with manufacturing as the timed build step and immediate installation. Door passage and sight queries are shared by navigation, discovery and combat interactions. Locking recalculates active routes and releases unreachable jobs without losing paid crafting/research progress. Occupants can step clear, idle dwarfs leave doorways, and Closed doors shut after passage. Fixture tiles are excluded from room/wall construction.
+
+Provisional balance: timber/reinforced/steel doors cost 20/40/80 gold, take 4/8/16 seconds of Workshop work and have 100/250/500 health. Spikes cost 35 gold and 6 seconds, deal 40 damage, pin for 2 seconds and reset after 6. Bolts cost 55 gold and 10 seconds, deal 30 damage to the first enemy within 7 squares along their facing and reset after 3. Walls, furniture, the Hearth and shut doors block shots; dwarfs neither trigger traps nor take friendly fire. No ammunition or Engineer rearming is needed. Dismantling gives no refund. Existing doors retain their health and maximum health when configuration changes.
+
+Added a defense sidebar with stock, prices, work time, directional placement, door controls, condition/cooldown inspection, and a placed-fixture list. Procedural hinged doors, locks, damage seams, rising spikes and bolt flight keep animation independent of gameplay. The Goblin Raider concept guides a simple debug enemy with continuous navigation, alternate-route preference, door attacks, pinning and defeat. Debug's resettable defense yard uses actual construction, manufacture and placement with explicit test stocks, and respects the free-room flag while production still charges gold.
+
+Verification: the full 74-test suite passed. Final focused defense/configuration checks passed all 16 tests, including an added free-room yard regression; the repository now contains 75 tests. Checks cover all recipe costs/outputs, invalid placement and overlap, route cancellation/resumption, locked-door occupants, sight, increasing breach resistance, alternate routes, fast pressure-plate crossings, lethal/nonlethal spikes, friendly exclusion, bolt facing/range/occlusion and automatic resets. Final TypeScript/Vite build passed with the existing Babylon bundle-size advisory; local Markdown links and `git diff --check` passed.
+
+Browser review verified all three door controls, dwarf hauling through a Closed door (20 gold returned), trap-assisted raider defeat, an unassisted raider breaking a locked timber door and reaching its target, invalid overlap feedback, a new spike placement, and a new bolt placed facing west after two R rotations. Review widened the test approach and steepened its camera so traps remain visible beside full-height walls, and moved selected-door controls above the build catalog. Normal defense production/placement and dwarf routing are usable; enemies remain manually spawned in the debug yard. Natural encounters/raids, dwarf combat, Hearth attacks/defeat, repairs and upgrades in place remain pending. Updated the canonical inventory, README, room/rule/interface/character designs, content playbook and graphics notes together. The local Vite server remains available for play.

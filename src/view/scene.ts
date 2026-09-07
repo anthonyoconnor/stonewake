@@ -184,11 +184,12 @@ export class GameScene {
           if(model==='assembly')for(const x of [-.65,.6]){const gear=MeshBuilder.CreateTorus('mechanism gear',{diameter:.26,thickness:.055,tessellation:8},this.scene);gear.position.set(x,.66,.12);gear.material=metal;gear.parent=root;gear.isPickable=false;}
         }
         if(f.outputCount){
-          part('finished assembly',0,.73,.13,.42,.09,.34,f.output==='bolt-trap'?iron:wood);
+          part('finished assembly',0,.73,.13,.42,.09,.34,f.output==='timber-door'||f.output==='reinforced-door'?wood:iron);
           if(f.output==='bolt-trap'){
             const spring=MeshBuilder.CreateTorus('trap spring',{diameter:.2,thickness:.035,tessellation:8},this.scene);spring.position.set(0,.82,.13);spring.material=metal;spring.parent=root;spring.isPickable=false;
             part('bolt mechanism',0,.86,.13,.035,.035,.34,iron);
-          }else for(const z of [.04,.22])part('door reinforcement',0,.79,z,.4,.03,.045,metal);
+          }else if(f.output==='spike-trap')for(const x of [-.13,0,.13]){const spike=MeshBuilder.CreateCylinder('finished trap spike',{height:.15,diameterBottom:.055,diameterTop:0,tessellation:6},this.scene);spike.position.set(x,.85,.13);spike.material=iron;spike.parent=root;spike.isPickable=false;}
+          else for(const z of [.04,.22])part('door reinforcement',0,.79,z,.4,.03,.045,metal);
         }
         continue;
       }

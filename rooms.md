@@ -177,18 +177,25 @@ The development free-build flag makes all room creation and expansion free. It l
 
 ## Doors and traps
 
-These are fixtures placed on the grid, not additional specialist rooms. Engineers and the Workshop provide their manufacture and upkeep.
+Implemented fixtures use the grid and shared Workshop stock. Queue an item in Workshop production; an Engineer charges its gold once and manufactures it at a reachable station. The player places a finished item immediately from the Defenses panel. Manufacturing is the timed build step; there is no separate delivery or installation job. Free room construction does not waive manufacturing costs or supply defense stock.
 
-| Proposed fixture | Purpose | Recurring requirement |
-|---|---|---|
-| Reinforced door or gate | Controls access and delays attackers | Repairs after damage |
-| Bolt trap | Provides ranged damage along an approach | Replacement firing supplies or mechanisms; exact model open |
-| Stonefall trap | Damages enemies in a confined passage | Reset or replacement after triggering |
-| Slowing trap | Holds attackers in a defended area for longer | Reset or repair |
+| Fixture | Gold | Workshop work | Protection / effect |
+|---|---:|---:|---|
+| Tier 1 · Timber door | 20 | 4 seconds | 100 health |
+| Tier 2 · Reinforced door | 40 | 8 seconds | 250 health |
+| Tier 3 · Steel door | 80 | 16 seconds | 500 health |
+| Spike trap | 35 | 6 seconds | 40 damage; pins surviving enemies for 2 seconds; resets after 6 seconds |
+| Bolt trap | 55 | 10 seconds | 30 damage to the first enemy in its facing; range 7 squares; resets after 3 seconds |
 
-Door access settings influence civilian routes as well as enemy movement. A locked gate can protect a district while preventing residents from reaching food or pay. The final interface and whether doors support separate access modes remain to be designed.
+These are provisional balance values, editable in Crafting and Defenses configuration. Work-speed bonuses affect manufacturing time. Health changes affect newly placed doors; existing damage is retained.
 
-Traps should offer different tactical uses throughout the campaign, not serve only one map or enemy species. Friendly-fire, ammunition, and trap-reset rules are still open.
+All three door tiers have player-selected **Open**, **Closed**, and **Locked** modes. Open admits everyone. Closed lets dwarfs open the door while passing, then shuts after they clear it. Enemies can follow through while it is physically open. Locked prevents dwarfs opening it and immediately updates their routes; this can cut off work, food, beds or unexplored areas. An occupant already in the doorway may step clear before it physically shuts. Idle dwarfs move out of doorways. Shut doors stop discovery rays; changing a mode does not erase previously discovered terrain. Enemies can damage Closed or Locked doors until they break, removing the obstruction.
+
+Doors occupy one clear, claimed square between two opposite walls, with walkable approaches on the other sides. Traps use clear, claimed floor. Fixtures cannot overlap rooms, the Hearth, furnishings or their access squares, other defenses, wall plans or loose gold. Placement consumes exactly one completed item; invalid placement consumes none. Room/wall construction excludes fixture tiles. Dismantling removes a fixture with no refund; repairs and upgrades in place remain pending.
+
+Spikes trigger when an enemy crosses the pressure plate, including fast crossings. A lethal hit defeats it; a survivor cannot move or attack during the pin. Bolts fire automatically along the selected compass direction, hit one enemy, and do not pierce. Walls, the Hearth, furniture and physically shut doors block shots. Both traps ignore dwarfs, cause no friendly fire, and **automatically reset after their cooldown**. They need no ammunition, replacement supplies or Engineer rearming. Cooldown starts when triggered; unused traps remain ready.
+
+Defenses are available in the normal stronghold. Enemy movement, trap damage, pinning and door breaking can currently be exercised with manually spawned Goblin Raiders in **Debug → Defense test yard**. This uses real construction, production, placement and movement services with supplied test stock. Natural encounters, raids, dwarf fighting and Hearth damage/defeat are still pending. Stonefall and additional slowing traps are design-only possibilities.
 
 ## Reinforced walls
 

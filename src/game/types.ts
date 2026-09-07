@@ -27,6 +27,18 @@ export interface World {
   salvaged?:Record<string,number>;
   researchOrders?:ResearchOrder[];hasteUntil?:number;
   recruitment?:{enabled:boolean;nextAt:number;cursor:number};
+  defenses?:Defense[]; enemies?:Enemy[]; nextDefenseId?:number; nextEnemyId?:number;
+  defenseTest?:{spawn:Point;target:Point};
+  routesChanged?:boolean;
+}
+export type DoorMode='open'|'closed'|'locked';
+export interface Defense extends Point {
+  id:number; type:string; rotation:number; mode:DoorMode; health:number;maxHealth:number;
+  openUntil:number; readyAt:number; triggeredAt:number; shotEnd?:Point;
+}
+export interface Enemy extends Point {
+  id:number; health:number; target:Point; facing:number; pinnedUntil:number;
+  nextAttackAt:number; activity:string; hitAt:number; diedAt?:number;
 }
 export interface Furnishing extends Point {
   id:string; room:string; kind:string; model?:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;

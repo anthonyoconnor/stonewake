@@ -11,6 +11,8 @@ import {canTrain,workRate} from './progression.ts';
 import {researchDuration} from './research.ts';
 import {spellById} from '../content/spells.ts';
 import {recruitSpecialist} from './recruitment.ts';
+import {tickDefenses} from './defenses.ts';
+import {doorAt,openDoorsForDwarf} from './doors.ts';
 export const addMiners=(w:World,count=tuning.startingMiners)=>addResidents(w,'miner',count);
 export function addResidents(w:World,type:string,count=1,origin?:Point) {
   const def=characterById(type);if(!def)return 0;
@@ -87,7 +89,7 @@ function choose(w:World,a:Resident){
     for(const p of nearest(a,neighbors(w,t).filter(p=>p.claimed&&p.terrain==='floor')))if(take(w,a,'reinforce',t,p))return;
   }
   const obstructs=tileAt(w,Math.round(a.x),Math.round(a.z))?.wallPlanned||w.furnishings.some(f=>Math.hypot(a.x-f.access.x,a.z-f.access.z)<.6)||w.agents.some(o=>o!==a&&o.job&&(Math.hypot(a.x-o.job.work.x,a.z-o.job.work.z)<.6||o.path.length&&Math.hypot(a.x-o.x,a.z-o.z)<.85));
-  if(obstructs)for(const p of nearest(a,w.tiles.filter(t=>t.known&&t.terrain==='floor'&&!t.core&&!t.wallPlanned&&Math.hypot(t.x-a.x,t.z-a.z)<tuning.sightRadius))){
+  if(obstructs||doorAt(w,{x:Math.round(a.x),z:Math.round(a.z)}))for(const p of nearest(a,w.tiles.filter(t=>t.known&&t.terrain==='floor'&&!t.core&&!t.wallPlanned&&!doorAt(w,t)&&canStand(w,t)&&Math.hypot(t.x-a.x,t.z-a.z)<tuning.sightRadius))){
     if(w.furnishings.some(f=>key(f.access)===key(p))||w.agents.some(o=>o!==a&&(Math.hypot(o.x-p.x,o.z-p.z)<.6||o.job&&key(o.job.work)===key(p))))continue;
     if(take(w,a,'idle',p,p))return;
   }
@@ -139,10 +141,15 @@ function move(w:World,a:Resident,dt:number){
     if(path)a.path=path;else releaseJob(w,a);
     return false;
   }
+  openDoorsForDwarf(w,a,next);
   a.x=next.x;a.z=next.z;a.facing=Math.atan2(vx,vz);a.retry=0;a.activity=a.carrying?'Carrying gold':'Walking to work';return false;
 }
 export function tick(w:World,dt:number){
   w.elapsed+=dt;
+  if(w.routesChanged){
+    for(const a of w.agents){a.retry=0;if(a.job){const path=findPath(w,a,a.job.work);if(path)a.path=path;else releaseJob(w,a);}}
+    w.routesChanged=false;
+  }
   if(Math.floor(w.elapsed-dt)!==Math.floor(w.elapsed))produceFood(w,1);
   for(const a of w.agents){
     if(a.job?.kind!=='sleep')a.energy=Math.max(0,a.energy-dt/tuning.restInterval);
@@ -174,7 +181,7 @@ export function tick(w:World,dt:number){
     }else if(j.kind==='buildWall'){
       a.activity='Building wall';t.wallProgress=Math.min(wallBuildDuration(),(t.wallProgress??0)+work);
       if(t.wallProgress<wallBuildDuration())continue;
-      if(w.agents.some(o=>Math.abs(o.x-t.x)<.5+tuning.radius&&Math.abs(o.z-t.z)<.5+tuning.radius)){
+      if([...w.agents,...(w.enemies??[]).filter(e=>e.health>0)].some(o=>Math.abs(o.x-t.x)<.5+tuning.radius&&Math.abs(o.z-t.z)<.5+tuning.radius)){
         a.activity='Waiting for the wall site to clear';continue;
       }
       t.terrain='rock';t.reinforced=true;t.wallPlanned=false;t.wallProgress=0;t.designated=false;t.claimed=false;w.revision++;
@@ -211,6 +218,7 @@ export function tick(w:World,dt:number){
     }
     a.job=undefined;a.path=[];
   }
+  tickDefenses(w,dt);
   if(Math.floor((w.elapsed-dt)*2)!==Math.floor(w.elapsed*2))for(const a of w.agents)reveal(w,a,tuning.sightRadius);
   recruitSpecialist(w,(type,origin)=>addResidents(w,type,1,origin)>0);
 }

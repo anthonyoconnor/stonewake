@@ -14,6 +14,8 @@ import {queueCraft} from './game/crafting';
 import {enableRecruitment} from './game/recruitment';
 import {queueResearch} from './game/research';
 import {spellDefinitions} from './content/spells';
+import {createDefenseLab} from './content/defense-lab';
+import {DefenseView} from './view/defenses';
 let world=createWorld(prototypeLevel);
 world.freeRoomBuilding=import.meta.env.VITE_FREE_ROOM_BUILDING==='true';
 addMiners(world);
@@ -29,6 +31,7 @@ const selection=new Selection(view);
 const sidebar=new Sidebar(view,controls,selection);
 selection.setTool('dig');
 const residents=new ResidentView(view);
+const defenses=new DefenseView(view);
 let loadingStudio=false;
 sidebar.onLab=async(open,shape,type)=>{
   if(loadingStudio)return;
@@ -38,7 +41,7 @@ sidebar.onLab=async(open,shape,type)=>{
     await new Promise<void>(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
   }
   sidebar.lab=open;selection.selected=undefined;selection.start=undefined;selection.hover=undefined;
-  const next=open?createRoomLab():world;
+  const next=open?(shape==='defenses'?createDefenseLab(world.freeRoomBuilding):createRoomLab()):world;
   next.freeRoomBuilding=world.freeRoomBuilding;
   if(open&&shape==='showcase'){
     for(const r of showcaseRooms){
@@ -52,12 +55,13 @@ sidebar.onLab=async(open,shape,type)=>{
     for(const spell of spellDefinitions)queueResearch(next,spell.id);
     designate(next,[{x:12,z:12},{x:12,z:13}]);
     next.tiles.find(t=>t.x===6&&t.z===16)!.loose=90;
-  }else if(open&&shape&&shape!=='empty'){
+  }else if(open&&shape&&shape!=='empty'&&shape!=='defenses'){
     buildRoom(next,type??sidebar.labType,labLayout(next,shape));
     if(shape==='Adjacent rooms')buildRoom(next,'treasure',labLayout(next,'Compact').map(p=>({x:p.x+3,z:p.z-3})));
   }
-  residents.reset();view.setWorld(next);controls.center(open?12:world.hearth.x,open?12:world.hearth.z);view.camera.radius=open?26:tuning.homeZoom;
-  selection.setTool(open?(type??sidebar.labType):'dig');sidebar.show(open?'lab':'rooms');
+  residents.reset();defenses.reset();view.setWorld(next);controls.center(open?(shape==='defenses'?18:12):world.hearth.x,open?12:world.hearth.z);view.camera.radius=open?26:tuning.homeZoom;
+  view.camera.beta=shape==='defenses'?.35:tuning.initialTilt;
+  selection.setTool(shape==='defenses'?'inspect':open?(type??sidebar.labType):'dig');sidebar.show(shape==='defenses'?'defenses':open?'lab':'rooms');
   loadingStudio=false;
 };
 sidebar.onFreeBuild=value=>{world.freeRoomBuilding=value;view.world.freeRoomBuilding=value;};
@@ -67,5 +71,5 @@ let accumulator=0;
 view.engine.runRenderLoop(()=>{
   const dt=Math.min(.25,view.engine.getDeltaTime()/1000);if(!sidebar.tuningDialog.open)controls.update(Math.min(.05,dt));else {controls.keys.clear();controls.pointer=undefined;}
   if(!document.hidden&&!sidebar.tuningDialog.open){accumulator+=dt;while(accumulator>=.05){tick(view.world,.05);accumulator-=.05;}}
-  residents.update();view.render();uiTime+=dt;if(uiTime>.15){sidebar.update();uiTime=0;}
+  residents.update();defenses.update();view.render();uiTime+=dt;if(uiTime>.15){sidebar.update();uiTime=0;}
 });

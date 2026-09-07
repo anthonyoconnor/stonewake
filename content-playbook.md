@@ -64,10 +64,16 @@ Example resident entry:
 }
 ```
 
+## Add a manufactured defense
+
+Add a stable recipe in `src/content/recipes.ts` and a matching entry in `src/content/defenses.ts`. Names, prices, work times, stock, placement choices and numeric configuration come from these registries. Door tiers reuse the door behavior and model; keep their price, work time and health increasing. A new trap behavior needs an explicit case in `src/game/defenses.ts` and matching geometry/animation in `src/view/defenses.ts`. `src/game/doors.ts` contains shared passage and sight queries, independent of rendering.
+
+Use the actual Workshop queue and `placeDefense` service, including in debug examples. Verify invalid placement does not consume stock, paid/free room modes do not waive manufacturing, and fixtures cannot overlap rooms, wall plans, furnishings or access. Exercise dwarf routes and needs after toggling doors, occupants stepping clear, sight blocking, enemy breaches, trap targeting, damage, pinning and cooldown. Spikes and bolts reset automatically without Engineer work or ammunition. Keep runtime health/cooldowns on the world and all text in the sidebar. `tests/defenses.test.ts` and Debug's defense yard provide focused checks; update the current inventory and affected designs in the same chunk.
+
 ## Verified boundaries and current limits
 
 `tests/content-extension.test.ts` temporarily registers a new room ID with renamed furnishing kinds and reused models; it verifies food production, layout, icon/floor identity, free construction, reclaiming and supply preservation. A second test registers a new dwarf and recipe capability and verifies attraction, movement, food, rest, crafting and exact cost. These definitions are removed after each check; they are not new shipped content.
 
 The audit removed the Kitchen-ID gate from food production, room-ID gates from furnishing models and summaries, and the fixed Engineer debug-spawn control. Look data is now alongside the room definition. New rooms using existing services and models need only content/art additions, not simulation refactors.
 
-There is no general public mod loader or editor. Bed/table/craft/training/research capacity means one physical user slot, not multiple simultaneous users in one model. Room service support is based on reachable facilities, not painted area. New content still needs balance and layout checks. Combat, guard duty, paid Miner recruitment, wages, departure, door/trap placement and campaign progression remain unimplemented. Check the current inventory for verification status of additions.
+There is no general public mod loader or editor. Bed/table/craft/training/research capacity means one physical user slot, not multiple simultaneous users in one model. Room service support is based on reachable facilities, not painted area. New content still needs balance and layout checks. Door/trap placement is implemented; debug raiders exercise damage, pinning and door breaking. Dwarf combat, natural encounters/raids, Hearth damage, guard duty, repairs, paid Miner recruitment, wages, departure and campaign progression remain unimplemented. Check the current inventory for verification status of additions.

@@ -28,7 +28,9 @@ Open **Debug → Room layouts** to build and inspect all implemented rooms with 
 
 **Free room construction** applies to room creation and expansion in both worlds. Set `VITE_FREE_ROOM_BUILDING=true` in an untracked `.env.local` to enable it on launch, or use the Debug toggle. Production inputs still cost gold. **Restart stronghold** starts a fresh prototype; refreshing also resets the session. After interacting with the game, closing, refreshing or navigating away asks for browser confirmation where supported, protecting against accidental Ctrl+W.
 
-Workshop production is under Rooms or Debug. Build a Training Room for autonomous training by every dwarf type; build a Library and choose **Spells → Research** to unlock Hearth Prospect and Hearth Haste. Engineers, Warriors and Runesmiths arrive automatically when accessible stations, spare beds and food support them. The Dwarfs panel explains missing support and shows training progress. **Debug → Test dwarf type → Add test dwarf** remains available for all four types. Guard Post, Bridge, combat, paid Miner recruitment, wages, departure, placing manufactured doors/traps and campaign progression remain pending. See the [current inventory](development-plan.md#current-implementation-status) for exact status.
+Workshop production is under Rooms, Defenses or Debug. In **Defenses → Build defenses**, select a finished item and click clear claimed floor to place it. Doors fit one-square passages between opposite walls. Inspect a door to choose **Open**, **Closed** (automatic dwarf passage), or **Locked** (dwarfs cannot open it). The three tiers cost 20/40/80 gold, take 4/8/16 seconds of Workshop work and have 100/250/500 health. Bolt traps fire along the chosen compass direction; select a facing or press **R** before placement. Spike traps damage and briefly pin enemies. Both trap types reset automatically, without Engineer work or ammunition. **Debug → Defense test yard** supplies test stock and actual placement/production, with test raiders, a dwarf hauling task, reset and return controls. Full [defense rules and balance](rooms.md#doors-and-traps) are documented.
+
+Build a Training Room for autonomous training by every dwarf type; build a Library and choose **Spells → Research** to unlock Hearth Prospect and Hearth Haste. Engineers, Warriors and Runesmiths arrive automatically when accessible stations, spare beds and food support them. The Dwarfs panel explains missing support and shows training progress. **Debug → Test dwarf type → Add test dwarf** remains available for all four types. Guard Post, Bridge, dwarf combat, natural raids, Hearth damage, paid Miner recruitment, wages, departure and campaign progression remain pending. See the [current inventory](development-plan.md#current-implementation-status) for exact status.
 
 ## Code map
 
@@ -37,11 +39,13 @@ Workshop production is under Rooms or Debug. Build a Training Room for autonomou
 | Level dimensions, openings and resource seams | [Level definitions](src/content/levels.ts) |
 | Room prices, footprints, capacity and services | [Room definitions](src/content/rooms.ts) and [room checklist](room-development-checklist.md) |
 | Character capabilities and recipes | [Characters](src/content/characters.ts), [recipes](src/content/recipes.ts) |
+| Door tiers, trap balance, placement and enemy interactions | [Defense definitions](src/content/defenses.ts), [defense simulation](src/game/defenses.ts), [door passage queries](src/game/doors.ts) |
 | Work pace and shared needs | [Tuning](src/content/tuning.ts), [simulation](src/game/simulation.ts), [food production](src/game/food.ts) |
 | Construction, furnishing and path access | [Rooms](src/game/rooms.ts), [navigation](src/game/navigation.ts) |
 | Prototype meshes, textures and animations | [Scene](src/view/scene.ts), [surfaces](src/view/surfaces.ts), [residents](src/view/residents.ts), [effects](src/view/effects.ts) |
 | Sidebar and grid input | [Sidebar](src/ui/sidebar.ts), [selection](src/ui/selection.ts) |
 | Repeatable debug examples | [Room studio data](src/content/room-lab.ts) |
+| Defense test yard | [Defense yard](src/content/defense-lab.ts) |
 
 The simulation has no Babylon.js or DOM dependency. Focused Node tests exercise discovery, mining, resource conservation, navigation, layout access, needs, free construction and staffed crafting. Graphics remain procedural prototype assets guided by the concepts; see the [graphics pass notes](graphics-pass.md).
 

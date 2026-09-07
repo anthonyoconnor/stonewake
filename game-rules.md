@@ -208,7 +208,9 @@ The [prototype rules](rooms.md#training-room-and-library-prototype-rules) record
 
 Opening an unknown area can expose a new front. A shortcut that helps workers can also bypass defenses. Defenders still need food, rest, and pay, so support-room placement affects readiness.
 
-Which enemies can tunnel, their targeting priorities, trap behavior, repairs under attack, and raid triggers remain open. Defense remains autonomous, guided by layout and the area rally rather than individual fighter commands.
+The current [door and trap rules](rooms.md#doors-and-traps) implement three increasing door tiers, Open/Closed/Locked access, a spike trap with damage and temporary pinning, and a directional bolt trap. Both traps reset automatically after cooldown and ignore friendly dwarfs. Shut doors block sight and delay enemies until broken; locked doors also block dwarf routes. Workshop manufacturing supplies player-placed fixtures.
+
+Enemy defense interactions are currently verified using debug-spawned Goblin Raiders. Natural encounters, raids, dwarf combat, Hearth attacks and the area rally are not yet implemented. Which enemies can tunnel, their broader targeting priorities, repairs under attack and raid triggers remain open. Future combat remains autonomous, guided by layout and the area rally rather than individual fighter commands.
 
 ## 13. Layout consequences to preserve
 

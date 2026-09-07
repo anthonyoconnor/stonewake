@@ -3,6 +3,7 @@ import {tuning,tuningSpec,type TuningKey} from './tuning.ts';
 import {roomDefinitions} from './rooms.ts';
 import {recipes} from './recipes.ts';
 import {spellDefinitions} from './spells.ts';
+import {defenseDefinitions} from './defenses.ts';
 export interface Setting {id:string;label:string;group:string;min:number;max:number;step:number;note:string;defaultValue:number;get:()=>number;set:(v:number)=>void}
 const field=(id:string,label:string,group:string,object:Record<string,any>,key:string,min:number,max:number,step:number,note:string):Setting=>({id,label,group,min,max,step,note,defaultValue:object[key],get:()=>object[key],set:v=>{object[key]=v;}});
 // The registries drive the editor: new rooms, recipes and spells appear without UI changes.
@@ -17,6 +18,7 @@ export const settings:Setting[]=[
   field(`recipe.${r.id}.cost`,`${r.name} · input gold`,'Crafting',r,'cost',0,10000,1,'Unpaid work only.'),
   field(`recipe.${r.id}.seconds`,`${r.name} · seconds`,'Crafting',r,'seconds',.1,600,.1,'Applies live.')
  ]),
+ ...defenseDefinitions.flatMap(d=>['health','damage','cooldown','pinSeconds','range'].filter(k=>typeof d[k as keyof typeof d]==='number').map(k=>field(`defense.${d.id}.${k}`,`${d.name} · ${k==='pinSeconds'?'pin seconds':k}`,'Defenses',d,k,.1,k==='health'||k==='damage'?10000:60,.1,k==='health'?'New doors only; existing doors retain their health.':'Future shots/triggers use this value.'))),
  ...spellDefinitions.flatMap(s=>[
   field(`spell.${s.id}.cost`,`${s.name} · casting gold`,'Training & research',s,'cost',0,10000,1,'Applies to future casts; room construction can be free without waiving casting costs.'),
   field(`spell.${s.id}.researchSeconds`,`${s.name} · first research seconds`,'Training & research',s,'researchSeconds',.1,600,.1,'Applies live to initial research.'),

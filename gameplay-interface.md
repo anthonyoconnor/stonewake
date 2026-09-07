@@ -55,7 +55,9 @@ Provide door and trap icons with the selected fixture's purpose and current plac
 
 Selecting a fixture gives a grid-aligned placement preview in the world. A valid preview and an invalid preview use different outlines or patterns as well as color. Explain an invalid location in the sidebar or message area, not beside the cursor.
 
-The Workshop and Engineers supply manufactured defenses. This interface does not decide whether a placement reserves stock, queues manufacture, or waits for delivery; that production flow remains open. If production takes time, its details stay in the sidebar and the world shows the actual physical state of the work.
+The Workshop and Engineers supply manufactured defenses. Queue production in this panel, then select a completed item and click a valid grid square to consume one stock item and place it. Manufacturing time is the build time; placement itself is immediate. The panel reports price, work time and stock. Door previews show the automatically determined passage orientation; bolt previews show a direction arrow, with compass selection or **R** to rotate before placement. Invalid previews include an X as well as a different color.
+
+Click a placed fixture with Inspect or the default floor-inspection action. Its controls appear at the top of the Defenses panel. Doors show health and **Open / Closed / Locked** buttons; traps show readiness, remaining cooldown and damage. A placed-fixture list provides another inspection route. Dismantle explicitly states that it gives no refund. Doors swing open, locks and damage appear on their models, spikes rise, and bolts visibly fire; health and timing numbers stay in the sidebar. Debug's defense yard provides test stock, test-raider and dwarf-hauling actions, reset and return controls.
 
 ### Spells
 

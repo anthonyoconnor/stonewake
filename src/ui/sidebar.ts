@@ -19,6 +19,8 @@ import {spellDefinitions} from '../content/spells';
 import {queueResearch,cancelResearch,castSpell} from '../game/research';
 import {workRate} from '../game/progression';
 import {enableRecruitment} from '../game/recruitment';
+import {showDefenses,updateDefenses} from './defenses';
+import {defenseAt} from '../game/doors';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
@@ -43,6 +45,7 @@ export class Sidebar {
     this.root.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b=>b.onclick=()=>this.show(b.dataset.category!));
     this.root.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>selection.setTool(b.dataset.tool!));
     selection.onChange=message=>{this.root.querySelector('#feedback')!.textContent=message;this.root.querySelectorAll<HTMLElement>('[data-tool],[data-room]').forEach(b=>b.classList.toggle('active',(b.dataset.tool??b.dataset.room)===selection.tool));this.updateSelection();};
+    selection.onInspect=p=>{if(defenseAt(this.view.world,p)){if(this.category!=='defenses')this.show('defenses');else updateDefenses(this);}};
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera]').forEach(b=>b.onclick=()=>{
       switch(b.dataset.camera){case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
     });
@@ -77,7 +80,8 @@ export class Sidebar {
       this.panel.innerHTML=`<div id="selected-action" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Room choices">${roomDefinitions.map(r=>`<button class="room-choice" data-room="${r.id}" aria-label="${r.name}${r.implemented?'':' (planned)'}" title="${r.name}${r.implemented?'':' · planned'}" ${r.implemented?'':'disabled'}>${actionIcon(r.id)}</button>`).join('')}</div><div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.room!));
       this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
-    }else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
+    }else if(category==='defenses')showDefenses(this);
+    else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
     else if(category==='spells'){
       this.panel.innerHTML=`<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Runesmiths research spells at accessible Library stations. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map(s=>`<article class="spell-card"><h3>${s.name}</h3><p>${s.description}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-research]').forEach(b=>b.onclick=()=>{queueResearch(this.view.world,b.dataset.research!);this.update();});
@@ -86,9 +90,10 @@ export class Sidebar {
     }
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
     if(['lab','debug'].includes(category)){
+      const yard=document.createElement('button');yard.className='wide';yard.textContent='Defense test yard';yard.onclick=()=>this.onLab(true,'defenses');this.panel.append(yard);
       const showcase=document.createElement('button');showcase.className='wide';showcase.textContent='Load visual showcase';showcase.onclick=()=>this.onLab(true,'showcase');this.panel.append(showcase);
     }
-    if(['rooms','lab','debug'].includes(category)){
+    if(['rooms','lab','debug','defenses'].includes(category)){
       const production=document.createElement('details');production.className='production';production.innerHTML=`<summary>Workshop production</summary><div id="craft-status" class="muted"></div>${recipes.map(r=>`<button class="wide" data-recipe="${r.id}">Queue ${r.name.toLowerCase()} · ${r.cost} gold</button>`).join('')}<div id="craft-orders"></div><div id="craft-outputs"></div>`;this.panel.append(production);
       production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.update();});
     }
@@ -122,6 +127,7 @@ export class Sidebar {
     c.fillStyle='#effaf4';c.fillRect(this.view.camera.target.x*sx-1.5,this.view.camera.target.z*sz-1.5,3,3);
   }
   update(){
+    updateDefenses(this);
     this.updateSelection();this.drawMap();const w=this.view.world;
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;

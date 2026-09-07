@@ -1,8 +1,9 @@
 import {type World,type Point,type Tile,tileAt,key} from './types.ts';
 import {blocked} from './navigation.ts';
 import {tuning} from '../content/tuning.ts';
+import {defenseAt} from './doors.ts';
 export function wallEligible(w:World,t:Tile|undefined):t is Tile {
- return !!t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room&&!t.loose&&!blocked(w,t)&&!w.furnishings.some(f=>key(f.access)===key(t));
+ return !!t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room&&!t.loose&&!defenseAt(w,t)&&!blocked(w,t)&&!w.furnishings.some(f=>key(f.access)===key(t));
 }
 export const wallBuildDuration=()=>Math.max(tuning.wallBuildSeconds,Math.max(tuning.mineSeconds,tuning.rockSeconds)+tuning.reinforceSeconds+1);
 export function planWalls(w:World,points:Point[],add=true){

@@ -2,6 +2,7 @@ import { type World,type Point,type Furnishing,key,tileAt,neighbors } from './ty
 import {roomById} from '../content/rooms.ts';
 import {blocked,reachable} from './navigation.ts';
 import {tuning} from '../content/tuning.ts';
+import {defenseAt} from './doors.ts';
 export const goldTotal=(w:World)=>w.allowance+w.furnishings.filter(f=>f.service==='storage').reduce((sum,f)=>sum+f.stored,0);
 export function spendGold(w:World,amount:number) {
   if(goldTotal(w)<amount)return false;
@@ -13,7 +14,7 @@ export function roomQuote(w:World,type:string,points:Point[]) {
   const def=roomById(type);const unique=[...new Map(points.map(p=>[key(p),p])).values()];
   const tiles=unique.map(p=>tileAt(w,p.x,p.z));
   if(!def?.implemented)return {valid:false,cost:0,tiles:[],reason:'This room is not available.'};
-  const fresh=tiles.filter(t=>t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room&&!t.wallPlanned) as NonNullable<typeof tiles[number]>[];
+  const fresh=tiles.filter(t=>t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room&&!t.wallPlanned&&!defenseAt(w,t)) as NonNullable<typeof tiles[number]>[];
   if(!fresh.length)return {valid:false,cost:0,tiles:[],reason:tiles.some(t=>t?.known&&t.room===type)?'This floor already belongs to the room.':'Select clear, claimed floor.'};
   const cost=w.freeRoomBuilding?0:fresh.length*def.cost;
   return {valid:cost<=goldTotal(w),cost,tiles:fresh,reason:cost>goldTotal(w)?'Not enough stored gold.':fresh.length?'Ready to build.':'This floor already belongs to the room.'};

@@ -1,6 +1,7 @@
 import {tuning} from '../content/tuning.ts';
 import { type World, type LevelDefinition, type Point, tileAt } from './types.ts';
 import {roomById} from '../content/rooms.ts';
+import {doorAt,doorIsOpen} from './doors.ts';
 export function createWorld(level: LevelDefinition): World {
   const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],elapsed:0,allowance:tuning.startingGold,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{},researchOrders:[]};
   for(let z=0;z<w.height;z++) for(let x=0;x<w.width;x++) {
@@ -37,7 +38,8 @@ export function reveal(w:World, origin:Point, radius=tuning.sightRadius) {
         const t=tileAt(w,Math.round(origin.x+dx*i/(steps||1)),Math.round(origin.z+dz*i/(steps||1)));
         if(!t) break;
         if(!t.known){t.known=true;if(!['dirt','rock','gold','gem'].includes(t.terrain))t.designated=false;changed=true;}
-        if(t.terrain!=='floor') break;
+        const door=doorAt(w,t);
+        if(t.terrain!=='floor'||door&&!doorIsOpen(w,door)) break;
       }
     }
   }

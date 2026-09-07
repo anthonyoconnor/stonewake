@@ -57,7 +57,7 @@ The proposed job priority is designated excavation and resource work, then outst
 
 ### Engineer
 
-Uses the Workshop to manufacture the doors and traps selected by the player. This single role covers both metalworking and mechanism assembly. Repairs and trap replenishment are proposed continuing work; their exact rules remain open. Engineers should wait for safe access rather than repeatedly walk into an active battle to repair a door. They can also improve their own stats in the shared Training Room.
+Uses the Workshop to manufacture the doors and traps selected by the player. This single role covers both metalworking and mechanism assembly. The player places completed stock through Defenses. The implemented spike and bolt traps reset automatically after cooldown, with no Engineer rearming or supply cost. Door repairs and upkeep for future fixture types remain proposed work; Engineers should wait for safe access rather than repeatedly walk into an active battle to repair a door. They can also improve their own stats in the shared Training Room.
 
 The Engineer is a female dwarf. Her concept uses practical teal workwear, a protective leather apron, goggles, a metalworking hammer, and mechanism tools. This appearance choice leaves her recruitment, needs, work, and training rules unchanged.
 
