@@ -27,7 +27,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 | M5 | Shared room rules, reusable room checklist, and room catalog/layout debugging view | Complete |
 | M5.1 | Free room construction flag and Debug option in the left sidebar | Complete |
 | M6 | Dormitory | Complete |
-| M7 | Kitchen | Not started |
+| M7 | Kitchen | Complete |
 | M8 | Workshop | Not started |
 
 ## M1 — Grid level and terrain
@@ -206,3 +206,7 @@ Added Debug to the left sidebar with free room construction, Room Layout Studio 
 
 ### M6 — 2026-09-07
 Added Dormitory definition, two-cell beds with rotated fitting, personal assignments, energy/rest service, sleeping pose, and sidebar bed/energy feedback. Studio supports tired test residents. Thirteen tests pass, including every implemented room across the layout/cost matrix and three unique bed assignments preserved on expansion. Browser verified a 45-square irregular Dormitory and all three miners completing one rest cycle and resuming normal activity, with no console errors. Prototype rest interval is 100 seconds and recovery takes roughly six seconds; needs penalties remain outside scope.
+
+
+### M7 — 2026-09-07
+Added Kitchen growing trays, cooking hearths, tables and brewing barrels; connected usable facilities produce finite stored meals and optional ale. Hungry residents reserve meals, reach tables, eat and resume work. Added stock/access feedback and hungry studio residents. Seventeen tests pass, including all room layouts/costs, production, blocked access, and an irregular-Kitchen traffic regression. Browser verified all three hungry residents complete meals in an L-shaped Kitchen. Fixed idle parking in facility aisles and stalled approaches. Production and need rates are provisional; no Cook role, separate ale need, or departure penalties were added.

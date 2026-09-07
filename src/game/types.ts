@@ -21,13 +21,14 @@ export interface World {
   agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
 }
 export interface Furnishing extends Point {
-  id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number;
+  id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;
 }
-export interface Job { kind:'mine'|'claim'|'collect'|'deliver'|'idle'|'sleep'; target:Point; work:Point; progress:number; furnishing?:string }
+export interface Job { kind:'mine'|'claim'|'collect'|'deliver'|'idle'|'sleep'|'eat'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number }
 export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;
-  energy:number;rested:number;
+  energy:number;rested:number;hunger:number;meals:number;meal:boolean;
+  avoidFacility?:string;avoidUntil?:number;
 }
 export const key = (p: Point) => `${p.x},${p.z}`;
 export const tileAt = (w: World, x: number, z: number): Tile | undefined =>

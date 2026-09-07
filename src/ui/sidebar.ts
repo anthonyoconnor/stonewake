@@ -53,6 +53,7 @@ export class Sidebar {
       this.panel.querySelector<HTMLButtonElement>('#reset-layout')!.onclick=()=>this.onLab(true,'empty',this.labType);
       this.panel.querySelector<HTMLButtonElement>('#leave-lab')!.onclick=()=>this.onLab(false);
       const test=document.createElement('button');test.className='wide';test.textContent='Add tired test residents';test.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.energy=.1;a.retry=0;}test.disabled=true;};this.panel.append(test);
+      const hungry=document.createElement('button');hungry.className='wide';hungry.textContent='Add hungry test residents';hungry.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.hunger=.1;a.retry=0;}hungry.disabled=true;};this.panel.append(hungry);
     }else if(category==='rooms'){
       this.panel.innerHTML=`<p class="eyebrow">BUILD YOUR STRONGHOLD</p>${roomDefinitions.filter(r=>r.implemented).map(r=>`<button class="room-card" data-room="${r.id}" title="${r.description}"><span class="room-icon" style="color:${r.color}">▦</span><span><strong>${r.name}</strong><small>${this.view.world.freeRoomBuilding?0:r.cost} gold / square</small></span></button>`).join('')}<div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.room!));
@@ -80,11 +81,16 @@ export class Sidebar {
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
     this.root.querySelector('#gold-total')!.textContent=String(goldTotal(w));this.root.querySelector('#dwarf-total')!.textContent=String(w.agents.length);
-    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name}</strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}</small></div>`).join('');
+    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name}</strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}</small></div>`).join('');
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??w.tiles.find(t=>t.room===this.selection.tool)??w.tiles.find(t=>t.room);
       if(p){const stats=roomStats(w,p);summary.textContent=`${stats.tiles} squares · ${stats.usable.length} usable facilities${stats.usable.some(f=>f.service==='rest')?` · ${stats.usable.filter(f=>f.assigned).length} assigned beds · ${stats.usable.filter(f=>!f.assigned).length} free beds`:` · ${stats.usable.reduce((s,f)=>s+f.capacity,0)} capacity`}${stats.tiles&&!stats.usable.length?' · Needs space or access.':''}`;}
       else summary.textContent='Select a room to inspect its usable facilities.';
+      if(p){const s=roomStats(w,p);if(s.facilities.some(f=>f.room==='kitchen')){
+        const count=(service:string)=>s.usable.filter(f=>f.service===service),food=count('cooking').reduce((sum,f)=>sum+f.stored,0);
+        summary.textContent=`${s.tiles} squares · ${food} meals · ${count('dining').length} eating positions · ${count('brewing').reduce((sum,f)=>sum+f.stored,0)} ale. `;
+        if(!count('growing').length||!count('cooking').length)summary.textContent+='Needs growing and cooking facilities.';else if(!count('dining').length)summary.textContent+='Needs room for a table.';else if(!food)summary.textContent+='Food is growing and cooking.';
+      }}
     }
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
   }

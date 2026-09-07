@@ -86,6 +86,30 @@ export class GameScene {
         for(const x of [-.34,.34])for(const z of [-.82,.82])part('bedpost',x,.3,z,.1,.6,.1,wood);
         continue;
       }
+      if(f.room==='kitchen'){
+        const root=new TransformNode(f.id,this.scene);root.parent=this.furnitureRoot;root.position.set(f.x,0,f.z);
+        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{this.box(n,x,y,z,w,h,d,m,root).isPickable=false;};
+        const cylinder=(n:string,x:number,y:number,z:number,h:number,d:number,m:StandardMaterial)=>{const mesh=MeshBuilder.CreateCylinder(n,{height:h,diameter:d,tessellation:10},this.scene);mesh.position.set(x,y,z);mesh.parent=root;mesh.material=m;mesh.isPickable=false;return mesh;};
+        if(f.kind==='mushrooms'){
+          part('growing tray',0,.15,0,.82,.3,.82,wood);part('soil',0,.31,0,.72,.03,.72,this.material('soil','#3c3127'));
+          for(let i=0;i<f.stored;i++){
+            const x=-.22+i%3*.22,z=-.16+Math.floor(i/3)*.32;
+            cylinder('mushroom stalk',x,.41,z,.18,.045,this.material('stalk','#e5d3ad'));
+            const cap=MeshBuilder.CreateSphere('mushroom cap',{diameter:.2,segments:6},this.scene);cap.position.set(x,.5,z);cap.scaling.y=.55;cap.parent=root;cap.material=this.material(i%2?'red cap':'cream cap',i%2?'#b85b34':'#d6b881');cap.isPickable=false;
+          }
+        }else if(f.kind==='stove'){
+          part('cooking hearth',0,.25,0,.75,.5,.75,this.material('stove stone','#4a504c',true));part('coals',0,.2,-.38,.4,.17,.025,this.material('fire','#ed9b47',false,.6));cylinder('cooking pot',0,.63,0,.24,.46,this.material('pot','#383c3f'));
+          if(f.stored)cylinder('prepared food',0,.77,0,.02,.38,this.material('stew','#c8a059'));
+        }else if(f.kind==='barrel'){
+          cylinder('brew barrel',0,.37,0,.72,.6,wood);
+          for(const y of [.13,.59]){const ring=MeshBuilder.CreateTorus('barrel hoop',{diameter:.59,thickness:.045,tessellation:12},this.scene);ring.position.y=y;ring.parent=root;ring.material=metal;ring.isPickable=false;}
+          part('tap',0,.24,-.36,.07,.13,.12,metal);
+        }else{
+          part('tabletop',0,.52,0,.8,.12,.76,wood);for(const x of [-.3,.3])for(const z of [-.27,.27])part('table leg',x,.26,z,.07,.5,.07,wood);
+          if(this.world.agents.some(a=>a.job?.kind==='eat'&&a.job.furnishing===f.id))cylinder('meal plate',0,.6,0,.025,.25,this.material('plate','#d4c5a0'));
+        }
+        continue;
+      }
       this.box('chest',f.x,.23,f.z,.68,.44,.65,wood,this.furnitureRoot).isPickable=false;
       for(const dx of [-.23,.23])this.box('chest band',f.x+dx,.46,f.z,.05,.035,.66,metal,this.furnitureRoot).isPickable=false;
       if(f.stored>0)for(let i=0;i<Math.min(7,Math.ceil(f.stored/20));i++)this.box('stored gold',f.x-.2+i%3*.18,.51+Math.floor(i/3)*.075,f.z-.12+Math.floor(i/3)*.12,.15,.07,.1,this.material('gold metal','#ffbf4d'),this.furnitureRoot).isPickable=false;
