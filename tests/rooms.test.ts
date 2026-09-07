@@ -5,6 +5,26 @@ import {buildRoom,furnish,roomStats} from '../src/game/rooms.ts';
 import {reachable} from '../src/game/navigation.ts';
 import {tileAt,key} from '../src/game/types.ts';
 import {goldTotal,roomQuote} from '../src/game/rooms.ts';
+import {roomDefinitions} from '../src/content/rooms.ts';
+import {addMiners,tick} from '../src/game/simulation.ts';
+test('every implemented room passes layout and cost checks',()=>{
+ for(const room of roomDefinitions.filter(r=>r.implemented))for(const shape of labShapes){
+   const w=createRoomLab();w.freeRoomBuilding=true;w.allowance=0;const before=reachable(w,{x:2,z:2});
+   buildRoom(w,room.id,labLayout(w,shape));const after=reachable(w,{x:2,z:2});
+   assert.equal(after.size,before.size-w.furnishings.reduce((s,f)=>s+f.cells.length,0),`${room.id}: ${shape}`);
+   for(const f of w.furnishings)assert(after.has(key(f.access)));assert.equal(goldTotal(w),0);
+   if(shape==='Single tile')assert.equal(w.furnishings.length,0);else assert(w.furnishings.length>0,`${room.id}: ${shape}`);
+   w.freeRoomBuilding=false;assert.equal(roomQuote(w,room.id,[{x:20,z:20}]).valid,false);
+ }
+});
+test('miners claim distinct beds, rest, and resume normal activity',()=>{
+ const w=createRoomLab();buildRoom(w,'dormitory',labLayout(w,'Large hall'));addMiners(w);
+ for(const a of w.agents)a.energy=.1;
+ for(let i=0;i<1200;i++)tick(w,.05);
+ assert(w.agents.every(a=>a.rested>=1));assert(w.agents.every(a=>a.job?.kind!=='sleep'));
+ const assignments=w.furnishings.filter(f=>f.assigned).map(f=>f.assigned);assert.equal(new Set(assignments).size,3);assert.equal(assignments.length,3);
+ const beds=w.furnishings.filter(f=>f.assigned);buildRoom(w,'dormitory',[{x:15,z:14},{x:15,z:15}]);for(const bed of beds)assert(w.furnishings.includes(bed));
+});
 test('free build waives creation and expansion costs but preserves placement rules',()=>{
  const w=createRoomLab();w.allowance=0;
  assert.equal(roomQuote(w,'treasure',labLayout(w,'Compact')).valid,false);

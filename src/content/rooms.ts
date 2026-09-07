@@ -5,8 +5,9 @@ export interface RoomDefinition {
 }
 export const roomDefinitions:RoomDefinition[]=[
   {id:'treasure',name:'Treasure Room',color:'#a98a3f',cost:12,description:'Store mined riches. Accessible vault chests hold delivered gold.',implemented:true,furnishings:[{kind:'chest',width:1,depth:1,capacity:150,service:'storage'}]},
+  {id:'dormitory',name:'Dormitory',color:'#79605e',cost:16,description:'A bed and a quiet place to rest for every dwarf.',implemented:true,furnishings:[{kind:'bed',width:1,depth:2,capacity:1,service:'rest'}]},
   ...[
-    ['dormitory','Dormitory','#79605e'],['kitchen','Kitchen','#71834d'],['workshop','Workshop','#537e82'],
+    ['kitchen','Kitchen','#71834d'],['workshop','Workshop','#537e82'],
     ['training','Training Room','#985d44'],['library','Library','#546f96'],['guard','Guard Post','#7f7770']
   ].map(([id,name,color])=>({id,name,color,cost:20,description:'Planned room',implemented:false,furnishings:[]}))
 ];

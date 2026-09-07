@@ -78,6 +78,14 @@ export class GameScene {
     this.furnitureRoot?.dispose();this.furnitureRoot=new TransformNode('furnishings',this.scene);
     for(const f of this.world.furnishings){
       const wood=this.material('chest wood','#60442e',true),metal=this.material('chest iron','#a28a5f');
+      if(f.kind==='bed'){
+        const bed=new TransformNode(f.id,this.scene);bed.parent=this.furnitureRoot;
+        bed.position.set(f.x+(f.rotation?.5:0),0,f.z+(f.rotation?0:.5));bed.rotation.y=f.rotation?Math.PI/2:0;
+        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{this.box(n,x,y,z,w,h,d,m,bed).isPickable=false;};
+        part('bed frame',0,.19,0,.75,.22,1.75,wood);part('blanket',0,.34,.17,.68,.14,1.25,this.material('blanket','#6c8278'));part('pillow',0,.37,-.6,.62,.14,.32,this.material('linen','#ddccaa'));
+        for(const x of [-.34,.34])for(const z of [-.82,.82])part('bedpost',x,.3,z,.1,.6,.1,wood);
+        continue;
+      }
       this.box('chest',f.x,.23,f.z,.68,.44,.65,wood,this.furnitureRoot).isPickable=false;
       for(const dx of [-.23,.23])this.box('chest band',f.x+dx,.46,f.z,.05,.035,.66,metal,this.furnitureRoot).isPickable=false;
       if(f.stored>0)for(let i=0;i<Math.min(7,Math.ceil(f.stored/20));i++)this.box('stored gold',f.x-.2+i%3*.18,.51+Math.floor(i/3)*.075,f.z-.12+Math.floor(i/3)*.12,.15,.07,.1,this.material('gold metal','#ffbf4d'),this.furnitureRoot).isPickable=false;

@@ -26,7 +26,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 | M4 | Autonomous miners, excavation, claiming, Treasure Room construction, and resource hauling | Complete |
 | M5 | Shared room rules, reusable room checklist, and room catalog/layout debugging view | Complete |
 | M5.1 | Free room construction flag and Debug option in the left sidebar | Complete |
-| M6 | Dormitory | Not started |
+| M6 | Dormitory | Complete |
 | M7 | Kitchen | Not started |
 | M8 | Workshop | Not started |
 
@@ -202,3 +202,7 @@ Generalized room definitions, variants/orientations, edge-connected room groupin
 
 ### M5.1 — 2026-09-07
 Added Debug to the left sidebar with free room construction, Room Layout Studio access, and a quick stronghold restart. The shared construction quote handles both creation and expansion; invalid terrain still fails. Optional VITE_FREE_ROOM_BUILDING config defaults to false. Eleven tests pass, including zero-fund free construction, unchanged balances, and restored normal pricing; TypeScript passes. Browser verified enabling the flag and constructing a studio room with its 50,000-gold debug allowance unchanged.
+
+
+### M6 — 2026-09-07
+Added Dormitory definition, two-cell beds with rotated fitting, personal assignments, energy/rest service, sleeping pose, and sidebar bed/energy feedback. Studio supports tired test residents. Thirteen tests pass, including every implemented room across the layout/cost matrix and three unique bed assignments preserved on expansion. Browser verified a 45-square irregular Dormitory and all three miners completing one rest cycle and resuming normal activity, with no console errors. Prototype rest interval is 100 seconds and recovery takes roughly six seconds; needs penalties remain outside scope.

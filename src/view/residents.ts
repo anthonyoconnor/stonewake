@@ -22,6 +22,8 @@ export class ResidentView {
         model={root,legs,arm,load};this.nodes.set(a.id,model);
       }
       model.root.position.set(a.x,0,a.z);model.root.rotation.y=a.facing;
+      model.root.rotation.x=0;
+      if(a.job?.kind==='sleep'&&!a.path.length){const bed=v.world.furnishings.find(f=>f.id===a.job?.furnishing);if(bed){model.root.position.set(bed.x+(bed.rotation?.9:0),.47,bed.z+(bed.rotation?0:.95));model.root.rotation.set(-Math.PI/2,bed.rotation?Math.PI/2:0,0);}}
       const walking=a.path.length>0;model.legs.forEach((leg,i)=>leg.rotation.x=walking?Math.sin(v.world.elapsed*11+i*Math.PI)*.45:0);
       model.arm.rotation.x=a.job?.kind==='mine'&&!walking?-.3+Math.sin(v.world.elapsed*8)*.8:0;
       model.load.setEnabled(a.carrying>0);

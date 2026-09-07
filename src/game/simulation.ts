@@ -3,8 +3,9 @@ import {canStand,findPath} from './navigation.ts';
 import {reveal} from './world.ts';
 import {tuning} from '../content/tuning.ts';
 export function addMiners(w:World,count=3) {
-  const positions=w.tiles.filter(t=>t.terrain==='floor'&&t.claimed&&!t.core).sort((a,b)=>Math.hypot(a.x-w.hearth.x,a.z-w.hearth.z)-Math.hypot(b.x-w.hearth.x,b.z-w.hearth.z));
-  for(let i=0;i<count;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:i+1,name:['Brokk','Orin','Thora'][i]??`Miner ${i+1}`,type:'miner',capabilities:['mine','haul','claim'],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0});}
+  const positions=w.tiles.filter(t=>t.claimed&&canStand(w,t)&&!w.agents.some(a=>Math.hypot(a.x-t.x,a.z-t.z)<.6)).sort((a,b)=>Math.hypot(a.x-w.hearth.x,a.z-w.hearth.z)-Math.hypot(b.x-w.hearth.x,b.z-w.hearth.z));
+  const firstId=Math.max(0,...w.agents.map(a=>a.id))+1;
+  for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:['Brokk','Orin','Thora'][i]??`Miner ${i+1}`,type:'miner',capabilities:['mine','haul','claim'],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0});}
 }
 export function designate(w:World,points:Point[],value=true) {
   for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&t.known&&['dirt','rock','gold','gem'].includes(t.terrain))t.designated=value;}
@@ -23,6 +24,10 @@ function choose(w:World,a:Resident){
     for(const f of storage(w,a))if(take(w,a,'deliver',f,f.access,f.id))return;
     const t=tileAt(w,Math.round(a.x),Math.round(a.z))!;t.loose+=a.carrying;a.carrying=0;w.revision++;
   }
+  if(a.energy<.3){
+    const beds=nearest(a,w.furnishings.filter(f=>f.service==='rest'&&(!f.assigned||f.assigned===a.id))).sort((f,g)=>Number(g.assigned===a.id)-Number(f.assigned===a.id));
+    for(const f of beds)if(take(w,a,'sleep',f,f.access,f.id)){f.assigned=a.id;return;}
+  }
   if(a.capabilities.includes('haul')&&availableStorage(w,a))for(const t of nearest(a,w.tiles.filter(t=>t.loose&&!reserved(w,'collect',t)))){
     for(const p of t.terrain==='floor'?[t]:neighbors(w,t))if(take(w,a,'collect',t,p))return;
   }
@@ -38,7 +43,7 @@ function choose(w:World,a:Resident){
     if(w.furnishings.some(f=>key(f.access)===key(p))||w.agents.some(o=>o!==a&&(Math.hypot(o.x-p.x,o.z-p.z)<.6||o.job&&key(o.job.work)===key(p))))continue;
     if(take(w,a,'idle',p,p))return;
   }
-  a.activity='Awaiting a designation';a.retry=.8;
+  a.activity=a.energy<.3?'Needs an accessible bed':'Awaiting a designation';a.retry=.8;
 }
 function valid(w:World,a:Resident){
   const j=a.job!,t=tileAt(w,j.target.x,j.target.z);if(!t)return false;
@@ -46,6 +51,7 @@ function valid(w:World,a:Resident){
   if(j.kind==='claim')return t.terrain==='floor'&&!t.claimed;
   if(j.kind==='collect')return t.loose>0;
   if(j.kind==='idle')return canStand(w,j.work);
+  if(j.kind==='sleep')return w.furnishings.some(f=>f.id===j.furnishing&&f.assigned===a.id)&&canStand(w,j.work);
   return w.furnishings.some(f=>f.id===j.furnishing&&f.stored<f.capacity);
 }
 function move(w:World,a:Resident,dt:number){
@@ -66,6 +72,7 @@ function move(w:World,a:Resident,dt:number){
 export function tick(w:World,dt:number){
   w.elapsed+=dt;
   for(const a of w.agents){
+    if(a.job?.kind!=='sleep')a.energy=Math.max(0,a.energy-dt/tuning.restInterval);
     if(a.job&&!valid(w,a)){a.job=undefined;a.path=[];}
     if(!a.job){a.retry-=dt;if(a.retry<=0)choose(w,a);}
     if(!a.job)continue;
@@ -77,6 +84,8 @@ export function tick(w:World,dt:number){
       if(t.terrain==='gem'){t.loose+=tuning.gemYield;t.source='gem';}
       else {if(t.terrain==='gold'){t.loose+=t.gold;t.gold=0;t.source='gold';}t.terrain='floor';t.claimed=false;t.designated=false;}
       reveal(w,j.work);w.revision++;
+    }else if(j.kind==='sleep'){
+      a.activity='Sleeping';a.energy=Math.min(1,a.energy+dt/tuning.restSeconds);if(a.energy<.999)continue;a.rested++;
     }else if(j.kind==='claim'){
       a.activity='Claiming floor';if(j.progress<tuning.claimSeconds)continue;t.claimed=true;reveal(w,t);w.revision++;
     }else if(j.kind==='collect'){
