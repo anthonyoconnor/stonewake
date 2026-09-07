@@ -1,0 +1,74 @@
+# Dwarven stronghold game
+
+A level-based underground management game inspired by Dungeon Keeper. The player reclaims lost dwarven strongholds by excavating terrain, building rooms, supporting autonomous dwarfs, researching spells, and preparing defenses against the creatures below.
+
+The focus is on **layout management**: where to dig, how rooms connect, how far residents travel, and which routes attackers can use to reach the base's Hearthstone.
+
+This repository currently contains **game design documents, AI-generated concept art, and image-generation prompts**. It has no playable implementation, engine project, or build/test setup. The project name is a working description.
+
+## Start here for a new session
+
+1. Read [Game rules](game-rules.md) for the core loop, agreed constraints, and open mechanics.
+2. Read the relevant detailed documents below before changing a system. Each distinguishes agreed direction from proposals and unresolved balance.
+3. For visual work, inspect the [approved terrain reference](concept-art/terrain/resource-terrain-v2.png), then the relevant current gallery and its prompt records.
+4. Check the working tree and recent Git history before editing. Keep related design documents, gallery links, and prompt records consistent when making changes.
+
+Current design documents define gameplay. Concept art illustrates the direction; incidental details in images or historical prompts do not establish new rules. Follow the user's latest decisions when evolving the design, and update the affected documents so future sessions have the same context.
+
+## Design document map
+
+| Document | What to find there |
+|---|---|
+| [Game rules](game-rules.md) | Core loop, autonomous control, camera, campaign progression, Hearthstone and defeat, excavation, economy, recruitment, needs, defense, and extensible character/room definitions |
+| [Characters](characters.md) | Current dwarf roster, work, recruitment, pay, bedding, food, special facilities, training, and behavior proposals |
+| [Rooms and structures](rooms.md) | Room catalog, purposes and outputs, attraction, arbitrary footprints, automatic furnishings, capacity, floors and wall identity, doors, traps, and reinforcement |
+| [Levels and underground contents](levels.md) | Terrain, resources, discovery, hidden spaces, regions and inhabitants, attacks, candidate strongholds, and level-authoring considerations |
+| [Gameplay interface](gameplay-interface.md) | Left sidebar, minimap, rooms/defenses/spells/dwarfs panels, selection and camera controls, messages, inspection, and a clear gameplay view |
+
+## Current scope and constraints
+
+- **Fresh settlements:** each level starts with a small mining crew and an established Stone Hearth around a dormant Hearthstone awakened during arrival. Other residents are recruited locally. Dwarfs arrive through the Hearthstone's runic connection. Enemies destroy the core to win; it has a fixed location and no upgrades. There is no expedition leader.
+- **One terrain layer:** excavation and construction use large square cells. Intact earth, gold-bearing terrain, and bedrock share one full height above a common walkable floor. Bedrock generally forms continuous seams with grid-shaped boundaries. Ordinary unmined earth cells can remain inside an excavation. There are no terraced mining layers or stacked playable floors.
+- **Discovery matters:** caves, ruins, passages, and inhabited chambers can already be excavated but remain hidden until breached and seen. Camera movement must not reveal concealed areas.
+- **Free movement, indirect control:** dwarfs and enemies move continuously through open space rather than snapping to tile centers. Dwarfs handle work, needs, and fighting autonomously. A call to arms can direct attention to an area; individual movement orders and possession are outside the design.
+- **Adaptive rooms:** room footprints can have any grid-based size or shape. Floors and existing wall treatments identify the room. Furnishings appear where their footprints and access space fit, and usable capacity follows those facilities.
+- **Shared needs and economy:** all dwarfs need wages, beds, food, and appropriate facilities. Miners deliver finite gold-seam yields and renewable, slower gem-column yields to Treasure Rooms; both produce the same gold currency. Dwarfs collect pay there. Bought miners cost more as the current living miner population rises, and the next price falls when that population falls.
+- **Clear overhead presentation:** stylized 3D with camera rotation and zoom. Controls and detailed information belong in the left sidebar, with the minimap at its top. The gameplay view has no floating text, numbers, health bars, or progress bars, including on hover or selection. Necessary text can appear in dismissible message cards associated with icons above the question-mark button.
+- **Reusable systems:** rooms and dwarf types must remain useful across levels. Future types should fit shared definitions and systems; this is an architecture requirement, not an implemented framework.
+
+The four current dwarf types are **Miner**, **Engineer** (female; Workshop doors and traps), **Warrior** (attracted by the shared Training Room), and **Runesmith** (Library spell research). All can train and use shared food and accommodation. The Ranger is deferred. Separate Smith, Priest, and expedition leader roles are removed.
+
+The catalog contains seven rooms—**Treasure Room, Dormitory, Kitchen, Workshop, Training Room, Library, and Guard Post**—plus the **Stone Hearth** and **Bridge** structures. The Kitchen includes growing, cooking, brewing, and eating. There are no separate Forge, Brewery, Barracks, Ranger Lodge, or Ancestral Shrine rooms. Exact crossing rules remain open.
+
+## Concept art and prompts
+
+Start at the [complete concept-art index](concept-art/README.md). All project concept art is stored under `concept-art/`, grouped by subject. The user-approved [gold seams and gem columns image](concept-art/terrain/resource-terrain-v2.png) is the primary reference for the overall terrain appearance. The current level and room sheets use that direction.
+
+| Subject | Current gallery | Prompt records |
+|---|---|---|
+| Dwarfs | [Four current character concepts](concept-art/dwarfs/README.md) | [Female Engineer revision](concept-art/dwarfs/prompts-v3.md), [merged-role revisions](concept-art/dwarfs/prompts-v2.md), and [original generation history](concept-art/dwarfs/prompts.md) |
+| Rooms and structures | [Nine room/structure sheets and a terrain-grid study](concept-art/rooms/README.md) | [Current terrain-style revisions](concept-art/rooms/prompts-v3.md); earlier [grid revisions](concept-art/rooms/prompts-v2.md) and [original history](concept-art/rooms/prompts.md) |
+| Levels and regions | [Seven environment concepts](concept-art/levels/README.md) | [Level prompts and reference usage](concept-art/levels/prompts.md) |
+| Terrain and resources | [Gold seams, gem columns, earth, and bedrock](concept-art/terrain/README.md) | [Approved resource-terrain revision](concept-art/terrain/prompts-v2.md) and [original history](concept-art/terrain/prompts.md) |
+| Enemies | [Ten creature concepts grouped by region](concept-art/enemies/README.md) | [Enemy generation prompts](concept-art/enemies/prompts.md) |
+
+The level gallery illustrates five candidate strongholds—Border Foothold, Flooded Workings, Fallen City, Crystal Divide, and Royal Deep—and two additional region studies, Fungal Caves and Volcanic Depths. These are representative areas, not complete maps or a finalized campaign sequence.
+
+The room sheets explore different sizes, irregular footprints, and continuous bedrock constraints. Their illustrated furniture counts and dimensions do not define room capacity, minimum sizes, upgrades, or fixed templates.
+
+### How to interpret the artwork
+
+- These are **AI-generated concept illustrations**, produced with the built-in image generation tool. They are not game screenshots, final production assets, modular 3D meshes, rigged characters, or tested navigation layouts.
+- Image titles and margin captions belong to the concept-sheet presentation. They do not authorize labels in the gameplay area.
+- The early [style comparison](concept-art/style-comparison-v1.png) records the choice of stylized 3D. Use the approved terrain reference and current subject galleries for subsequent work.
+- User-supplied Dungeon Keeper screenshots are external visual references. The [UI reference section](gameplay-interface.md#reference-images) and [terrain gallery](concept-art/terrain/README.md) explain their use; they are not original assets for this game.
+- Only selected current images are retained in the working galleries. Previously committed images remain in Git history; uncommitted drafts may only be named in historical prompts. Filename revisions such as `v2` and `v3` identify artwork versions, not in-game upgrade levels.
+- Historical prompts preserve what was actually requested, including removed roles, earlier source filenames, and rejected geometry. They are provenance, not current requirements. Some source images exist only in Git history; current gallery links point to retained files.
+
+## Continuing the project
+
+Keep agreed rules distinct from experiments and proposed numbers. Balance, spell lists and research pacing, Library usefulness after research, combat and training details, repair and trap replenishment, crowd behavior, crossing permissions, and exact campaign objectives still need work. Open decisions are recorded in the relevant design documents.
+
+When adding or revising art, save the selected result in the appropriate `concept-art/` subfolder, record its prompt and reference usage, and update the gallery. Keep older prompt records identifiable as historical. Avoid restoring retired roles or mechanics merely because they appear in an earlier prompt.
+
+When updating the design, revise the relevant companion documents and this overview if the scope changes. Before committing, check local Markdown links, inspect changed artwork, review `git diff --check`, and confirm `git status` contains only intended changes. Use descriptive commits to preserve the design and art history.

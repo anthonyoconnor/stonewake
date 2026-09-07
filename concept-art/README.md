@@ -1,5 +1,7 @@
 # Concept art
 
+Return to the [project guide](../README.md). These are AI-generated concept illustrations; the design documents define gameplay, and the galleries explain each image's scope.
+
 All project concept art is stored in this folder, grouped by subject. Keep the current concepts and their source references here. Superseded images and drafts have been removed; historical prompt records remain as provenance. Version numbers on retained filenames identify the selected revisions.
 
 ## Visual direction
