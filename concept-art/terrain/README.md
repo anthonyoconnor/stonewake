@@ -15,7 +15,7 @@ This concept shows one larger connected mine area, using large square excavation
 - **Gem columns:** persistent mineral-rich columns with square terrain footprints and accessible working faces. They represent the existing renewable gem deposits and yield the same gold currency.
 - **Bedrock:** a continuous band of dense rock connected to the wider geology, with boundaries following grid edges.
 
-The user approved the gem-column design and the gold seam's top-and-side treatment; these remain the visual direction for those resources. Gold and gems should stay identifiable without relying on selection highlights. This art does not decide whether distant deposits appear through unexplored ground. Exact tile dimensions, miner-to-cell scale, and selection styling remain visual and implementation details to refine.
+The user approved this image as a representation of the overall terrain appearance, as well as the gem-column design and gold seam's top-and-side treatment. It is the primary visual reference for the [level and region concepts](../levels/README.md). Gold and gems should stay identifiable without relying on selection highlights. This art does not decide whether distant deposits appear through unexplored ground. Exact tile dimensions, miner-to-cell scale, and selection styling remain visual and implementation details to refine.
 
 ## References and provenance
 

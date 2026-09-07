@@ -25,6 +25,10 @@ The gallery contains the current four-role roster shown above. Superseded sheets
 
 [View the gold seam and gem column concept](terrain/README.md). This wider mining area combines one terrain layer, large square excavation cells, gold visible on top and exposed wall faces, persistent gem columns, and connected bedrock. The [revision prompt](terrain/prompts-v2.md), [original prompt](terrain/prompts.md), and user-supplied excavation reference are stored in `terrain/`.
 
+## Levels and underground regions
+
+[View the level and region gallery](levels/README.md). The five candidate strongholds are Border Foothold, Flooded Workings, Fallen City, Crystal Divide, and Royal Deep. Fungal Caves and Volcanic Depths have additional regional studies, covering all outlined terrain types. The approved gold-and-gem image supplies the shared terrain appearance. [Generation prompts](levels/prompts.md) are saved with the images.
+
 ## Rooms and structures
 
 [View the room and structure gallery](rooms/README.md).

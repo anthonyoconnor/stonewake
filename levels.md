@@ -54,7 +54,7 @@ An excavated room can contain squares of ordinary earth that have not been mined
 
 ## Resource appearance and excavation scale
 
-The [gold seam and gem column concept](concept-art/terrain/README.md) shows a larger connected mining area with dirt and bedrock. Playable excavation cells should read as substantial squares, consistently aligned across intact terrain tops, exposed wall sections, floor footprints, and selection overlays. Small decorative stone joints or texture details do not define additional action cells.
+The user approved the [gold seam and gem column concept](concept-art/terrain/README.md) as the reference for the overall terrain appearance, including dirt and bedrock. Level concepts should preserve its substantial square excavation cells, consistent terrain height, overhead presentation, and readable materials. Playable cells align across intact terrain tops, exposed wall sections, floor footprints, and selection overlays. Small decorative stone joints or texture details do not define additional action cells.
 
 Gold veins should be visible on the tops and exposed sides of gold-bearing terrain within the visible area. Gem columns occupy square terrain footprints, show mineral detail from above and on accessible faces, and provide working positions beside the deposit. The column appearance represents the existing persistent gem resource rather than a new currency or power source.
 
@@ -107,6 +107,10 @@ Hostile groups must have a route to the base or a clearly defined way to create 
 This table is a concept list, not a commitment to five levels or a fixed order. Basic shared systems must remain available wherever they are required for survival. Later maps should not arbitrarily prohibit previously unlocked rooms or dwarf types. The same Kitchen supports all residents, the Workshop supplies doors and traps, the Library researches spells, and the Training Room develops every dwarf type. Confined or dispersed maps can favor several smaller Kitchens and training facilities instead of one central room.
 
 Initial levels must be playable with Miners, Engineers, Warriors, and Runesmiths and the current room catalog. Discovery follows excavation and dwarf visibility without requiring a separate scouting specialist. Level definitions should reference dwarf and room definitions by stable identifiers, so future additions can be introduced without rewriting the level systems or adding new requirements to existing maps. See the [architecture requirements](game-rules.md#14-extensible-character-and-room-definitions).
+
+## Level and region concept art
+
+The [level and region gallery](concept-art/levels/README.md) illustrates all five candidate strongholds, with additional Fungal Caves and Volcanic Depths studies. Border Foothold represents upper workings, Fallen City ancient halls, and Crystal Divide crystal caverns; Flooded Workings explores water-constrained mining and Royal Deep combines regional approaches. These are representative explored sections rather than final map layouts or a confirmed campaign sequence. Their [prompts](concept-art/levels/prompts.md) record the approved terrain reference and each scene's layout intent.
 
 ## Level authoring checklist
 
