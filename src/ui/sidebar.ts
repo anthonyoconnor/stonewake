@@ -15,6 +15,10 @@ import {recipes,recipeById} from '../content/recipes';
 import {actionIcon} from './icons';
 import {reachable} from '../game/navigation';
 import {key,tileAt} from '../game/types';
+import {spellDefinitions} from '../content/spells';
+import {queueResearch,cancelResearch,castSpell} from '../game/research';
+import {workRate} from '../game/progression';
+import {enableRecruitment} from '../game/recruitment';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
@@ -67,11 +71,19 @@ export class Sidebar {
       this.panel.querySelector<HTMLButtonElement>('#leave-lab')!.onclick=()=>this.onLab(false);
       const test=document.createElement('button');test.className='wide';test.textContent='Add tired test residents';test.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.energy=.1;a.retry=0;}test.disabled=true;};this.panel.append(test);
       const hungry=document.createElement('button');hungry.className='wide';hungry.textContent='Add hungry test residents';hungry.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.hunger=.1;a.retry=0;}hungry.disabled=true;};this.panel.append(hungry);
+      const arrivals=document.createElement('label');arrivals.className='toggle';arrivals.innerHTML=`<input id="lab-arrivals" type="checkbox" ${this.view.world.recruitment?.enabled?'checked':''}> Test automatic specialist arrivals`;arrivals.title='Use normal room, bed and food requirements in this test world.';this.panel.append(arrivals);
+      arrivals.querySelector<HTMLInputElement>('input')!.onchange=e=>enableRecruitment(this.view.world,(e.target as HTMLInputElement).checked);
     }else if(category==='rooms'){
       this.panel.innerHTML=`<div id="selected-action" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Room choices">${roomDefinitions.map(r=>`<button class="room-choice" data-room="${r.id}" aria-label="${r.name}${r.implemented?'':' (planned)'}" title="${r.name}${r.implemented?'':' · planned'}" ${r.implemented?'':'disabled'}>${actionIcon(r.id)}</button>`).join('')}</div><div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.room!));
       this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
-    }else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="residents-list"></div>';
+    }else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
+    else if(category==='spells'){
+      this.panel.innerHTML=`<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Runesmiths research spells at accessible Library stations. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map(s=>`<article class="spell-card"><h3>${s.name}</h3><p>${s.description}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
+      this.panel.querySelectorAll<HTMLButtonElement>('[data-research]').forEach(b=>b.onclick=()=>{queueResearch(this.view.world,b.dataset.research!);this.update();});
+      this.panel.querySelectorAll<HTMLButtonElement>('[data-pause-research]').forEach(b=>b.onclick=()=>{cancelResearch(this.view.world,b.dataset.pauseResearch!);this.update();});
+      this.panel.querySelectorAll<HTMLButtonElement>('[data-cast]').forEach(b=>b.onclick=()=>{this.root.querySelector('#feedback')!.textContent=castSpell(this.view.world,b.dataset.cast!);this.update();});
+    }
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
     if(['lab','debug'].includes(category)){
       const showcase=document.createElement('button');showcase.className='wide';showcase.textContent='Load visual showcase';showcase.onclick=()=>this.onLab(true,'showcase');this.panel.append(showcase);
@@ -114,7 +126,8 @@ export class Sidebar {
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
     this.root.querySelector('#gold-total')!.textContent=String(goldTotal(w));this.root.querySelector('#dwarf-total')!.textContent=String(w.agents.length);
-    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name}</strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}</small></div>`).join('');
+    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>Training ${a.trainingLevel??0} / ${tuning.trainingLevels} · Work +${Math.round((workRate(w,a)-1)*100)}%<br>${(a.trainingLevel??0)>=tuning.trainingLevels?'Training complete':`Next level ${Math.min(100,Math.floor((a.trainingProgress??0)/tuning.trainingSeconds*100))}%`}</small></div>`).join('');
+    const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`Specialists arrive through the Hearth when rooms and settlement have spare capacity. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);
       if(p){const stats=roomStats(w,p);summary.textContent=`${stats.tiles} squares · ${stats.usable.length} usable facilities${stats.usable.some(f=>f.service==='rest')?` · ${stats.usable.filter(f=>f.assigned).length} assigned beds · ${stats.usable.filter(f=>!f.assigned).length} free beds`:` · ${stats.usable.reduce((s,f)=>s+f.capacity,0)} capacity`}${stats.tiles&&!stats.usable.length?' · Needs space or access.':''}`;}
@@ -125,15 +138,36 @@ export class Sidebar {
         if(!count('growing').length||!count('cooking').length)summary.textContent+='Needs growing and cooking facilities.';else if(!count('dining').length)summary.textContent+='Needs room for a table.';else if(!food)summary.textContent+='Food is growing and cooking.';
       }}
       if(p&&tileAt(w,p.x,p.z)?.core){const chest=w.furnishings.find(f=>f.id==='hearth-treasury');summary.textContent=chest?`Hearth treasury · ${chest.stored} / ${chest.capacity} gold`:'';}
+      if(p){const s=roomStats(w,p),room=roomDefinitions.find(r=>r.id===tileAt(w,p.x,p.z)?.room);
+        for(const service of ['training','research'])if(room?.furnishings.some(f=>f.service===service)){
+          const stations=new Set(s.usable.filter(f=>f.service===service).map(f=>key(f.access))),occupied=new Set(w.agents.filter(a=>a.job&&stations.has(key(a.job.work))).map(a=>key(a.job!.work))).size;
+          summary.textContent=`${s.tiles} squares · ${stations.size} usable ${service} positions · ${occupied} occupied · ${stations.size-occupied} available. `;
+          summary.textContent+=!stations.size?`Needs space and access for a ${service} station.`:service==='training'?'All dwarf types train here.':'Choose research in the Spells panel.';
+        }
+      }
     }
     const attraction=this.panel.querySelector('#debug-attraction');if(attraction)attraction.textContent=attractionStatus(w,this.panel.querySelector<HTMLSelectElement>('#debug-dwarf-type')!.value);
     if(summary&&w.salvaged&&Object.values(w.salvaged).some(v=>v>0))summary.textContent+=` Retained supplies: ${Object.entries(w.salvaged).filter(([,n])=>n>0).map(([service,n])=>`${n} ${service}`).join(', ')}.`;
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
     const craftStatus=this.panel.querySelector('#craft-status');if(craftStatus){
       const start=w.agents[0]??w.tiles.find(t=>t.claimed&&!t.core&&t.terrain==='floor'),access=start?reachable(w,start):new Set<string>();
-      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft'&&access.has(key(f.access))).length} usable craft positions · ${w.agents.filter(a=>recipes.some(r=>a.capabilities.includes(r.capability))).length} capable workers. Add test residents through the Debug dwarf catalog.`;
+      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft'&&access.has(key(f.access))).length} usable craft positions · ${w.agents.filter(a=>recipes.some(r=>a.capabilities.includes(r.capability))).length} capable workers. Engineers need a working Workshop, spare beds and food to arrive.`;
       this.panel.querySelector('#craft-orders')!.innerHTML=w.craftOrders.filter(o=>o.state!=='done').map(o=>`<p>${recipeById(o.recipe)!.name} · ${o.state==='working'?Math.round(o.progress/recipeById(o.recipe)!.seconds*100)+'%':'Queued'}</p>`).join('');
       this.panel.querySelector('#craft-outputs')!.textContent=recipes.map(r=>`${w.outputs[r.id]??0} ${r.name.toLowerCase()}s`).join(' · ');
+    }
+    const researchCapacity=this.panel.querySelector('#research-capacity');if(researchCapacity){
+      const workers=w.agents.filter(a=>a.capabilities.includes('research')),routes=workers.map(a=>reachable(w,a));
+      const stations=new Set(w.furnishings.filter(f=>f.service==='research'&&routes.some(r=>r.has(key(f.access)))).map(f=>key(f.access)));
+      researchCapacity.textContent=`${workers.length} capable researcher${workers.length===1?'':'s'} · ${stations.size} reachable research positions${workers.length?'':'. Build a Library and provide spare beds and food to attract a Runesmith.'}`;
+      for(const spell of spellDefinitions){
+        const order=w.researchOrders?.find(o=>o.spell===spell.id),ready=order?.state==='ready',paused=order?.paused;
+        const duration=order?.unlocked?spell.prepareSeconds:spell.researchSeconds;
+        this.panel.querySelector(`[data-research-status="${spell.id}"]`)!.textContent=ready?'Ready to cast':order?`${paused?'Paused':order.state==='working'?'In progress':'Queued'} · ${Math.min(100,Math.floor(order.progress/duration*100))}% · ${order.unlocked?'Preparing':'Researching'}`:`Not researched · ${duration} seconds of research`;
+        const research=this.panel.querySelector<HTMLButtonElement>(`[data-research="${spell.id}"]`)!;research.disabled=!!order&&!paused;research.textContent=paused?'Resume':'Research';
+        this.panel.querySelector<HTMLButtonElement>(`[data-pause-research="${spell.id}"]`)!.disabled=!order||!!paused||ready;
+        const cast=this.panel.querySelector<HTMLButtonElement>(`[data-cast="${spell.id}"]`)!;cast.disabled=!ready||goldTotal(w)<spell.cost;cast.textContent=`Cast · ${spell.cost} gold${ready&&goldTotal(w)<spell.cost?' · Needs gold':''}`;
+      }
+      this.panel.querySelector('#active-spells')!.textContent=(w.hasteUntil??0)>w.elapsed?`Haste active · ${Math.ceil(w.hasteUntil!-w.elapsed)} seconds remaining`:'';
     }
   }
 }

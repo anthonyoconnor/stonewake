@@ -1,5 +1,5 @@
 import {type World,type Resident,type Job,type Point,tileAt,neighbors,key} from './types.ts';
-import {canStand,findPath,clearLine} from './navigation.ts';
+import {canStand,findPath,clearLine,reachable} from './navigation.ts';
 import {reveal} from './world.ts';
 import {tuning} from '../content/tuning.ts';
 import {foodFacilities,produceFood} from './food.ts';
@@ -7,12 +7,19 @@ import {characterById} from '../content/characters.ts';
 import {recipeById} from '../content/recipes.ts';
 import {spendGold,goldTotal} from './rooms.ts';
 import {wallEligible,wallBuildDuration} from './walls.ts';
+import {canTrain,workRate} from './progression.ts';
+import {researchDuration} from './research.ts';
+import {spellById} from '../content/spells.ts';
+import {recruitSpecialist} from './recruitment.ts';
 export const addMiners=(w:World,count=tuning.startingMiners)=>addResidents(w,'miner',count);
-export function addResidents(w:World,type:string,count=1) {
-  const def=characterById(type);if(!def)return;
-  const positions=w.tiles.filter(t=>t.claimed&&canStand(w,t)&&!w.agents.some(a=>Math.hypot(a.x-t.x,a.z-t.z)<.6)).sort((a,b)=>Math.hypot(a.x-w.hearth.x,a.z-w.hearth.z)-Math.hypot(b.x-w.hearth.x,b.z-w.hearth.z));
+export function addResidents(w:World,type:string,count=1,origin?:Point) {
+  const def=characterById(type);if(!def)return 0;
+  const routes=origin?reachable(w,origin):undefined;
+  const positions=w.tiles.filter(t=>t.claimed&&canStand(w,t)&&(!routes||routes.has(key(t)))&&!w.agents.some(a=>Math.hypot(a.x-t.x,a.z-t.z)<.6)).sort((a,b)=>Math.hypot(a.x-w.hearth.x,a.z-w.hearth.z)-Math.hypot(b.x-w.hearth.x,b.z-w.hearth.z));
   const firstId=Math.max(0,...w.agents.map(a=>a.id))+1;
-  for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:def.names[i%def.names.length],type,capabilities:[...def.capabilities],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false,crafted:0});}
+  const existing=w.agents.filter(a=>a.type===type).length;
+  for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:def.names[(existing+i)%def.names.length],type,capabilities:[...def.capabilities],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false,crafted:0,trainingLevel:0,trainingProgress:0,nextTrainingAt:w.elapsed});}
+  return Math.min(count,positions.length);
 }
 export function designate(w:World,points:Point[],value:boolean|'toggle'=true) {
   for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&(!t.known||['dirt','rock','gold','gem'].includes(t.terrain)))t.designated=value==='toggle'?!t.designated:value;}
@@ -26,6 +33,7 @@ function take(w:World,a:Resident,kind:Job['kind'],target:Point,work:Point,furnis
 }
 function storage(w:World,a:Resident){return nearest(a,w.furnishings.filter(f=>f.service==='storage'&&f.stored<f.capacity));}
 function availableStorage(w:World,a:Resident){return storage(w,a).find(f=>findPath(w,a,f.access));}
+function availableStations(w:World,a:Resident,service:string){return nearest(a,w.furnishings.filter(f=>f.service===service&&!(a.avoidFacility===f.id&&(a.avoidUntil??0)>w.elapsed)&&!w.agents.some(o=>o!==a&&o.job&&(o.job.furnishing===f.id||key(o.job.work)===key(f.access)))));}
 function choose(w:World,a:Resident){
   if(a.carrying){
     for(const f of storage(w,a))if(take(w,a,'deliver',f,f.access,f.id))return;
@@ -41,10 +49,17 @@ function choose(w:World,a:Resident){
     const food=foodFacilities(w,table).find(f=>f.service==='cooking'&&f.stored>0);
     if((a.meal||food)&&take(w,a,'eat',table,table.access,table.id)){if(!a.meal){food!.stored--;a.meal=true;w.revision++;}return;}
   }
+  if(canTrain(w,a))for(const f of availableStations(w,a,'training'))if(take(w,a,'train',f,f.access,f.id))return;
+  if(a.capabilities.includes('research'))for(const order of w.researchOrders??[]){
+    if(order.state!=='queued'||order.paused||!spellById(order.spell))continue;
+    for(const f of availableStations(w,a,'research'))if(take(w,a,'research',f,f.access,f.id)){
+      a.job!.order=order.id;order.worker=a.id;order.state='working';return;
+    }
+  }
   for(const order of w.craftOrders.filter(o=>o.state==='queued')){
     const recipe=recipeById(order.recipe)!;if(!a.capabilities.includes(recipe.capability))continue;
     if(!order.paid&&goldTotal(w)<recipe.cost){a.activity='Waiting for production gold';a.retry=1;return;}
-    for(const f of nearest(a,w.furnishings.filter(f=>f.service==='craft'&&!w.agents.some(o=>o.job?.furnishing===f.id)))){
+    for(const f of availableStations(w,a,'craft')){
       if(take(w,a,'craft',f,f.access,f.id)){a.job!.order=order.id;order.worker=a.id;order.state='working';return;}
     }
   }
@@ -76,7 +91,7 @@ function choose(w:World,a:Resident){
     if(w.furnishings.some(f=>key(f.access)===key(p))||w.agents.some(o=>o!==a&&(Math.hypot(o.x-p.x,o.z-p.z)<.6||o.job&&key(o.job.work)===key(p))))continue;
     if(take(w,a,'idle',p,p))return;
   }
-  a.activity=a.hunger<tuning.hungerThreshold?'Needs food and an accessible table':a.energy<tuning.restThreshold?'Needs an accessible bed':'Awaiting a designation';a.retry=tuning.retrySeconds;
+  a.activity=a.hunger<tuning.hungerThreshold?'Needs food and an accessible table':a.energy<tuning.restThreshold?'Needs an accessible bed':a.capabilities.includes('research')?'Waiting for Library research':a.capabilities.includes('mine')?'Awaiting a designation':'Awaiting work or training';a.retry=tuning.retrySeconds;
 }
 function valid(w:World,a:Resident){
   const j=a.job!,t=tileAt(w,j.target.x,j.target.z);if(!t)return false;
@@ -90,10 +105,13 @@ function valid(w:World,a:Resident){
   if(j.kind==='sleep')return w.furnishings.some(f=>f.id===j.furnishing&&f.assigned===a.id)&&canStand(w,j.work);
   if(j.kind==='eat')return a.meal&&w.furnishings.some(f=>f.id===j.furnishing)&&canStand(w,j.work);
   if(j.kind==='craft')return w.furnishings.some(f=>f.id===j.furnishing)&&w.craftOrders.some(o=>o.id===j.order&&o.state==='working'&&o.worker===a.id)&&canStand(w,j.work);
+  if(j.kind==='train')return canTrain(w,a)&&w.furnishings.some(f=>f.id===j.furnishing&&f.service==='training')&&canStand(w,j.work);
+  if(j.kind==='research')return a.capabilities.includes('research')&&w.furnishings.some(f=>f.id===j.furnishing&&f.service==='research')&&!!w.researchOrders?.some(o=>o.id===j.order&&o.state==='working'&&o.worker===a.id&&!o.paused)&&canStand(w,j.work);
   return w.furnishings.some(f=>f.id===j.furnishing&&f.stored<f.capacity);
 }
 function releaseJob(w:World,a:Resident){
   if(a.job?.kind==='craft'){const order=w.craftOrders.find(o=>o.id===a.job!.order);if(order?.state==='working'){order.state='queued';order.worker=undefined;}}
+  if(a.job?.kind==='research'){const order=w.researchOrders?.find(o=>o.id===a.job!.order);if(order?.state==='working'&&order.worker===a.id){order.state='queued';order.worker=undefined;}}
   a.job=undefined;a.path=[];
 }
 function move(w:World,a:Resident,dt:number){
@@ -130,10 +148,12 @@ export function tick(w:World,dt:number){
     if(a.job?.kind!=='sleep')a.energy=Math.max(0,a.energy-dt/tuning.restInterval);
     if(a.job?.kind!=='eat')a.hunger=Math.max(0,a.hunger-dt/tuning.hungerInterval);
     if(a.job&&!valid(w,a))releaseJob(w,a);
+    if((a.job?.kind==='train'||a.job?.kind==='research')&&(a.energy<tuning.restThreshold||a.hunger<tuning.hungerThreshold))releaseJob(w,a);
     if(!a.job){a.retry-=dt;if(a.retry<=0)choose(w,a);}
     if(!a.job)continue;
     if(!move(w,a,dt))continue;
-    const j=a.job,t=tileAt(w,j.target.x,j.target.z)!;j.progress+=dt;
+    const j=a.job,t=tileAt(w,j.target.x,j.target.z)!,work=dt*workRate(w,a);
+    j.progress+=['mine','buildWall','reinforce','claim','craft','research'].includes(j.kind)?work:dt;
     if(j.kind==='mine'){
       a.activity=t.terrain==='gem'?'Extracting gems':t.terrain==='gold'?'Mining gold':'Excavating';const duration=t.terrain==='gem'?tuning.gemSeconds:t.terrain==='gold'?tuning.goldSeconds:t.terrain==='rock'?tuning.rockSeconds:tuning.mineSeconds;
       if(j.progress<duration)continue;
@@ -152,7 +172,7 @@ export function tick(w:World,dt:number){
       else {t.terrain='floor';t.claimed=false;t.designated=false;t.reinforced=false;}
       reveal(w,j.work);w.revision++;
     }else if(j.kind==='buildWall'){
-      a.activity='Building wall';t.wallProgress=Math.min(wallBuildDuration(),(t.wallProgress??0)+dt);
+      a.activity='Building wall';t.wallProgress=Math.min(wallBuildDuration(),(t.wallProgress??0)+work);
       if(t.wallProgress<wallBuildDuration())continue;
       if(w.agents.some(o=>Math.abs(o.x-t.x)<.5+tuning.radius&&Math.abs(o.z-t.z)<.5+tuning.radius)){
         a.activity='Waiting for the wall site to clear';continue;
@@ -163,9 +183,17 @@ export function tick(w:World,dt:number){
     }else if(j.kind==='craft'){
       const order=w.craftOrders.find(o=>o.id===j.order)!,recipe=recipeById(order.recipe)!;
       if(!order.paid){if(!spendGold(w,recipe.cost)){releaseJob(w,a);a.retry=1;continue;}order.paid=true;w.revision++;}
-      a.activity=`Crafting ${recipe.name.toLowerCase()}`;order.progress+=dt;if(order.progress<recipe.seconds)continue;
+      a.activity=`Crafting ${recipe.name.toLowerCase()}`;order.progress+=work;if(order.progress<recipe.seconds)continue;
       order.state='done';order.worker=undefined;w.outputs[recipe.id]=(w.outputs[recipe.id]??0)+1;a.crafted++;
       const f=w.furnishings.find(f=>f.id===j.furnishing)!;f.output=recipe.id;f.outputCount=(f.outputCount??0)+1;w.revision++;
+    }else if(j.kind==='train'){
+      a.activity='Training';a.trainingProgress=(a.trainingProgress??0)+dt;if(a.trainingProgress<tuning.trainingSeconds)continue;
+      a.trainingLevel=Math.min(tuning.trainingLevels,(a.trainingLevel??0)+1);a.trainingProgress=0;a.nextTrainingAt=w.elapsed+tuning.trainingInterval;w.revision++;
+    }else if(j.kind==='research'){
+      const order=w.researchOrders!.find(o=>o.id===j.order)!,spell=spellById(order.spell)!;
+      a.activity=`${order.unlocked?'Preparing':'Researching'} ${spell.name}`;order.progress+=work;
+      if(order.progress<researchDuration(order))continue;
+      order.progress=researchDuration(order);order.state='ready';order.unlocked=true;order.worker=undefined;w.revision++;
     }else if(j.kind==='eat'){
       a.activity='Eating';if(j.progress<tuning.eatSeconds)continue;a.hunger=1;a.meals++;a.meal=false;
       const table=w.furnishings.find(f=>f.id===j.furnishing)!;const ale=foodFacilities(w,table).find(f=>f.service==='brewing'&&f.stored>0);if(ale)ale.stored--;w.revision++;
@@ -184,4 +212,5 @@ export function tick(w:World,dt:number){
     a.job=undefined;a.path=[];
   }
   if(Math.floor((w.elapsed-dt)*2)!==Math.floor(w.elapsed*2))for(const a of w.agents)reveal(w,a,tuning.sightRadius);
+  recruitSpecialist(w,(type,origin)=>addResidents(w,type,1,origin)>0);
 }

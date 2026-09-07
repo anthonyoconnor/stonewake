@@ -12,7 +12,9 @@ export const showcaseRooms=[
   {type:'treasure',x:2,z:2,width:5,depth:5},
   {type:'dormitory',x:10,z:2,width:6,depth:5},
   {type:'kitchen',x:2,z:10,width:7,depth:5},
-  {type:'workshop',x:14,z:11,width:6,depth:6}
+  {type:'workshop',x:14,z:11,width:6,depth:6},
+  {type:'training',x:7,z:17,width:6,depth:5},
+  {type:'library',x:14,z:18,width:7,depth:4}
 ];
 export function labLayout(w:World,shape:string):Point[]{
   let cells:Point[]=[];

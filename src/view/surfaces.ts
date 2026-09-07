@@ -45,6 +45,15 @@ export function surfaceTexture(scene:Scene,name:string){
     if(motif==='treasure'){c.arc(128,128,24,0,Math.PI*2);c.moveTo(128,109);c.lineTo(145,128);c.lineTo(128,147);c.lineTo(111,128);c.closePath();}
     else if(motif==='dormitory'){c.rect(110,110,36,36);c.moveTo(110,110);c.lineTo(146,146);c.moveTo(146,110);c.lineTo(110,146);}
     else if(motif==='kitchen'){c.arc(128,127,24,Math.PI,Math.PI*2);c.lineTo(104,127);c.moveTo(122,127);c.lineTo(122,149);c.lineTo(134,149);c.lineTo(134,127);}
+    else if(motif==='training'){
+      c.moveTo(128,101);c.lineTo(155,128);c.lineTo(128,155);c.lineTo(101,128);c.closePath();
+      c.moveTo(110,110);c.lineTo(146,146);c.moveTo(146,110);c.lineTo(110,146);
+      for(const y of [32,224]){c.moveTo(28,y);c.lineTo(228,y);}
+    }
+    else if(motif==='library'){
+      c.moveTo(106,105);c.lineTo(128,111);c.lineTo(150,105);c.lineTo(150,148);c.lineTo(128,153);c.lineTo(106,148);c.closePath();c.moveTo(128,111);c.lineTo(128,153);
+      for(const x of [32,224]){c.moveTo(x,112);c.lineTo(x,144);c.moveTo(x-8,124);c.lineTo(x,114);c.lineTo(x+8,124);}
+    }
     else {for(let i=0;i<=16;i++){const a=i*Math.PI/8,r=i%2?21:27;const x=128+Math.cos(a)*r,y=128+Math.sin(a)*r;if(!i)c.moveTo(x,y);else c.lineTo(x,y);}c.moveTo(139,128);c.arc(128,128,11,0,Math.PI*2);}
     c.stroke();
   }

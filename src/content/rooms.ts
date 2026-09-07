@@ -18,9 +18,15 @@ export const roomDefinitions:RoomDefinition[]=[
     {kind:'anvil',width:1,depth:1,capacity:1,service:'craft'},
     {kind:'assembly',width:2,depth:1,capacity:1,service:'craft'}
   ]},
-  ...[
-    ['training','Training Room','#985d44'],['library','Library','#546f96'],['guard','Guard Post','#7f7770']
-  ].map(([id,name,color])=>({id,name,color,cost:20,description:'Planned room',implemented:false,furnishings:[]}))
+  {id:'training',look:{icon:'training',floor:'#785849',trim:'#c89c62',motif:'training'},name:'Training Room',color:'#985d44',cost:22,description:'All dwarfs train at accessible practice stations to improve work speed. Attracts Warriors.',implemented:true,furnishings:[
+    {kind:'dummy',width:1,depth:1,capacity:1,service:'training'},
+    {kind:'weights',width:2,depth:1,capacity:1,service:'training'}
+  ]},
+  {id:'library',look:{icon:'library',floor:'#4c6178',trim:'#94b5c9',motif:'library'},name:'Library',color:'#546f96',cost:26,description:'Runesmiths research and prepare useful spells at accessible reading stations.',implemented:true,furnishings:[
+    {kind:'lectern',width:1,depth:1,capacity:1,service:'research'},
+    {kind:'bookshelf',width:2,depth:1,capacity:1,service:'research'}
+  ]},
+  {id:'guard',name:'Guard Post',color:'#7f7770',cost:20,description:'Planned room',implemented:false,furnishings:[]}
 ];
 export const roomById=(id:string)=>roomDefinitions.find(r=>r.id===id);
 

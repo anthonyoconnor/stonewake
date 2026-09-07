@@ -12,6 +12,10 @@ The recruitment, miner pricing, needs, autonomous control, merged specialist rol
 
 ## Shared resident rules
 
+Current prototype: all four types share autonomous movement, food, rest and Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when accessible specialist stations and shared support have spare capacity. One eligible specialist can arrive every 45 seconds; eligible types take turns. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Wages, paid Miner recruitment, departure, combat and guard duty remain pending.
+
+Training gives up to five levels with 8% work speed per level. It takes 12 seconds of station use per level with 45 seconds between sessions; needs take priority and partial progress survives interruptions. These are provisional tunable values. Warriors currently train and use shared needs; their combat role awaits the combat system. Runesmiths autonomously research the spells selected in the sidebar and prepare them again after casting. See the [room prototype rules](rooms.md#training-room-and-library-prototype-rules) for details.
+
 - All resident dwarfs, including purchased miners, need regular pay, accessible bedding, sufficient food, and any facilities required by their role.
 - Dwarfs choose work, eat, sleep, collect wages, and respond to threats autonomously. Players do not possess, move, or issue individual orders to them.
 - Dwarfs and enemies move continuously through halls and rooms in any clear direction. They do not snap to tile centers or occupy exclusive grid squares; obstacles and available physical clearance determine where they can go.
@@ -59,11 +63,11 @@ The Engineer is a female dwarf. Her concept uses practical teal workwear, a prot
 
 ### Warrior
 
-Alternates between training, guard duty, and ordinary needs. Guard Posts and the position of the Training Room influence where Warriors spend their time and how quickly they can respond. The Training Room attracts Warriors but is available to every dwarf type. It provides training positions, while Warriors sleep in Dormitories like everyone else. Training progression and limits remain to be designed.
+The intended role alternates between training, guard duty, and ordinary needs. Guard Posts and the position of the Training Room will influence how quickly Warriors respond. The Training Room attracts Warriors but is available to every dwarf type. It provides training positions, while Warriors sleep in Dormitories like everyone else. Current training progression is defined in the prototype rules above; guarding and combat remain pending.
 
 ### Runesmith
 
-Works at the Library to research spells. This is the stronghold's single research specialist. Spell selection, research order, casting rules, and any personal combat abilities remain to be defined; separate healing or morale duties are not assumed. Like every dwarf, a Runesmith can train. Research pacing and the Library's use after available research is complete need a simple solution that keeps the facility relevant across levels.
+Works at the Library to research spells. This is the stronghold's single research specialist. The prototype lets the player queue, pause and cast Hearth Prospect and Hearth Haste; the Library prepares each spell again after casting. Like every dwarf, a Runesmith can train. Broader spell balance, campaign research and any personal combat abilities remain open; separate healing or morale duties are not assumed.
 
 ## Continuing usefulness
 
@@ -81,8 +85,8 @@ The [dwarf concept gallery](concept-art/dwarfs/README.md) shows the current four
 
 - Starting miner count, recruitment price curve, wage amounts, and payday interval.
 - Food consumption, bed capacity, and room capacity per specialist.
-- Combat abilities and training stat gains, costs, limits, and scheduling for all dwarf types.
-- Research pacing and Library use after available research is complete.
+- Combat abilities and balance of the provisional shared training values.
+- Broader spell balance and campaign research progression.
 - How many fighters and support dwarfs answer a rally.
 - Whether individual dwarf names or personalities are included.
 

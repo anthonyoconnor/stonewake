@@ -92,6 +92,18 @@ export class GameScene {
       for(const y of [.25,1.08])this.box('room wall trim',t.x+dx*.485,y,t.z+dz*.485,dx?.045:.98,.07,dz?.045:.98,trim).isPickable=false;
       this.box('wall panel',t.x+dx*.46,.66,t.z+dz*.46,dx?.06:.52,.58,dz?.06:.52,this.material('chest wood','#755334',true)).isPickable=false;
       if(roomLook(room.id).motif==='workshop')for(const offset of [-.15,.15])this.box('hanging tool',t.x+dx*.41+dz*offset,.68,t.z+dz*.41+dx*offset,dx?.06:.035,.3,dz?.06:.035,trim).isPickable=false;
+      if(roomLook(room.id).motif==='training'){
+        this.box('training banner',t.x+dx*.405,.68,t.z+dz*.405,dx?.025:.34,.5,dz?.025:.34,this.material('training banner','#843f31')).isPickable=false;
+        const target=MeshBuilder.CreateTorus('practice wall target',{diameter:.22,thickness:.022,tessellation:16},this.scene);target.position.set(t.x+dx*.38,.7,t.z+dz*.38);target.rotation.set(dz?Math.PI/2:0,0,dx?Math.PI/2:0);target.material=trim;target.parent=this.terrainRoot;target.isPickable=false;
+      }
+      if(roomLook(room.id).motif==='library'){
+        const shelf=this.material('library shelf','#59402d',true);
+        for(const y of [.42,.76,1.04])this.box('wall bookshelf',t.x+dx*.405,y,t.z+dz*.405,dx?.15:.76,.045,dz?.15:.76,shelf).isPickable=false;
+        for(const y of [.58,.9])for(let i=0;i<7;i++){
+          const offset=(i-3)*.091,book=this.material(`book spine ${i%3}`,['#486982','#866143','#647558'][i%3]);
+          this.box('wall book',t.x+dx*.415+dz*offset,y,t.z+dz*.415+dx*offset,dx?.09:.065,.19+(i%2)*.035,dz?.09:.065,book).isPickable=false;
+        }
+      }
       if(['treasure','kitchen'].includes(roomLook(room.id).motif)){
         const emblem=MeshBuilder.CreateCylinder('wall emblem',{height:.04,diameter:.28,tessellation:12},this.scene);emblem.position.set(t.x+dx*.4,.68,t.z+dz*.4);emblem.rotation.set(dz?Math.PI/2:0,0,dx?Math.PI/2:0);emblem.material=trim;emblem.parent=this.terrainRoot;emblem.isPickable=false;
       }
@@ -177,6 +189,43 @@ export class GameScene {
             const spring=MeshBuilder.CreateTorus('trap spring',{diameter:.2,thickness:.035,tessellation:8},this.scene);spring.position.set(0,.82,.13);spring.material=metal;spring.parent=root;spring.isPickable=false;
             part('bolt mechanism',0,.86,.13,.035,.035,.34,iron);
           }else for(const z of [.04,.22])part('door reinforcement',0,.79,z,.4,.03,.045,metal);
+        }
+        continue;
+      }
+      if(['dummy','weights','lectern','bookshelf'].includes(model)){
+        const large=model==='weights'||model==='bookshelf',root=new TransformNode(f.id,this.scene);root.parent=this.furnitureRoot;
+        root.position.set(f.x+(large&&!f.rotation?.5:0),0,f.z+(large&&f.rotation?.5:0));root.rotation.y=f.rotation?Math.PI/2:0;
+        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{const mesh=this.box(n,x,y,z,w,h,d,m,root);mesh.isPickable=false;return mesh;};
+        const cylinder=(n:string,x:number,y:number,z:number,h:number,d:number,m:StandardMaterial)=>{const mesh=MeshBuilder.CreateCylinder(n,{height:h,diameter:d,tessellation:10},this.scene);mesh.position.set(x,y,z);mesh.parent=root;mesh.material=m;mesh.isPickable=false;return mesh;};
+        const iron=this.material('training iron','#5f686c'),linen=this.material('parchment','#e0d1aa'),blue=this.material('research inlay','#6db6c9',false,.12);
+        if(model==='dummy'){
+          part('dummy foot',0,.07,0,.66,.14,.66,wood);cylinder('practice post',0,.51,0,.9,.13,wood);
+          cylinder('bound straw torso',0,.57,0,.4,.33,this.material('training straw','#b99a62'));
+          part('practice crossbar',0,.67,0,.7,.12,.13,wood);cylinder('dummy head',0,.89,0,.19,.24,this.material('training straw','#b99a62'));
+          for(const y of [.43,.65,.93])cylinder('practice bindings',0,y,0,.04,y===.93?.25:.34,metal);
+          const target=MeshBuilder.CreateTorus('dummy target',{diameter:.22,thickness:.025,tessellation:12},this.scene);target.position.set(0,.56,-.18);target.rotation.x=Math.PI/2;target.material=this.material('training target','#823f31');target.parent=root;target.isPickable=false;
+        }else if(model==='weights'){
+          part('weight station deck',0,.07,0,1.75,.14,.78,wood);part('exercise bench',0,.35,.05,.75,.12,.38,this.material('training leather','#784d35'));
+          for(const x of [-.32,.32])part('exercise bench leg',x,.21,.05,.08,.3,.3,iron);
+          for(const x of [-.65,.65]){part('weight rack upright',x,.36,-.14,.09,.62,.1,wood);cylinder('weight stack',x,.2,.18,.2,.32,iron);}
+          const bar=cylinder('barbell',0,.68,-.14,1.55,.055,metal);bar.rotation.z=Math.PI/2;
+          for(const x of [-.59,.59]){const weight=cylinder('barbell plate',x,.68,-.14,.18,.38,iron);weight.rotation.z=Math.PI/2;}
+        }else{
+          const width=large?1.7:.74;
+          part('reading desk',0,.56,.07,width,.13,.68,wood);
+          for(const x of [-width/2+.09,width/2-.09])for(const z of [-.18,.31])part('reading desk leg',x,.27,z,.085,.54,.085,wood);
+          if(large){
+            part('research shelf backing',0,.78,-.29,1.7,.62,.1,wood);
+            for(const y of [.56,.84,1.09])part('research shelf board',0,y,-.24,1.72,.055,.22,wood);
+            for(const y of [.69,.98])for(let i=0;i<11;i++)part('shelved volume',-.72+i*.14,y,-.235,.1,.18+(i%2)*.02,.13,this.material(`book spine ${i%3}`,['#486982','#866143','#647558'][i%3]));
+          }else{part('lectern stand',0,.43,-.12,.18,.55,.18,wood);part('sloped reading rest',0,.65,.06,.66,.08,.53,wood).rotation.x=.13;}
+          part('book binding',0,.663,.15,.51,.045,.37,metal);
+          for(const side of [-1,1]){
+            part('open research book',side*.122,.7,.15,.235,.035,.34,linen).rotation.z=side*.1;
+            for(let i=0;i<3;i++)part('ink markings',side*.125,.725,.05+i*.075,.125,.005,.012,blue);
+          }
+          cylinder('reading candle base',width/2-.12,.67,.2,.055,.12,metal);cylinder('reading candle',width/2-.12,.77,.2,.16,.05,linen);
+          this.crystal(width/2-.12,.88,.2,.08,'#f1c37b',root);
         }
         continue;
       }

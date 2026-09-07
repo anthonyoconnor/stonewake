@@ -32,6 +32,12 @@ export function findPath(w:World,start:Point,end:Point):Point[]|undefined {
   const raw:Point[]=[];let p:Point|undefined=end;
   while(p){raw.unshift(p);p=visited.get(key(p));}
   const result:Point[]=[];let from=start,index=1;
+  // Avoidance leaves fractional positions near corners. The first grid edge can
+  // be clear from its center while clipping terrain from the actual position.
+  if(index<raw.length&&!clearLine(w,from,raw[index])){
+    if(!clearLine(w,from,s))return;
+    result.push(s);from=s;
+  }
   while(index<raw.length){let far=index;while(far+1<raw.length&&clearLine(w,from,raw[far+1]))far++;result.push(raw[far]);from=raw[far];index=far+1;}
   return result;
 }

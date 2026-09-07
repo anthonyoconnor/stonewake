@@ -165,7 +165,7 @@ Together with directly purchased Miners, these specialists form the four dwarf t
 - No dedicated corridor to the surface is required on every map.
 - Required rooms must remain usable after arrival; attraction is not a one-time checklist.
 
-Arrival timing, population limits, exact room thresholds, and behavior when several types qualify remain open. [Characters](characters.md) records the four core dwarf types.
+The current prototype admits at most one eligible specialist every 45 seconds, rotating among eligible types. Accessible working positions, spare beds and stored food bound arrivals; the room studio disables automatic arrivals. Values remain tunable. [Characters](characters.md) records the four core dwarf types and current limitations.
 
 ## 10. Needs, payday, and departure
 
@@ -191,11 +191,11 @@ The player should see the actual capacity in the sidebar when selecting or expan
 
 Engineers automatically manufacture doors and traps in the Workshop. Runesmiths automatically research spells in the Library. Each is a single combined specialist role. Separate equipment manufacture, enchanting, and shrine services are outside this simplified design.
 
-Every dwarf can autonomously use the Training Room to increase its stats: Miners, Engineers, Warriors, and Runesmiths. The room attracts Warriors but its training positions are shared. Training takes the dwarf's time and usable room capacity; stat gains, costs, limits, and scheduling alongside work, needs, and defense remain to be designed. It provides no sleeping capacity.
+Every dwarf can autonomously use the Training Room to increase its stats: Miners, Engineers, Warriors, and Runesmiths. The room attracts Warriors but its training positions are shared. Training takes the dwarf's time and usable room capacity. The [prototype rules](rooms.md#training-room-and-library-prototype-rules) define provisional levels, work bonuses and scheduling; combat integration remains open. It provides no sleeping capacity.
 
-Every room must remain useful across strongholds. New populations need food, beds, and training; new layouts need manufactured defenses. Research pacing must also preserve the Library's relevance across levels. Its use after all available research is complete remains an explicit design question, without assuming additional production or maintenance systems.
+Every room must remain useful across strongholds. New populations need food, beds, and training; new layouts need manufactured defenses. The Library prototype prepares spells again after casting so it retains work after initial research. Campaign research progression remains open.
 
-Exact item handling, research progression, and associated gold costs remain to be designed. No additional mined currency is established beyond gold from deposits and gem deposits.
+The [prototype rules](rooms.md#training-room-and-library-prototype-rules) record current research progression and casting gold costs. Exact defensive item handling and broader balance remain open. No additional mined currency is established beyond gold from deposits and gem deposits.
 
 ## 12. Defense and enemies
 

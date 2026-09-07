@@ -2,9 +2,10 @@ import {characterDefinitions} from './characters.ts';
 import {tuning,tuningSpec,type TuningKey} from './tuning.ts';
 import {roomDefinitions} from './rooms.ts';
 import {recipes} from './recipes.ts';
+import {spellDefinitions} from './spells.ts';
 export interface Setting {id:string;label:string;group:string;min:number;max:number;step:number;note:string;defaultValue:number;get:()=>number;set:(v:number)=>void}
 const field=(id:string,label:string,group:string,object:Record<string,any>,key:string,min:number,max:number,step:number,note:string):Setting=>({id,label,group,min,max,step,note,defaultValue:object[key],get:()=>object[key],set:v=>{object[key]=v;}});
-// The registries drive the editor: new rooms and recipes appear without UI changes.
+// The registries drive the editor: new rooms, recipes and spells appear without UI changes.
 export const settings:Setting[]=[
  ...Object.entries(tuningSpec).map(([key,s])=>({...s,id:`tuning.${key}`,defaultValue:s.value,get:()=>tuning[key as TuningKey],set:(v:number)=>{tuning[key as TuningKey]=v;}})),
  ...roomDefinitions.flatMap(r=>[
@@ -15,6 +16,11 @@ export const settings:Setting[]=[
  ...recipes.flatMap(r=>[
   field(`recipe.${r.id}.cost`,`${r.name} · input gold`,'Crafting',r,'cost',0,10000,1,'Unpaid work only.'),
   field(`recipe.${r.id}.seconds`,`${r.name} · seconds`,'Crafting',r,'seconds',.1,600,.1,'Applies live.')
+ ]),
+ ...spellDefinitions.flatMap(s=>[
+  field(`spell.${s.id}.cost`,`${s.name} · casting gold`,'Training & research',s,'cost',0,10000,1,'Applies to future casts; room construction can be free without waiving casting costs.'),
+  field(`spell.${s.id}.researchSeconds`,`${s.name} · first research seconds`,'Training & research',s,'researchSeconds',.1,600,.1,'Applies live to initial research.'),
+  field(`spell.${s.id}.prepareSeconds`,`${s.name} · preparation seconds`,'Training & research',s,'prepareSeconds',.1,600,.1,'Applies live after casting a researched spell.')
  ])
 ];
 export const settingValues=()=>Object.fromEntries(settings.map(s=>[s.id,s.get()]));

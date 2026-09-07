@@ -63,7 +63,7 @@ Spells are accessed through their own sidebar category. Selecting an available s
 
 Use an understated target outline or effect preview when useful. No floating spell name, cost, range number, or cooldown counter appears in the world. Any defined cooldown or research progress belongs in the spell panel. Unavailable spells have a distinct icon state, with the reason available on selection or focus.
 
-Runesmiths research spells in the Library. The spell list, costs, research order, progression, and casting restrictions remain to be designed. The interface should display the agreed rules when those exist rather than assume an additional magical currency or manual commands for individual Runesmiths.
+Runesmiths research spells in the Library. The current [training, research and arrival controls](#training-research-and-arrival-controls) expose the provisional spell list, casting costs, research/preparation progress and restrictions. No additional magical currency or individual Runesmith orders are used.
 
 ### Dwarfs
 
@@ -74,6 +74,18 @@ Recruit Miner is available here with the current purchase price and affordabilit
 Selecting a dwarf in the world opens its information in the sidebar. A locate action from the population panel can center the camera on that dwarf. Inspection is informational: it does not enable individual movement orders, possession, manual job assignment, or selecting an army to command.
 
 ## Excavation, selection, and camera controls
+
+### Training, research and arrival controls
+
+Training Room and Library are selectable room icons using the same construction controls as the other rooms. Selecting either room reports accessible positions, occupied positions and available capacity in the left sidebar. A room with no usable station explains that it needs space and access.
+
+The Dwarfs panel shows each resident's type, activity, food/rest state, training level, progress toward the next level and current work-speed bonus. Specialists show their actual arrival requirements and missing support. There are no individual training or movement orders.
+
+The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume, Pause, and Cast controls. Initial research is selected by the player; Runesmiths choose accessible stations autonomously. A cast is available only when prepared and affordable. Hearth Prospect and Hearth Haste apply from the sidebar without a world target. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active Haste time stays in the sidebar. See [room prototype rules](rooms.md#training-room-and-library-prototype-rules) for the current tunable spell effects and costs.
+
+**Debug → Load visual showcase** builds all six implemented rooms through normal gameplay construction and adds three Miners plus an Engineer, Warrior and Runesmith. It includes actual food/gold stocks, craft orders and both research orders. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
+
+The studio starts with automatic arrivals disabled. **Test automatic specialist arrivals** enables normal room/support checks in that test world. The Dwarfs panel reports time until the next check and the specific missing capacity for each type.
 
 Excavation is the default cursor action at startup and after right-click or Escape cancels another operation. It is also available as a sidebar tool. The first tile determines the entire excavation gesture at pointer-down: an unmarked tile starts adding, and a marked tile starts removing. The action stays fixed across mixed selections, with matching cursor and preview; changes apply on release. Adding preserves existing marks, and removing leaves unmarked tiles unchanged. Single clicks still toggle their tile. Clicking an open floor or room inspects it. Marking diggable terrain uses a clear cell outline or surface treatment on the square grid. Bedrock cannot be designated for mining. The final highlight colors and pattern remain to be chosen.
 

@@ -12,8 +12,12 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 | [Dormitory](concept-art/rooms/dormitory-v3.png) | Warm patterned stone, timber beds, pillows, folded woven blankets and individual resting poses |
 | [Kitchen](concept-art/rooms/kitchen-v3.png) | Mushroom motifs, red/cream growing beds, cooking hearths, tables and banded casks; stock controls visible mushrooms and prepared food |
 | [Workshop](concept-art/rooms/workshop-v3.png) | Dark paving and brass gear motifs, tool boards, benches, anvils, assembly parts, reinforced door panels and trap mechanisms |
+| [Training Room](concept-art/rooms/training-room-v3.png) | Warm practice-lane paving, diamond emblems, reinforced-wall banners and targets, bound-straw dummies and larger weight benches |
+| [Library](concept-art/rooms/library-v3.png) | Blue book/rune inlays, reinforced-wall shelves, compact candlelit lecterns and larger reading desks with bookshelves |
 | [Miner](concept-art/dwarfs/miner-v1.png) | Broad ochre tunic, helmet lamp, clasped beard, curved pick, heavy boots and visible carrying satchel |
 | [Female Engineer](concept-art/dwarfs/engineer-v3.png) | Teal clothing, apron, twin braids, goggles, tool pack and hammer |
+| [Warrior](concept-art/dwarfs/warrior-v1.png) | Crimson tunic, layered steel shoulders and armor, dark beard, banded helmet, broad wooden shield and axe |
+| [Runesmith](concept-art/dwarfs/runesmith-v2.png) | Indigo robe and mantle, ivory borders, silver hair and beard, and an open rune book |
 
 ## Activity and iteration
 
@@ -23,7 +27,7 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 
 `src/view/surfaces.ts` provides the room palette and generated paving, brass motifs, rough stone and timber textures. Scene geometry includes contact shadows, wall-foot shading, lanterns and fittings on existing walls. Furnishings retain the gameplay footprints used by navigation; decoration does not add walls or capacity.
 
-Use **Debug → Load visual showcase** for a repeatable scene containing every implemented room, a mining crew, an Engineer, actual test stock, loose gold, excavation marks and two production orders. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
+Use **Debug → Load visual showcase** for a repeatable scene containing all six implemented rooms, a mining crew, an Engineer, a Warrior, a Runesmith, actual test stock, loose gold, excavation marks, two production orders and queued spell research. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
 
 The result is a stylized procedural prototype, not a reproduction of the concept sheets' illustration detail. Sculpted meshes, authored texture sets, skeletal animation, audio, advanced shadows and cinematic effects remain optional future art work. They are not prerequisites for rapid gameplay iteration.
 
@@ -34,3 +38,11 @@ Reviewed normal terrain/core and the four-room showcase at several rotations and
 Unchanged furnishing meshes are retained, static parts sharing a material draw together, and the glow layer includes only emissive objects. This keeps common stock and job updates from rebuilding the whole room scene. Showcase setup yields between room builds to keep input responsive.
 
 Unclaimed excavated tiles and discovered natural floors appear as bare dirt with scattered stones. Claiming replaces this with fitted flooring. Natural walls remain rough dirt or rock until a miner completes reinforcement; only then do masonry, wall fittings and lanterns appear. The shared single-height terrain and floor plane are unchanged.
+
+## Training and Library extension — 2026-09-07
+
+Reviewed the approved terrain plus the current Training Room, Library, Warrior and Runesmith sheets before this extension. The new `dummy` and `lectern` models occupy one tile; `weights` and `bookshelf` occupy two by one tiles and rotate with their gameplay footprints. The larger Library model combines a reading desk and shelf, so it provides a visible research position as well as books. Shelves on reinforced wall faces are decorative and add no service capacity. Both floor motifs remain visible when no furniture fits or no walls exist.
+
+All appearances use the existing shared walking, eating and sleeping rig. Actual `train` jobs drive alternating practice punches at a dummy or paired hand-weight lifts at a weight station, and hide carried work equipment. Actual `research` jobs drive a reading pose with a gentle page-pointing gesture and occasional blue motes. Shield, book and exercise props are visual equipment only. Training dust and research motes reuse the bounded particle pool and respect reduced-motion preference. No labels or progress indicators appear above characters or furnishings.
+
+These are editable prototype models; body proportions, decorative book marks, equipment and furnishings follow the approved visual direction without introducing equipment inventories, casting rules or combat behavior. Integrated verification is recorded in the [development record](development-plan.md).

@@ -10,6 +10,16 @@ See the [current implementation inventory](development-plan.md#current-implement
 
 The grid, adaptable room shapes and furnishings, distinctive floors and walls, fixed Hearthstone, treasure storage, shared food and bedding, doors, traps, and spell research are established parts of the design. The simplified facilities are a Workshop that attracts Engineers and makes doors and traps, a Library that attracts Runesmiths and researches spells, and a Training Room that attracts Warriors while letting all dwarfs improve their stats. Kitchen is the working name for the combined food and brewing room. Exact art treatments, production handling, defensive examples, prices, furnishing footprints, rates, and capacities remain proposals or balancing decisions.
 
+## Training Room and Library prototype rules
+
+The Training Room costs 22 gold per square and automatically fits 1×1 practice dummies and 2×1 weight stations, each with one clear working position. Every resident can train autonomously. Each level takes 12 seconds of practice and gives an 8% work-speed increase, up to five levels. Sessions are spaced by 45 seconds so dwarfs return to their other work; food and rest take priority. Training costs time only. Progress belongs to the dwarf and survives interruptions, expansion and room reclaim. Combat effects and guard duty remain future work.
+
+The Library costs 26 gold per square and fits 1×1 lecterns and 2×1 shelf/reading stations with one research position each. Only residents with the `research` capability perform research. Select a spell in **Spells → Research**; each order reserves one researcher and one accessible station. Different spells can progress simultaneously at separate stations. Pause/resume retains progress. Removing a station releases its worker without erasing research or prepared spells.
+
+The provisional spell list is Hearth Prospect (32 seconds of initial research, 12 seconds to prepare again, 20 gold per cast) and Hearth Haste (40 seconds initially, 16 seconds thereafter, 30 gold per cast). Prospect extends normal sight from the Hearth to 16 tiles, respects solid walls, and spends nothing if no new terrain can be revealed. Haste adds 35% work speed for 30 seconds and cannot stack with itself. Casting consumes a prepared spell and automatically queues its next preparation, giving the Library ongoing work. No extra currency is introduced. See [interface rules](gameplay-interface.md#training-research-and-arrival-controls) for controls.
+
+These costs, times, limits and bonuses are editable prototype values in [Game configuration](configuration.md). Both rooms use the normal layout, access, capacity, free-construction and reclaim systems. Their attraction services are `training` for Warriors and `research` for Runesmiths; arrivals also require spare shared food and bed capacity.
+
 ## Placement and capacity
 
 - The world uses a square grid. Players select tiles to excavate and designate room footprints on usable, claimed floor.
@@ -140,12 +150,12 @@ Food production, eating capacity, and bed spaces must serve existing residents a
 | Facility | Staffing and inputs | Proposed output handling | What keeps it useful |
 |---|---|---|---|
 | Workshop | Engineer working time and gold | Manufactured items support player-selected door and trap placements | New defenses, repairs, and replacement mechanisms |
-| Training Room | Any dwarf's time and an accessible training position; training cost remains open | Stat increases applied to the dwarf training | Developing the fresh population in every stronghold, across all roles |
-| Library | Runesmith working time and research capacity; research costs remain open | Progress toward spells | Spell research across the campaign; availability on later levels and use after all available research is complete still need definition |
+| Training Room | Any dwarf's time and an accessible training position; time-only prototype cost | Work-speed progression applied to the trainee | Developing the fresh population in every stronghold, across all roles |
+| Library | Research-capable resident's time and accessible research position; casting costs shared gold | Initial research and one prepared charge per spell | Preparing spells again after casting; campaign progression remains open |
 
 The Workshop combines metalworking and mechanism assembly in one facility. The Library is the single spell-research facility. Gold, labor, room capacity, and food support this simplified draft; separate equipment production, ore processing, and magical currencies are not established systems.
 
-Training is available to Miners, Engineers, Warriors, and Runesmiths. The player supplies room capacity, and dwarfs train autonomously. Training must share time with work, needs, and defense; scheduling, stat gains, and progression limits remain open. Capacity feedback should show occupied and available training positions rather than beds or Warrior-only slots.
+Training is available to Miners, Engineers, Warriors, and Runesmiths. The player supplies room capacity, and dwarfs train autonomously. Current scheduling, work bonuses and limits are recorded in the prototype rules above; defense integration remains open. Capacity feedback shows occupied and available training positions rather than beds or Warrior-only slots.
 
 The current room catalog supports the four core dwarf types. Additional rooms and more powerful dwarf types can be introduced later, after the core gameplay works.
 
@@ -191,8 +201,8 @@ The proposed wall model has one visible reinforced state. Reinforced earth is ha
 - Treatment of displaced furniture or stored contents after later room changes.
 - Exact specialist attraction thresholds and migration rate.
 - Kitchen food production, storage, serving throughput, and support across multiple rooms.
-- Spell research list, progression across levels, and Library use after available research is complete.
-- Training stat gains, costs, limits, and scheduling for every dwarf type.
+- Broader spell list and progression across levels; preparation after casting is the current continuing Library service.
+- Balance of prototype training gains, limits and scheduling, plus future combat integration.
 - Door, trap, bridge, and core repair rules.
 - Room selling, refunds, and rebuilding damaged facilities.
 

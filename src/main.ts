@@ -11,9 +11,13 @@ import {Selection} from './ui/selection';
 import {createRoomLab,labLayout,showcaseRooms} from './content/room-lab';
 import {buildRoom} from './game/rooms';
 import {queueCraft} from './game/crafting';
+import {enableRecruitment} from './game/recruitment';
+import {queueResearch} from './game/research';
+import {spellDefinitions} from './content/spells';
 let world=createWorld(prototypeLevel);
 world.freeRoomBuilding=import.meta.env.VITE_FREE_ROOM_BUILDING==='true';
 addMiners(world);
+enableRecruitment(world);
 const view=new GameScene(document.querySelector<HTMLCanvasElement>('#world')!,world);
 const controls=new CameraControls(view);
 // A browser owns Ctrl+W; protect the in-memory session at the point of leaving.
@@ -30,7 +34,7 @@ sidebar.onLab=async(open,shape,type)=>{
   if(loadingStudio)return;
   if(open&&shape==='showcase'){
     loadingStudio=true;
-    sidebar.root.querySelector('#feedback')!.textContent='Preparing the four-room showcase…';
+    sidebar.root.querySelector('#feedback')!.textContent='Preparing the six-room showcase…';
     await new Promise<void>(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
   }
   sidebar.lab=open;selection.selected=undefined;selection.start=undefined;selection.hover=undefined;
@@ -41,12 +45,13 @@ sidebar.onLab=async(open,shape,type)=>{
       buildRoom(next,r.type,Array.from({length:r.width*r.depth},(_,i)=>({x:r.x+i%r.width,z:r.z+Math.floor(i/r.width)})));
       await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
     }
-    addMiners(next);addResidents(next,'engineer');
+    addMiners(next);addResidents(next,'engineer');addResidents(next,'warrior');addResidents(next,'runesmith');
     for(const a of next.agents){a.energy=.2;a.hunger=.2;}
     for(const f of next.furnishings)if(f.service==='storage')f.stored=Math.min(f.capacity,80);else if(f.service==='cooking')f.stored=4;
     queueCraft(next,'reinforced-door');queueCraft(next,'bolt-trap');
+    for(const spell of spellDefinitions)queueResearch(next,spell.id);
     designate(next,[{x:12,z:12},{x:12,z:13}]);
-    next.tiles.find(t=>t.x===7&&t.z===17)!.loose=90;
+    next.tiles.find(t=>t.x===6&&t.z===16)!.loose=90;
   }else if(open&&shape&&shape!=='empty'){
     buildRoom(next,type??sidebar.labType,labLayout(next,shape));
     if(shape==='Adjacent rooms')buildRoom(next,'treasure',labLayout(next,'Compact').map(p=>({x:p.x+3,z:p.z-3})));
@@ -56,7 +61,7 @@ sidebar.onLab=async(open,shape,type)=>{
   loadingStudio=false;
 };
 sidebar.onFreeBuild=value=>{world.freeRoomBuilding=value;view.world.freeRoomBuilding=value;};
-sidebar.onRestart=()=>{const free=world.freeRoomBuilding;world=createWorld(prototypeLevel);world.freeRoomBuilding=free;addMiners(world);sidebar.onLab(false);};
+sidebar.onRestart=()=>{const free=world.freeRoomBuilding;world=createWorld(prototypeLevel);world.freeRoomBuilding=free;addMiners(world);enableRecruitment(world);sidebar.onLab(false);};
 let uiTime=0;
 let accumulator=0;
 view.engine.runRenderLoop(()=>{

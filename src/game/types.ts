@@ -25,12 +25,15 @@ export interface World {
   agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
   craftOrders:CraftOrder[];outputs:Record<string,number>;
   salvaged?:Record<string,number>;
+  researchOrders?:ResearchOrder[];hasteUntil?:number;
+  recruitment?:{enabled:boolean;nextAt:number;cursor:number};
 }
 export interface Furnishing extends Point {
   id:string; room:string; kind:string; model?:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
 }
 export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
-export interface Job { kind:'mine'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
+export interface ResearchOrder {id:number;spell:string;state:'queued'|'working'|'ready';progress:number;unlocked:boolean;paused?:boolean;worker?:number}
+export interface Job { kind:'mine'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'|'train'|'research'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
 export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;
@@ -38,6 +41,7 @@ export interface Resident extends Point {
   energy:number;rested:number;hunger:number;meals:number;meal:boolean;
   avoidFacility?:string;avoidUntil?:number;
   crafted:number;
+  trainingLevel?:number;trainingProgress?:number;nextTrainingAt?:number;
 }
 export const key = (p: Point) => `${p.x},${p.z}`;
 export const tileAt = (w: World, x: number, z: number): Tile | undefined =>

@@ -13,19 +13,19 @@ Last checked: **2026-09-07** against the room and character definitions and the 
 | Treasure Room | Implemented: construction, automatic chests, gold storage and hauling | Wage collection |
 | Dormitory | Implemented: automatic beds and autonomous rest | — |
 | Kitchen | Implemented: growing, cooking, brewing and autonomous meals | — |
-| Workshop | Implemented: staffed door/trap production | Normal Engineer arrivals; placing and using manufactured defenses; repairs/replenishment |
-| Training Room | Not implemented; disabled catalog placeholder | Furnishings, shared training and Warrior attraction |
-| Library | Not implemented; disabled catalog placeholder | Furnishings, research, spells and Runesmith attraction |
+| Workshop | Implemented: staffed door/trap production and Engineer attraction | Placing and using manufactured defenses; repairs/replenishment |
+| Training Room | Implemented: automatic practice stations, shared capped work-speed training and Warrior attraction | Combat progression/balance |
+| Library | Implemented: automatic research stations, spell research/preparation/casting and Runesmith attraction | Broader spell catalog and campaign research progression |
 | Guard Post | Not implemented; disabled catalog placeholder | Guard positions and defensive behavior |
 | Stone Hearth | Implemented: fixed core, arrival location and starter treasury chest | Enemy attacks, core destruction and defeat |
 | Bridge | Not implemented | Crossing rules, construction and navigation across gaps |
 
 | Dwarf type | Current status | Remaining integration |
 |---|---|---|
-| Miner | Implemented: starting crew, mining, hauling, claiming, reinforcement and wall construction; shared food/rest | Normal paid recruitment; wages; shared training and threat response |
-| Engineer | Implemented through debug spawning: Workshop crafting and shared food/rest | Normal specialist arrivals; wages; shared training; proposed repairs/replenishment |
-| Warrior | Not implemented; design/concept art only | Character definition, appearance, recruitment, training, guarding and combat |
-| Runesmith | Not implemented; design/concept art only | Character definition, appearance, recruitment and spell research |
+| Miner | Implemented: starting crew, mining, hauling, claiming, reinforcement and wall construction; shared food/rest/training | Normal paid recruitment; wages; threat response |
+| Engineer | Implemented: normal Workshop-based arrivals, crafting and shared food/rest/training; also in Debug | Wages; proposed repairs/replenishment |
+| Warrior | Implemented: normal Training Room-based arrivals, appearance and shared food/rest/training; also in Debug | Wages; guarding and combat |
+| Runesmith | Implemented: normal Library-based arrivals, appearance, research/preparation and shared food/rest/training; also in Debug | Wages; personal combat abilities and campaign progression |
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
@@ -332,3 +332,15 @@ Verified the original definition/service boundaries and corrected remaining type
 Added `content-playbook.md` with copyable room/dwarf entries, a service/model table, exact file map, automatic UI integrations, reclaim/stock/needs/access checks, and explicit instructions for truly new behaviors. Updated the existing room checklist and character documentation. Two additive-content regression tests register a renamed food room and new specialist/recipe: production, visuals selected from data, layout, reclaim, attraction, shared needs and exact crafting cost all pass without simulation changes. Full-suite/build and browser verification follows.
 Browser review verified the generated dwarf catalog by spawning an Engineer (3→4 residents), the Dwarfs configuration tab, and the complete four-room showcase after the model/appearance changes. Earlier browser checks covered a live mining edit, a constructed wall and a 12-gold room square reclaimed for 6. No browser console errors. All 45 existing/new tests passed; an additional high-speed movement regression verifies that extreme debug speed values cannot jump across a wall added to an existing route. Movement now checks the full travel segment against terrain. Final checks are recorded below.
 Final verification: all 46 tests pass and the TypeScript/Vite build passes (the existing Babylon bundle-size advisory remains). The browser showcase showed each of the four residents completing three rests and at least three meals, with continued work and no console errors. Documentation links in the new guides resolve, and `git diff --check` passes. Changes are committed in completed chunks; the local game server is left running for play.
+
+### Training Room, Library, Warrior and Runesmith — 2026-09-07
+
+Implemented the four requested additions using the room checklist and content playbook. Training and research are shared services with distinct accessible work positions, reservations, cancellation and progress independent of furnishings. All four dwarf types train autonomously; Runesmiths research selected spells and prepare them again after casting. Normal specialist arrivals now use the Hearth route, spare service positions, beds, stored food and sustainable food production/serving within connected room components. The same rules cover Engineers. Arrival testing is opt-in in the room studio.
+
+Reviewed the approved terrain and all four relevant concept sheets. Added automatic compact/large practice and research furnishings, room floor and reinforced-wall identities, Warrior and Runesmith appearances, and training/research animations. Sidebar controls expose training stats, real occupied/available work positions, arrival requirements and spell queue/pause/resume/casting. The six-room showcase uses actual construction, stocks and services. No floating world labels or meters were added.
+
+Provisional rules: Training Room 22 gold/square, Library 26; 12 seconds per training level, 45 seconds between sessions, five levels, +8% work speed each. Research unlocks Hearth Prospect and Hearth Haste; casting uses shared gold and queues shorter preparation for repeat use. Full values and behavior are recorded in rooms.md and exposed in Game configuration. Combat, guarding, paid Miner recruitment, wages, departure, defensive placement and campaign progression remain pending in the current inventory.
+
+Verification: all 60 tests pass, plus the final TypeScript/Vite build (existing Babylon bundle-size advisory). Both rooms pass the shared eight-layout matrix and focused checks for paid/free expansion, reclaim/refunds, separate components, blocked/restored access, narrow enclosed corridors, shared work squares, reservation release and retained progress. New dwarf checks cover shared meals/rest/training, capability exclusion, actual work bonuses, research pause/resume, casting costs/reuse, blocked sight and normal arrival limits. Review found and fixed food eligibility pooling across disconnected room sections.
+
+Browser review covered six-room construction, new geometry at different camera distances/angles, shared needs/training for all four types, research completion, pause/resume, Haste costing exactly 30 gold and queuing preparation, an ineffective Prospect cast spending zero, 9 training positions / 7 research positions in the showcase, and automatic arrivals stopping at 8 residents when beds filled. Browser console checks reported no errors. A longer browser run exposed a resident repeatedly clipping the first corner of a route from a fractional position. A failing movement regression now passes after adding a safe first leg through the current tile center. The exact 600-second showcase replay then kept all 8 residents eating/resting, reached training 5 for everyone and completed both spells and crafting outputs; the previously stuck Engineer completed 7 meals and 6 rests. Documentation links and git diff --check pass. The local Vite server remains available for play.

@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createWorld} from '../src/game/world.ts';
 import {addMiners,tick} from '../src/game/simulation.ts';
-import {canStand,findPath} from '../src/game/navigation.ts';
+import {canStand,findPath,clearLine} from '../src/game/navigation.ts';
 import {tileAt} from '../src/game/types.ts';
 test('opposing dwarfs pass in a one-tile corridor without clipping terrain',()=>{
  const w=createWorld({id:'crowd',name:'Crowd',width:16,height:9,hearth:{x:2,z:2},openings:[],seams:[]});w.furnishings=[];
@@ -23,4 +23,15 @@ test('fast tuning cannot jump through a wall added across an existing route',asy
   const end={x:10,z:6};a.job={kind:'idle',target:end,work:end,progress:0};a.path=[end];tileAt(w,4,6)!.terrain='rock';
   tick(w,.05);assert.equal(a.x,3);assert(canStand(w,a));
  }finally{tuning.speed=speed;def.speedMultiplier=multiplier;}
+});
+
+test('a fractional start beside a corner returns a walkable first leg and reaches its destination',()=>{
+ const w=createWorld({id:'corner-start',name:'Corner start',width:10,height:10,hearth:{x:2,z:2},openings:[[2,2,8,8]],seams:[]});w.furnishings=[];
+ for(const t of w.tiles){t.known=true;t.core=false;t.claimed=t.terrain==='floor';}tileAt(w,3,5)!.terrain='rock';
+ addMiners(w,1);const a=w.agents[0];Object.assign(a,{x:3.51,z:4.3});const end={x:5,z:5};
+ assert(canStand(w,a));assert(!clearLine(w,a,end));
+ a.path=findPath(w,a,end)!;assert(a.path.length>1);assert(clearLine(w,a,a.path[0]),'The first leg from the real position must clear the corner.');
+ a.job={kind:'idle',target:end,work:end,progress:0};
+ for(let i=0;i<200&&Math.hypot(a.x-end.x,a.z-end.z)>.1;i++){tick(w,.05);assert(canStand(w,a));}
+ assert(Math.hypot(a.x-end.x,a.z-end.z)<.1,'The resident must not repeatedly request the same obstructed route.');
 });

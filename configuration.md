@@ -8,6 +8,7 @@ Edit balance values in `src/content/tuning.ts`: each entry defines its default, 
 | Room prices, look/icon, furnishing models/footprints/capacity | `src/content/rooms.ts` |
 | Dwarf names, appearance, speed, capabilities and attraction | `src/content/characters.ts` |
 | Production input costs, durations and capabilities | `src/content/recipes.ts` |
+| Spell effects, research/preparation durations and casting gold | `src/content/spells.ts` |
 | Map sizes, openings and seams | `src/content/levels.ts` |
 | Debug layouts and example stock | `src/content/room-lab.ts`, showcase setup in `src/main.ts` |
 | Procedural art shapes, texture motifs, lighting | `src/view/` (presentation, not balance) |
@@ -17,3 +18,5 @@ The popup is grouped into tabs. Edit any number of tabs, then Apply once; invali
 Fields say whether they apply live, to new loads, new furnishings, a new stronghold, or a new page. In-flight bags and existing furniture stock/capacity are preserved. Rebuild a room studio layout after changing furnishing dimensions/capacities. Existing room payments are retained when costs change. New rooms and recipes automatically join the numeric editor through `src/content/settings.ts`.
 
 Wall construction must remain slower than excavation plus reinforcement. Camera bounds must contain the Home distance. Whole-number capacities/costs and finite ranges are validated before any mutations. Values are provisional, not final balance.
+
+The **Training & research** group tunes training duration, interval, level cap and work-speed bonus, Haste duration/bonus and Prospect radius. Specialist arrival cadence is under **Economy & world**. Spell research/preparation times and casting prices come from the spell registry and appear in the same group. Training/research progress is retained during tuning and room changes. Normal arrivals require explicit world enablement and are off by default in room layouts; **Test automatic specialist arrivals** enables the same rules there. These systems live in `src/game/progression.ts`, `research.ts` and `recruitment.ts`; work scheduling remains in `simulation.ts`.
