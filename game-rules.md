@@ -8,6 +8,8 @@ Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Levels](le
 
 This document records the agreed direction and the current working rules. Proposals and unresolved mechanics are identified explicitly. Numerical balance values are not final. The companion documents expand the inventories without committing to an implementation or a final campaign roster.
 
+The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records the agreed M1–M4 sequence and guidelines for rapid iteration and extensible content. Game saves, multiplayer, and production hardening are outside the current implementation scope. Development has not started.
+
 ## 1. Player role and core loop
 
 The player manages a dwarven expedition reclaiming a lost underground kingdom, one stronghold at a time.
@@ -120,6 +122,7 @@ Work scheduling must allow genuinely spare miners to reinforce walls. Renewable 
 - Miners extract and transport gold to Treasure Rooms.
 - Treasure Room capacity comes from the accessible storage positions that fit its size and shape.
 - Undelivered gold does not become spendable until stored.
+- Mined gold or gem yields remain on the ground at the extraction site if no Treasure Room is available. Miners collect them once reachable storage has free capacity; full or unreachable storage must not cause resources to disappear. Both sources still produce the same gold currency.
 - Building, recruitment, wages, and applicable production costs draw from stored reserves.
 
 Exact extraction rates, carrying capacity, storage density, and spending costs remain open. Startup must provide usable funds before normal hauling is established; the form of starting storage is still to be chosen.

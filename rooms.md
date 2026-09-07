@@ -115,6 +115,8 @@ Core health and whether the damaged structure can be repaired remain open.
 
 Miners extract gold from finite gold deposits and renewable gem deposits, then carry it to storage. Gems provide the same gold currency rather than a second spendable resource.
 
+If no Treasure Room is available, mined gold or gem yields remain on the ground where they were extracted. Miners collect and deliver them once reachable storage with free capacity exists. Full or unreachable storage also leaves resources waiting; undelivered resources do not disappear or become spendable.
+
 Usable storage positions within the room's size and shape limit its capacity. Gold piles should show actual stored wealth rather than appear full merely because the room was expanded. Undelivered gold is not yet part of the spendable treasury. Construction and recruitment use stored funds, while dwarfs physically visit an accessible Treasure Room to collect their wages on payday.
 
 Storage and route problems need clear feedback: no free capacity, no reachable room, or insufficient stored gold. Treasure Rooms near mines reduce hauling distance; rooms near residents make wage collection more convenient. Exact withdrawal behavior across multiple rooms remains to be specified.

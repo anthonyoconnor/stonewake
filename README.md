@@ -1,6 +1,6 @@
 # Dwarven stronghold game
 
-A level-based underground management game inspired by Dungeon Keeper. The player reclaims lost dwarven strongholds by excavating terrain, building rooms, supporting autonomous dwarfs, researching spells, and preparing defenses against the creatures below.
+A browser-playable, level-based underground management game inspired by Dungeon Keeper. The player reclaims lost dwarven strongholds by excavating terrain, building rooms, supporting autonomous dwarfs, researching spells, and preparing defenses against the creatures below.
 
 The focus is on **layout management**: where to dig, how rooms connect, how far residents travel, and which routes attackers can use to reach the base's Hearthstone.
 
@@ -9,6 +9,7 @@ This repository currently contains **game design documents, AI-generated concept
 ## Start here for a new session
 
 1. Read [Game rules](game-rules.md) for the core loop, agreed constraints, and open mechanics.
+   Read the [Development plan](development-plan.md) for the confirmed TypeScript + Babylon.js stack, iteration guidelines, and M1–M4 scope before implementation work.
 2. Read the relevant detailed documents below before changing a system. Each distinguishes agreed direction from proposals and unresolved balance.
 3. For visual work, inspect the [approved terrain reference](concept-art/terrain/resource-terrain-v2.png), then the relevant current gallery and its prompt records.
 4. Check the working tree and recent Git history before editing. Keep related design documents, gallery links, and prompt records consistent when making changes.
@@ -24,9 +25,11 @@ Current design documents define gameplay. Concept art illustrates the direction;
 | [Rooms and structures](rooms.md) | Room catalog, purposes and outputs, attraction, arbitrary footprints, automatic furnishings, capacity, floors and wall identity, doors, traps, and reinforcement |
 | [Levels and underground contents](levels.md) | Terrain, resources, discovery, hidden spaces, regions and inhabitants, attacks, candidate strongholds, and level-authoring considerations |
 | [Gameplay interface](gameplay-interface.md) | Left sidebar, minimap, rooms/defenses/spells/dwarfs panels, selection and camera controls, messages, inspection, and a clear gameplay view |
+| [Development plan](development-plan.md) | Confirmed TypeScript + Babylon.js browser stack, development guidelines, M1–M4 milestones, completion checks, and progress record; implementation has not started |
 
 ## Current scope and constraints
 
+- **Browser play and development:** use TypeScript + Babylon.js. Prioritize fast iteration and extensible characters, levels, rooms, and features. Game saves, multiplayer, and production hardening are outside the current development plan. Commit completed chunks and every milestone. M1–M4 are recorded in the [Development plan](development-plan.md); development has not started.
 - **Fresh settlements:** each level starts with a small mining crew and an established Stone Hearth around a dormant Hearthstone awakened during arrival. Other residents are recruited locally. Dwarfs arrive through the Hearthstone's runic connection. Enemies destroy the core to win; it has a fixed location and no upgrades. There is no expedition leader.
 - **One terrain layer:** excavation and construction use large square cells. Intact earth, gold-bearing terrain, and bedrock share one full height above a common walkable floor. Bedrock generally forms continuous seams with grid-shaped boundaries. Ordinary unmined earth cells can remain inside an excavation. There are no terraced mining layers or stacked playable floors.
 - **Discovery matters:** caves, ruins, passages, and inhabited chambers can already be excavated but remain hidden until breached and seen. Camera movement must not reveal concealed areas.
