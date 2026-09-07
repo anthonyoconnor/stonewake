@@ -81,3 +81,7 @@ The [dwarf concept gallery](concept-art/dwarfs/README.md) shows the current four
 - Research pacing and Library use after available research is complete.
 - How many fighters and support dwarfs answer a rally.
 - Whether individual dwarf names or personalities are included.
+
+## Implementation playbook
+
+[Adding rooms and dwarf types](content-playbook.md) gives the concrete dwarf-registration steps, supported capabilities/models, debug spawn workflow and test requirements. All dwarf definitions now join the debug catalog automatically; per-type walking speed is tunable. Soft crowd avoidance yields to path progress when necessary, while terrain and furniture remain solid. Miners can also construct planned walls, with a deliberately longer work duration.

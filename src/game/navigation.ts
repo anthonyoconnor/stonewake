@@ -9,7 +9,7 @@ export function canStand(w:World,p:Point,extra:Set<string>=new Set()) {
   for(const dx of [-r,r])for(const dz of [-r,r])if(blocked(w,{x:Math.round(p.x+dx),z:Math.round(p.z+dz)},extra))return false;
   return true;
 }
-function clearLine(w:World,a:Point,b:Point) {
+export function clearLine(w:World,a:Point,b:Point) {
   const steps=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.15);
   for(let i=1;i<=steps;i++)if(!canStand(w,{x:a.x+(b.x-a.x)*i/steps,z:a.z+(b.z-a.z)*i/steps}))return false;
   return true;

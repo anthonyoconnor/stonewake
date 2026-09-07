@@ -8,7 +8,7 @@ export function foodFacilities(w:World,table:Furnishing){
 export function produceFood(w:World,seconds:number){
   const visited=new Set<string>();
   for(const t of w.tiles){
-    if(t.room!=='kitchen'||visited.has(key(t)))continue;
+    if(!t.room||visited.has(key(t)))continue;
     for(const p of roomTiles(w,t))visited.add(key(p));
     const facilities=roomStats(w,t).usable;
     const growers=facilities.filter(f=>f.service==='growing');

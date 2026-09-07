@@ -5,8 +5,8 @@ Edit balance values in `src/content/tuning.ts`: each entry defines its default, 
 | Content | Source of truth |
 |---|---|
 | Shared balance and camera | `src/content/tuning.ts` |
-| Room prices, furnishing footprints/capacity | `src/content/rooms.ts` |
-| Dwarf names, appearance, capabilities and attraction | `src/content/characters.ts` |
+| Room prices, look/icon, furnishing models/footprints/capacity | `src/content/rooms.ts` |
+| Dwarf names, appearance, speed, capabilities and attraction | `src/content/characters.ts` |
 | Production input costs, durations and capabilities | `src/content/recipes.ts` |
 | Map sizes, openings and seams | `src/content/levels.ts` |
 | Debug layouts and example stock | `src/content/room-lab.ts`, showcase setup in `src/main.ts` |

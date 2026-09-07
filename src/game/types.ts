@@ -27,7 +27,7 @@ export interface World {
   salvaged?:Record<string,number>;
 }
 export interface Furnishing extends Point {
-  id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
+  id:string; room:string; kind:string; model?:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
 }
 export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
 export interface Job { kind:'mine'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }

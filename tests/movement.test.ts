@@ -13,3 +13,14 @@ test('opposing dwarfs pass in a one-tile corridor without clipping terrain',()=>
  for(let i=0;i<250;i++){tick(w,.05);w.agents.forEach((a,j)=>{assert(canStand(w,a));if(Math.hypot(a.x-targets[j].x,a.z-5)<.1)reached[j]=true;});closest=Math.min(closest,Math.abs(w.agents[0].x-w.agents[1].x));if(reached.every(Boolean))break;}
  assert(reached.every(Boolean));assert(closest<.34,'Brief overlap is permitted in the bottleneck');
 });
+
+test('fast tuning cannot jump through a wall added across an existing route',async()=>{
+ const {tuning}=await import('../src/content/tuning.ts');const {characterById}=await import('../src/content/characters.ts');const def=characterById('miner')!,speed=tuning.speed,multiplier=def.speedMultiplier;
+ try{
+  tuning.speed=10;def.speedMultiplier=5;
+  const w=createWorld({id:'fast',name:'Fast',width:14,height:10,hearth:{x:3,z:3},openings:[[2,6,11,6]],seams:[]});w.furnishings=[];
+  for(const t of w.tiles){t.known=true;t.core=false;t.claimed=t.terrain==='floor';}addMiners(w,1);const a=w.agents[0];a.x=3;a.z=6;
+  const end={x:10,z:6};a.job={kind:'idle',target:end,work:end,progress:0};a.path=[end];tileAt(w,4,6)!.terrain='rock';
+  tick(w,.05);assert.equal(a.x,3);assert(canStand(w,a));
+ }finally{tuning.speed=speed;def.speedMultiplier=multiplier;}
+});

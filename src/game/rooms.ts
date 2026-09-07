@@ -67,7 +67,7 @@ export function furnish(w:World) {
     if(w.furnishings.some(f=>occupied.has(key(f.access))))continue;
     const access=cells.flatMap(p=>neighbors(w,p)).find(p=>p.room===t.room&&!occupied.has(key(p))&&after.has(key(p)));
     if(!access)continue;
-    const item:Furnishing={id:`${t.room}:${key(t)}`,x:t.x,z:t.z,room:t.room,kind:variant.kind,service:variant.service,rotation,cells,access:{x:access.x,z:access.z},capacity:variant.capacity,stored:0};
+    const item:Furnishing={id:`${t.room}:${key(t)}`,x:t.x,z:t.z,room:t.room,kind:variant.kind,model:variant.model??variant.kind,service:variant.service,rotation,cells,access:{x:access.x,z:access.z},capacity:variant.capacity,stored:0};
     w.furnishings.push(item);placed=true;break;
     }if(placed)break;}
   }

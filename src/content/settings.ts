@@ -1,3 +1,4 @@
+import {characterDefinitions} from './characters.ts';
 import {tuning,tuningSpec,type TuningKey} from './tuning.ts';
 import {roomDefinitions} from './rooms.ts';
 import {recipes} from './recipes.ts';
@@ -8,8 +9,9 @@ export const settings:Setting[]=[
  ...Object.entries(tuningSpec).map(([key,s])=>({...s,id:`tuning.${key}`,defaultValue:s.value,get:()=>tuning[key as TuningKey],set:(v:number)=>{tuning[key as TuningKey]=v;}})),
  ...roomDefinitions.flatMap(r=>[
   field(`room.${r.id}.cost`,`${r.name} · gold/square`,'Rooms',r,'cost',0,10000,1,'New construction only; existing payments are retained.'),
-  ...r.furnishings.flatMap(f=>['capacity','width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · ${k}`,'Rooms',f,k,1,k==='capacity'?10000:8,1,'New furnishings only; reload a room layout to compare.')))
+  ...r.furnishings.flatMap(f=>[...(['storage','growing','cooking','brewing'].includes(f.service)?['capacity']:[]),'width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · ${k}`,'Rooms',f,k,1,k==='capacity'?10000:8,1,'New furnishings only; reload a room layout to compare.')))
  ]),
+ ...characterDefinitions.map(c=>field("dwarf."+c.id+".speedMultiplier",c.name+' · walking speed multiplier','Dwarfs',c,'speedMultiplier',.1,5,.1,'Applies live.')),
  ...recipes.flatMap(r=>[
   field(`recipe.${r.id}.cost`,`${r.name} · input gold`,'Crafting',r,'cost',0,10000,1,'Unpaid work only.'),
   field(`recipe.${r.id}.seconds`,`${r.name} · seconds`,'Crafting',r,'seconds',.1,600,.1,'Applies live.')

@@ -1,0 +1,65 @@
+# Adding rooms and dwarf types
+
+This is the implementation playbook for the browser prototype. Read the relevant room/character design first. Stable IDs are the links between content and systems; names are presentation. The examples below use existing services and models. They do not introduce a new simulation framework.
+
+## Add a room using existing services
+
+1. Add one `RoomDefinition` to `src/content/rooms.ts`. Use a unique lowercase ID, display name, minimap color, cost, description and `implemented:true`. Add a `look` with icon ID, floor color, trim color and motif. Existing motifs are `treasure`, `dormitory`, `kitchen`, `workshop`; a generic motif is also available. Reuse an icon while prototyping or add original SVG artwork in `src/ui/icons.ts`.
+2. Define each furnishing with a unique kind within the room, whole-tile width/depth, service and capacity. `model` selects reusable artwork independently of the kind: `chest`, `bed`, `mushrooms`, `stove`, `table`, `barrel`, `bench`, `anvil`, `assembly`. Omitting model uses kind. Physical access and collision follow the footprint; match the model's intended dimensions (for example a bed is 1×2). A new visual model is an additive drawing case in `src/view/scene.ts`; an unknown model shows a neutral prototype block.
+3. Use an existing service from the table below. Construction, refunds, free construction, connected components, navigation, automatic furnishing, reservations and stock handling are shared. Do not add room-name checks to these systems.
+4. Start the game. The room automatically appears in the room grid, Room Layout Studio catalog, and room configuration tab. Select it in the studio and load the example shapes. No extra sidebar registration is required.
+5. If it attracts a dwarf, reference its services in that dwarf's `attractionServices`; services are not exclusive to one room or type. Recruitment is still a debug fixture: eligibility exists, automatic specialist arrivals do not.
+6. Follow every layout case in [the room checklist](room-development-checklist.md), including paid/free construction, expansion, reclaim/refund, stored contents, blocked entrances, multiple users and walls planned beside the room. A one-tile room can have zero usable facilities.
+7. Add a focused service regression and browser playtest. Update the relevant design, development plan and this playbook if a new shared service was introduced. Run `npm test`, `npm run build`, review `git diff --check`, commit, and leave `npm run dev` running.
+
+Example room entry (copy into the exported definitions array, choose approved names/art):
+
+```ts
+{
+  id: 'small-vault', name: 'Small Vault', color: '#987641', cost: 10,
+  description: 'Compact gold storage.', implemented: true,
+  look: {icon: 'treasure', floor: '#655b49', trim: '#c3a15c', motif: 'treasure'},
+  furnishings: [{kind: 'vault-box', model: 'chest', width: 1, depth: 1,
+    capacity: 100, service: 'storage'}]
+}
+```
+
+| Existing service | Shared behavior / dependencies |
+|---|---|
+| `storage` | Gold hauling, spending, capacity, displaced contents; no worker required. |
+| `rest` | One assigned resident per physical bed; automatic needs and rest. Keep capacity 1. |
+| `growing` | Timed ingredient stock. |
+| `cooking` | Timed meals; consumes growing stock within the same edge-connected room. |
+| `brewing` | Timed ale stock in the room. |
+| `dining` | One eater per physical table; needs reachable cooking stock in the same room. Keep capacity 1. |
+| `craft` | One worker per station; queued recipe capability controls eligibility and inputs. Keep capacity 1. |
+
+Growing, cooking, brewing and dining can belong to any room ID. Food stock salvaged by reclaiming refills replacement facilities with the same service. Removed treasure stock remains loose gold for hauling. Completed crafted items live in the shared output inventory; a removed station does not erase them.
+
+## Add a dwarf using existing behaviors
+
+1. Add one `CharacterDefinition` to `src/content/characters.ts`: unique ID, name, nonempty names list, color, speed multiplier, appearance, capabilities and attraction services. `helmet` and `braids` are the current reusable models; either can be used by any type. Do not branch gameplay on the type's name or appearance.
+2. Select existing capabilities: `mine`, `haul`, `claim`, `reinforce`, `buildWall`, or a capability named by a crafting recipe. Needs and movement are shared automatically; they do not need capability flags. A specialist can have several capabilities.
+3. For production, add a recipe to `src/content/recipes.ts` with its ID, name, cost, seconds and required capability. Recipes run at reachable `craft` stations and charge once. A new recipe automatically joins the queue UI and configuration editor. Inputs/outputs currently use gold and item counts; complex input chains require a new shared implementation.
+4. Open Debug or Room Layout Studio, choose the type under **Test dwarf type**, then **Add test dwarf**. The catalog is generated from the definitions. Its attraction message uses required services and shared bed/food support. Per-type speed is in the Dwarfs configuration tab. Capabilities/names/appearance changes apply on spawn or page reload; runtime settings do not rewrite existing job capability lists.
+5. Verify movement through narrow furnished rooms, eating, sleeping, work with/without the required capability, unavailable facilities and cancelled work. Verify it does not acquire abilities merely from using a familiar model.
+6. For a genuinely new appearance, extend `src/view/residents.ts` and keep geometry/animations separate from the simulation. For a genuinely new behavior such as combat or research, add its shared service/job with explicit eligibility, reservation, cancellation and tests. A definition alone cannot implement an unimplemented mechanic.
+7. Update `characters.md`, record checks in the development plan, run focused tests plus the build, browser playtest, and commit.
+
+Example resident entry:
+
+```ts
+{
+  id: 'artisan', name: 'Artisan', names: ['Ada', 'Dagna'], color: '#738c96',
+  speedMultiplier: 1, appearance: 'braids',
+  capabilities: ['craft'], attractionServices: ['craft']
+}
+```
+
+## Verified boundaries and current limits
+
+`tests/content-extension.test.ts` temporarily registers a new room ID with renamed furnishing kinds and reused models; it verifies food production, layout, icon/floor identity, free construction, reclaiming and supply preservation. A second test registers a new dwarf and recipe capability and verifies attraction, movement, food, rest, crafting and exact cost. These definitions are removed after each check; they are not new shipped content.
+
+The audit removed the Kitchen-ID gate from food production, room-ID gates from furnishing models and summaries, and the fixed Engineer debug-spawn control. Look data is now alongside the room definition. New rooms using existing services and models need only content/art additions, not simulation refactors.
+
+There is no general public mod loader or editor. Bed/table/craft capacity means one physical user slot, not multiple simultaneous users in one model. Room service support is based on reachable facilities, not painted area. New content still needs balance and layout checks. Training, research, combat, automatic recruitment, door/trap placement and campaign progression remain unimplemented; their catalog placeholders do not provide those behaviors.

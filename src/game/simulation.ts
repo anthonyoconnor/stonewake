@@ -1,5 +1,5 @@
 import {type World,type Resident,type Job,type Point,tileAt,neighbors,key} from './types.ts';
-import {canStand,findPath} from './navigation.ts';
+import {canStand,findPath,clearLine} from './navigation.ts';
 import {reveal} from './world.ts';
 import {tuning} from '../content/tuning.ts';
 import {foodFacilities,produceFood} from './food.ts';
@@ -98,7 +98,7 @@ function releaseJob(w:World,a:Resident){
 }
 function move(w:World,a:Resident,dt:number){
   const target=a.path[0];if(!target)return true;
-  const dx=target.x-a.x,dz=target.z-a.z,d=Math.hypot(dx,dz),step=Math.min(d,tuning.speed*dt);
+  const dx=target.x-a.x,dz=target.z-a.z,d=Math.hypot(dx,dz),step=Math.min(d,tuning.speed*(characterById(a.type)?.speedMultiplier??1)*dt);
   if(d<tuning.arrivalDistance){a.path.shift();if(a.job){a.job.lastDistance=undefined;a.job.stalled=0;}return !a.path.length;}
   if(a.job){
     a.job.stalled=a.job.lastDistance!==undefined&&d>a.job.lastDistance-.002?(a.job.stalled??0)+dt:0;a.job.lastDistance=d;
@@ -115,8 +115,8 @@ function move(w:World,a:Resident,dt:number){
   const norm=Math.hypot(vx,vz)||1;let next={x:a.x+vx/norm*step,z:a.z+vz/norm*step};
   // Avoid residents when space allows, but never let avoidance stop forward progress.
   // Terrain and furniture remain solid even while residents briefly overlap.
-  if(!canStand(w,next)||Math.hypot(target.x-next.x,target.z-next.z)>d-step*.25)next={x:a.x+dx/d*step,z:a.z+dz/d*step};
-  if(!canStand(w,next)){
+  if(!clearLine(w,a,next)||Math.hypot(target.x-next.x,target.z-next.z)>d-step*.25)next={x:a.x+dx/d*step,z:a.z+dz/d*step};
+  if(!clearLine(w,a,next)){
     const path=a.job&&findPath(w,a,a.job.work);
     if(path)a.path=path;else releaseJob(w,a);
     return false;

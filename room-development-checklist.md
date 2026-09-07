@@ -41,3 +41,7 @@ Run these practical checks for every room. Use the actual furnishing footprints 
 The debug view is a rapid development aid. A resettable test layout is sufficient; saved layouts, a public editor, and persistence are outside the current plan.
 
 Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
+
+## Implementation reference
+
+Follow [Adding rooms and dwarf types](content-playbook.md) for exact source files, a copyable room definition, supported services/models and the verified additive-content tests. The room catalog and debug configuration use definitions automatically. Run reclaim/refund tests as well as placement tests: paid tiles refund part of original cost, free tiles refund zero, displaced gold and food are preserved, and active service jobs release safely.

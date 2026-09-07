@@ -1,12 +1,7 @@
+import {roomLook} from '../content/rooms';
 import {DynamicTexture,type Scene} from '@babylonjs/core';
 
 // Small generated material sheets keep visual iteration independent of an asset pipeline.
-export const roomLooks:Record<string,{floor:string;trim:string}>={
-  treasure:{floor:'#62655d',trim:'#c3a15c'},
-  dormitory:{floor:'#796b58',trim:'#baa477'},
-  kitchen:{floor:'#806d50',trim:'#d2bd8b'},
-  workshop:{floor:'#49565b',trim:'#bca067'}
-};
 export function surfaceTexture(scene:Scene,name:string){
   const tex=new DynamicTexture(`${name}-surface`,{width:256,height:256},scene,false);
   const c=tex.getContext() as CanvasRenderingContext2D;let seed=31;
@@ -30,7 +25,7 @@ export function surfaceTexture(scene:Scene,name:string){
     tex.update();return tex;
   }
   const wood=name.includes('wood'),room=name.startsWith('floor-'),paved=room||name==='hearth stone';
-  const base=room?(roomLooks[name.slice(6)]?.floor??'#656963').slice(1):'ffffff';
+  const base=room?(roomLook(name.slice(6)).floor??'#656963').slice(1):'ffffff';
   const rgb=[0,2,4].map(i=>parseInt(base.slice(i,i+2),16));
   c.fillStyle=room?'#292c2b':'#5b5851';c.fillRect(0,0,256,256);
   const size=wood?64:paved?128:64;
@@ -44,12 +39,12 @@ export function surfaceTexture(scene:Scene,name:string){
   }
   for(let i=0;i<1500;i++){c.fillStyle=i%2?'#ffffff0c':'#18161015';c.fillRect(random()*256,random()*256,1+random()*3,1+random()*2);}
   if(room){
-    const id=name.slice(6);c.strokeStyle=roomLooks[id]?.trim??'#c0aa77';c.lineWidth=5;
+    const id=name.slice(6),motif=roomLook(id).motif;c.strokeStyle=roomLook(id).trim??'#c0aa77';c.lineWidth=5;
     c.strokeRect(5,5,246,246);for(const x of [8,248])for(const y of [8,248]){c.fillStyle='#f2d799';c.fillRect(x-2,y-2,4,4);}
     c.beginPath();
-    if(id==='treasure'){c.arc(128,128,24,0,Math.PI*2);c.moveTo(128,109);c.lineTo(145,128);c.lineTo(128,147);c.lineTo(111,128);c.closePath();}
-    else if(id==='dormitory'){c.rect(110,110,36,36);c.moveTo(110,110);c.lineTo(146,146);c.moveTo(146,110);c.lineTo(110,146);}
-    else if(id==='kitchen'){c.arc(128,127,24,Math.PI,Math.PI*2);c.lineTo(104,127);c.moveTo(122,127);c.lineTo(122,149);c.lineTo(134,149);c.lineTo(134,127);}
+    if(motif==='treasure'){c.arc(128,128,24,0,Math.PI*2);c.moveTo(128,109);c.lineTo(145,128);c.lineTo(128,147);c.lineTo(111,128);c.closePath();}
+    else if(motif==='dormitory'){c.rect(110,110,36,36);c.moveTo(110,110);c.lineTo(146,146);c.moveTo(146,110);c.lineTo(110,146);}
+    else if(motif==='kitchen'){c.arc(128,127,24,Math.PI,Math.PI*2);c.lineTo(104,127);c.moveTo(122,127);c.lineTo(122,149);c.lineTo(134,149);c.lineTo(134,127);}
     else {for(let i=0;i<=16;i++){const a=i*Math.PI/8,r=i%2?21:27;const x=128+Math.cos(a)*r,y=128+Math.sin(a)*r;if(!i)c.moveTo(x,y);else c.lineTo(x,y);}c.moveTo(139,128);c.arc(128,128,11,0,Math.PI*2);}
     c.stroke();
   }

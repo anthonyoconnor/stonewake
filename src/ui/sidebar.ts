@@ -1,4 +1,6 @@
+import {characterDefinitions} from '../content/characters';
 import {tuning} from '../content/tuning';
+import {wallBuildDuration} from '../game/walls';
 import {TuningDialog} from './tuning-dialog';
 import { Matrix } from '@babylonjs/core';
 import type { GameScene } from '../view/scene';
@@ -79,7 +81,8 @@ export class Sidebar {
       production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.update();});
     }
     if(['lab','debug'].includes(category)){
-      const engineer=document.createElement('button');engineer.className='wide';engineer.textContent='Add test Engineer';engineer.onclick=()=>{addResidents(this.view.world,'engineer');engineer.disabled=true;};this.panel.append(engineer);
+            const catalog=document.createElement('div');catalog.innerHTML=`<label>Test dwarf type<select id="debug-dwarf-type">${characterDefinitions.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></label><button id="add-test-dwarf" class="wide">Add test dwarf</button><p id="debug-attraction" class="muted"></p>`;this.panel.append(catalog);
+      catalog.querySelector<HTMLButtonElement>('#add-test-dwarf')!.onclick=()=>{addResidents(this.view.world,catalog.querySelector<HTMLSelectElement>('select')!.value);this.update();};
     }
     this.updateSelection();
   }
@@ -87,9 +90,9 @@ export class Sidebar {
     const id=this.selection.tool,room=roomDefinitions.find(r=>r.id===id);
     this.root.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>{const selected=b.dataset.room===id;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
     const header=this.panel.querySelector<HTMLElement>('#selected-action');if(!header)return;
-    const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+price;
+    const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+price+':'+tuning.reclaimRatio+':'+wallBuildDuration();
     if(header.dataset.selection===signature)return;header.dataset.selection=signature;
-    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='reclaim'?'Reclaim room tiles':'Excavate')}</strong>${price===undefined?'':`<span class="room-price"><b>${price}</b> gold / square</span>`}</div>`;
+    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='reclaim'?'Reclaim room tiles':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='reclaim'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% of paid cost back</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span>`}</div>`;
   }
   drawMap(){
     const c=this.minimap.getContext('2d')!,w=this.view.world,sx=this.minimap.width/w.width,sz=this.minimap.height/w.height;
@@ -116,17 +119,19 @@ export class Sidebar {
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);
       if(p){const stats=roomStats(w,p);summary.textContent=`${stats.tiles} squares · ${stats.usable.length} usable facilities${stats.usable.some(f=>f.service==='rest')?` · ${stats.usable.filter(f=>f.assigned).length} assigned beds · ${stats.usable.filter(f=>!f.assigned).length} free beds`:` · ${stats.usable.reduce((s,f)=>s+f.capacity,0)} capacity`}${stats.tiles&&!stats.usable.length?' · Needs space or access.':''}`;}
       else summary.textContent='';
-      if(p){const s=roomStats(w,p);if(s.facilities.some(f=>f.room==='kitchen')){
+      if(p){const s=roomStats(w,p);if(s.facilities.some(f=>['growing','cooking','dining','brewing'].includes(f.service))){
         const count=(service:string)=>s.usable.filter(f=>f.service===service),food=count('cooking').reduce((sum,f)=>sum+f.stored,0);
         summary.textContent=`${s.tiles} squares · ${food} meals · ${count('dining').length} eating positions · ${count('brewing').reduce((sum,f)=>sum+f.stored,0)} ale. `;
         if(!count('growing').length||!count('cooking').length)summary.textContent+='Needs growing and cooking facilities.';else if(!count('dining').length)summary.textContent+='Needs room for a table.';else if(!food)summary.textContent+='Food is growing and cooking.';
       }}
       if(p&&tileAt(w,p.x,p.z)?.core){const chest=w.furnishings.find(f=>f.id==='hearth-treasury');summary.textContent=chest?`Hearth treasury · ${chest.stored} / ${chest.capacity} gold`:'';}
     }
+    const attraction=this.panel.querySelector('#debug-attraction');if(attraction)attraction.textContent=attractionStatus(w,this.panel.querySelector<HTMLSelectElement>('#debug-dwarf-type')!.value);
+    if(summary&&w.salvaged&&Object.values(w.salvaged).some(v=>v>0))summary.textContent+=` Retained supplies: ${Object.entries(w.salvaged).filter(([,n])=>n>0).map(([service,n])=>`${n} ${service}`).join(', ')}.`;
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
     const craftStatus=this.panel.querySelector('#craft-status');if(craftStatus){
       const start=w.agents[0]??w.tiles.find(t=>t.claimed&&!t.core&&t.terrain==='floor'),access=start?reachable(w,start):new Set<string>();
-      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft'&&access.has(key(f.access))).length} usable craft positions · ${w.agents.filter(a=>a.capabilities.includes('craft')).length} Engineers. ${attractionStatus(w,'engineer')} Recruitment uses the Debug test worker for now.`;
+      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft'&&access.has(key(f.access))).length} usable craft positions · ${w.agents.filter(a=>recipes.some(r=>a.capabilities.includes(r.capability))).length} capable workers. Add test residents through the Debug dwarf catalog.`;
       this.panel.querySelector('#craft-orders')!.innerHTML=w.craftOrders.filter(o=>o.state!=='done').map(o=>`<p>${recipeById(o.recipe)!.name} · ${o.state==='working'?Math.round(o.progress/recipeById(o.recipe)!.seconds*100)+'%':'Queued'}</p>`).join('');
       this.panel.querySelector('#craft-outputs')!.textContent=recipes.map(r=>`${w.outputs[r.id]??0} ${r.name.toLowerCase()}s`).join(' · ');
     }

@@ -24,7 +24,7 @@ Open **Debug → Room layouts** to build and inspect all implemented rooms with 
 
 **Free room construction** applies to room creation and expansion in both worlds. Set `VITE_FREE_ROOM_BUILDING=true` in an untracked `.env.local` to enable it on launch, or use the Debug toggle. Production inputs still cost gold. **Restart stronghold** starts a fresh prototype; refreshing also resets the session. After interacting with the game, closing, refreshing or navigating away asks for browser confirmation where supported, protecting against accidental Ctrl+W.
 
-Workshop production is under Rooms or Debug. Normal Engineer recruitment and placing manufactured doors/traps are pending; **Add test Engineer** verifies the staffed production service. Training Room, Library, Guard Post, Bridge, combat and campaign progression remain broader design work.
+Workshop production is under Rooms or Debug. Normal Engineer recruitment and placing manufactured doors/traps are pending; **Test dwarf type → Engineer → Add test dwarf** verifies the staffed production service. Training Room, Library, Guard Post, Bridge, combat and campaign progression remain broader design work.
 
 ## Code map
 
@@ -121,3 +121,7 @@ After development checks, leave the local Vite server running so the game remain
 Gold seams now fill miners' bags directly. A full 45-gold bag triggers a treasury trip while the remaining pillar stays intact; miners return to finish it. Gold is left at the mining site only when no reachable treasury has space. The Stone Hearth chest participates in the same delivery system as Treasure Rooms.
 
 Use **Debug → Game configuration** to tune gameplay while testing. The grouped popup pauses simulation and explains live versus new-world/new-furnishing settings. See [Configuration guide](configuration.md) for the source-of-truth map. Dwarfs use soft avoidance: short overlaps are preferable to blocked corridors, while terrain and furniture stay solid.
+
+New content follows [Adding rooms and dwarf types](content-playbook.md), alongside the [room checklist](room-development-checklist.md). The guide includes source locations, examples and supported services; the debug dwarf catalog and room choices are generated from definitions.
+
+The command bar now includes **Build walls** and **Reclaim room tiles**. Wall plans require clear claimed floor and take 24 seconds of miner work by default. Reclaim returns room floor to claimed ground and refunds 50% of its original payment; free-built tiles refund zero. Both values are in Game configuration. Removed chest gold is preserved, and food supplies are retained for replacement facilities.
