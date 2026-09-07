@@ -2,7 +2,8 @@ import {TransformNode} from '@babylonjs/core';
 import {type Point,tileAt} from '../game/types.ts';
 import type {GameScene} from '../view/scene';
 import {designate} from '../game/simulation.ts';
-import {buildRoom,roomQuote} from '../game/rooms.ts';
+import {buildRoom,roomQuote,reclaimRoom,reclaimQuote} from '../game/rooms.ts';
+import {planWalls,wallEligible,wallBuildDuration} from '../game/walls.ts';
 import {actionCursor} from './icons.ts';
 export class Selection {
   tool='dig';dragAdds?:boolean;start?:Point;hover?:Point;selected?:Point;preview:TransformNode;
@@ -14,17 +15,19 @@ export class Selection {
     this.updateCursor();
     const canvas=view.canvas;
     const pick=(e:PointerEvent)=>{const r=canvas.getBoundingClientRect();const hit=view.scene.pick(e.clientX-r.left,e.clientY-r.top,m=>!!m.metadata?.tile);const p=hit?.pickedMesh?.metadata?.tile as Point|undefined;return p&&(tileAt(view.world,p.x,p.z)?.known||this.tool!=='inspect')?p:undefined;};
-    canvas.addEventListener('pointerdown',e=>{if(e.button===2){this.setTool('dig');return;}if(e.button!==0)return;this.start=pick(e);this.dragAdds=this.start&&['dig','erase'].includes(this.tool)?this.tool==='dig'&&!tileAt(view.world,this.start.x,this.start.z)?.designated:undefined;this.hover=this.start;this.draw();canvas.setPointerCapture(e.pointerId);});
+    canvas.addEventListener('pointerdown',e=>{if(e.button===2){this.setTool('dig');return;}if(e.button!==0)return;this.start=pick(e);const tile=this.start&&tileAt(view.world,this.start.x,this.start.z);this.dragAdds=this.start&&['dig','erase','wall'].includes(this.tool)?this.tool==='wall'?!tile?.wallPlanned:this.tool==='dig'&&!tile?.designated:undefined;this.hover=this.start;this.draw();canvas.setPointerCapture(e.pointerId);});
     canvas.addEventListener('pointermove',e=>{this.hover=pick(e);this.draw();});
     canvas.addEventListener('pointerup',e=>{
       if(e.button!==0)return;const end=pick(e);
       if(this.start&&end){const points=this.rectangle(this.start,end);
         if(this.tool==='dig'&&points.length===1&&tileAt(view.world,end.x,end.z)?.known&&tileAt(view.world,end.x,end.z)?.terrain==='floor')this.inspect(end);
         else if(this.tool==='dig'||this.tool==='erase'){designate(view.world,points,this.dragAdds??false);this.onChange(this.tool==='dig'?'Excavation updated.':'Excavation marks removed.');}
+        else if(this.tool==='wall')this.onChange(planWalls(view.world,points,this.dragAdds??true));
+        else if(this.tool==='reclaim')this.onChange(reclaimRoom(view.world,points));
         else if(this.tool!=='inspect')this.onChange(buildRoom(view.world,this.tool,points));
         else this.inspect(end);
       }
-      this.start=undefined;this.dragAdds=undefined;this.draw();
+      this.start=undefined;this.dragAdds=undefined;this.draw(false);
     });
     const cancel=()=>this.setTool('dig');
     canvas.addEventListener('contextmenu',cancel);window.addEventListener('keydown',e=>{if(e.key==='Escape')cancel();});
@@ -33,14 +36,17 @@ export class Selection {
   setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=tool;this.draw();this.onChange('');}
   inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.core?`Stone Hearth · Treasury ${this.view.world.furnishings.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.furnishings.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);}
   rectangle(a:Point,b:Point){const result:Point[]=[];for(let z=Math.min(a.z,b.z);z<=Math.max(a.z,b.z);z++)for(let x=Math.min(a.x,b.x);x<=Math.max(a.x,b.x);x++)result.push({x,z});return result;}
-  draw(){
+  draw(feedback=true){
     this.updateCursor();this.preview.dispose();this.preview=new TransformNode('preview',this.view.scene);if(!this.hover||this.tool==='inspect')return;
-    const cells=this.rectangle(this.start??this.hover,this.hover),room=!['dig','erase'].includes(this.tool),quote=room?roomQuote(this.view.world,this.tool,cells):undefined;
+    const cells=this.rectangle(this.start??this.hover,this.hover),room=!['dig','erase','wall','reclaim'].includes(this.tool),quote=room?roomQuote(this.view.world,this.tool,cells):undefined;
+    const reclaim=this.tool==='reclaim'?reclaimQuote(this.view.world,cells):undefined;
     for(const p of cells){const t=tileAt(this.view.world,p.x,p.z);if(!t||(!t.known&&room))continue;
-      const valid=quote?quote.valid&&quote.tiles.includes(t):!t.known||['dirt','rock','gold','gem'].includes(t.terrain);
-      const adding=valid&&(!!quote||this.tool==='dig'&&(this.dragAdds??!t.designated));
+      const valid=reclaim?reclaim.tiles.includes(t):this.tool==='wall'?wallEligible(this.view.world,t):quote?quote.valid&&quote.tiles.includes(t):!t.known||['dirt','rock','gold','gem'].includes(t.terrain);
+      const adding=valid&&(!!quote||this.tool==='wall'&&(this.dragAdds??!t.wallPlanned)||this.tool==='dig'&&(this.dragAdds??!t.designated));
       const m=this.view.box('selection',p.x,t.known&&t.terrain==='floor'?.025:1.515,p.z,.95,.02,.95,this.view.material(adding?'preview yes':'preview no',adding?'#8ce3bb':'#e08172',false,.4),this.preview);m.material!.alpha=.42;m.isPickable=false;
     }
-    if(quote)this.onChange(`${quote.tiles.length} buildable squares · ${quote.cost} gold · ${quote.reason}`);
+    if(quote&&feedback)this.onChange(`${quote.tiles.length} buildable squares · ${quote.cost} gold · ${quote.reason}`);
+    if(reclaim&&feedback)this.onChange(`${reclaim.tiles.length} room squares · ${reclaim.refund} gold refund`);
+    if(this.tool==='wall'&&feedback)this.onChange(`Build walls on clear claimed floor · ${wallBuildDuration()} seconds each · Start on a plan to cancel it.`);
   }
 }

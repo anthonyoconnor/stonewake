@@ -58,7 +58,7 @@ export class GameScene {
     const root=this.terrainRoot;
     if(!this.tileNodes.size)this.drawHearth();
     for(const t of this.world.tiles){
-      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.reinforced,t.room,t.loose,t.designated,t.known?neighbors(this.world,t).map(n=>n.terrain+':'+n.known+':'+n.reinforced).join():null].join(':');
+      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.reinforced,t.wallPlanned,t.room,t.loose,t.designated,t.known?neighbors(this.world,t).map(n=>n.terrain+':'+n.known+':'+n.reinforced).join():null].join(':');
       const old=this.tileNodes.get(id);if(old?.signature===signature)continue;old?.node.dispose();
       const node=new TransformNode(id,this.scene);node.parent=root;this.terrainRoot=node;this.drawTile(t);this.tileNodes.set(id,{signature,node});
     }
@@ -72,6 +72,7 @@ export class GameScene {
     mesh.metadata={tile:{x:t.x,z:t.z}};
     if(t.designated){const m=this.box('dig designation',t.x,1.49,t.z,.94,.025,.94,this.material('designation','#53d8c6',false,.4));m.material!.alpha=.38;m.isPickable=false;}
     if(!t.known)return;
+    if(t.wallPlanned){const m=this.box('wall plan',t.x,.22,t.z,.88,.44,.88,this.material('wall blueprint','#86b6cc',false,.25));m.material!.alpha=.4;m.isPickable=false;}
     if(type==='gold')for(let i=0;i<9;i++){
       const m=this.box('branching gold seam',t.x-.42+i*.105,1.493,t.z+Math.sin(i*1.7+t.x)*.17,.15,.028,.04+(i%3)*.02,this.material('gold metal','#edb855',false,.2));m.rotation.y=Math.sin(i*2)*.9;m.isPickable=false;
       for(const n of neighbors(this.world,t).filter(n=>n.terrain==='floor'&&n.known)){

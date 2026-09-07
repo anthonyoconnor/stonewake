@@ -6,6 +6,7 @@ import {foodFacilities,produceFood} from './food.ts';
 import {characterById} from '../content/characters.ts';
 import {recipeById} from '../content/recipes.ts';
 import {spendGold,goldTotal} from './rooms.ts';
+import {wallEligible,wallBuildDuration} from './walls.ts';
 export const addMiners=(w:World,count=tuning.startingMiners)=>addResidents(w,'miner',count);
 export function addResidents(w:World,type:string,count=1) {
   const def=characterById(type);if(!def)return;
@@ -61,14 +62,17 @@ function choose(w:World,a:Resident){
     for(const p of nearest(a,neighbors(w,t)))if(take(w,a,'mine',t,p))return;
   }
   if(a.capabilities.includes('claim'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&t.terrain==='floor'&&!t.claimed&&!reserved(w,'claim',t))))if(take(w,a,'claim',t,t))return;
+  if(a.capabilities.includes('buildWall'))for(const t of nearest(a,w.tiles.filter(t=>t.wallPlanned&&wallEligible(w,t)&&!reserved(w,'buildWall',t)))){
+    for(const p of nearest(a,neighbors(w,t).filter(p=>!p.wallPlanned)))if(take(w,a,'buildWall',t,p))return;
+  }
   if(a.capabilities.includes('mine'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&t.designated&&t.terrain==='gem'&&!reserved(w,'mine',t)))){
     for(const p of nearest(a,neighbors(w,t)))if(take(w,a,'mine',t,p))return;
   }
   if(a.capabilities.includes('reinforce'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&!t.reinforced&&!t.designated&&['dirt','rock'].includes(t.terrain)&&!reserved(w,'reinforce',t)))){
     for(const p of nearest(a,neighbors(w,t).filter(p=>p.claimed&&p.terrain==='floor')))if(take(w,a,'reinforce',t,p))return;
   }
-  const obstructs=w.furnishings.some(f=>Math.hypot(a.x-f.access.x,a.z-f.access.z)<.6)||w.agents.some(o=>o!==a&&o.job&&(Math.hypot(a.x-o.job.work.x,a.z-o.job.work.z)<.6||o.path.length&&Math.hypot(a.x-o.x,a.z-o.z)<.85));
-  if(obstructs)for(const p of nearest(a,w.tiles.filter(t=>t.known&&t.terrain==='floor'&&!t.core&&Math.hypot(t.x-a.x,t.z-a.z)<6))){
+  const obstructs=tileAt(w,Math.round(a.x),Math.round(a.z))?.wallPlanned||w.furnishings.some(f=>Math.hypot(a.x-f.access.x,a.z-f.access.z)<.6)||w.agents.some(o=>o!==a&&o.job&&(Math.hypot(a.x-o.job.work.x,a.z-o.job.work.z)<.6||o.path.length&&Math.hypot(a.x-o.x,a.z-o.z)<.85));
+  if(obstructs)for(const p of nearest(a,w.tiles.filter(t=>t.known&&t.terrain==='floor'&&!t.core&&!t.wallPlanned&&Math.hypot(t.x-a.x,t.z-a.z)<tuning.sightRadius))){
     if(w.furnishings.some(f=>key(f.access)===key(p))||w.agents.some(o=>o!==a&&(Math.hypot(o.x-p.x,o.z-p.z)<.6||o.job&&key(o.job.work)===key(p))))continue;
     if(take(w,a,'idle',p,p))return;
   }
@@ -78,6 +82,7 @@ function valid(w:World,a:Resident){
   const j=a.job!,t=tileAt(w,j.target.x,j.target.z);if(!t)return false;
   if(j.kind==='mine')return t.known&&t.designated&&['dirt','rock','gold','gem'].includes(t.terrain);
   if(j.kind==='claim')return t.terrain==='floor'&&!t.claimed;
+  if(j.kind==='buildWall')return !!t.wallPlanned&&wallEligible(w,t)&&canStand(w,j.work);
   if(j.kind==='reinforce')return t.known&&!t.reinforced&&!t.designated&&['dirt','rock'].includes(t.terrain)&&!!tileAt(w,j.work.x,j.work.z)?.claimed&&canStand(w,j.work);
   if(j.kind==='collect')return t.loose>0;
   if(j.kind==='drop')return a.carrying>0&&canStand(w,j.work);
@@ -102,7 +107,10 @@ function move(w:World,a:Resident,dt:number){
   let vx=dx/d,vz=dz/d;
   for(const other of w.agents)if(other!==a){
     const ox=a.x-other.x,oz=a.z-other.z,dist=Math.hypot(ox,oz);
-    if(dist>0&&dist<tuning.avoidanceRadius){const weight=(1-dist/tuning.avoidanceRadius)*tuning.avoidanceStrength;vx+=ox/dist*weight;vz+=oz/dist*weight;}
+    if(dist>0&&dist<tuning.avoidanceRadius){
+      const weight=(1-dist/tuning.avoidanceRadius)*tuning.avoidanceStrength;vx+=ox/dist*weight;vz+=oz/dist*weight;
+      if(ox*dx+oz*dz<0){vx+=dz/d*weight;vz-=dx/d*weight;}
+    }
   }
   const norm=Math.hypot(vx,vz)||1;let next={x:a.x+vx/norm*step,z:a.z+vz/norm*step};
   // Avoid residents when space allows, but never let avoidance stop forward progress.
@@ -143,6 +151,13 @@ export function tick(w:World,dt:number){
       }
       else {t.terrain='floor';t.claimed=false;t.designated=false;t.reinforced=false;}
       reveal(w,j.work);w.revision++;
+    }else if(j.kind==='buildWall'){
+      a.activity='Building wall';t.wallProgress=Math.min(wallBuildDuration(),(t.wallProgress??0)+dt);
+      if(t.wallProgress<wallBuildDuration())continue;
+      if(w.agents.some(o=>Math.abs(o.x-t.x)<.5+tuning.radius&&Math.abs(o.z-t.z)<.5+tuning.radius)){
+        a.activity='Waiting for the wall site to clear';continue;
+      }
+      t.terrain='rock';t.reinforced=true;t.wallPlanned=false;t.wallProgress=0;t.designated=false;t.claimed=false;w.revision++;
     }else if(j.kind==='reinforce'){
       a.activity='Reinforcing wall';if(j.progress<tuning.reinforceSeconds)continue;t.reinforced=true;w.revision++;
     }else if(j.kind==='craft'){

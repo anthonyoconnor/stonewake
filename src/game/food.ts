@@ -14,6 +14,8 @@ export function produceFood(w:World,seconds:number){
     const growers=facilities.filter(f=>f.service==='growing');
     for(const f of facilities){
       if(!['growing','cooking','brewing'].includes(f.service))continue;
+      const recovered=Math.min(w.salvaged?.[f.service]??0,f.capacity-f.stored);
+      if(recovered>0){f.stored+=recovered;w.salvaged![f.service]-=recovered;w.revision++;}
       const duration=f.service==='growing'?tuning.growingSeconds:f.service==='cooking'?tuning.cookingSeconds:tuning.brewingSeconds;
       f.progress=Math.min(duration,(f.progress??0)+seconds);
       if(f.progress<duration||f.stored>=f.capacity)continue;

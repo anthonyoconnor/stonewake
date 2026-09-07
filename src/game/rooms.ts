@@ -1,6 +1,7 @@
 import { type World,type Point,type Furnishing,key,tileAt,neighbors } from './types.ts';
 import {roomById} from '../content/rooms.ts';
 import {blocked,reachable} from './navigation.ts';
+import {tuning} from '../content/tuning.ts';
 export const goldTotal=(w:World)=>w.allowance+w.furnishings.filter(f=>f.service==='storage').reduce((sum,f)=>sum+f.stored,0);
 export function spendGold(w:World,amount:number) {
   if(goldTotal(w)<amount)return false;
@@ -12,7 +13,7 @@ export function roomQuote(w:World,type:string,points:Point[]) {
   const def=roomById(type);const unique=[...new Map(points.map(p=>[key(p),p])).values()];
   const tiles=unique.map(p=>tileAt(w,p.x,p.z));
   if(!def?.implemented)return {valid:false,cost:0,tiles:[],reason:'This room is not available.'};
-  const fresh=tiles.filter(t=>t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room) as NonNullable<typeof tiles[number]>[];
+  const fresh=tiles.filter(t=>t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room&&!t.wallPlanned) as NonNullable<typeof tiles[number]>[];
   if(!fresh.length)return {valid:false,cost:0,tiles:[],reason:tiles.some(t=>t?.known&&t.room===type)?'This floor already belongs to the room.':'Select clear, claimed floor.'};
   const cost=w.freeRoomBuilding?0:fresh.length*def.cost;
   return {valid:cost<=goldTotal(w),cost,tiles:fresh,reason:cost>goldTotal(w)?'Not enough stored gold.':fresh.length?'Ready to build.':'This floor already belongs to the room.'};
@@ -20,8 +21,21 @@ export function roomQuote(w:World,type:string,points:Point[]) {
 export function buildRoom(w:World,type:string,points:Point[]) {
   const quote=roomQuote(w,type,points);if(!quote.valid)return quote.reason;
   if(!spendGold(w,quote.cost))return 'Not enough stored gold.';
-  for(const t of quote.tiles)t.room=type;
+  for(const t of quote.tiles){t.room=type;t.roomPaid=quote.cost/quote.tiles.length;}
   furnish(w);w.revision++;return `${roomById(type)!.name} built.`;
+}
+export function reclaimQuote(w:World,points:Point[]){
+  const tiles=[...new Map(points.map(p=>[key(p),tileAt(w,p.x,p.z)])).values()].filter(t=>t?.known&&t.room&&!t.core&&t.terrain==='floor') as World['tiles'];
+  const refund=tiles.reduce((sum,t)=>sum+Math.floor((t.roomPaid??0)*tuning.reclaimRatio),0);
+  return {tiles,refund};
+}
+export function reclaimRoom(w:World,points:Point[]){
+  const {tiles,refund}=reclaimQuote(w,points);if(!tiles.length)return 'Select room tiles to reclaim.';
+  for(const t of tiles){t.room=undefined;t.roomPaid=undefined;t.claimed=true;}
+  furnish(w);
+  // Selling grants an immediate credit even when removing the last Treasure Room.
+  w.allowance+=refund;w.spent-=refund;w.revision++;
+  return `${tiles.length} room squares reclaimed · ${refund} gold refunded.`;
 }
 export function furnish(w:World) {
   // Retain valid objects; displaced storage remains in the world rather than vanishing.
@@ -30,6 +44,7 @@ export function furnish(w:World) {
     if(f.cells.every(p=>tileAt(w,p.x,p.z)?.room===f.room&&tileAt(w,p.x,p.z)?.terrain==='floor')&&tileAt(w,f.access.x,f.access.z)?.terrain==='floor')return true;
     const floor=w.tiles.find(t=>t.terrain==='floor'&&!t.core&&t.x===f.access.x&&t.z===f.access.z)??w.tiles.find(t=>t.terrain==='floor'&&!t.core);
     if(floor&&f.stored&&f.service==='storage')floor.loose+=f.stored;
+    if(f.stored&&f.service!=='storage'){w.salvaged??={};w.salvaged[f.service]=(w.salvaged[f.service]??0)+f.stored;}
     return false;
   });
   const start=w.agents[0]??w.tiles.find(t=>t.claimed&&!t.core&&t.terrain==='floor');if(!start)return;
@@ -43,7 +58,7 @@ export function furnish(w:World) {
     for(const variant of variants){for(const rotation of variant.width===variant.depth?[0]:[0,1]){
     const width=rotation?variant.depth:variant.width,depth=rotation?variant.width:variant.depth,cells:Point[]=[];
     for(let z=0;z<depth;z++)for(let x=0;x<width;x++)cells.push({x:t.x+x,z:t.z+z});
-    if(cells.some(p=>tileAt(w,p.x,p.z)?.room!==t.room||blocked(w,p)||w.agents.some(a=>Math.hypot(a.x-p.x,a.z-p.z)<.7)))continue;
+    if(cells.some(p=>tileAt(w,p.x,p.z)?.room!==t.room||tileAt(w,p.x,p.z)?.wallPlanned||blocked(w,p)||w.agents.some(a=>Math.hypot(a.x-p.x,a.z-p.z)<.7)))continue;
     const occupied=new Set(cells.map(key));const before=reachable(w,start);
     if(cells.some(p=>!before.has(key(p))))continue;
     const after=reachable(w,start,occupied);

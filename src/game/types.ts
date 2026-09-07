@@ -5,9 +5,12 @@ export interface Tile extends Point {
   known: boolean;
   claimed: boolean;
   reinforced?: boolean;
+  wallPlanned?: boolean;
+  wallProgress?: number;
   designated: boolean;
   core: boolean;
   room?: string;
+  roomPaid?: number;
   gold: number;
   loose: number;
   source?: 'gold' | 'gem';
@@ -21,12 +24,13 @@ export interface World {
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
   agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
   craftOrders:CraftOrder[];outputs:Record<string,number>;
+  salvaged?:Record<string,number>;
 }
 export interface Furnishing extends Point {
   id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
 }
 export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
-export interface Job { kind:'mine'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
+export interface Job { kind:'mine'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
 export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;

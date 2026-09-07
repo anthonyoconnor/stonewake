@@ -30,5 +30,9 @@ test('first tile locks excavation drag action and cancelling construction restor
   selection.setTool('treasure');win.dispatchEvent(Object.assign(new Event('keydown'),{key:'Escape'}));assert.equal(selection.tool,'dig');
   emit('pointermove',7,7);assert.equal(canvas.style.cursor,actionCursor('inspect'));click(7,7);assert.deepEqual(selection.selected,{x:7,z:7});
   tileAt(world,12,10)!.known=false;tileAt(world,12,10)!.terrain='floor';emit('pointermove',12,10);assert.equal(canvas.style.cursor,actionCursor('dig'));click(12,10);assert.equal(tileAt(world,12,10)!.designated,true);assert.equal(tileAt(world,12,10)!.known,false);click(12,10);assert.equal(tileAt(world,12,10)!.designated,false);
+  selection.setTool('reclaim');click(7,7);assert.equal(tileAt(world,7,7)!.room,undefined);assert.equal(world.allowance,394);
+  selection.setTool('wall');click(7,7);assert(tileAt(world,7,7)!.wallPlanned);
+  emit('pointerdown',8,7);emit('pointerup',7,7);assert(tileAt(world,7,7)!.wallPlanned);assert(tileAt(world,8,7)!.wallPlanned);
+  emit('pointerdown',7,7);emit('pointerup',8,8);assert(!tileAt(world,7,7)!.wallPlanned);assert(!tileAt(world,8,7)!.wallPlanned);assert(!tileAt(world,8,8)!.wallPlanned);
  }finally{scene.dispose();engine.dispose();Reflect.deleteProperty(globalThis,'window');}
 });

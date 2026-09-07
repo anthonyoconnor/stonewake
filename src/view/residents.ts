@@ -57,7 +57,7 @@ export class ResidentView {
       m.tool.setEnabled(!working||!['sleep','eat','claim'].includes(j!.kind));
       if(working&&j){
         if(j.target.x!==j.work.x||j.target.z!==j.work.z)m.root.rotation.y=Math.atan2(j.target.x-j.work.x,j.target.z-j.work.z);
-        if(j.kind==='mine'||j.kind==='craft'||j.kind==='reinforce'){
+        if(j.kind==='mine'||j.kind==='craft'||j.kind==='reinforce'||j.kind==='buildWall'){
           const swing=Math.sin(j.progress*Math.PI*4);m.arm.rotation.x=-.75+swing*.95;m.leftArm.rotation.x=-.15;m.root.rotation.x=.06+Math.max(0,swing)*.1;
         }else if(j.kind==='claim'){m.root.position.y=-.09;m.root.rotation.x=.35;m.arm.rotation.x=-.9;m.leftArm.rotation.x=-.6;}
         else if(j.kind==='eat'){m.arm.rotation.x=-.9-Math.sin(j.progress*4)*.35;m.leftArm.rotation.x=-.7;}

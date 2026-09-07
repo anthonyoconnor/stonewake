@@ -1,5 +1,7 @@
 // Shared vector artwork keeps menu icons and action cursors visually identical.
 const artwork:Record<string,string>={
+ wall:'<path d="M6 20H58V53H6Z" fill="url(#steel)"/><path d="M6 31H58M6 42H58M22 20V31M44 20V31M14 31V42M36 31V42M22 42V53M44 42V53" stroke="#34434a" stroke-width="3"/><path d="M27 6H37V22H27ZM22 11H42V17H22Z" fill="url(#gold)"/>',
+ reclaim:'<path d="m7 39 24-13 25 13-25 15Z" fill="url(#steel)"/><path d="M13 17Q33 0 48 18L43 23Q33 12 19 22L25 27 7 29 8 11Z" fill="url(#gold)"/><circle cx="34" cy="40" r="6" fill="#f8d17b"/>',
  dig:'<path d="M17 49 39 17" stroke="#482e21" stroke-width="9"/><path d="M17 47 38 17" stroke="#bc8851" stroke-width="5"/><path d="M10 22Q28 3 49 17L55 30 39 21 27 20 12 29Z" fill="url(#steel)"/><path d="m29 15 7 5" stroke="#f5dd9e" stroke-width="4"/>',
  treasure:'<path d="M9 28Q9 12 24 12H40Q54 12 54 28V48H9Z" fill="url(#wood)"/><path d="M9 28H54V47H9Z" fill="#9b5f30"/><path d="M9 28H54M20 14V47M44 14V47" stroke="url(#gold)" stroke-width="5"/><path d="M28 27H37V38H28Z" fill="#ffe4a0"/><path d="M31 30H34V35H31Z" fill="#614829"/><path d="M12 43H51" stroke="#ce9e56"/>',
  dormitory:'<path d="M10 18H17V51H10ZM48 28H55V51H48Z" fill="url(#wood)"/><path d="M16 25H48V43H16Z" fill="#644a65"/><path d="M17 23H29V33H17Z" fill="#f4e5bc"/><path d="M29 26H48V40H29Z" fill="#b77978"/><path d="M16 42H49V48H16Z" fill="url(#gold)"/><path d="M33 29V38M39 29V38" stroke="#dfb190" stroke-width="2"/>',
