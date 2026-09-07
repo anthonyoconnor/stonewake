@@ -20,7 +20,7 @@ The provisional spell list is Hearth Prospect (32 seconds of initial research, 1
 
 These costs, times, limits and bonuses are editable prototype values in [Game configuration](configuration.md). Both rooms use the normal layout, access, capacity, free-construction and reclaim systems. Their attraction services are `training` for Warriors and `research` for Runesmiths; arrivals also require spare shared food and bed capacity.
 
-The [spell design document](spells.md) defines the eight approved next spell concepts, including Call to Arms, and provisional research times, preparation times, costs and targeting rules. They are planned content; the two Hearth spells above remain the current implementation.
+See the [spell design document](spells.md) for the spell catalog, balance values, targeting rules and implementation status. Keep spell catalog changes there; this document covers the Library's facilities and research service.
 
 ## Placement and capacity
 
