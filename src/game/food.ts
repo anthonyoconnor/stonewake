@@ -1,3 +1,4 @@
+import {tuning} from '../content/tuning.ts';
 import {type World,type Furnishing,key} from './types.ts';
 import {roomStats,roomTiles} from './rooms.ts';
 export function foodFacilities(w:World,table:Furnishing){
@@ -13,7 +14,7 @@ export function produceFood(w:World,seconds:number){
     const growers=facilities.filter(f=>f.service==='growing');
     for(const f of facilities){
       if(!['growing','cooking','brewing'].includes(f.service))continue;
-      const duration=f.service==='growing'?5:f.service==='cooking'?4:12;
+      const duration=f.service==='growing'?tuning.growingSeconds:f.service==='cooking'?tuning.cookingSeconds:tuning.brewingSeconds;
       f.progress=Math.min(duration,(f.progress??0)+seconds);
       if(f.progress<duration||f.stored>=f.capacity)continue;
       if(f.service==='cooking'){

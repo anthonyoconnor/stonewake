@@ -119,3 +119,5 @@ Excavated, unclaimed ground looks like bare earth with scattered stones; miners 
 After development checks, leave the local Vite server running so the game remains available to play.
 
 Gold seams now fill miners' bags directly. A full 45-gold bag triggers a treasury trip while the remaining pillar stays intact; miners return to finish it. Gold is left at the mining site only when no reachable treasury has space. The Stone Hearth chest participates in the same delivery system as Treasure Rooms.
+
+Use **Debug → Game configuration** to tune gameplay while testing. The grouped popup pauses simulation and explains live versus new-world/new-furnishing settings. See [Configuration guide](configuration.md) for the source-of-truth map. Dwarfs use soft avoidance: short overlaps are preferable to blocked corridors, while terrain and furniture stay solid.

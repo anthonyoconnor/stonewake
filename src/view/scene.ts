@@ -1,3 +1,4 @@
+import {tuning} from '../content/tuning';
 import { Engine, Scene, ArcRotateCamera, Vector3, Color3, Color4, HemisphericLight, DirectionalLight, PointLight, MeshBuilder, StandardMaterial, DynamicTexture, TransformNode, GlowLayer, Mesh } from '@babylonjs/core';
 import { type World, type Tile,neighbors } from '../game/types';
 import {roomById} from '../content/rooms';
@@ -15,7 +16,7 @@ export class GameScene {
     this.engine=new Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true});
     this.engine.setHardwareScalingLevel(Math.max(1,window.devicePixelRatio/1.5));
     this.scene=new Scene(this.engine);this.scene.clearColor=Color4.FromHexString('#101821ff');
-    this.camera=new ArcRotateCamera('camera',-Math.PI/2.4,0.76,25,new Vector3(world.hearth.x,0,world.hearth.z),this.scene);
+    this.camera=new ArcRotateCamera('camera',tuning.initialAngle,tuning.initialTilt,tuning.initialZoom,new Vector3(world.hearth.x,0,world.hearth.z),this.scene);
     this.camera.minZ=0.1;this.camera.maxZ=150;
     const sky=new HemisphericLight('cavern light',new Vector3(0.1,1,0.3),this.scene);sky.intensity=.52;sky.groundColor=Color3.FromHexString('#252b39');
     const sun=new DirectionalLight('warm rim',new Vector3(-0.5,-1,0.7),this.scene);sun.intensity=.88;sun.diffuse=Color3.FromHexString('#ffe2b4');

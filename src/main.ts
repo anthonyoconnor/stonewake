@@ -1,3 +1,4 @@
+import {tuning} from './content/tuning';
 import './style.css';
 import { prototypeLevel } from './content/levels';
 import { createWorld } from './game/world';
@@ -50,7 +51,7 @@ sidebar.onLab=async(open,shape,type)=>{
     buildRoom(next,type??sidebar.labType,labLayout(next,shape));
     if(shape==='Adjacent rooms')buildRoom(next,'treasure',labLayout(next,'Compact').map(p=>({x:p.x+3,z:p.z-3})));
   }
-  residents.reset();view.setWorld(next);controls.center(open?12:world.hearth.x,open?12:world.hearth.z);view.camera.radius=open?26:23;
+  residents.reset();view.setWorld(next);controls.center(open?12:world.hearth.x,open?12:world.hearth.z);view.camera.radius=open?26:tuning.homeZoom;
   selection.setTool(open?(type??sidebar.labType):'dig');sidebar.show(open?'lab':'rooms');
   loadingStudio=false;
 };
@@ -59,7 +60,7 @@ sidebar.onRestart=()=>{const free=world.freeRoomBuilding;world=createWorld(proto
 let uiTime=0;
 let accumulator=0;
 view.engine.runRenderLoop(()=>{
-  const dt=Math.min(.25,view.engine.getDeltaTime()/1000);controls.update(Math.min(.05,dt));
-  if(!document.hidden){accumulator+=dt;while(accumulator>=.05){tick(view.world,.05);accumulator-=.05;}}
+  const dt=Math.min(.25,view.engine.getDeltaTime()/1000);if(!sidebar.tuningDialog.open)controls.update(Math.min(.05,dt));else {controls.keys.clear();controls.pointer=undefined;}
+  if(!document.hidden&&!sidebar.tuningDialog.open){accumulator+=dt;while(accumulator>=.05){tick(view.world,.05);accumulator-=.05;}}
   residents.update();view.render();uiTime+=dt;if(uiTime>.15){sidebar.update();uiTime=0;}
 });

@@ -1,0 +1,15 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {createWorld} from '../src/game/world.ts';
+import {addMiners,tick} from '../src/game/simulation.ts';
+import {canStand,findPath} from '../src/game/navigation.ts';
+import {tileAt} from '../src/game/types.ts';
+test('opposing dwarfs pass in a one-tile corridor without clipping terrain',()=>{
+ const w=createWorld({id:'crowd',name:'Crowd',width:16,height:9,hearth:{x:2,z:2},openings:[],seams:[]});w.furnishings=[];
+ for(const t of w.tiles){t.terrain='bedrock';t.known=true;t.core=false;t.claimed=false;}
+ for(let x=2;x<=13;x++)Object.assign(tileAt(w,x,5)!,{terrain:'floor',claimed:true});addMiners(w,2);
+ const targets=[{x:12,z:5},{x:3,z:5}];w.agents.forEach((a,i)=>{a.x=i?12:3;a.z=5;a.job={kind:'idle',target:targets[i],work:targets[i],progress:0};a.path=findPath(w,a,targets[i])!;});
+ const reached=[false,false];let closest=Infinity;
+ for(let i=0;i<250;i++){tick(w,.05);w.agents.forEach((a,j)=>{assert(canStand(w,a));if(Math.hypot(a.x-targets[j].x,a.z-5)<.1)reached[j]=true;});closest=Math.min(closest,Math.abs(w.agents[0].x-w.agents[1].x));if(reached.every(Boolean))break;}
+ assert(reached.every(Boolean));assert(closest<.34,'Brief overlap is permitted in the bottleneck');
+});

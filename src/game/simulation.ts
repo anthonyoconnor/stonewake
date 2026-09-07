@@ -6,7 +6,7 @@ import {foodFacilities,produceFood} from './food.ts';
 import {characterById} from '../content/characters.ts';
 import {recipeById} from '../content/recipes.ts';
 import {spendGold,goldTotal} from './rooms.ts';
-export const addMiners=(w:World,count=3)=>addResidents(w,'miner',count);
+export const addMiners=(w:World,count=tuning.startingMiners)=>addResidents(w,'miner',count);
 export function addResidents(w:World,type:string,count=1) {
   const def=characterById(type);if(!def)return;
   const positions=w.tiles.filter(t=>t.claimed&&canStand(w,t)&&!w.agents.some(a=>Math.hypot(a.x-t.x,a.z-t.z)<.6)).sort((a,b)=>Math.hypot(a.x-w.hearth.x,a.z-w.hearth.z)-Math.hypot(b.x-w.hearth.x,b.z-w.hearth.z));
@@ -30,13 +30,13 @@ function choose(w:World,a:Resident){
     for(const f of storage(w,a))if(take(w,a,'deliver',f,f.access,f.id))return;
     const origin=a.cargoOrigin&&tileAt(w,a.cargoOrigin.x,a.cargoOrigin.z);
     if(origin)for(const p of origin.terrain==='floor'?[origin]:nearest(a,neighbors(w,origin)))if(take(w,a,'drop',origin,p))return;
-    a.activity='Waiting for a route to storage or the mining site';a.retry=.8;return;
+    a.activity='Waiting for a route to storage or the mining site';a.retry=tuning.retrySeconds;return;
   }
-  if(a.energy<.3){
+  if(a.energy<tuning.restThreshold){
     const beds=nearest(a,w.furnishings.filter(f=>f.service==='rest'&&(!f.assigned||f.assigned===a.id))).sort((f,g)=>Number(g.assigned===a.id)-Number(f.assigned===a.id));
     for(const f of beds)if(take(w,a,'sleep',f,f.access,f.id)){f.assigned=a.id;return;}
   }
-  if(a.hunger<.3||a.meal)for(const table of nearest(a,w.furnishings.filter(f=>f.service==='dining'&&!(a.avoidFacility===f.id&&(a.avoidUntil??0)>w.elapsed)&&!w.agents.some(o=>o!==a&&o.job&&(o.job.furnishing===f.id||key(o.job.work)===key(f.access)))))){
+  if(a.hunger<tuning.hungerThreshold||a.meal)for(const table of nearest(a,w.furnishings.filter(f=>f.service==='dining'&&!(a.avoidFacility===f.id&&(a.avoidUntil??0)>w.elapsed)&&!w.agents.some(o=>o!==a&&o.job&&(o.job.furnishing===f.id||key(o.job.work)===key(f.access)))))){
     const food=foodFacilities(w,table).find(f=>f.service==='cooking'&&f.stored>0);
     if((a.meal||food)&&take(w,a,'eat',table,table.access,table.id)){if(!a.meal){food!.stored--;a.meal=true;w.revision++;}return;}
   }
@@ -72,7 +72,7 @@ function choose(w:World,a:Resident){
     if(w.furnishings.some(f=>key(f.access)===key(p))||w.agents.some(o=>o!==a&&(Math.hypot(o.x-p.x,o.z-p.z)<.6||o.job&&key(o.job.work)===key(p))))continue;
     if(take(w,a,'idle',p,p))return;
   }
-  a.activity=a.hunger<.3?'Needs food and an accessible table':a.energy<.3?'Needs an accessible bed':'Awaiting a designation';a.retry=.8;
+  a.activity=a.hunger<tuning.hungerThreshold?'Needs food and an accessible table':a.energy<tuning.restThreshold?'Needs an accessible bed':'Awaiting a designation';a.retry=tuning.retrySeconds;
 }
 function valid(w:World,a:Resident){
   const j=a.job!,t=tileAt(w,j.target.x,j.target.z);if(!t)return false;
@@ -94,19 +94,24 @@ function releaseJob(w:World,a:Resident){
 function move(w:World,a:Resident,dt:number){
   const target=a.path[0];if(!target)return true;
   const dx=target.x-a.x,dz=target.z-a.z,d=Math.hypot(dx,dz),step=Math.min(d,tuning.speed*dt);
-  if(d<.055){a.path.shift();if(a.job){a.job.lastDistance=undefined;a.job.stalled=0;}return !a.path.length;}
+  if(d<tuning.arrivalDistance){a.path.shift();if(a.job){a.job.lastDistance=undefined;a.job.stalled=0;}return !a.path.length;}
   if(a.job){
     a.job.stalled=a.job.lastDistance!==undefined&&d>a.job.lastDistance-.002?(a.job.stalled??0)+dt:0;a.job.lastDistance=d;
-    if((a.job.stalled??0)>1.5){a.avoidFacility=a.job.furnishing;a.avoidUntil=w.elapsed+8;releaseJob(w,a);a.retry=.25;return false;}
+    if((a.job.stalled??0)>tuning.stallSeconds){a.avoidFacility=a.job.furnishing;a.avoidUntil=w.elapsed+tuning.facilityRetry;releaseJob(w,a);a.retry=.25;return false;}
   }
   let vx=dx/d,vz=dz/d;
-  for(const other of w.agents)if(other!==a){const ox=a.x-other.x,oz=a.z-other.z,dist=Math.hypot(ox,oz);if(dist>0&&dist<.55){vx+=ox/dist*(.55-dist)*2;vz+=oz/dist*(.55-dist)*2;}}
+  for(const other of w.agents)if(other!==a){
+    const ox=a.x-other.x,oz=a.z-other.z,dist=Math.hypot(ox,oz);
+    if(dist>0&&dist<tuning.avoidanceRadius){const weight=(1-dist/tuning.avoidanceRadius)*tuning.avoidanceStrength;vx+=ox/dist*weight;vz+=oz/dist*weight;}
+  }
   const norm=Math.hypot(vx,vz)||1;let next={x:a.x+vx/norm*step,z:a.z+vz/norm*step};
-  const clear=(p:Point)=>canStand(w,p)&&!w.agents.some(o=>o!==a&&Math.hypot(o.x-p.x,o.z-p.z)<tuning.radius*1.7);
-  if(!clear(next)){
-    const side=a.id%2?1:-1;
-    next={x:a.x-vz/norm*step*side,z:a.z+vx/norm*step*side};
-    if(!clear(next)){a.retry+=dt;if(a.retry>2){releaseJob(w,a);a.retry=.25;}return false;}
+  // Avoid residents when space allows, but never let avoidance stop forward progress.
+  // Terrain and furniture remain solid even while residents briefly overlap.
+  if(!canStand(w,next)||Math.hypot(target.x-next.x,target.z-next.z)>d-step*.25)next={x:a.x+dx/d*step,z:a.z+dz/d*step};
+  if(!canStand(w,next)){
+    const path=a.job&&findPath(w,a,a.job.work);
+    if(path)a.path=path;else releaseJob(w,a);
+    return false;
   }
   a.x=next.x;a.z=next.z;a.facing=Math.atan2(vx,vz);a.retry=0;a.activity=a.carrying?'Carrying gold':'Walking to work';return false;
 }
@@ -115,7 +120,7 @@ export function tick(w:World,dt:number){
   if(Math.floor(w.elapsed-dt)!==Math.floor(w.elapsed))produceFood(w,1);
   for(const a of w.agents){
     if(a.job?.kind!=='sleep')a.energy=Math.max(0,a.energy-dt/tuning.restInterval);
-    if(a.job?.kind!=='eat')a.hunger=Math.max(0,a.hunger-dt/85);
+    if(a.job?.kind!=='eat')a.hunger=Math.max(0,a.hunger-dt/tuning.hungerInterval);
     if(a.job&&!valid(w,a))releaseJob(w,a);
     if(!a.job){a.retry-=dt;if(a.retry<=0)choose(w,a);}
     if(!a.job)continue;
@@ -126,7 +131,7 @@ export function tick(w:World,dt:number){
       if(j.progress<duration)continue;
       if(t.terrain==='gem'){t.loose+=tuning.gemYield;t.source='gem';}
       else if(t.terrain==='gold'){
-        const amount=Math.min(t.gold,tuning.goldYield,tuning.carry-a.carrying);t.gold-=amount;t.source='gold';
+        const amount=Math.min(t.gold,tuning.goldYield,Math.max(0,tuning.carry-a.carrying));t.gold-=amount;t.source='gold';
         if(availableStorage(w,a)){
           a.carrying+=amount;a.cargoOrigin={...j.target};
         }else {t.loose+=amount+a.carrying;a.carrying=0;a.cargoOrigin=undefined;}
@@ -147,14 +152,14 @@ export function tick(w:World,dt:number){
       order.state='done';order.worker=undefined;w.outputs[recipe.id]=(w.outputs[recipe.id]??0)+1;a.crafted++;
       const f=w.furnishings.find(f=>f.id===j.furnishing)!;f.output=recipe.id;f.outputCount=(f.outputCount??0)+1;w.revision++;
     }else if(j.kind==='eat'){
-      a.activity='Eating';if(j.progress<4)continue;a.hunger=1;a.meals++;a.meal=false;
+      a.activity='Eating';if(j.progress<tuning.eatSeconds)continue;a.hunger=1;a.meals++;a.meal=false;
       const table=w.furnishings.find(f=>f.id===j.furnishing)!;const ale=foodFacilities(w,table).find(f=>f.service==='brewing'&&f.stored>0);if(ale)ale.stored--;w.revision++;
     }else if(j.kind==='sleep'){
       a.activity='Sleeping';a.energy=Math.min(1,a.energy+dt/tuning.restSeconds);if(a.energy<.999)continue;a.rested++;
     }else if(j.kind==='claim'){
       a.activity='Claiming floor';if(j.progress<tuning.claimSeconds)continue;t.claimed=true;reveal(w,t);w.revision++;
     }else if(j.kind==='collect'){
-      const f=availableStorage(w,a);if(f){const amount=Math.min(t.loose,tuning.carry-a.carrying,f.capacity-f.stored);t.loose-=amount;a.carrying+=amount;a.cargoOrigin={...j.target};w.revision++;}
+      const f=availableStorage(w,a);if(f){const amount=Math.min(t.loose,Math.max(0,tuning.carry-a.carrying),f.capacity-f.stored);t.loose-=amount;a.carrying+=amount;a.cargoOrigin={...j.target};w.revision++;}
     }else if(j.kind==='deliver'){
       const f=w.furnishings.find(f=>f.id===j.furnishing)!;const amount=Math.min(a.carrying,f.capacity-f.stored);f.stored+=amount;a.carrying-=amount;if(!a.carrying)a.cargoOrigin=undefined;w.revision++;
     }else if(j.kind==='drop'){
@@ -163,5 +168,5 @@ export function tick(w:World,dt:number){
     }
     a.job=undefined;a.path=[];
   }
-  if(Math.floor((w.elapsed-dt)*2)!==Math.floor(w.elapsed*2))for(const a of w.agents)reveal(w,a,6);
+  if(Math.floor((w.elapsed-dt)*2)!==Math.floor(w.elapsed*2))for(const a of w.agents)reveal(w,a,tuning.sightRadius);
 }
