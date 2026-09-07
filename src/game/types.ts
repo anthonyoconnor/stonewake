@@ -18,6 +18,15 @@ export interface LevelDefinition {
 }
 export interface World {
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
+  agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number;
+}
+export interface Furnishing extends Point {
+  id:string; room:string; kind:string; cells:Point[]; access:Point; capacity:number; stored:number;
+}
+export interface Job { kind:'mine'|'claim'|'collect'|'deliver'|'idle'; target:Point; work:Point; progress:number; furnishing?:string }
+export interface Resident extends Point {
+  id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
+  activity:string; facing:number; retry:number;
 }
 export const key = (p: Point) => `${p.x},${p.z}`;
 export const tileAt = (w: World, x: number, z: number): Tile | undefined =>

@@ -1,9 +1,11 @@
 import { Engine, Scene, ArcRotateCamera, Vector3, Color3, Color4, HemisphericLight, DirectionalLight, PointLight, MeshBuilder, StandardMaterial, DynamicTexture, TransformNode, type Mesh } from '@babylonjs/core';
 import { type World, type Tile } from '../game/types';
+import {roomById} from '../content/rooms';
 const colors: Record<string,string> = {dirt:'#69523c',rock:'#777a77',bedrock:'#35434c',gold:'#ae7a31',gem:'#354661',floor:'#756550',unknown:'#151d25'};
 export class GameScene {
   engine: Engine; scene: Scene; camera: ArcRotateCamera;
   materials = new Map<string,StandardMaterial>(); terrainRoot: TransformNode; lastRevision=-1;
+  tileNodes=new Map<string,{signature:string;node:TransformNode}>(); furnitureRoot?:TransformNode;
   constructor(public canvas:HTMLCanvasElement,public world:World) {
     this.engine=new Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true});
     this.engine.setHardwareScalingLevel(Math.max(1,window.devicePixelRatio/1.5));
@@ -41,13 +43,20 @@ export class GameScene {
   }
   refresh() {
     if(this.lastRevision===this.world.revision)return;
-    this.lastRevision=this.world.revision;this.terrainRoot.dispose();this.terrainRoot=new TransformNode('terrain',this.scene);
-    for(const t of this.world.tiles)this.drawTile(t);
-    this.drawHearth();
+    this.lastRevision=this.world.revision;
+    const root=this.terrainRoot;
+    if(!this.tileNodes.size)this.drawHearth();
+    for(const t of this.world.tiles){
+      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.room,t.loose,t.designated].join(':');
+      const old=this.tileNodes.get(id);if(old?.signature===signature)continue;old?.node.dispose();
+      const node=new TransformNode(id,this.scene);node.parent=root;this.terrainRoot=node;this.drawTile(t);this.tileNodes.set(id,{signature,node});
+    }
+    this.terrainRoot=root;this.drawFurniture();
   }
   drawTile(t:Tile) {
     const type=t.known?t.terrain:'unknown',solid=type!=='floor';
-    const mesh=this.box(`tile-${t.x}-${t.z}`,t.x,solid?.68:-.12,t.z,.997,solid?1.6:.24,.997,this.material(type,colors[type],t.known));
+    const room=t.room?roomById(t.room):undefined;
+    const mesh=this.box(`tile-${t.x}-${t.z}`,t.x,solid?.68:-.12,t.z,.997,solid?1.6:.24,.997,this.material(room?`floor-${room.id}`:type,room?.color??colors[type],t.known));
     mesh.metadata={tile:{x:t.x,z:t.z}};
     if(!t.known)return;
     if(type==='gold')for(let i=0;i<4;i++) {
@@ -56,6 +65,20 @@ export class GameScene {
     }
     if(type==='gem')for(let i=0;i<5;i++)this.crystal(t.x+Math.sin(i*4)*.27,1.55,t.z+Math.cos(i*4)*.27,.45+i%2*.2,i%2?'#65c4dd':'#b68be9');
     if(type==='floor'&&t.claimed&&!t.core){const m=this.box('claim inset',t.x,-.004,t.z,.1,.012,.1,this.material('claim','#a69874'));m.isPickable=false;}
+    if(t.designated){const m=this.box('dig designation',t.x,1.49,t.z,.94,.025,.94,this.material('designation','#53d8c6',false,.4));m.material!.alpha=.38;m.isPickable=false;}
+    if(room)for(const dx of [-.46,.46]){const m=this.box('room inlay',t.x+dx,.007,t.z,.025,.015,.94,this.material(`inlay-${room.id}`,'#d2bc83'));m.isPickable=false;}
+    if(t.loose)for(let i=0;i<Math.min(8,Math.ceil(t.loose/10));i++){
+      const p=MeshBuilder.CreateSphere('loose riches',{diameter:.1+(i%2)*.035,segments:4},this.scene);p.position.set(t.x+Math.sin(i*2)*.18,.07+Math.floor(i/4)*.06,t.z+Math.cos(i*2)*.17-(solid?.65:0));p.material=this.material(t.source==='gem'?'loose gem':'gold metal',t.source==='gem'?'#a38ae3':'#ffbf4d',false,.25);p.parent=this.terrainRoot;p.isPickable=false;
+    }
+  }
+  drawFurniture(){
+    this.furnitureRoot?.dispose();this.furnitureRoot=new TransformNode('furnishings',this.scene);
+    for(const f of this.world.furnishings){
+      const wood=this.material('chest wood','#60442e',true),metal=this.material('chest iron','#a28a5f');
+      this.box('chest',f.x,.23,f.z,.68,.44,.65,wood,this.furnitureRoot).isPickable=false;
+      for(const dx of [-.23,.23])this.box('chest band',f.x+dx,.46,f.z,.05,.035,.66,metal,this.furnitureRoot).isPickable=false;
+      if(f.stored>0)for(let i=0;i<Math.min(7,Math.ceil(f.stored/20));i++)this.box('stored gold',f.x-.2+i%3*.18,.51+Math.floor(i/3)*.075,f.z-.12+Math.floor(i/3)*.12,.15,.07,.1,this.material('gold metal','#ffbf4d'),this.furnitureRoot).isPickable=false;
+    }
   }
   drawHearth() {
     const {x,z}=this.world.hearth;
