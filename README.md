@@ -6,6 +6,10 @@ The focus is on **layout management**: where to dig, how rooms connect, how far 
 
 This repository contains a **TypeScript + Babylon.js browser prototype**, game design documents, AI-generated concept art, and image-generation prompts. Implementation progress is recorded in the development plan. Stonewake is a provisional prototype title.
 
+## What is implemented?
+
+The [current implementation inventory](development-plan.md#current-implementation-status) lists every planned room, structure and dwarf, its availability, and remaining integrations. **M1–M9 completion covers the prototype milestones, not the full design.** Use that inventory for what is added or missing; the catalogs below describe the intended game.
+
 ## Run locally
 
 Use Node.js 24 or later. Run `npm install`, then `npm run dev` and open the local URL printed by Vite. Code and content changes reload automatically. `npm test` runs focused simulation checks, and `npm run build` checks TypeScript and creates a browser build. No account, server backend, or save system is used.

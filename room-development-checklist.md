@@ -19,6 +19,8 @@ The current [room rules](rooms.md) define gameplay. The [room gallery](concept-a
 - [ ] **Add the room to the Room Debug View.** Make its implemented state clear and allow creation/expansion with the same grid controls and runtime systems as normal play. Verify the layouts below and inspect from several rotations and zoom levels.
 - [ ] **Verify, document, and commit.** Playtest the room's function in the current game and debug view, check relevant failure cases, and confirm existing room behavior still works after shared changes. Record checks, provisional values, and any pending integrations in the development plan; keep related docs and art links current. Commit completed chunks and the milestone.
 
+- [ ] **Update the current inventory.** Update the [current implementation status](development-plan.md#current-implementation-status) in the same completed chunk, including related dwarf availability and remaining integrations. Distinguish normal play, debug-only access, placeholders and design-only content; a milestone completion entry does not replace this update.
+
 ## Layout checks
 
 Run these practical checks for every room. Use the actual furnishing footprints to choose dimensions; do not impose universal room sizes or square-room bonuses.

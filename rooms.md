@@ -2,7 +2,11 @@
 
 Working design for the dwarven stronghold game. Companion documents: [Characters](characters.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
-## Status
+## Implementation status
+
+See the [current implementation inventory](development-plan.md#current-implementation-status) for all rooms and structures, including missing content and partial integrations. The catalog and rules below describe the intended design, not a list of completed features. Update the inventory whenever a room or its services change.
+
+## Design status
 
 The grid, adaptable room shapes and furnishings, distinctive floors and walls, fixed Hearthstone, treasure storage, shared food and bedding, doors, traps, and spell research are established parts of the design. The simplified facilities are a Workshop that attracts Engineers and makes doors and traps, a Library that attracts Runesmiths and researches spells, and a Training Room that attracts Warriors while letting all dwarfs improve their stats. Kitchen is the working name for the combined food and brewing room. Exact art treatments, production handling, defensive examples, prices, furnishing footprints, rates, and capacities remain proposals or balancing decisions.
 

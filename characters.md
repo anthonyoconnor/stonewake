@@ -2,7 +2,11 @@
 
 Working design for the dwarven stronghold game. Companion documents: [Rooms](rooms.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
-## Status
+## Implementation status
+
+See the [current implementation inventory](development-plan.md#current-implementation-status) for all dwarf types, including debug-only availability and missing recruitment/work systems. The roster and rules below describe the intended design, not a list of completed features. Update the inventory whenever a dwarf or its supporting systems change.
+
+## Design status
 
 The recruitment, miner pricing, needs, autonomous control, merged specialist roles, and shared training rules below reflect the agreed design. Core gameplay uses four dwarf types: Miner, Engineer, Warrior, and Runesmith. Engineer is the working name for the combined workshop crafter, whose character design is female; Runesmith is the working name for the combined spell researcher. Relative wages, standard bed and meal quantities, and detailed job behaviors remain proposals. Exact costs, consumption rates, capacities, and combat statistics remain unbalanced.
 

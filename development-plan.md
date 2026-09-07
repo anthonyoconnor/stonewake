@@ -4,6 +4,39 @@ Status: **M1–M9 complete, including M5.1.** TypeScript and Babylon.js are conf
 
 Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [Rooms](rooms.md), [Levels](levels.md), and [Gameplay interface](gameplay-interface.md). This plan defines development order; systems outside the listed milestones remain part of the broader design where documented, without becoming requirements for these milestones. Every new room follows the [room development checklist](room-development-checklist.md).
 
+## Current implementation status
+
+Last checked: **2026-09-07** against the room and character definitions and the verified development record. This is the canonical content-status inventory; milestone completion above does **not** mean the full game design is implemented.
+
+| Room or structure | Current status | Remaining integration |
+|---|---|---|
+| Treasure Room | Implemented: construction, automatic chests, gold storage and hauling | Wage collection |
+| Dormitory | Implemented: automatic beds and autonomous rest | — |
+| Kitchen | Implemented: growing, cooking, brewing and autonomous meals | — |
+| Workshop | Implemented: staffed door/trap production | Normal Engineer arrivals; placing and using manufactured defenses; repairs/replenishment |
+| Training Room | Not implemented; disabled catalog placeholder | Furnishings, shared training and Warrior attraction |
+| Library | Not implemented; disabled catalog placeholder | Furnishings, research, spells and Runesmith attraction |
+| Guard Post | Not implemented; disabled catalog placeholder | Guard positions and defensive behavior |
+| Stone Hearth | Implemented: fixed core, arrival location and starter treasury chest | Enemy attacks, core destruction and defeat |
+| Bridge | Not implemented | Crossing rules, construction and navigation across gaps |
+
+| Dwarf type | Current status | Remaining integration |
+|---|---|---|
+| Miner | Implemented: starting crew, mining, hauling, claiming, reinforcement and wall construction; shared food/rest | Normal paid recruitment; wages; shared training and threat response |
+| Engineer | Implemented through debug spawning: Workshop crafting and shared food/rest | Normal specialist arrivals; wages; shared training; proposed repairs/replenishment |
+| Warrior | Not implemented; design/concept art only | Character definition, appearance, recruitment, training, guarding and combat |
+| Runesmith | Not implemented; design/concept art only | Character definition, appearance, recruitment and spell research |
+
+**Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
+
+Other broad systems still pending include combat/enemies, rallying, dissatisfaction/departure and campaign progression. Detailed behavior and unresolved choices remain in the design documents; completed checks remain in the development record below.
+
+### Keeping status current
+
+Update this inventory in the same completed chunk as any room, structure, dwarf or related gameplay integration. Distinguish usable gameplay, debug-only access, disabled placeholders, and design-only content; list remaining dependencies even when its milestone is complete. Verify status against definitions and actual behavior/checks, not artwork or a registered name. Keep README and the relevant design document linked here, and update any affected local status wording. Historical development entries record what happened; they do not replace this current inventory.
+
+Documentation correction — 2026-09-07: added this inventory after the missing-content question exposed that current status was scattered across historical entries and design catalogs. Checked the room/character registries, pending-system wording in the implementation playbook, and the development record. Linked the inventory from README and both content design documents, and added maintenance requirements to the content playbook and room checklist. Documentation-only change; reviewed the diff and checked whitespace and the new link target. No gameplay behavior changed.
+
 ## Overall guidelines
 
 - Build a browser game using **TypeScript + Babylon.js**.
