@@ -16,7 +16,7 @@ The Training Room costs 22 gold per square and automatically fits 1×1 practice 
 
 The Library costs 26 gold per square and fits 1×1 lecterns and 2×1 shelf/reading stations with one research position each. Only residents with the `research` capability perform research. Select a spell in **Spells → Research**; each order reserves one researcher and one accessible station. Different spells can progress simultaneously at separate stations. Pause/resume retains progress. Removing a station releases its worker without erasing research or prepared spells.
 
-The provisional spell list is Hearth Prospect (32 seconds of initial research, 12 seconds to prepare again, 20 gold per cast) and Hearth Haste (40 seconds initially, 16 seconds thereafter, 30 gold per cast). Prospect extends normal sight from the Hearth to 16 tiles, respects solid walls, and spends nothing if no new terrain can be revealed. Haste adds 35% work speed for 30 seconds and cannot stack with itself. Casting consumes a prepared spell and automatically queues its next preparation, giving the Library ongoing work. No extra currency is introduced. See [interface rules](gameplay-interface.md#training-research-and-arrival-controls) for controls.
+Casting consumes a prepared spell and automatically queues its next preparation, giving the Library ongoing work. Casting uses shared gold; no extra currency is introduced. See [interface rules](gameplay-interface.md#training-research-and-arrival-controls) for controls.
 
 These costs, times, limits and bonuses are editable prototype values in [Game configuration](configuration.md). Both rooms use the normal layout, access, capacity, free-construction and reclaim systems. Their attraction services are `training` for Warriors and `research` for Runesmiths; arrivals also require spare shared food and bed capacity.
 
@@ -157,9 +157,9 @@ Food production, eating capacity, and bed spaces must serve existing residents a
 
 The Workshop combines metalworking and mechanism assembly in one facility. The Library is the single spell-research facility. Gold, labor, room capacity, and food support this simplified draft; separate equipment production, ore processing, and magical currencies are not established systems.
 
-Training is available to Miners, Engineers, Warriors, and Runesmiths. The player supplies room capacity, and dwarfs train autonomously. Current scheduling, work bonuses and limits are recorded in the prototype rules above; defense integration remains open. Capacity feedback shows occupied and available training positions rather than beds or Warrior-only slots.
+Training is available to every dwarf type. The player supplies room capacity, and dwarfs train autonomously. Current scheduling, work bonuses and limits are recorded in the prototype rules above; defense integration remains open. Capacity feedback shows occupied and available training positions rather than beds or Warrior-only slots.
 
-The current room catalog supports the four core dwarf types. Additional rooms and more powerful dwarf types can be introduced later, after the core gameplay works.
+The room catalog supports the [dwarf roster](characters.md). Additional rooms and more powerful dwarf types can be introduced later, after the core gameplay works.
 
 ## Adding room types later
 

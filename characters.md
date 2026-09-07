@@ -8,11 +8,11 @@ See the [current implementation inventory](development-plan.md#current-implement
 
 ## Design status
 
-The recruitment, miner pricing, needs, autonomous control, merged specialist roles, and shared training rules below reflect the agreed design. Core gameplay uses four dwarf types: Miner, Engineer, Warrior, and Runesmith. Engineer is the working name for the combined workshop crafter, whose character design is female; Runesmith is the working name for the combined spell researcher. Relative wages, standard bed and meal quantities, and detailed job behaviors remain proposals. Exact costs, consumption rates, capacities, and combat statistics remain unbalanced.
+The recruitment, miner pricing, needs, autonomous control, merged specialist roles, and shared training rules below reflect the agreed design. The roster below defines the dwarf types in scope. Engineer is the working name for the combined workshop crafter, whose character design is female; Runesmith is the working name for the combined spell researcher. Relative wages, standard bed and meal quantities, and detailed job behaviors remain proposals. Exact costs, consumption rates, capacities, and combat statistics remain unbalanced.
 
 ## Shared resident rules
 
-Current prototype: all four types share autonomous movement, food, rest and Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when accessible specialist stations and shared support have spare capacity. One eligible specialist can arrive every 45 seconds; eligible types take turns. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Wages, paid Miner recruitment, departure, combat and guard duty remain pending.
+Current prototype: all dwarf types share autonomous movement, food, rest and Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when accessible specialist stations and shared support have spare capacity. One eligible specialist can arrive every 45 seconds; eligible types take turns. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Wages, paid Miner recruitment, departure, combat and guard duty remain pending.
 
 Training gives up to five levels with 8% work speed per level. It takes 12 seconds of station use per level with 45 seconds between sessions; needs take priority and partial progress survives interruptions. These are provisional tunable values. Warriors currently train and use shared needs; their combat role awaits the combat system. Runesmiths autonomously research the spells selected in the sidebar and prepare them again after casting. See the [room prototype rules](rooms.md#training-room-and-library-prototype-rules) for details.
 
@@ -67,7 +67,7 @@ The intended role alternates between training, guard duty, and ordinary needs. G
 
 ### Runesmith
 
-Works at the Library to research spells. This is the stronghold's single research specialist. The prototype lets the player queue, pause and cast Hearth Prospect and Hearth Haste; the Library prepares each spell again after casting. Like every dwarf, a Runesmith can train. Broader spell balance, campaign research and any personal combat abilities remain open; separate healing or morale duties are not assumed.
+Works at the Library to research spells. This is the stronghold's single research specialist. The player queues and pauses research; the Library prepares spells again after casting. See [Spells](spells.md) for the catalog and implementation status. Like every dwarf, a Runesmith can train. Campaign research and any personal combat abilities remain open; separate healing or morale duties are not assumed.
 
 ## Continuing usefulness
 
@@ -75,11 +75,11 @@ Every resident role must remain useful on later maps. Terrain and objectives cha
 
 ## Adding dwarf types later
 
-The initial gameplay scope is the four types listed above. Future types should be added through character definitions that describe their appearance, stats, needs, recruitment conditions, and job capabilities. Shared movement, needs, training, job assignment, and rally systems must work with those definitions rather than a fixed list of four names. New roles may add a behavior when needed without replacing the shared resident systems. See the [architecture requirements](game-rules.md#14-extensible-character-and-room-definitions).
+The roster above defines the initial gameplay scope. Future types should be added through character definitions that describe their appearance, stats, needs, recruitment conditions, and job capabilities. Shared movement, needs, training, job assignment, and rally systems must work with those definitions rather than a fixed list of names. New roles may add a behavior when needed without replacing the shared resident systems. See the [architecture requirements](game-rules.md#14-extensible-character-and-room-definitions).
 
 ## Character concept art
 
-The [dwarf concept gallery](concept-art/dwarfs/README.md) shows the current four-role roster; superseded and deferred character images have been removed. The latest Engineer sheet depicts the agreed female character; the Runesmith sheet reflects the merged research role. Each sheet includes front, back, and overhead studies in the shared stylized 3D direction. Other appearance details remain visual proposals rather than changes to recruitment, needs, or combat rules. Exact prompts are retained with the images. All concept art is collected in the [concept-art folder](concept-art/README.md).
+The [dwarf concept gallery](concept-art/dwarfs/README.md) contains the character references; superseded and deferred character images have been removed. The latest Engineer sheet depicts the agreed female character; the Runesmith sheet reflects the merged research role. Each sheet includes front, back, and overhead studies in the shared stylized 3D direction. Other appearance details remain visual proposals rather than changes to recruitment, needs, or combat rules. Exact prompts are retained with the images. All concept art is collected in the [concept-art folder](concept-art/README.md).
 
 ## Decisions still open
 

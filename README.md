@@ -24,13 +24,13 @@ Excavation can be planned into darkness. Hidden tiles accept the same marks rega
 
 Pan with **WASD** or by moving the mouse to a window edge. Hold **Left Ctrl+A/D** or drag horizontally with the **middle mouse button** to orbit the viewed point at a fixed tilt; **Q/E** also rotates. Both panning methods preserve the camera angle. Zoom with the wheel, and press **Home** to return to the Hearthstone. The minimap also moves the camera. Camera movement does not reveal hidden terrain.
 
-Open **Debug → Room layouts** to build and inspect all implemented rooms with the normal grid tools. Example footprints and the four-type test dwarf catalog make services easy to exercise. **Load visual showcase** creates all six rooms with actual test stocks, six residents, queued crafting jobs and spell research. Click Rooms to return to the studio controls after inspecting Dwarfs; Return to stronghold restores the game you left in memory.
+Open **Debug → Room layouts** to build and inspect implemented rooms with the normal grid tools. Example footprints and the test dwarf catalog make services easy to exercise. **Load visual showcase** creates example rooms with actual test stocks, residents, queued crafting jobs and spell research. Click Rooms to return to the studio controls after inspecting Dwarfs; Return to stronghold restores the game you left in memory.
 
 **Free room construction** applies to room creation and expansion in both worlds. Set `VITE_FREE_ROOM_BUILDING=true` in an untracked `.env.local` to enable it on launch, or use the Debug toggle. Production inputs still cost gold. **Restart stronghold** starts a fresh prototype; refreshing also resets the session. After interacting with the game, closing, refreshing or navigating away asks for browser confirmation where supported, protecting against accidental Ctrl+W.
 
-Workshop production is under Rooms, Defenses or Debug. In **Defenses → Build defenses**, select a finished item and click clear claimed floor to place it. Doors fit one-square passages between opposite walls. Inspect a door to choose **Open**, **Closed** (automatic dwarf passage), or **Locked** (dwarfs cannot open it). The three tiers cost 20/40/80 gold, take 4/8/16 seconds of Workshop work and have 100/250/500 health. Bolt traps fire along the chosen compass direction; select a facing or press **R** before placement. Spike traps damage and briefly pin enemies. Both trap types reset automatically, without Engineer work or ammunition. **Debug → Defense test yard** supplies test stock and actual placement/production, with test raiders, a dwarf hauling task, reset and return controls. Full [defense rules and balance](rooms.md#doors-and-traps) are documented.
+Workshop production is under Rooms, Defenses or Debug. In **Defenses → Build defenses**, select a finished item and click clear claimed floor to place it. Doors fit one-square passages between opposite walls. Inspect a door to choose **Open**, **Closed** (automatic dwarf passage), or **Locked** (dwarfs cannot open it). Bolt traps fire along the chosen compass direction; select a facing or press **R** before placement. Spike traps damage and briefly pin enemies. Both trap types reset automatically, without Engineer work or ammunition. **Debug → Defense test yard** supplies test stock and actual placement/production, with test raiders, a dwarf hauling task, reset and return controls. Full [defense rules and balance](rooms.md#doors-and-traps) are documented.
 
-Build a Training Room for autonomous training by every dwarf type; build a Library and choose **Spells → Research** to unlock Hearth Prospect and Hearth Haste. Engineers, Warriors and Runesmiths arrive automatically when accessible stations, spare beds and food support them. The Dwarfs panel explains missing support and shows training progress. **Debug → Test dwarf type → Add test dwarf** remains available for all four types. Guard Post, Bridge, dwarf combat, natural raids, Hearth damage, paid Miner recruitment, wages, departure and campaign progression remain pending. See the [current inventory](development-plan.md#current-implementation-status) for exact status.
+Build a Training Room for autonomous training by every dwarf type; build a Library and choose **Spells → Research** to unlock available spells. See [Spells](spells.md) for the catalog and spell implementation status. Specialists arrive automatically when their required facilities, spare beds and food support them. The Dwarfs panel explains missing support and shows training progress. Use **Debug → Test dwarf type → Add test dwarf** to exercise registered types. See the [current inventory](development-plan.md#current-implementation-status) for implemented content and remaining work.
 
 ## Code map
 
@@ -84,9 +84,9 @@ Current design documents define gameplay. Concept art illustrates the direction;
 - **Clear overhead presentation:** stylized 3D with camera rotation and zoom. Controls and detailed information belong in the left sidebar, with the minimap at its top. The gameplay view has no floating text, numbers, health bars, or progress bars, including on hover or selection. Necessary text can appear in dismissible message cards associated with icons above the question-mark button.
 - **Reusable systems:** rooms and dwarf types must remain useful across levels. Future types should fit shared definitions and systems; this is an architecture requirement, not an implemented framework.
 
-The four current dwarf types are **Miner**, **Engineer** (female; Workshop doors and traps), **Warrior** (attracted by the shared Training Room), and **Runesmith** (Library spell research). All can train and use shared food and accommodation. The Ranger is deferred. Separate Smith, Priest, and expedition leader roles are removed.
+The [character catalog](characters.md) defines dwarf roles and their facilities. All dwarfs can train and use shared food and accommodation; shared systems support additional types through editable definitions.
 
-The catalog contains seven rooms—**Treasure Room, Dormitory, Kitchen, Workshop, Training Room, Library, and Guard Post**—plus the **Stone Hearth** and **Bridge** structures. The Kitchen includes growing, cooking, brewing, and eating. There are no separate Forge, Brewery, Barracks, Ranger Lodge, or Ancestral Shrine rooms. Exact crossing rules remain open.
+The [room and structure catalog](rooms.md) defines facilities and their functions, including combined services and deferred concepts.
 
 ## Concept art and prompts
 
@@ -94,13 +94,13 @@ Start at the [complete concept-art index](concept-art/README.md). All project co
 
 | Subject | Current gallery | Prompt records |
 |---|---|---|
-| Dwarfs | [Four current character concepts](concept-art/dwarfs/README.md) | [Female Engineer revision](concept-art/dwarfs/prompts-v3.md), [merged-role revisions](concept-art/dwarfs/prompts-v2.md), and [original generation history](concept-art/dwarfs/prompts.md) |
-| Rooms and structures | [Nine room/structure sheets and a terrain-grid study](concept-art/rooms/README.md) | [Current terrain-style revisions](concept-art/rooms/prompts-v3.md); earlier [grid revisions](concept-art/rooms/prompts-v2.md) and [original history](concept-art/rooms/prompts.md) |
-| Levels and regions | [Seven environment concepts](concept-art/levels/README.md) | [Level prompts and reference usage](concept-art/levels/prompts.md) |
+| Dwarfs | [Character concepts](concept-art/dwarfs/README.md) | [Female Engineer revision](concept-art/dwarfs/prompts-v3.md), [merged-role revisions](concept-art/dwarfs/prompts-v2.md), and [original generation history](concept-art/dwarfs/prompts.md) |
+| Rooms and structures | [Room/structure sheets and terrain-grid study](concept-art/rooms/README.md) | [Current terrain-style revisions](concept-art/rooms/prompts-v3.md); earlier [grid revisions](concept-art/rooms/prompts-v2.md) and [original history](concept-art/rooms/prompts.md) |
+| Levels and regions | [Environment concepts](concept-art/levels/README.md) | [Level prompts and reference usage](concept-art/levels/prompts.md) |
 | Terrain and resources | [Gold seams, gem columns, earth, and bedrock](concept-art/terrain/README.md) | [Approved resource-terrain revision](concept-art/terrain/prompts-v2.md) and [original history](concept-art/terrain/prompts.md) |
-| Enemies | [Ten creature concepts grouped by region](concept-art/enemies/README.md) | [Enemy generation prompts](concept-art/enemies/prompts.md) |
+| Enemies | [Creature concepts grouped by region](concept-art/enemies/README.md) | [Enemy generation prompts](concept-art/enemies/prompts.md) |
 
-The level gallery illustrates five candidate strongholds—Border Foothold, Flooded Workings, Fallen City, Crystal Divide, and Royal Deep—and two additional region studies, Fungal Caves and Volcanic Depths. These are representative areas, not complete maps or a finalized campaign sequence.
+The level gallery contains candidate strongholds and region studies. These are representative areas, not complete maps or a finalized campaign sequence.
 
 The room sheets explore different sizes, irregular footprints, and continuous bedrock constraints. Their illustrated furniture counts and dimensions do not define room capacity, minimum sizes, upgrades, or fixed templates.
 
@@ -119,7 +119,7 @@ Keep agreed rules distinct from experiments and proposed numbers. Balance, spell
 
 When adding or revising art, save the selected result in the appropriate `concept-art/` subfolder, record its prompt and reference usage, and update the gallery. Keep older prompt records identifiable as historical. Avoid restoring retired roles or mechanics merely because they appear in an earlier prompt.
 
-When updating the design, revise the relevant companion documents and this overview if the scope changes. Before committing, check local Markdown links, inspect changed artwork, review `git diff --check`, and confirm `git status` contains only intended changes. Use descriptive commits to preserve the design and art history.
+Keep catalogs and balance details in their owning design document; link to them from overviews and companion docs instead of repeating counts, lists or values. Update companion documents only when their own rules or instructions change. Dated development records and verification results are historical snapshots, not current catalogs. Before committing, check local Markdown links, inspect changed artwork, review `git diff --check`, and confirm `git status` contains only intended changes. Use descriptive commits to preserve the design and art history.
 
 Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
 

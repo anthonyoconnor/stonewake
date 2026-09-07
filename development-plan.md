@@ -225,6 +225,10 @@ Complete when terrain/resources, core, all four implemented rooms and both imple
 
 Prototype values remain provisional. Milestone commits are identifiable by their M-number in Git history.
 
+### Documentation ownership audit — 2026-09-07
+
+Removed redundant catalog counts, roster summaries, showcase inventories and spell details from companion docs. Spell balance and status now live in spells.md; other docs link to the owning catalog or configuration source. README records the maintenance rule: update companion docs only when their own behavior or instructions change. Historical milestone scopes, verification results and dated records remain snapshots. Documentation-only audit; checked local links, reviewed the scoped diff and ran whitespace checks. Gameplay files were not changed.
+
 ### Call to Arms spell design — 2026-09-07
 
 Added the eighth planned spell, [Call to Arms](spells.md#call-to-arms-behavior): all fighting dwarfs rally to a selected point for a limited period. Provisional values are 45 seconds initial research, 20 seconds repeat preparation, 25 gold per cast, 45 seconds duration including travel, and a 3-tile gathering radius. Documented capability-based responders, autonomous combat, blocked access, critical-needs exceptions, one active rally and early dismissal. Updated companion rally and Library references. Documentation only; no gameplay implementation or ongoing source work changed. Reviewed the scoped diff and checked whitespace and local links; runtime playtests remain for implementation.

@@ -41,7 +41,7 @@ Proposed orientation: keep the minimap fixed to the map and rotate the camera fo
 
 ### Rooms
 
-Use a grid of recognizable room icons. The current growable room catalog is Treasure Room, Dormitory, Kitchen, Workshop, Training Room, Library, and Guard Post. Bridge is available as a construction choice where the level permits it. The Stone Hearth is already established at level start and is not a room the player can repeatedly build or upgrade.
+Use a grid of recognizable room icons. Populate choices from the registered [room catalog](rooms.md). Bridge is available as a construction choice where the level permits it. The Stone Hearth is already established at level start and is not a room the player can repeatedly build or upgrade.
 
 Selecting an icon activates room designation. A compact display above the four-column icon grid shows the selected icon, room name and current gold cost per square (zero with free construction enabled). Each room has distinct shared vector artwork used by both its menu button and the world cursor. Unimplemented rooms are disabled and identified as planned; names remain available through button labels and hover titles. Repeated descriptions and per-button prices are omitted. Usable capacity and changes to it also appear here when they can be calculated. Do not print costs, tile counts, capacity numbers, or room names over the selected ground.
 
@@ -83,9 +83,9 @@ Training Room and Library are selectable room icons using the same construction 
 
 The Dwarfs panel shows each resident's type, activity, food/rest state, training level, progress toward the next level and current work-speed bonus. Specialists show their actual arrival requirements and missing support. There are no individual training or movement orders.
 
-The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume, Pause, and Cast controls. Initial research is selected by the player; Runesmiths choose accessible stations autonomously. A cast is available only when prepared and affordable. Hearth Prospect and Hearth Haste apply from the sidebar without a world target. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active Haste time stays in the sidebar. See [room prototype rules](rooms.md#training-room-and-library-prototype-rules) for the current tunable spell effects and costs.
+The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume, Pause, and Cast controls. Initial research is selected by the player; Runesmiths choose accessible stations autonomously. A cast is available only when prepared and affordable. Targeting follows the selected spell's definition. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active effect time stays in the sidebar. See [Spells](spells.md) for effects, costs, targeting and implementation status.
 
-**Debug → Load visual showcase** builds all six implemented rooms through normal gameplay construction and adds three Miners plus an Engineer, Warrior and Runesmith. It includes actual food/gold stocks, craft orders and both research orders. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
+**Debug → Load visual showcase** builds example rooms through normal gameplay construction and adds test residents, actual food/gold stocks, craft orders and research orders. The [configuration guide](configuration.md) identifies the source of the showcase contents. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
 
 The studio starts with automatic arrivals disabled. **Test automatic specialist arrivals** enables normal room/support checks in that test world. The Dwarfs panel reports time until the next check and the specific missing capacity for each type.
 
@@ -174,7 +174,7 @@ Objective briefings, discovered-area explanations, and tutorial guidance use the
 
 Icons need distinct silhouettes and consistent selected, unavailable, and alert states. Show names and explanations in a sidebar help area on hover or keyboard focus so an icon-only toolbar does not require guessing. Keep these explanations within the sidebar or message card. Support readable UI scaling and keyboard focus without adding labels to the gameplay world.
 
-Build category contents from the registered room, dwarf, fixture, and spell definitions. A new type supplies its icon and information using the same panel structure; adding content should not require another permanent toolbar or assume a fixed four-type population layout. Display only content appropriate to the campaign and level unlock rules.
+Build category contents from the registered room, dwarf, fixture, and spell definitions. A new type supplies its icon and information using the same panel structure; adding content should not require another permanent toolbar or assume a fixed population roster. Display only content appropriate to the campaign and level unlock rules.
 
 ## Development debug controls
 

@@ -30,9 +30,9 @@ Layout management is the primary activity. The position and connections of rooms
 
 Dwarfs handle their movement, jobs, needs, and fighting autonomously. There is no possession, individual movement command, or direct troop control.
 
-The [Call to Arms spell](spells.md#call-to-arms-behavior) calls all fighting dwarfs to a selected point for a limited period, with one active rally at a time. Responders walk there and fight autonomously. Proposed starting values are 25 gold per cast, 45 seconds of duration including travel, and a 3-tile gathering radius; the spell document defines research, preparation, responder eligibility and expiry behavior. This rally remains planned content.
+The [Call to Arms spell](spells.md#call-to-arms-behavior) calls all fighting dwarfs to a selected point for a limited period. Responders walk there and fight autonomously. The spell document owns its balance values, responder eligibility, restrictions and expiry behavior. This rally remains planned content.
 
-Spells are accessed through the left sidebar. Available player-cast spells use a target selection when applicable; spell effects, costs, research order, and casting restrictions remain to be defined. Dwarf behavior stays autonomous.
+Spells are accessed through the left sidebar. Available player-cast spells use a target selection when applicable; [Spells](spells.md) defines their effects, costs, research rules and casting restrictions. Dwarf behavior stays autonomous.
 
 ### Autonomous movement
 
@@ -191,11 +191,11 @@ The player should see the actual capacity in the sidebar when selecting or expan
 
 Engineers automatically manufacture doors and traps in the Workshop. Runesmiths automatically research spells in the Library. Each is a single combined specialist role. Separate equipment manufacture, enchanting, and shrine services are outside this simplified design.
 
-Every dwarf can autonomously use the Training Room to increase its stats: Miners, Engineers, Warriors, and Runesmiths. The room attracts Warriors but its training positions are shared. Training takes the dwarf's time and usable room capacity. The [prototype rules](rooms.md#training-room-and-library-prototype-rules) define provisional levels, work bonuses and scheduling; combat integration remains open. It provides no sleeping capacity.
+Every dwarf can autonomously use the Training Room to increase its stats. The room attracts Warriors but its training positions are shared. Training takes the dwarf's time and usable room capacity. The [prototype rules](rooms.md#training-room-and-library-prototype-rules) define provisional levels, work bonuses and scheduling; combat integration remains open. It provides no sleeping capacity.
 
 Every room must remain useful across strongholds. New populations need food, beds, and training; new layouts need manufactured defenses. The Library prototype prepares spells again after casting so it retains work after initial research. Campaign research progression remains open.
 
-The [prototype rules](rooms.md#training-room-and-library-prototype-rules) record current research progression and casting gold costs. Exact defensive item handling and broader balance remain open. No additional mined currency is established beyond gold from deposits and gem deposits.
+The [Library rules](rooms.md#training-room-and-library-prototype-rules) describe the research service; [Spells](spells.md) owns spell progression and casting costs. Exact defensive item handling and broader balance remain open. No additional mined currency is established beyond gold from deposits and gem deposits.
 
 ## 12. Defense and enemies
 
@@ -231,10 +231,10 @@ These are intended design effects to verify during playtesting, not claims about
 
 ## 14. Extensible character and room definitions
 
-Development focuses on the current four dwarf types and room catalog to establish the core gameplay. The architecture must allow new dwarf types and rooms later. The prototype implements shared definitions and services for Miners and Engineers; the remaining roles and broader systems are still planned.
+Development focuses on the [character](characters.md) and [room](rooms.md) catalogs to establish core gameplay. Shared definitions and services must allow additional content; the [implementation inventory](development-plan.md#current-implementation-status) records current support.
 
 - Define each dwarf type as data with a stable identifier, presentation assets, base stats and training progression, needs, recruitment conditions, and job or combat capabilities. Keep appearance separate from behavior; making the Engineer female does not require a different resident system.
-- Reuse common systems for autonomous movement, needs, payday, departure, training, and job assignment. Determine job eligibility from capabilities and room services rather than hard-coded checks for the four current dwarf names. Shared food, accommodation, and training should support future resident types through the same rules.
+- Reuse common systems for autonomous movement, needs, payday, departure, training, and job assignment. Determine job eligibility from capabilities and room services rather than hard-coded checks for dwarf names. Shared food, accommodation, and training should support future resident types through the same rules.
 - Define each room type as data with a stable identifier, floor and wall treatments, furnishing variants and footprints, access clearances, capacities, services, and outputs. Reuse grid construction, automatic furnishing, pathfinding updates, and capacity feedback for new rooms.
 - Express attraction as configurable conditions referring to room services, usable capacity, and settlement support. Allow multiple dwarf types to use one room and a future dwarf to require several facilities; do not enforce a permanent one-room-to-one-dwarf pairing.
 - Let new definitions select reusable behaviors, with a clear place to add a new job or room service when necessary. Adding content that uses existing behaviors should not require changes throughout the simulation.

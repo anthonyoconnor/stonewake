@@ -2,11 +2,15 @@
 
 ## Design and implementation status
 
-The user approved the eight spell concepts below on 2026-09-07: individual Haste, enemy Slow, Stoneguard, Thunder Rune, Runic Barrier, Mending Rune, Rune of Reckoning, and Call to Arms. Their numerical values and detailed restrictions are provisional starting points for playtesting. This is a design update, not an implementation milestone.
+The catalog below records the user-approved spell concepts. Their numerical values and detailed restrictions are provisional starting points for playtesting. This is a design update, not an implementation milestone.
 
 The playable prototype still contains only Hearth Prospect and Hearth Haste. The new catalog is the intended direction for useful offensive, defensive, and individual support spells. Individual Haste is intended to replace the global Hearth Haste when implemented; Hearth Prospect's retention or replacement remains undecided. No existing spell is removed by this document.
 
 Related rules: [Library research](rooms.md#training-room-and-library-prototype-rules), [spell interface](gameplay-interface.md#spells), and [implementation inventory](development-plan.md#current-implementation-status).
+
+## Current prototype spells
+
+Hearth Prospect takes 32 seconds of initial research and 12 seconds to prepare again, costing 20 gold per cast. It extends normal sight from the Hearth to 16 tiles, respects solid walls, and spends nothing if no new terrain can be revealed. Hearth Haste takes 40 seconds initially and 16 seconds to prepare again, costing 30 gold per cast. It adds 35% work speed for 30 seconds without changing walking or needs, and cannot stack with itself. Both currently cast directly from the sidebar without a world target. Live values are defined in [spell definitions](src/content/spells.ts) and [shared tuning](src/content/tuning.ts).
 
 ## Proposed catalog
 
@@ -27,7 +31,7 @@ Thunder Rune's damage and the barrier's health assume a provisional reference co
 
 ## Research and casting rules
 
-- A functional Library and an available research-capable Runesmith are needed to research or replenish a spell. Initially allow all eight research choices without a prerequisite tree; the longer research times make the larger tactical effects later investments. Campaign unlocks remain open.
+- A functional Library and an available research-capable Runesmith are needed to research or replenish a spell. Initially allow all catalog research choices without a prerequisite tree; the longer research times make the larger tactical effects later investments. Campaign unlocks remain open.
 - Retain one prepared charge per spell for the whole stronghold. Different spells can be researched or prepared at separate accessible stations, but researchers cannot combine on the same order. Pausing or losing a station retains progress, unlocks and prepared charges.
 - A successful cast consumes the charge and gold, then queues preparation immediately. There is no separate cooldown; repeat preparation is the reuse gate and can benefit from research-speed bonuses. Prepared spells can still be cast without an active researcher.
 - Casting is instant after valid target selection. Dwarf buffs target a currently visible friendly dwarf; hostile spells target currently visible enemies. Use the world's visibility rules, never camera position or unexplored terrain. Casting has no additional distance limit from the Hearth or researcher, allowing support at a distant explored battlefront.

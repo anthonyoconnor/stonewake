@@ -27,7 +27,7 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 
 `src/view/surfaces.ts` provides the room palette and generated paving, brass motifs, rough stone and timber textures. Scene geometry includes contact shadows, wall-foot shading, lanterns and fittings on existing walls. Furnishings retain the gameplay footprints used by navigation; decoration does not add walls or capacity.
 
-Use **Debug → Load visual showcase** for a repeatable scene containing all six implemented rooms, a mining crew, an Engineer, a Warrior, a Runesmith, actual test stock, loose gold, excavation marks, two production orders and queued spell research. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
+Use **Debug → Load visual showcase** for a repeatable scene containing example rooms, test residents, actual stock, loose gold, excavation marks, production orders and queued spell research. The [configuration guide](configuration.md) identifies the source of the showcase contents. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
 
 The result is a stylized procedural prototype, not a reproduction of the concept sheets' illustration detail. Sculpted meshes, authored texture sets, skeletal animation, audio, advanced shadows and cinematic effects remain optional future art work. They are not prerequisites for rapid gameplay iteration.
 
