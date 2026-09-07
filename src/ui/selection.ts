@@ -4,7 +4,7 @@ import {type GameScene} from '../view/scene';
 import {designate} from '../game/simulation';
 import {buildRoom,roomQuote} from '../game/rooms';
 export class Selection {
-  tool='inspect';start?:Point;hover?:Point;preview:TransformNode;
+  tool='inspect';start?:Point;hover?:Point;selected?:Point;preview:TransformNode;
   onChange:(message:string)=>void=()=>{};
   constructor(public view:GameScene){
     this.preview=new TransformNode('preview',view.scene);
@@ -17,7 +17,7 @@ export class Selection {
       if(this.start&&end){const points=this.rectangle(this.start,end);
         if(this.tool==='dig'||this.tool==='erase'){designate(view.world,points,this.tool==='dig');this.onChange(this.tool==='dig'?'Excavation marked. Miners will find reachable work.':'Excavation marks removed.');}
         else if(this.tool!=='inspect')this.onChange(buildRoom(view.world,this.tool,points));
-        else {const t=tileAt(view.world,end.x,end.z)!;this.onChange(t.core?'Stone Hearth · Your stronghold’s heart.':`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);}
+        else {this.selected=end;const t=tileAt(view.world,end.x,end.z)!;this.onChange(t.core?'Stone Hearth · Your stronghold’s heart.':`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);}
       }
       this.start=undefined;this.draw();
     });

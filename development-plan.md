@@ -24,7 +24,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 | M2 | Camera scrolling/panning, zoom, and rotation | Complete |
 | M3 | Basic left sidebar and minimap, with gameplay controls left blank | Complete |
 | M4 | Autonomous miners, excavation, claiming, Treasure Room construction, and resource hauling | Complete |
-| M5 | Shared room rules, reusable room checklist, and room catalog/layout debugging view | Not started |
+| M5 | Shared room rules, reusable room checklist, and room catalog/layout debugging view | Complete |
 | M5.1 | Free room construction flag and Debug option in the left sidebar | Not started |
 | M6 | Dormitory | Not started |
 | M7 | Kitchen | Not started |
@@ -194,3 +194,7 @@ Added the left sidebar, known-terrain minimap with camera footprint and click na
 
 ### M4 — 2026-09-07
 Implemented three autonomous miners, click/drag excavation and cancellation, continuous routes with corner clearance and yielding, floor claiming, Treasure Room construction, circulation-preserving storage, finite gold and renewable gems, ground pickups, and delivery-only income. Seven simulation tests pass, including resource conservation, no-storage fallback, cancellation, and blocked corners; TypeScript/build passes. Browser playtest mined a seam, built storage, and observed gold rise from 340 to 520 on delivery with no console errors. A provisional 400-gold founding allowance enables the first room. Needs and later room services remain deferred to their milestones.
+
+
+### M5 — 2026-09-07
+Generalized room definitions, variants/orientations, edge-connected room grouping, usable-facility inspection, wall trims, and furnishing preservation. Added a separate resettable 24 × 24 Room Layout Studio with the full room catalog and eight example footprints using normal construction and selection. Main-game state stays in memory when visiting the studio. Ten tests pass, including the layout matrix, circulation, one-cell capacity, expansion, and displaced gold; TypeScript passes. Browser verified the catalog and a 45-square L-shaped room with 23 reachable chests. The M5 checklist is satisfied for Treasure Room; services for subsequent rooms follow their milestones.

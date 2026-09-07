@@ -32,7 +32,7 @@ Run these practical checks for every room. Use the actual furnishing footprints 
 | L shape, irregular wing, or branching footprint | Wider parts can furnish independently of narrow connecting sections. |
 | Retained ordinary earth and a continuous bedrock seam | Occupied terrain contributes no floor/capacity; objects and users respect the obstacles. |
 | Adjacent different room types and an open cavern without walls | Floor identity stays readable and no separating walls appear automatically. |
-| Separate patches, including corner-touching patches | Use the shared grouping rule consistently; do not treat unreachable capacity as usable. The edge-connected grouping rule in rooms.md remains a proposal until tested and adopted. |
+| Separate patches, including corner-touching patches | Use the shared grouping rule consistently; do not treat unreachable capacity as usable. The prototype uses the edge-connected grouping rule recorded in rooms.md. |
 | Expansion and newly opened wall/entrance | Preserve valid furnishings and contents, update access, and avoid blocking old routes. |
 | Blocked entrance or unusable facility | Users wait or choose a reachable alternative; capacity and feedback reflect the access problem. |
 | Occupied facilities and multiple users | Avoid duplicate assignments or double-counted capacity; users can enter and leave. |

@@ -21,7 +21,7 @@ export interface World {
   agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number;
 }
 export interface Furnishing extends Point {
-  id:string; room:string; kind:string; cells:Point[]; access:Point; capacity:number; stored:number;
+  id:string; room:string; kind:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number;
 }
 export interface Job { kind:'mine'|'claim'|'collect'|'deliver'|'idle'; target:Point; work:Point; progress:number; furnishing?:string }
 export interface Resident extends Point {

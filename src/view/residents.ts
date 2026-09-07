@@ -3,6 +3,7 @@ import type {GameScene} from './scene';
 export class ResidentView {
   nodes=new Map<number,{root:TransformNode;legs:TransformNode[];arm:TransformNode;load:TransformNode}>();
   constructor(public view:GameScene){}
+  reset(){for(const m of this.nodes.values())m.root.dispose();this.nodes.clear();}
   update(){
     const v=this.view;
     for(const a of v.world.agents){

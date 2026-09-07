@@ -1,5 +1,5 @@
 import { Engine, Scene, ArcRotateCamera, Vector3, Color3, Color4, HemisphericLight, DirectionalLight, PointLight, MeshBuilder, StandardMaterial, DynamicTexture, TransformNode, type Mesh } from '@babylonjs/core';
-import { type World, type Tile } from '../game/types';
+import { type World, type Tile,neighbors } from '../game/types';
 import {roomById} from '../content/rooms';
 const colors: Record<string,string> = {dirt:'#69523c',rock:'#777a77',bedrock:'#35434c',gold:'#ae7a31',gem:'#354661',floor:'#756550',unknown:'#151d25'};
 export class GameScene {
@@ -47,7 +47,7 @@ export class GameScene {
     const root=this.terrainRoot;
     if(!this.tileNodes.size)this.drawHearth();
     for(const t of this.world.tiles){
-      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.room,t.loose,t.designated].join(':');
+      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.room,t.loose,t.designated,t.room?neighbors(this.world,t).map(n=>n.terrain).join():null].join(':');
       const old=this.tileNodes.get(id);if(old?.signature===signature)continue;old?.node.dispose();
       const node=new TransformNode(id,this.scene);node.parent=root;this.terrainRoot=node;this.drawTile(t);this.tileNodes.set(id,{signature,node});
     }
@@ -67,6 +67,9 @@ export class GameScene {
     if(type==='floor'&&t.claimed&&!t.core){const m=this.box('claim inset',t.x,-.004,t.z,.1,.012,.1,this.material('claim','#a69874'));m.isPickable=false;}
     if(t.designated){const m=this.box('dig designation',t.x,1.49,t.z,.94,.025,.94,this.material('designation','#53d8c6',false,.4));m.material!.alpha=.38;m.isPickable=false;}
     if(room)for(const dx of [-.46,.46]){const m=this.box('room inlay',t.x+dx,.007,t.z,.025,.015,.94,this.material(`inlay-${room.id}`,'#d2bc83'));m.isPickable=false;}
+    if(room)for(const n of neighbors(this.world,t))if(n.known&&n.terrain!=='floor'){
+      const dx=n.x-t.x,dz=n.z-t.z;this.box('room wall trim',t.x+dx*.495,.5,t.z+dz*.495,dx?.045:.98,.12,dz?.045:.98,this.material(`wall-${room.id}`,room.color),this.terrainRoot).isPickable=false;
+    }
     if(t.loose)for(let i=0;i<Math.min(8,Math.ceil(t.loose/10));i++){
       const p=MeshBuilder.CreateSphere('loose riches',{diameter:.1+(i%2)*.035,segments:4},this.scene);p.position.set(t.x+Math.sin(i*2)*.18,.07+Math.floor(i/4)*.06,t.z+Math.cos(i*2)*.17-(solid?.65:0));p.material=this.material(t.source==='gem'?'loose gem':'gold metal',t.source==='gem'?'#a38ae3':'#ffbf4d',false,.25);p.parent=this.terrainRoot;p.isPickable=false;
     }
@@ -88,4 +91,9 @@ export class GameScene {
     this.crystal(x,1.25,z,1.75,'#7fdef0');this.crystal(x-.5,.72,z+.2,.7,'#579bd0');this.crystal(x+.4,.65,z-.15,.8,'#86e5d7');
   }
   render(){this.refresh();this.scene.render();}
+  setWorld(world:World){
+    this.world=world;this.terrainRoot.dispose();this.terrainRoot=new TransformNode('terrain',this.scene);this.tileNodes.clear();this.lastRevision=-1;
+    const light=this.scene.getLightByName('hearth light') as PointLight;light.position.set(world.hearth.x,2.4,world.hearth.z);
+    this.refresh();
+  }
 }

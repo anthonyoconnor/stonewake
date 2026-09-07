@@ -3,10 +3,13 @@ import type { GameScene } from '../view/scene';
 import type { CameraControls } from '../view/controls';
 import type {Selection} from './selection';
 import {roomDefinitions} from '../content/rooms';
-import {goldTotal} from '../game/rooms';
+import {goldTotal,roomStats} from '../game/rooms';
+import {labShapes} from '../content/room-lab';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
+  lab=false;labType='treasure';labShape='Compact';
+  onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
   constructor(public view:GameScene,public controls:CameraControls,public selection:Selection) {
     this.root=document.createElement('aside');this.root.id='sidebar';this.root.setAttribute('aria-label','Stronghold controls');
     this.root.innerHTML=`
@@ -35,9 +38,17 @@ export class Sidebar {
     this.category=category;
     this.root.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',(b as HTMLElement).dataset.category===category));
     if(category==='help')this.panel.innerHTML='<p class="eyebrow">FIELD GUIDE</p><h2>Find your foothold.</h2><p>Explore the stone halls around your Hearthstone.</p><dl><dt>W A S D</dt><dd>Move camera</dd><dt>Q / E</dt><dd>Rotate view</dd><dt>Mouse wheel</dt><dd>Zoom</dd><dt>Middle drag</dt><dd>Pan</dd><dt>Home</dt><dd>Return to hearth</dd></dl>';
-    else if(category==='rooms'){
-      this.panel.innerHTML=`<p class="eyebrow">BUILD YOUR STRONGHOLD</p>${roomDefinitions.filter(r=>r.implemented).map(r=>`<button class="room-card" data-room="${r.id}"><span class="room-icon" style="color:${r.color}">▦</span><span><strong>${r.name}</strong><small>${r.cost} gold / square</small></span></button><p class="muted room-description">${r.description}</p>`).join('')}<div id="room-summary" class="muted"></div>`;
+    else if(category==='lab'){
+      this.panel.innerHTML=`<p class="eyebrow">ROOM LAYOUT STUDIO</p><label>Room catalog<select id="lab-room">${roomDefinitions.map(r=>`<option value="${r.id}" ${r.id===this.labType?'selected':''} ${r.implemented?'':'disabled'}>${r.name}${r.implemented?'':' · planned'}</option>`).join('')}</select></label><label>Example footprint<select id="lab-shape">${labShapes.map(s=>`<option ${s===this.labShape?'selected':''}>${s}</option>`).join('')}</select></label><div class="lab-actions"><button id="load-layout">Load layout</button><button id="reset-layout">Clear layout</button></div><p class="muted">Drag claimed squares to create or expand a room. Right click to inspect.</p><div id="room-summary"></div><button id="leave-lab" class="wide">Return to stronghold</button><p class="muted">Structures: Stone Hearth · fixed<br>Bridge · planned</p>`;
+      this.panel.querySelector<HTMLSelectElement>('#lab-room')!.onchange=e=>{this.labType=(e.target as HTMLSelectElement).value;this.selection.setTool(this.labType);};
+      this.panel.querySelector<HTMLSelectElement>('#lab-shape')!.onchange=e=>this.labShape=(e.target as HTMLSelectElement).value;
+      this.panel.querySelector<HTMLButtonElement>('#load-layout')!.onclick=()=>this.onLab(true,this.labShape,this.labType);
+      this.panel.querySelector<HTMLButtonElement>('#reset-layout')!.onclick=()=>this.onLab(true,'empty',this.labType);
+      this.panel.querySelector<HTMLButtonElement>('#leave-lab')!.onclick=()=>this.onLab(false);
+    }else if(category==='rooms'){
+      this.panel.innerHTML=`<p class="eyebrow">BUILD YOUR STRONGHOLD</p>${roomDefinitions.filter(r=>r.implemented).map(r=>`<button class="room-card" data-room="${r.id}" title="${r.description}"><span class="room-icon" style="color:${r.color}">▦</span><span><strong>${r.name}</strong><small>${r.cost} gold / square</small></span></button>`).join('')}<div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.room!));
+      this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
     }else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="residents-list"></div>';
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
   }
@@ -58,9 +69,15 @@ export class Sidebar {
   }
   update(){
     this.drawMap();const w=this.view.world;
+    this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
+    this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
     this.root.querySelector('#gold-total')!.textContent=String(goldTotal(w));this.root.querySelector('#dwarf-total')!.textContent=String(w.agents.length);
     const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name}</strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}</small></div>`).join('');
-    const summary=this.root.querySelector('#room-summary');if(summary){const chests=w.furnishings.filter(f=>f.room==='treasure');summary.textContent=`${chests.length} vault chests · ${chests.reduce((s,f)=>s+f.stored,0)} / ${chests.reduce((s,f)=>s+f.capacity,0)} gold stored`;}
+    const summary=this.root.querySelector('#room-summary');if(summary){
+      const p=this.selection.selected??w.tiles.find(t=>t.room===this.selection.tool)??w.tiles.find(t=>t.room);
+      if(p){const stats=roomStats(w,p);summary.textContent=`${stats.tiles} squares · ${stats.usable.length} usable facilities · ${stats.usable.reduce((s,f)=>s+f.capacity,0)} capacity${stats.tiles&&!stats.usable.length?' · Needs space or access.':''}`;}
+      else summary.textContent='Select a room to inspect its usable facilities.';
+    }
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
   }
 }

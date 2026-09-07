@@ -11,7 +11,7 @@ The grid, adaptable room shapes and furnishings, distinctive floors and walls, f
 - The world uses a square grid. Players select tiles to excavate and designate room footprints on usable, claimed floor.
 - All rooms occupy the level's common floor plane. Intact terrain is one full layer above it; excavation creates floor space rather than intermediate shelves, terraces, or another storey.
 - Rooms can be any size or shape formed from those tiles: rectangles, narrow strips, bends, branching areas, or shapes following bedrock seams and wrapping retained earth tiles. A single tile can be designated even if it cannot yet accommodate a functional furnishing.
-- Proposed grouping rule: tiles of the same room type that share an edge form a connected room. Disconnected patches operate separately; touching only at a corner does not connect them.
+- Prototype grouping rule: tiles of the same room type that share an edge form a connected room. Disconnected patches operate separately; touching only at a corner does not connect them.
 - Rooms must be reachable for dwarfs to use them. An isolated room does not satisfy a need simply because it exists.
 - Usable capacity depends on the size and shape of the room, the furnishings that fit, and access to their working positions. Total tile count alone does not guarantee a particular number of beds or workstations.
 - The player designates and expands the room; its floor, wall treatments, and furnishings adapt automatically. Individual furniture placement is not required.
