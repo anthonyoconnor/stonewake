@@ -1,3 +1,4 @@
+import {hasteRate} from '../game/spell-effects';
 import {MeshBuilder,TransformNode,Vector3,type Mesh} from '@babylonjs/core';
 import type {GameScene} from './scene';
 import {characterById} from '../content/characters';
@@ -90,9 +91,10 @@ export class ResidentView {
   }
   update(){
     const v=this.view,time=v.world.elapsed;
+    for(const [id,m] of this.nodes)if(!v.world.agents.some(a=>a.id===id)){m.root.dispose();m.shadow.dispose();this.nodes.delete(id);}
     for(const a of v.world.agents){
       let m=this.nodes.get(a.id);if(!m){m=this.create(a.id,a.type);this.nodes.set(a.id,m);}
-      const walking=a.path.length>0,j=a.job,working=!!j&&!walking,phase=time*11+a.id;
+      const walking=a.path.length>0,j=a.job,working=!!j&&!walking,phase=time*11*hasteRate(v.world,a)+a.id;
       m.root.position.set(a.x,walking?Math.abs(Math.sin(phase))*.025:0,a.z);m.root.rotation.set(0,a.facing,0);
       m.root.scaling.y=1+Math.sin(time*2+a.id)*.008;m.shadow.position.set(a.x,.025,a.z);
       m.legs.forEach((leg,i)=>leg.rotation.x=walking?Math.sin(phase+i*Math.PI)*.4:0);
@@ -121,7 +123,7 @@ export class ResidentView {
           if(bed){m.root.position.set(bed.x+(bed.rotation?.75:0),.5,bed.z+(bed.rotation?0:.75));m.root.rotation.set(-Math.PI/2,bed.rotation?Math.PI/2:0,0);m.arm.rotation.x=.1;m.leftArm.rotation.x=.1;}
         }
       }
-      m.load.setEnabled(a.carrying>0);m.load.rotation.z=walking?Math.sin(phase)*.1:0;
+      if(a.activity==='Fighting'){m.arm.rotation.x=-.8+Math.sin(time*9)*.8;m.leftArm.rotation.x=-.7;} m.load.setEnabled(a.carrying>0);m.load.rotation.z=walking?Math.sin(phase)*.1:0;
     }
   }
 }

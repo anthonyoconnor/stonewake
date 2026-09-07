@@ -13,15 +13,17 @@ import {spellById} from '../content/spells.ts';
 import {recruitSpecialist} from './recruitment.ts';
 import {tickDefenses} from './defenses.ts';
 import {doorAt,openDoorsForDwarf} from './doors.ts';
+import {alive,hasteRate,tickSpellEffects} from './spell-effects.ts';
+import {tickFighter,combatDefaults} from './combat.ts';
 export const addMiners=(w:World,count=tuning.startingMiners)=>addResidents(w,'miner',count);
 export function addResidents(w:World,type:string,count=1,origin?:Point) {
   const def=characterById(type);if(!def)return 0;
   const routes=origin?reachable(w,origin):undefined;
   const positions=w.tiles.filter(t=>t.claimed&&canStand(w,t)&&(!routes||routes.has(key(t)))&&!w.agents.some(a=>Math.hypot(a.x-t.x,a.z-t.z)<.6)).sort((a,b)=>Math.hypot(a.x-w.hearth.x,a.z-w.hearth.z)-Math.hypot(b.x-w.hearth.x,b.z-w.hearth.z));
-  const firstId=Math.max(0,...w.agents.map(a=>a.id))+1;
+  const firstId=Math.max(w.nextResidentId??0,...w.agents.map(a=>a.id))+1;
   const existing=w.agents.filter(a=>a.type===type).length;
-  for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:def.names[(existing+i)%def.names.length],type,capabilities:[...def.capabilities],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false,crafted:0,trainingLevel:0,trainingProgress:0,nextTrainingAt:w.elapsed});}
-  return Math.min(count,positions.length);
+  for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:def.names[(existing+i)%def.names.length],type,capabilities:[...def.capabilities],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false,crafted:0,trainingLevel:0,trainingProgress:0,nextTrainingAt:w.elapsed,health:def.combat?.health??combatDefaults.health,maxHealth:def.combat?.health??combatDefaults.health});}
+  const added=Math.min(count,positions.length);if(added)w.nextResidentId=firstId+added-1;return added;
 }
 export function designate(w:World,points:Point[],value:boolean|'toggle'=true) {
   for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&(!t.known||['dirt','rock','gold','gem'].includes(t.terrain)))t.designated=value==='toggle'?!t.designated:value;}
@@ -118,7 +120,7 @@ function releaseJob(w:World,a:Resident){
 }
 function move(w:World,a:Resident,dt:number){
   const target=a.path[0];if(!target)return true;
-  const dx=target.x-a.x,dz=target.z-a.z,d=Math.hypot(dx,dz),step=Math.min(d,tuning.speed*(characterById(a.type)?.speedMultiplier??1)*dt);
+  const dx=target.x-a.x,dz=target.z-a.z,d=Math.hypot(dx,dz),step=Math.min(d,tuning.speed*(characterById(a.type)?.speedMultiplier??1)*hasteRate(w,a)*dt);
   if(d<tuning.arrivalDistance){a.path.shift();if(a.job){a.job.lastDistance=undefined;a.job.stalled=0;}return !a.path.length;}
   if(a.job){
     a.job.stalled=a.job.lastDistance!==undefined&&d>a.job.lastDistance-.002?(a.job.stalled??0)+dt:0;a.job.lastDistance=d;
@@ -146,6 +148,12 @@ function move(w:World,a:Resident,dt:number){
 }
 export function tick(w:World,dt:number){
   w.elapsed+=dt;
+  tickSpellEffects(w,dt);
+  for(const a of w.agents)if(!alive(a)){
+    releaseJob(w,a);for(const f of w.furnishings)if(f.assigned===a.id)f.assigned=undefined;
+    const t=tileAt(w,Math.round(a.x),Math.round(a.z));if(t)t.loose+=a.carrying;a.carrying=0;w.revision++;
+  }
+  w.agents=w.agents.filter(alive);
   if(w.routesChanged){
     for(const a of w.agents){a.retry=0;if(a.job){const path=findPath(w,a,a.job.work);if(path)a.path=path;else releaseJob(w,a);}}
     w.routesChanged=false;
@@ -154,6 +162,7 @@ export function tick(w:World,dt:number){
   for(const a of w.agents){
     if(a.job?.kind!=='sleep')a.energy=Math.max(0,a.energy-dt/tuning.restInterval);
     if(a.job?.kind!=='eat')a.hunger=Math.max(0,a.hunger-dt/tuning.hungerInterval);
+    if(tickFighter(w,a,dt,releaseJob,move))continue;
     if(a.job&&!valid(w,a))releaseJob(w,a);
     if((a.job?.kind==='train'||a.job?.kind==='research')&&(a.energy<tuning.restThreshold||a.hunger<tuning.hungerThreshold))releaseJob(w,a);
     if(!a.job){a.retry-=dt;if(a.retry<=0)choose(w,a);}
@@ -194,7 +203,7 @@ export function tick(w:World,dt:number){
       order.state='done';order.worker=undefined;w.outputs[recipe.id]=(w.outputs[recipe.id]??0)+1;a.crafted++;
       const f=w.furnishings.find(f=>f.id===j.furnishing)!;f.output=recipe.id;f.outputCount=(f.outputCount??0)+1;w.revision++;
     }else if(j.kind==='train'){
-      a.activity='Training';a.trainingProgress=(a.trainingProgress??0)+dt;if(a.trainingProgress<tuning.trainingSeconds)continue;
+      a.activity='Training';a.trainingProgress=(a.trainingProgress??0)+dt*hasteRate(w,a);if(a.trainingProgress<tuning.trainingSeconds)continue;
       a.trainingLevel=Math.min(tuning.trainingLevels,(a.trainingLevel??0)+1);a.trainingProgress=0;a.nextTrainingAt=w.elapsed+tuning.trainingInterval;w.revision++;
     }else if(j.kind==='research'){
       const order=w.researchOrders!.find(o=>o.id===j.order)!,spell=spellById(order.spell)!;

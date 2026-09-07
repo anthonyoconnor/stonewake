@@ -30,7 +30,7 @@ test('every dwarf type trains autonomously, shares the level cap and gains usabl
 
 test('training and research release for shared meals and rest, then continue their earned progress',()=>{
  for(const type of ['warrior','runesmith']){
-  const w=createRoomLab();buildRoom(w,type==='warrior'?'training':'library',rect(8,8,4,4));buildRoom(w,'dormitory',rect(2,2,5,5));buildRoom(w,'kitchen',rect(8,2,6,5));addResidents(w,type);queueResearch(w,'haste');
+  const w=createRoomLab();buildRoom(w,type==='warrior'?'training':'library',rect(8,8,4,4));buildRoom(w,'dormitory',rect(2,2,5,5));buildRoom(w,'kitchen',rect(8,2,6,5));addResidents(w,type);queueResearch(w,'dwarf-haste');
   const a=w.agents[0];until(w,()=>type==='warrior'?(a.trainingProgress??0)>.3:(w.researchOrders![0].progress>.3));
   const progress=type==='warrior'?a.trainingProgress!:w.researchOrders![0].progress;
   a.energy=.1;a.hunger=.1;tick(w,.05);assert.equal(a.job?.kind,'sleep');
@@ -41,33 +41,12 @@ test('training and research release for shared meals and rest, then continue the
 });
 
 test('Library requires research capability and supports pause, resume and exactly one ready spell',()=>{
- const w=createRoomLab();buildRoom(w,'library',rect(8,8,4,4));queueResearch(w,'haste');addResidents(w,'warrior');run(w,5);
+ const w=createRoomLab();buildRoom(w,'library',rect(8,8,4,4));queueResearch(w,'dwarf-haste');addResidents(w,'warrior');run(w,5);
  assert.equal(w.researchOrders![0].progress,0);
  addResidents(w,'runesmith');until(w,()=>w.researchOrders![0].progress>1);
- const order=w.researchOrders![0],progress=order.progress;cancelResearch(w,'haste');run(w,3);
+ const order=w.researchOrders![0],progress=order.progress;cancelResearch(w,'dwarf-haste');run(w,3);
  assert.equal(order.progress,progress);assert.equal(order.state,'queued');assert.equal(order.worker,undefined);
- queueResearch(w,'haste');queueResearch(w,'haste');assert.equal(w.researchOrders!.length,1);
+ queueResearch(w,'dwarf-haste');queueResearch(w,'dwarf-haste');assert.equal(w.researchOrders!.length,1);
  until(w,()=>order.state==='ready');assert(order.unlocked);
  run(w,3);assert.equal(order.state,'ready');assert.equal(order.worker,undefined);
-});
-
-test('researched Haste costs shared gold, improves real research and requires preparation before reuse',()=>{
- const w=createRoomLab();buildRoom(w,'library',rect(8,8,4,4));addResidents(w,'runesmith');queueResearch(w,'haste');until(w,()=>w.researchOrders![0].state==='ready');
- const initial=goldTotal(w),order=w.researchOrders![0],a=w.agents[0];assert.match(castSpell(w,'haste'),/cast/);
- assert.equal(goldTotal(w),initial-spellById('haste')!.cost);assert(workRate(w,a)>1);assert.equal(order.state,'queued');assert.equal(order.progress,0);
- assert.match(castSpell(w,'haste'),/Research and prepare/);assert.equal(goldTotal(w),initial-spellById('haste')!.cost);
- const start=w.elapsed;until(w,()=>order.state==='ready');assert(w.elapsed-start<spellById('haste')!.prepareSeconds);
- const gold=goldTotal(w);assert.match(castSpell(w,'haste'),/already active/);assert.equal(goldTotal(w),gold);
- w.elapsed=w.hasteUntil!+.1;assert.equal(workRate(w,a),1);w.allowance=0;for(const f of w.furnishings)if(f.service==='storage')f.stored=0;
- assert.match(castSpell(w,'haste'),/Not enough/);assert.equal(order.state,'ready');w.allowance=30;
- assert.match(castSpell(w,'haste'),/cast/);assert.equal(goldTotal(w),0);
-});
-
-test('Prospect reveals new Hearth sight without crossing walls and charges nothing for an ineffective cast',()=>{
- const w=createWorld({id:'sight-spell',name:'Sight spell',width:28,height:18,hearth:{x:4,z:9},openings:[[2,8,24,10]],seams:[{terrain:'bedrock',cells:[{x:16,z:8},{x:16,z:9},{x:16,z:10}]}]});
- queueResearch(w,'prospect');const order=w.researchOrders![0];order.state='ready';order.unlocked=true;
- assert.equal(tileAt(w,14,9)!.known,false);assert.equal(tileAt(w,17,9)!.known,false);
- const initial=goldTotal(w);assert.match(castSpell(w,'prospect'),/cast/);
- assert.equal(tileAt(w,14,9)!.known,true);assert.equal(tileAt(w,17,9)!.known,false);assert.equal(goldTotal(w),initial-spellById('prospect')!.cost);
- order.state='ready';const gold=goldTotal(w);assert.match(castSpell(w,'prospect'),/No new terrain/);assert.equal(goldTotal(w),gold);assert.equal(order.state,'ready');
 });

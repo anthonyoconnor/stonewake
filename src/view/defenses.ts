@@ -2,6 +2,7 @@ import {TransformNode,MeshBuilder,type Mesh,type StandardMaterial} from '@babylo
 import type {GameScene} from './scene';
 import {type Defense,type Enemy} from '../game/types';
 import {defenseById,defenseDirections} from '../content/defenses';
+import {visible,slowRate} from '../game/spell-effects';
 import {doorIsOpen,isDoor} from '../game/doors';
 interface FixtureModel {root:TransformNode;leaf?:TransformNode;lock?:Mesh;cracks?:TransformNode;spikes?:TransformNode;bolt?:TransformNode}
 interface RaiderModel {root:TransformNode;legs:TransformNode[];arm:TransformNode}
@@ -70,10 +71,10 @@ export class DefenseView {
     }
     for(const e of w.enemies??[]){
       let m=this.raiders.get(e.id);if(!m){m=this.raider(e);this.raiders.set(e.id,m);}
-      const dead=e.health<=0,pinned=e.pinnedUntil>w.elapsed,walking=e.activity==='Approaching',phase=w.elapsed*10+e.id;
-      m.root.setEnabled(!dead||w.elapsed-e.diedAt!<3);m.root.position.set(e.x,pinned?.12:dead?.15:0,e.z);m.root.rotation.set(0,e.facing,dead?Math.PI/2:0);
+      const dead=e.health<=0,pinned=e.pinnedUntil>w.elapsed,walking=e.activity==='Approaching',phase=w.elapsed*10*slowRate(w,e)+e.id;
+      m.root.setEnabled(visible(w,e)&&(!dead||w.elapsed-e.diedAt!<3));m.root.position.set(e.x,pinned?.12:dead?.15:0,e.z);m.root.rotation.set(0,e.facing,dead?Math.PI/2:0);
       m.legs.forEach((leg,i)=>leg.rotation.x=walking?Math.sin(phase+i*Math.PI)*.35:pinned?-.3:0);
-      m.arm.rotation.x=e.activity==='Breaking down door'?-1+Math.sin(w.elapsed*8)*.7:pinned?-1.7:walking?Math.sin(phase)*.2:0;
+      m.arm.rotation.x=['Breaking down door','Breaking runic barrier','Attacking dwarf'].includes(e.activity)?-1+Math.sin(w.elapsed*8)*.7:pinned?-1.7:walking?Math.sin(phase)*.2:0;
     }
   }
 }

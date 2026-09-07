@@ -2,6 +2,7 @@ import {type World,type Point,type Defense,type DoorMode,type Enemy,tileAt,key} 
 import {defenseById,defenseDirections,raiderDefinition} from '../content/defenses.ts';
 import {defenseAt,doorAt,isDoor,doorIsOpen,doorOccupied,passageFrom} from './doors.ts';
 import {blocked,findPath,clearLine} from './navigation.ts';
+import {alive,slowRate,damageEnemy,damageResident,damageBarrier,spellLine} from './spell-effects.ts';
 
 export function defenseQuote(w:World,type:string,p:Point){
   const def=defenseById(type),t=tileAt(w,p.x,p.z);
@@ -50,14 +51,10 @@ export function addRaider(w:World,spawn:Point,target:Point){
   const e:Enemy={id:w.nextEnemyId=(w.nextEnemyId??0)+1,...spawn,target:{...target},health:raiderDefinition.health,facing:0,pinnedUntil:0,nextAttackAt:0,activity:'Approaching',hitAt:-100};
   (w.enemies??=[]).push(e);return e;
 }
-function hit(w:World,e:Enemy,damage:number){
-  e.health=Math.max(0,e.health-damage);e.hitAt=w.elapsed;
-  if(!e.health){e.diedAt=w.elapsed;e.activity='Defeated';}
-}
 function trigger(w:World,d:Defense,e:Enemy){
   const def=defenseById(d.type)!;d.triggeredAt=w.elapsed;d.readyAt=w.elapsed+def.cooldown!;
-  hit(w,e,def.damage!);
-  if(def.kind==='spike'&&e.health>0){e.pinnedUntil=w.elapsed+def.pinSeconds!;e.activity='Pinned by spikes';}
+  damageEnemy(w,e,def.damage!,'trap');
+  if(def.kind==='spike'&&e.health>0){e.pinnedUntil=Math.max(e.pinnedUntil,w.elapsed+def.pinSeconds!);e.activity='Pinned by spikes';}
   if(def.kind==='bolt')d.shotEnd={x:e.x,z:e.z};
 }
 // Movement is sampled at <= .1 square, so fast movement cannot skip a pressure plate.
@@ -79,9 +76,15 @@ export function tickDefenses(w:World,dt:number){
   for(const e of w.enemies??[]){
     if(e.health<=0)continue;
     spikeAtEnemy(w,e);if(e.health<=0)continue;
-    if(e.pinnedUntil>w.elapsed){e.activity='Pinned by spikes';continue;}
-    let remaining=raiderDefinition.speed*dt;
-    const path=findPath(w,e,e.target,'enemy')??findPath(w,e,e.target,'breach');
+    if(e.pinnedUntil>w.elapsed){if(e.activity!=='Pinned by spikes')e.activity='Stunned';continue;}
+    const victim=w.agents.filter(a=>alive(a)&&Math.hypot(a.x-e.x,a.z-e.z)<=6&&spellLine(w,e,a)).sort((a,b)=>Math.hypot(a.x-e.x,a.z-e.z)-Math.hypot(b.x-e.x,b.z-e.z))[0];
+    if(victim&&Math.hypot(victim.x-e.x,victim.z-e.z)<=1.05){
+      e.activity='Attacking dwarf';e.facing=Math.atan2(victim.x-e.x,victim.z-e.z);
+      if(e.nextAttackAt<=w.elapsed){damageResident(w,victim,raiderDefinition.damage);e.nextAttackAt=w.elapsed+raiderDefinition.attackSeconds/slowRate(w,e);}continue;
+    }
+    let remaining=raiderDefinition.speed*slowRate(w,e)*dt;
+    const destination=victim?{x:Math.round(victim.x),z:Math.round(victim.z)}:e.target;
+    const path=findPath(w,e,destination,'enemy')??findPath(w,e,destination,'breach');
     if(!path){e.activity='No route';continue;}
     e.activity='Approaching';
     while(remaining>0&&path.length){
@@ -91,8 +94,9 @@ export function tickDefenses(w:World,dt:number){
       e.facing=Math.atan2(dx,dz);
       if(!clearLine(w,e,next,passageFrom(w,e,'enemy'))){
         const door=w.defenses?.filter(d=>isDoor(d)&&!doorIsOpen(w,d)&&Math.hypot(d.x-e.x,d.z-e.z)<1.2&&(d.x-e.x)*dx+(d.z-e.z)*dz>0).sort((a,b)=>Math.hypot(a.x-e.x,a.z-e.z)-Math.hypot(b.x-e.x,b.z-e.z))[0];
-        e.activity=door?'Breaking down door':'Blocked';
-        if(door&&e.nextAttackAt<=w.elapsed){damageDoor(w,door,raiderDefinition.damage);e.nextAttackAt=w.elapsed+raiderDefinition.attackSeconds;}
+        const barrier=w.barrier&&Math.hypot(w.barrier.x-e.x,w.barrier.z-e.z)<1.2&&(w.barrier.x-e.x)*dx+(w.barrier.z-e.z)*dz>0?w.barrier:undefined;
+        e.activity=door?'Breaking down door':barrier?'Breaking runic barrier':'Blocked';
+        if((door||barrier)&&e.nextAttackAt<=w.elapsed){if(door)damageDoor(w,door,raiderDefinition.damage);else damageBarrier(w,raiderDefinition.damage);e.nextAttackAt=w.elapsed+raiderDefinition.attackSeconds/slowRate(w,e);}
         break;
       }
       e.x=next.x;e.z=next.z;remaining-=step;spikeAtEnemy(w,e);

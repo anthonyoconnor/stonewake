@@ -15,17 +15,22 @@ import {recipes,recipeById} from '../content/recipes';
 import {actionIcon} from './icons';
 import {reachable} from '../game/navigation';
 import {key,tileAt} from '../game/types';
-import {spellDefinitions} from '../content/spells';
-import {queueResearch,cancelResearch,castSpell} from '../game/research';
+import {spellDefinitions,spellDescription} from '../content/spells';
+import {queueResearch,cancelResearch} from '../game/research';
 import {workRate} from '../game/progression';
 import {enableRecruitment} from '../game/recruitment';
 import {showDefenses,updateDefenses} from './defenses';
 import {defenseAt} from '../game/doors';
+import {dismissRally,health,maxHealth,visible} from '../game/spell-effects';
+import type {SpellTarget} from '../game/research';
+import {prepareTestSpells} from '../content/spell-lab';
+import {addRaider} from '../game/defenses';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
   tuningDialog=new TuningDialog();
   lab=false;labType='treasure';labShape='Compact';
+  inspectedUnit?:SpellTarget;
   onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
   onFreeBuild:(value:boolean)=>void=()=>{};onRestart:()=>void=()=>{};
   constructor(public view:GameScene,public controls:CameraControls,public selection:Selection) {
@@ -37,6 +42,7 @@ export class Sidebar {
       <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs','debug'].map(id=>`<button data-category="${id}" aria-label="${id[0].toUpperCase()+id.slice(1)}" title="${id}"><span>${glyphs[id]}</span><small>${id}</small></button>`).join('')}</nav>
       <div class="work-tools"><button data-tool="dig">${actionIcon('dig')} Excavate</button><button data-tool="erase" aria-label="Remove excavation marks" title="Clear excavation">${actionIcon('erase')}</button><button data-tool="wall" aria-label="Build walls" title="Build walls">${actionIcon('wall')}</button><button data-tool="reclaim" aria-label="Reclaim room tiles" title="Reclaim room tiles">${actionIcon('reclaim')}</button></div>
       <div id="panel" class="panel"></div>
+      <div id="unit-inspection" class="feedback" hidden></div>
       <div id="feedback" class="feedback" role="status">Choose a task for your stronghold.</div>
       <div class="camera-tools"><button data-camera="home" aria-label="Return to Hearthstone">⌂</button><button data-camera="in" aria-label="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out">−</button></div>
       <footer><button id="help" aria-label="Help">?</button><span>THE HEARTH IS ALIGHT</span><span class="live-dot"></span></footer>`;
@@ -46,6 +52,7 @@ export class Sidebar {
     this.root.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>selection.setTool(b.dataset.tool!));
     selection.onChange=message=>{this.root.querySelector('#feedback')!.textContent=message;this.root.querySelectorAll<HTMLElement>('[data-tool],[data-room]').forEach(b=>b.classList.toggle('active',(b.dataset.tool??b.dataset.room)===selection.tool));this.updateSelection();};
     selection.onInspect=p=>{if(defenseAt(this.view.world,p)){if(this.category!=='defenses')this.show('defenses');else updateDefenses(this);}};
+    selection.onUnitInspect=target=>{this.inspectedUnit=target;this.update();};
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera]').forEach(b=>b.onclick=()=>{
       switch(b.dataset.camera){case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
     });
@@ -83,13 +90,14 @@ export class Sidebar {
     }else if(category==='defenses')showDefenses(this);
     else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
     else if(category==='spells'){
-      this.panel.innerHTML=`<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Runesmiths research spells at accessible Library stations. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map(s=>`<article class="spell-card"><h3>${s.name}</h3><p>${s.description}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
+      this.panel.innerHTML=`<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Runesmiths research spells at accessible Library stations. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map(s=>`<article class="spell-card"><h3>${s.name}</h3><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-research]').forEach(b=>b.onclick=()=>{queueResearch(this.view.world,b.dataset.research!);this.update();});
       this.panel.querySelectorAll<HTMLButtonElement>('[data-pause-research]').forEach(b=>b.onclick=()=>{cancelResearch(this.view.world,b.dataset.pauseResearch!);this.update();});
-      this.panel.querySelectorAll<HTMLButtonElement>('[data-cast]').forEach(b=>b.onclick=()=>{this.root.querySelector('#feedback')!.textContent=castSpell(this.view.world,b.dataset.cast!);this.update();});
+      this.panel.querySelectorAll<HTMLButtonElement>('[data-cast]').forEach(b=>b.onclick=()=>{this.selection.setTool(b.dataset.cast!);this.root.querySelector('#feedback')!.textContent='Choose a visible target. Right-click or Escape cancels.';this.update();});
     }
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
     if(['lab','debug'].includes(category)){
+      const spells=document.createElement('button');spells.className='wide';spells.textContent='Spell test yard';spells.onclick=()=>this.onLab(true,'spells');this.panel.append(spells);
       const yard=document.createElement('button');yard.className='wide';yard.textContent='Defense test yard';yard.onclick=()=>this.onLab(true,'defenses');this.panel.append(yard);
       const showcase=document.createElement('button');showcase.className='wide';showcase.textContent='Load visual showcase';showcase.onclick=()=>this.onLab(true,'showcase');this.panel.append(showcase);
     }
@@ -102,6 +110,17 @@ export class Sidebar {
       catalog.querySelector<HTMLButtonElement>('#add-test-dwarf')!.onclick=()=>{addResidents(this.view.world,catalog.querySelector<HTMLSelectElement>('select')!.value);this.update();};
     }
     this.updateSelection();
+    if(category==='spells'&&this.view.world.spellTest){
+      const controls=document.createElement('div');controls.className='spell-test-controls';
+      const pause=document.createElement('label');pause.innerHTML=`<input type="checkbox" ${this.view.world.spellTest.paused?'checked':''}> Pause test simulation`;pause.querySelector('input')!.onchange=e=>{this.view.world.spellTest!.paused=(e.target as HTMLInputElement).checked;};controls.append(pause);
+      const button=(label:string,fn:()=>void)=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;controls.append(b);};
+      button('Prepare test spells',()=>{prepareTestSpells(this.view.world);this.update();});
+      button('Add test enemy',()=>{const w=this.view.world;addRaider(w,w.spellTest!.spawn,w.spellTest!.target);});
+      button('Wound test warrior',()=>{const a=this.view.world.agents.find(a=>a.capabilities.includes('fight'));if(a){a.health=Math.max(1,health(a)-50);this.inspectedUnit={kind:'dwarf',id:a.id};this.update();}});
+      button('Reset spell yard',()=>this.onLab(true,'spells'));
+      button('Return to stronghold',()=>this.onLab(false));
+      this.panel.prepend(controls);
+    }
   }
   updateSelection(){
     const id=this.selection.tool,room=roomDefinitions.find(r=>r.id===id);
@@ -173,7 +192,16 @@ export class Sidebar {
         this.panel.querySelector<HTMLButtonElement>(`[data-pause-research="${spell.id}"]`)!.disabled=!order||!!paused||ready;
         const cast=this.panel.querySelector<HTMLButtonElement>(`[data-cast="${spell.id}"]`)!;cast.disabled=!ready||goldTotal(w)<spell.cost;cast.textContent=`Cast · ${spell.cost} gold${ready&&goldTotal(w)<spell.cost?' · Needs gold':''}`;
       }
-      this.panel.querySelector('#active-spells')!.textContent=(w.hasteUntil??0)>w.elapsed?`Haste active · ${Math.ceil(w.hasteUntil!-w.elapsed)} seconds remaining`:'';
+      this.panel.querySelector('#active-spells')!.textContent=[w.rally?`Call to Arms · ${Math.ceil(w.rally.until-w.elapsed)} seconds · ${w.agents.filter(a=>a.rallying&&!a.rallyUnreachable).length} responding · ${w.agents.filter(a=>a.rallyUnreachable).length} unreachable`:'',w.barrier?`Barrier · ${Math.ceil(w.barrier.health)} / ${w.barrier.maxHealth} health · ${Math.ceil(w.barrier.until-w.elapsed)} seconds`:''].filter(Boolean).join(' · ');
+      let dismiss=this.panel.querySelector<HTMLButtonElement>('#dismiss-rally');
+      if(!dismiss){dismiss=document.createElement('button');dismiss.id='dismiss-rally';dismiss.className='wide';dismiss.textContent='Dismiss Call to Arms';dismiss.onclick=()=>{dismissRally(this.view.world);this.update();};this.panel.append(dismiss);}
+      dismiss.hidden=!w.rally;
     }
+    const inspection=this.root.querySelector<HTMLElement>('#unit-inspection')!,target=this.inspectedUnit;
+    const dwarf=target?.kind==='dwarf'?w.agents.find(a=>a.id===target.id):undefined;
+    const enemy=target?.kind==='enemy'?w.enemies?.find(e=>e.id===target.id&&e.health>0):undefined;
+    const unit=dwarf??enemy;
+    inspection.hidden=!unit||!visible(w,unit);
+    if(unit&&!inspection.hidden)inspection.textContent=`${dwarf?dwarf.name:'Enemy'} · Health ${Math.ceil(dwarf?health(dwarf):enemy!.health)}${dwarf?' / '+maxHealth(dwarf):''}\n${unit.activity}\n${(unit.effects??[]).filter(e=>e.until>w.elapsed).map(e=>`${spellDefinitions.find(s=>s.id===e.id)?.name??e.id} · ${Math.ceil(e.until-w.elapsed)}s${e.kind==='shield'?' · '+Math.ceil(e.remaining??0)+' shield':''}`).join('\n')}`;
   }
 }

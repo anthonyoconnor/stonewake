@@ -20,7 +20,7 @@ const until=(w:World,condition:()=>boolean,seconds=40)=>{
  for(let i=0;i<seconds*20&&!condition();i++)tick(w,.05);
  assert(condition(),'Expected the autonomous service condition within the simulated time.');
 };
-const research=(w:World,room:string)=>{if(room==='library'){queueResearch(w,'prospect');queueResearch(w,'haste');}};
+const research=(w:World,room:string)=>{if(room==='library'){queueResearch(w,'stoneguard');queueResearch(w,'dwarf-haste');}};
 
 test('learning room expansion preserves fittings and refunds only the paid portion',()=>{
  for(const {room,service} of learningRooms){

@@ -2,6 +2,7 @@ import {tuning} from '../content/tuning.ts';
 import { type World, type LevelDefinition, type Point, tileAt } from './types.ts';
 import {roomById} from '../content/rooms.ts';
 import {doorAt,doorIsOpen} from './doors.ts';
+import {barrierAt} from './spell-effects.ts';
 export function createWorld(level: LevelDefinition): World {
   const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],elapsed:0,allowance:tuning.startingGold,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{},researchOrders:[]};
   for(let z=0;z<w.height;z++) for(let x=0;x<w.width;x++) {
@@ -39,7 +40,7 @@ export function reveal(w:World, origin:Point, radius=tuning.sightRadius) {
         if(!t) break;
         if(!t.known){t.known=true;if(!['dirt','rock','gold','gem'].includes(t.terrain))t.designated=false;changed=true;}
         const door=doorAt(w,t);
-        if(t.terrain!=='floor'||door&&!doorIsOpen(w,door)) break;
+        if(t.terrain!=='floor'||door&&!doorIsOpen(w,door)||barrierAt(w,t)) break;
       }
     }
   }

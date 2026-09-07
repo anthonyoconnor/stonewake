@@ -30,7 +30,7 @@ Layout management is the primary activity. The position and connections of rooms
 
 Dwarfs handle their movement, jobs, needs, and fighting autonomously. There is no possession, individual movement command, or direct troop control.
 
-The [Call to Arms spell](spells.md#call-to-arms-behavior) calls all fighting dwarfs to a selected point for a limited period. Responders walk there and fight autonomously. The spell document owns its balance values, responder eligibility, restrictions and expiry behavior. This rally remains planned content.
+The [Call to Arms spell](spells.md#call-to-arms-behavior) calls all fighting dwarfs to a selected point for a limited period. Responders walk there and fight autonomously. The spell document owns its balance values, responder eligibility, restrictions and expiry behavior.
 
 Spells are accessed through the left sidebar. Available player-cast spells use a target selection when applicable; [Spells](spells.md) defines their effects, costs, research rules and casting restrictions. Dwarf behavior stays autonomous.
 
@@ -210,7 +210,7 @@ Opening an unknown area can expose a new front. A shortcut that helps workers ca
 
 The current [door and trap rules](rooms.md#doors-and-traps) implement three increasing door tiers, Open/Closed/Locked access, a spike trap with damage and temporary pinning, and a directional bolt trap. Both traps reset automatically after cooldown and ignore friendly dwarfs. Shut doors block sight and delay enemies until broken; locked doors also block dwarf routes. Workshop manufacturing supplies player-placed fixtures.
 
-Enemy defense interactions are currently verified using debug-spawned Goblin Raiders. Natural encounters, raids, dwarf combat, Hearth attacks and the area rally are not yet implemented. Which enemies can tunnel, their broader targeting priorities, repairs under attack and raid triggers remain open. Future combat remains autonomous, guided by layout and the area rally rather than individual fighter commands.
+Defense, targeted spells and autonomous Warrior combat are verified using debug-spawned Goblin Raiders. The [spell rules](spells.md) define temporary effects and the area rally. Natural encounters, raids, Hearth attacks, guard duty and retreat remain pending. Enemy tunneling, broader targeting priorities, repairs under attack and raid triggers remain open.
 
 ## 13. Layout consequences to preserve
 

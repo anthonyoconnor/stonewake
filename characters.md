@@ -12,9 +12,9 @@ The recruitment, miner pricing, needs, autonomous control, merged specialist rol
 
 ## Shared resident rules
 
-Current prototype: all dwarf types share autonomous movement, food, rest and Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when accessible specialist stations and shared support have spare capacity. One eligible specialist can arrive every 45 seconds; eligible types take turns. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Wages, paid Miner recruitment, departure, combat and guard duty remain pending.
+Current prototype: all dwarf types share autonomous movement, food, rest and Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when accessible specialist stations and shared support have spare capacity. One eligible specialist can arrive every 45 seconds; eligible types take turns. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Wages, paid Miner recruitment, departure, guard duty and retreat remain pending.
 
-Training gives up to five levels with 8% work speed per level. It takes 12 seconds of station use per level with 45 seconds between sessions; needs take priority and partial progress survives interruptions. These are provisional tunable values. Warriors currently train and use shared needs; their combat role awaits the combat system. Runesmiths autonomously research the spells selected in the sidebar and prepare them again after casting. See the [room prototype rules](rooms.md#training-room-and-library-prototype-rules) for details.
+Training gives up to five levels with 8% work speed per level. It takes 12 seconds of station use per level with 45 seconds between sessions; needs take priority and partial progress survives interruptions. These are provisional tunable values. Warriors train, use shared needs, fight nearby enemies autonomously and respond to Call to Arms. Combat currently uses debug-spawned enemies; see [Spells](spells.md) for combat values and effects. Runesmiths autonomously research the spells selected in the sidebar and prepare them again after casting. See the [room prototype rules](rooms.md#training-room-and-library-prototype-rules) for details.
 
 - All resident dwarfs, including purchased miners, need regular pay, accessible bedding, sufficient food, and any facilities required by their role.
 - Dwarfs choose work, eat, sleep, collect wages, and respond to threats autonomously. Players do not possess, move, or issue individual orders to them.
@@ -63,7 +63,7 @@ The Engineer is a female dwarf. Her concept uses practical teal workwear, a prot
 
 ### Warrior
 
-The intended role alternates between training, guard duty, and ordinary needs. Guard Posts and the position of the Training Room will influence how quickly Warriors respond. The Training Room attracts Warriors but is available to every dwarf type. It provides training positions, while Warriors sleep in Dormitories like everyone else. Current training progression is defined in the prototype rules above; guarding and combat remain pending.
+The intended role alternates between training, guard duty, and ordinary needs. Guard Posts and the position of the Training Room will influence how quickly Warriors respond. The Training Room attracts Warriors but is available to every dwarf type. It provides training positions, while Warriors sleep in Dormitories like everyone else. Current training progression is defined in the prototype rules above; guarding remains pending; autonomous melee combat and spell rally response are implemented.
 
 ### Runesmith
 

@@ -15,25 +15,25 @@ Last checked: **2026-09-07** against the room and character definitions and the 
 | Kitchen | Implemented: growing, cooking, brewing and autonomous meals | — |
 | Workshop | Implemented: Engineer attraction, staffed production of all three door tiers and both traps, shared finished stock for placement | Door repairs; upkeep for future fixture types |
 | Training Room | Implemented: automatic practice stations, shared capped work-speed training and Warrior attraction | Combat progression/balance |
-| Library | Implemented: automatic research stations, spell research/preparation/casting and Runesmith attraction | Broader spell catalog and campaign research progression |
+| Library | Implemented: automatic research stations, targeted spell research/preparation/casting and Runesmith attraction; catalog in [Spells](spells.md) | Campaign research progression and broader balance |
 | Guard Post | Not implemented; disabled catalog placeholder | Guard positions and defensive behavior |
 | Stone Hearth | Implemented: fixed core, arrival location and starter treasury chest | Enemy attacks, core destruction and defeat |
 | Bridge | Not implemented | Crossing rules, construction and navigation across gaps |
 | Timber / Reinforced / Steel doors | Implemented in normal play: manufacture, placement, increasing health, Open/Closed/Locked access, dwarf passage, sight blocking and breakage | Repairs and upgrades in place; natural enemy encounters |
 | Spike trap | Implemented in normal play: manufacture, placement, enemy damage, brief pinning and automatic cooldown reset | Natural enemy encounters |
 | Bolt trap | Implemented in normal play: manufacture, placement, directional first-target shots, line of sight and automatic cooldown reset | Natural enemy encounters |
-| Goblin Raider | Debug-only: continuous movement, alternate routes, door breaking, trap damage, pinning and defeat in the defense yard | Normal spawning/raids, dwarf combat and Hearth attacks |
+| Goblin Raider | Debug-only: continuous movement, alternate routes, door/barrier breaking, trap and spell damage, attacking dwarfs, pinning and defeat | Normal spawning/raids and Hearth attacks |
 
 | Dwarf type | Current status | Remaining integration |
 |---|---|---|
 | Miner | Implemented: starting crew, mining, hauling, claiming, reinforcement and wall construction; shared food/rest/training | Normal paid recruitment; wages; threat response |
 | Engineer | Implemented: normal Workshop-based arrivals, crafting and shared food/rest/training; also in Debug | Wages; proposed repairs |
-| Warrior | Implemented: normal Training Room-based arrivals, appearance and shared food/rest/training; also in Debug | Wages; guarding and combat |
+| Warrior | Implemented: normal arrivals, shared needs/training, autonomous melee combat and Call to Arms response | Wages; guard posts, retreat and combat balance |
 | Runesmith | Implemented: normal Library-based arrivals, appearance, research/preparation and shared food/rest/training; also in Debug | Wages; personal combat abilities and campaign progression |
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-Other broad systems still pending include dwarf combat, natural enemy encounters/raids, Hearth damage/defeat, rallying, dissatisfaction/departure and campaign progression. Debug raiders now exercise the implemented defense interactions. Detailed behavior and unresolved choices remain in the design documents; completed checks remain in the development record below.
+Other broad systems still pending include natural enemy encounters/raids, Hearth damage/defeat, guard duty, retreat, dissatisfaction/departure and campaign progression. Debug raiders exercise defense, combat and spell interactions. Detailed behavior and unresolved choices remain in the design documents; completed checks remain in the development record below.
 
 ### Keeping status current
 
@@ -224,6 +224,14 @@ Complete when terrain/resources, core, all four implemented rooms and both imple
 ## Development record
 
 Prototype values remain provisional. Milestone commits are identifiable by their M-number in Git history.
+
+### Targeted spells and autonomous combat — 2026-09-07
+
+Replaced the retired Hearth spells with the [implemented spell catalog](spells.md). Added pointer targeting with validation before payment, individual speed/shield/healing/debuff effects, blocked area damage and stun, a destructible temporary navigation barrier, and a timed shared rally. Reused Library research/preparation, stored gold, room access and movement. Warriors now fight autonomously through a capability; Raiders attack nearby dwarfs and spell barriers. Death releases jobs, beds and carried gold, and new residents retain unique identifiers. Combat values remain provisional; natural encounters/raids, Hearth defeat, guard scheduling and retreat remain pending.
+
+Added restrained rune, armor, barrier and impact geometry guided by the approved terrain and Warrior references, with combat/speed animation and sidebar-only health/effect feedback. The spell yard builds actual facilities and provides explicit debug preparation, spawning, wounding, pause/reset and return controls. Spell configuration values and descriptions derive from the same registry. Active effects keep cast-time values.
+
+Verification: all 83 simulation/input/layout tests and the TypeScript/Vite build pass (existing Babylon bundle-size advisory). New checks cover cast costs/cancellation/invalid targets, individual work and preparation, slow movement/attack cadence, damage sources, shields, interrupted healing, blocked blasts, barrier access/expiry/breakage, rally reservations/blocked routes/critical needs/new arrivals/dismissal, and combat/death cleanup. Browser review exercised the replacement catalog and targeted spell effects: Haste cost 25 on one dwarf, Mending healed the wounded target, Call to Arms reported two responders, invalid barrier targeting spent nothing, and a valid barrier appeared for 40 gold. Slow and Reckoning applied to the selected enemy; Thunder reduced its health from 120 to 90 for 50 gold. After resuming, the Warriors defeated it and all test residents survived. No browser console errors. Fixed a rally arrival tolerance edge case and the debug controls' horizontal overflow. Final whitespace and documentation-link checks pass; local Vite remains available for play.
 
 ### Documentation ownership audit — 2026-09-07
 

@@ -2,21 +2,17 @@
 
 ## Design and implementation status
 
-The catalog below records the user-approved spell concepts. Their numerical values and detailed restrictions are provisional starting points for playtesting. This is a design update, not an implementation milestone.
+The catalog below is implemented in the browser prototype. Its numerical values remain provisional starting points for playtesting.
 
-The playable prototype still contains only Hearth Prospect and Hearth Haste. The new catalog is the intended direction for useful offensive, defensive, and individual support spells. Individual Haste is intended to replace the global Hearth Haste when implemented; Hearth Prospect's retention or replacement remains undecided. No existing spell is removed by this document.
+Hearth Prospect and global Hearth Haste have been removed. The catalog uses targeted casting, individual effects and the shared Library research/preparation service. Offensive spells work against the current debug-spawned enemies; natural encounters and raids remain pending.
 
 Related rules: [Library research](rooms.md#training-room-and-library-prototype-rules), [spell interface](gameplay-interface.md#spells), and [implementation inventory](development-plan.md#current-implementation-status).
 
-## Current prototype spells
-
-Hearth Prospect takes 32 seconds of initial research and 12 seconds to prepare again, costing 20 gold per cast. It extends normal sight from the Hearth to 16 tiles, respects solid walls, and spends nothing if no new terrain can be revealed. Hearth Haste takes 40 seconds initially and 16 seconds to prepare again, costing 30 gold per cast. It adds 35% work speed for 30 seconds without changing walking or needs, and cannot stack with itself. Both currently cast directly from the sidebar without a world target. Live values are defined in [spell definitions](src/content/spells.ts) and [shared tuning](src/content/tuning.ts).
-
-## Proposed catalog
+## Spell catalog
 
 Research and preparation times are seconds of active work by one Runesmith at normal speed, excluding travel, meals and rest. Research unlocks the spell and supplies its first charge. Preparation replenishes that charge after each successful cast. Costs are shared gold paid per cast; research and preparation have no additional gold fee.
 
-| Spell / proposed stable ID | Role and target | Initial research | Repeat preparation | Cast cost | Effect and duration |
+| Spell / stable ID | Role and target | Initial research | Repeat preparation | Cast cost | Effect and duration |
 |---|---|---:|---:|---:|---|
 | **Haste** / `dwarf-haste` | Support; one living friendly dwarf | 45 s | 20 s | 25 gold | +50% movement, work and attack speed for 20 s. Does not speed up hunger, fatigue or other needs. |
 | **Slow** / `enemy-slow` | Defensive control; one living enemy, including strong enemies | 60 s | 25 s | 30 gold | -40% movement and attack speed for 15 s. Does not reduce damage per hit. |
@@ -27,7 +23,7 @@ Research and preparation times are seconds of active work by one Runesmith at no
 | **Rune of Reckoning** / `rune-of-reckoning` | Offense; one living enemy | 75 s | 30 s | 40 gold | Target takes 30% extra damage from dwarf attacks for 15 s. Spell and trap damage receive no bonus. |
 | **Call to Arms** / `call-to-arms` | Rally; one visible, walkable floor point | 45 s | 20 s | 25 gold | Calls all fighting dwarfs throughout the stronghold to the point for 45 s, including travel time. They gather within 3 tiles and fight autonomously to defend the area. |
 
-Thunder Rune's damage and the barrier's health assume a provisional reference combatant with 100 health and a basic attack of 10 damage per second. These are balance references, not final character statistics; rescale the two flat values when combat statistics are established. The other health effects use percentages to remain useful across dwarf types and training levels. Stoneguard absorbs damage after normal mitigation and passes any excess through to health.
+Warriors currently start with 100 health and attack for 10 damage once per second; the test Raider has 120 health and attacks for 20 damage once per second. These combat values remain provisional. Health-based buffs scale with the target's maximum health. Stoneguard absorbs incoming damage and passes any excess through to health; there is no separate armor-mitigation model yet.
 
 ## Research and casting rules
 
@@ -44,7 +40,7 @@ Thunder Rune's damage and the barrier's health assume a provisional reference co
 
 Call to Arms is the spell version of the shared area rally. It calls every living dwarf whose character definition grants a fighting role, regardless of distance from the target. Warriors are the initial intended responders; future fighting types join through their capabilities. Training alone does not turn a Miner, Engineer or Runesmith into a responder. Noncombat workers continue their jobs.
 
-- Responders interrupt ordinary work, training, guard duty, eating and resting, releasing any occupied service reservations. They walk by normal routes, without teleporting or gaining a speed bonus. Needs continue at their normal pace; critical survival needs or emergency retreat may temporarily override the rally. On recovery they answer the call if it remains active.
+- Responders interrupt ordinary work, training, eating and resting, releasing any occupied service reservations. They walk by normal routes, without teleporting or gaining a speed bonus. Needs continue at their normal pace. Hunger or energy below 10% temporarily releases the rally until needs recover above 30% and the current meal/rest ends. Nearby attackers still trigger self-defense. Guard scheduling and emergency retreat remain future combat work.
 - The target may be claimed or unclaimed visible floor, but must be walkable and reachable by at least one eligible fighter. With no eligible reachable fighter, reject the cast without charge. A fighter whose route is blocked reports that status in the sidebar and rejoins if access becomes available. New eligible arrivals also respond during the active period.
 - Fighters gather in accessible space within a 3-tile radius instead of trying to occupy one point. They autonomously engage enemies in that area, defend themselves while approaching, and return toward the rally when enemies leave the area. The spell does not reveal fog or let fighters pass through walls, doors or barriers.
 - Only one rally may be active per stronghold. Reject another Call to Arms while it is active; the player can dismiss it early in the sidebar, without a refund, then cast at another point once the next charge is prepared. Preparation starts on casting as usual.
@@ -52,12 +48,14 @@ Call to Arms is the spell version of the shared area rally. It calls every livin
 
 These response priorities, radius and timing are provisional. The agreed behavior is that the spell calls all fighting dwarfs to a selected point for a limited period, without individual movement orders.
 
-## Presentation and remaining work
+## Controls, verification and remaining work
 
 Use the existing left-sidebar Spells panel for research, costs, readiness and targeting, with right-click or Escape cancelling target selection. Selected-unit details show health, shield amount and effect time remaining in the sidebar. Use restrained physical effects such as stone armor, rune glows and thunder impacts in the world; do not add floating text, numbers, health bars or timers.
 
-Implementation needs individual spell targeting, per-unit effects and action-rate modifiers. Offensive and defensive effects also depend on combat health/damage, enemy visibility, stun and temporary navigation obstacles. Keep those dependencies distinct from the existing research service. Store spell values in editable definitions and expose relevant balance fields in Game configuration when implemented; the values in this document are not live settings yet.
+Select **Spells → Research**, then **Cast** once ready, and click a valid dwarf, enemy or floor point. Casting returns to excavation after success; right-click or Escape cancels targeting without charge. Unit selection and successful targeted casts show health and effects in the sidebar. Spell targeting and enemy visibility require current line of sight within the normal sight radius of a living dwarf or the Hearth; camera movement does not grant sight. Haste multiplies the target's trained work rate and does not accelerate effect timers or needs.
 
-Call to Arms additionally needs shared rally assignments, capability-based responder selection and priority handling. Show a restrained ground rune at the rally point; remaining time, responding/unreachable fighter counts and Dismiss belong in the sidebar. Verify all eligible fighters respond, nonfighters continue work, blocked routes recover, service reservations release, and expiry/dismissal restores normal priorities. Test the single-rally restriction, distant travel consuming the duration, new arrivals and critical-needs exceptions.
+Definitions and tunable effect values live in [spell definitions](src/content/spells.ts), with research and casting in [research](src/game/research.ts), effect timers/damage in [spell effects](src/game/spell-effects.ts), and fighter response in [combat](src/game/combat.ts). **Game configuration** exposes research/preparation costs and effect values; active effects retain their cast-time values. The rally uses a ground rune; remaining time, responding/unreachable counts and Dismiss stay in the sidebar. Barrier health and duration also stay in the spell panel.
 
-Playtest cast validation and exact gold/charge use, interrupted preparation, effect expiry and non-stacking, strong-enemy Slow, blast obstruction, healing under repeated damage, and barrier occupancy/path updates. Balance should make a 25–50 gold cast a meaningful tactical purchase without replacing Warriors, constructed defenses or room investment.
+**Debug → Spell test yard** constructs working Library, food and rest facilities with test residents and prepared charges. It offers pause/resume, preparation, enemy spawning, wounding, reset and return controls. Debug preparation is an explicit shortcut; normal research and repeat preparation still use actual Runesmith work. The yard is separate from the stronghold in memory.
+
+Simulation checks cover exact charges, invalid targets, individual speed, research reuse, Slow and attack cadence, damage-source-specific Reckoning, shields, interrupted healing, blast obstruction, barrier occupancy/construction/path updates, rally responder eligibility, reservations, blocked routes, critical needs, new arrivals, dismissal and expiry. Browser checks cover targeted casts, health/cost feedback, visual effects and live combat. Broader enemy types, natural raids, guard duty, retreat and campaign progression remain pending; no new mana, persistence or direct troop orders are introduced.

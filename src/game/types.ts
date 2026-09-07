@@ -25,10 +25,15 @@ export interface World {
   agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
   craftOrders:CraftOrder[];outputs:Record<string,number>;
   salvaged?:Record<string,number>;
-  researchOrders?:ResearchOrder[];hasteUntil?:number;
+  researchOrders?:ResearchOrder[];
+  barrier?:Point&{health:number;maxHealth:number;until:number};
+  rally?:Point&{until:number;radius:number};
+  spellBursts?:Array<Point&{id:string;at:number;radius:number}>;
   recruitment?:{enabled:boolean;nextAt:number;cursor:number};
   defenses?:Defense[]; enemies?:Enemy[]; nextDefenseId?:number; nextEnemyId?:number;
   defenseTest?:{spawn:Point;target:Point};
+  spellTest?:{spawn:Point;target:Point;paused?:boolean};
+  nextResidentId?:number;
   routesChanged?:boolean;
 }
 export type DoorMode='open'|'closed'|'locked';
@@ -39,7 +44,9 @@ export interface Defense extends Point {
 export interface Enemy extends Point {
   id:number; health:number; target:Point; facing:number; pinnedUntil:number;
   nextAttackAt:number; activity:string; hitAt:number; diedAt?:number;
+  effects?:SpellEffect[];
 }
+export interface SpellEffect {id:string;kind:'haste'|'slow'|'shield'|'mend'|'reckoning';until:number;strength:number;remaining?:number;rate?:number;pauseSeconds?:number;startedAt:number}
 export interface Furnishing extends Point {
   id:string; room:string; kind:string; model?:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
 }
@@ -54,6 +61,8 @@ export interface Resident extends Point {
   avoidFacility?:string;avoidUntil?:number;
   crafted:number;
   trainingLevel?:number;trainingProgress?:number;nextTrainingAt?:number;
+  health?:number;maxHealth?:number;hitAt?:number;nextAttackAt?:number;effects?:SpellEffect[];
+  combatTarget?:number;rallying?:boolean;rallyUnreachable?:boolean;recovering?:boolean;
 }
 export const key = (p: Point) => `${p.x},${p.z}`;
 export const tileAt = (w: World, x: number, z: number): Tile | undefined =>

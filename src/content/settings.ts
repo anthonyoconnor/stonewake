@@ -22,7 +22,8 @@ export const settings:Setting[]=[
  ...spellDefinitions.flatMap(s=>[
   field(`spell.${s.id}.cost`,`${s.name} · casting gold`,'Training & research',s,'cost',0,10000,1,'Applies to future casts; room construction can be free without waiving casting costs.'),
   field(`spell.${s.id}.researchSeconds`,`${s.name} · first research seconds`,'Training & research',s,'researchSeconds',.1,600,.1,'Applies live to initial research.'),
-  field(`spell.${s.id}.prepareSeconds`,`${s.name} · preparation seconds`,'Training & research',s,'prepareSeconds',.1,600,.1,'Applies live after casting a researched spell.')
+  field(`spell.${s.id}.prepareSeconds`,`${s.name} · preparation seconds`,'Training & research',s,'prepareSeconds',.1,600,.1,'Applies live after casting a researched spell.'),
+  ...['duration','strength','radius','stunSeconds','healRate','pauseSeconds'].filter(k=>typeof s[k as keyof typeof s]==='number'&&s[k as keyof typeof s]!==0).map(k=>field(`spell.${s.id}.${k}`,`${s.name} · ${k}`,'Spells',s,k,.01,k==='strength'?(s.strength<1?.9:1000):k==='healRate'?1:300,.01,'Future casts only; active effects retain their values.'))
  ])
 ];
 export const settingValues=()=>Object.fromEntries(settings.map(s=>[s.id,s.get()]));
