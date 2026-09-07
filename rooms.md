@@ -53,7 +53,7 @@ Each room type needs compact furnishings and larger arrangements rather than one
 - Retain existing valid furnishings when expanding where practical, especially occupied beds and stations. Avoid unnecessary rearrangement on every added tile.
 - Recalculate after floor changes, wall excavation, or new doorways make an old arrangement invalid. Keep stored contents and resident assignments associated with surviving or relocated furnishings where possible.
 
-Exact placement rules are still to be prototyped. If a later room removal or damage system reduces capacity, excess stored gold or items must be preserved and any lost bed or workstation capacity clearly reported; remodeling must not silently delete residents' resources.
+The shared placement system now implements these rules with provisional furnishing footprints. If a later room removal or damage system reduces capacity, excess stored gold or items must be preserved and any lost bed or workstation capacity clearly reported; remodeling must not silently delete residents' resources.
 
 ### Capacity and feedback
 
@@ -151,7 +151,7 @@ Room definitions should describe their visual identity, compact and large furnis
 
 ## Room development and debugging
 
-The [development plan](development-plan.md) schedules shared room support and a Room Debug View in M5, a sidebar Debug menu and free room construction flag in M5.1, then the Dormitory, Kitchen, and Workshop in M6–M8. These are planned features; implementation progress is tracked in the development plan.
+The [development plan](development-plan.md) schedules shared room support and a Room Debug View in M5, a sidebar Debug menu and free room construction flag in M5.1, then the Dormitory, Kitchen, and Workshop in M6–M8. These features are implemented; verification and prototype limitations are recorded in the development plan.
 
 Every room addition follows the [room development checklist](room-development-checklist.md), which covers definitions, placement, automatic furnishings, capacity, access, services, sidebar feedback, and varied layout checks. Review the existing Treasure Room against the same checklist when establishing shared room support.
 

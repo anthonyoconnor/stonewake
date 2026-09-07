@@ -8,6 +8,12 @@ export function createRoomLab(){
   for(const t of w.tiles){t.known=true;t.claimed=t.terrain==='floor';}w.allowance=50000;return w;
 }
 export const labShapes=['Single tile','Compact','Large hall','Narrow strip','L shape','Around earth','Bedrock seam','Adjacent rooms'];
+export const showcaseRooms=[
+  {type:'treasure',x:2,z:2,width:5,depth:5},
+  {type:'dormitory',x:10,z:2,width:6,depth:5},
+  {type:'kitchen',x:2,z:10,width:7,depth:5},
+  {type:'workshop',x:14,z:11,width:6,depth:6}
+];
 export function labLayout(w:World,shape:string):Point[]{
   let cells:Point[]=[];
   const rect=(x:number,z:number,width:number,depth:number)=>{for(let dz=0;dz<depth;dz++)for(let dx=0;dx<width;dx++)cells.push({x:x+dx,z:z+dz});};

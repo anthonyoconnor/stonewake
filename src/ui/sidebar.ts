@@ -8,6 +8,9 @@ import {labShapes} from '../content/room-lab';
 import {addMiners,addResidents} from '../game/simulation';
 import {queueCraft,attractionStatus} from '../game/crafting';
 import {recipes,recipeById} from '../content/recipes';
+import {roomLooks} from '../view/surfaces';
+import {reachable} from '../game/navigation';
+import {key} from '../game/types';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
@@ -39,8 +42,9 @@ export class Sidebar {
     this.show('rooms');view.engine.resize();
   }
   show(category:string){
+    if(category==='rooms'&&this.lab)category='lab';
     this.category=category;
-    this.root.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',(b as HTMLElement).dataset.category===category));
+    this.root.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',(b as HTMLElement).dataset.category===(category==='lab'?'rooms':category)));
     if(category==='help')this.panel.innerHTML='<p class="eyebrow">FIELD GUIDE</p><h2>Find your foothold.</h2><p>Explore the stone halls around your Hearthstone.</p><dl><dt>W A S D</dt><dd>Move camera</dd><dt>Q / E</dt><dd>Rotate view</dd><dt>Mouse wheel</dt><dd>Zoom</dd><dt>Middle drag</dt><dd>Pan</dd><dt>Home</dt><dd>Return to hearth</dd></dl>';
     else if(category==='debug'){
       this.panel.innerHTML=`<p class="eyebrow">DEVELOPMENT TOOLS</p><label class="toggle"><input id="free-rooms" type="checkbox" ${this.view.world.freeRoomBuilding?'checked':''}/> Free room construction</label><p class="muted">${this.view.world.freeRoomBuilding?'Room construction and expansion cost no gold.':'Normal room costs are active.'} Placement and access rules still apply.</p><button id="debug-lab" class="wide">Room layouts</button><button id="restart" class="wide">Restart stronghold</button>`;
@@ -57,11 +61,14 @@ export class Sidebar {
       const test=document.createElement('button');test.className='wide';test.textContent='Add tired test residents';test.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.energy=.1;a.retry=0;}test.disabled=true;};this.panel.append(test);
       const hungry=document.createElement('button');hungry.className='wide';hungry.textContent='Add hungry test residents';hungry.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.hunger=.1;a.retry=0;}hungry.disabled=true;};this.panel.append(hungry);
     }else if(category==='rooms'){
-      this.panel.innerHTML=`<p class="eyebrow">BUILD YOUR STRONGHOLD</p>${roomDefinitions.filter(r=>r.implemented).map(r=>`<button class="room-card" data-room="${r.id}" title="${r.description}"><span class="room-icon" style="color:${r.color}">▦</span><span><strong>${r.name}</strong><small>${this.view.world.freeRoomBuilding?0:r.cost} gold / square</small></span></button>`).join('')}<div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
+      this.panel.innerHTML=`<p class="eyebrow">BUILD YOUR STRONGHOLD</p>${roomDefinitions.filter(r=>r.implemented).map(r=>`<button class="room-card" data-room="${r.id}" title="${r.description}"><span class="room-icon" style="color:${r.color}">${roomLooks[r.id]?.icon??'▦'}</span><span><strong>${r.name}</strong><small>${this.view.world.freeRoomBuilding?0:r.cost} gold / square</small></span></button>`).join('')}<div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.room!));
       this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
     }else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="residents-list"></div>';
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
+    if(['lab','debug'].includes(category)){
+      const showcase=document.createElement('button');showcase.className='wide';showcase.textContent='Load visual showcase';showcase.onclick=()=>this.onLab(true,'showcase');this.panel.append(showcase);
+    }
     if(['rooms','lab','debug'].includes(category)){
       const production=document.createElement('details');production.className='production';production.innerHTML=`<summary>Workshop production</summary><div id="craft-status" class="muted"></div>${recipes.map(r=>`<button class="wide" data-recipe="${r.id}">Queue ${r.name.toLowerCase()} · ${r.cost} gold</button>`).join('')}<div id="craft-orders"></div><div id="craft-outputs"></div>`;this.panel.append(production);
       production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.update();});
@@ -74,7 +81,7 @@ export class Sidebar {
     const c=this.minimap.getContext('2d')!,w=this.view.world,sx=this.minimap.width/w.width,sz=this.minimap.height/w.height;
     c.fillStyle='#0c1319';c.fillRect(0,0,240,170);
     const color:Record<string,string>={dirt:'#6f5a43',rock:'#91938a',bedrock:'#3c4d55',gold:'#dba949',gem:'#857ab9',floor:'#8b8067'};
-    for(const t of w.tiles)if(t.known){c.fillStyle=t.core?'#8de3e5':color[t.terrain];c.fillRect(t.x*sx,t.z*sz,sx+.4,sz+.4);}
+    for(const t of w.tiles)if(t.known){c.fillStyle=t.core?'#8de3e5':t.room?roomDefinitions.find(r=>r.id===t.room)!.color:color[t.terrain];c.fillRect(t.x*sx,t.z*sz,sx+.4,sz+.4);}
     c.strokeStyle='#ddd4b2';c.lineWidth=1;c.beginPath();
     const scene=this.view.scene,e=this.view.engine;
     const width=this.view.canvas.clientWidth,height=this.view.canvas.clientHeight;
@@ -103,7 +110,8 @@ export class Sidebar {
     }
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
     const craftStatus=this.panel.querySelector('#craft-status');if(craftStatus){
-      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft').length} craft positions · ${w.agents.filter(a=>a.capabilities.includes('craft')).length} Engineers. ${attractionStatus(w,'engineer')}`;
+      const start=w.agents[0]??w.tiles.find(t=>t.claimed&&!t.core&&t.terrain==='floor'),access=start?reachable(w,start):new Set<string>();
+      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft'&&access.has(key(f.access))).length} usable craft positions · ${w.agents.filter(a=>a.capabilities.includes('craft')).length} Engineers. ${attractionStatus(w,'engineer')} Recruitment uses the Debug test worker for now.`;
       this.panel.querySelector('#craft-orders')!.innerHTML=w.craftOrders.filter(o=>o.state!=='done').map(o=>`<p>${recipeById(o.recipe)!.name} · ${o.state==='working'?Math.round(o.progress/recipeById(o.recipe)!.seconds*100)+'%':'Queued'}</p>`).join('');
       this.panel.querySelector('#craft-outputs')!.textContent=recipes.map(r=>`${w.outputs[r.id]??0} ${r.name.toLowerCase()}s`).join(' · ');
     }

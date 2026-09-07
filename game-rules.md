@@ -8,7 +8,7 @@ Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Levels](le
 
 This document records the agreed direction and the current working rules. Proposals and unresolved mechanics are identified explicitly. Numerical balance values are not final. The companion documents expand the inventories without committing to an implementation or a final campaign roster.
 
-The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records the agreed M1–M8 sequence, including M5.1, and guidelines for rapid iteration and extensible content. The planned room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Implementation is authorized; progress is tracked in the development plan.
+The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records the agreed M1–M9 sequence, including M5.1, and guidelines for rapid iteration and extensible content. The room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Implementation is authorized; progress is tracked in the development plan.
 
 ## 1. Player role and core loop
 
@@ -227,7 +227,7 @@ These are intended design effects to verify during playtesting, not claims about
 
 ## 14. Extensible character and room definitions
 
-Development focuses on the current four dwarf types and room catalog to establish the core gameplay. The architecture must allow new dwarf types and rooms later. These are requirements for the future implementation, not claims about an existing codebase.
+Development focuses on the current four dwarf types and room catalog to establish the core gameplay. The architecture must allow new dwarf types and rooms later. The prototype implements shared definitions and services for Miners and Engineers; the remaining roles and broader systems are still planned.
 
 - Define each dwarf type as data with a stable identifier, presentation assets, base stats and training progression, needs, recruitment conditions, and job or combat capabilities. Keep appearance separate from behavior; making the Engineer female does not require a different resident system.
 - Reuse common systems for autonomous movement, needs, payday, departure, training, and job assignment. Determine job eligibility from capabilities and room services rather than hard-coded checks for the four current dwarf names. Shared food, accommodation, and training should support future resident types through the same rules.

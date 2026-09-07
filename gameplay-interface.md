@@ -160,7 +160,7 @@ Build category contents from the registered room, dwarf, fixture, and spell defi
 
 ## Development debug controls
 
-M5 adds a **Room Debug View** for inspecting all defined room types and testing implemented rooms in different layouts. M5.1 adds **Debug** as an option alongside the left-hand sidebar controls. Its panel provides access to the room view and a **Free room construction** toggle showing the current development flag state. These features are planned in the [development plan](development-plan.md); implementation progress is tracked in the development plan.
+M5 adds a **Room Debug View** for inspecting all defined room types and testing implemented rooms in different layouts. M5.1 adds **Debug** as an option alongside the left-hand sidebar controls. Its panel provides access to the room view and a **Free room construction** toggle showing the current development flag state. These features are implemented; verification is recorded in the [development plan](development-plan.md).
 
 The room view offers a catalog, room selection, and a resettable test area. Planned room entries remain clearly marked until implemented. Create and expand a selected room with the same click/drag grid gestures, previews, validation, automatic furnishings, and camera controls as normal gameplay. Use the sidebar to inspect usable capacity, stock/occupancy where applicable, and access or layout problems. New room definitions feed the catalog automatically.
 

@@ -18,4 +18,4 @@ Read `README.md` and `development-plan.md` before development. Read the relevant
 
 ## Current authorization
 
-The user authorized implementation of all milestones M1–M8, including M5.1, on 2026-09-07. Proceed through the sequence without requesting approval again for ordinary implementation, verification, or milestone commits. This authorization supersedes the earlier planning-only instruction. Do not claim a milestone complete until its required behavior has been implemented and verified.
+The user authorized implementation of all milestones M1–M8, including M5.1, on 2026-09-07, and subsequently requested M9 after M8: review the concept art and add a graphics and animation pass to the existing game. M1–M9 are complete; see the development record for verification and pending broader gameplay integrations. This authorization supersedes the earlier planning-only instruction. Continue to follow these development priorities for subsequent user-authorized work. Do not claim a milestone complete until its required behavior has been implemented and verified.

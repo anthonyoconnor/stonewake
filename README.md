@@ -12,10 +12,37 @@ Use Node.js 24 or later. Run `npm install`, then `npm run dev` and open the loca
 
 Project-wide development instructions are in [AGENTS.md](AGENTS.md).
 
+## Play and iterate
+
+Choose **Excavate** and drag across visible dirt, rock, gold or gems. Miners find reachable work, clear terrain and claim the floor. Choose a room and drag claimed squares to build; right-click or Escape cancels the current gesture. Start with a Treasure Room to receive mined riches. There is a provisional 400-gold starting allowance. Room capacity comes from accessible furnishings, so narrow or tiny layouts may not function yet.
+
+Pan with **WASD** or middle drag, rotate with **Q/E**, zoom with the wheel, and press **Home** to return to the Hearthstone. The minimap also moves the camera. Camera movement does not reveal hidden terrain.
+
+Open **Debug → Room layouts** to build and inspect all implemented rooms with the normal grid tools. Example footprints, tired/hungry residents and a test Engineer make services easy to exercise. **Load visual showcase** creates all four rooms with actual test stocks, four residents and queued crafting jobs. Click Rooms to return to the studio controls after inspecting Dwarfs; Return to stronghold restores the game you left in memory.
+
+**Free room construction** applies to room creation and expansion in both worlds. Set `VITE_FREE_ROOM_BUILDING=true` in an untracked `.env.local` to enable it on launch, or use the Debug toggle. Production inputs still cost gold. **Restart stronghold** starts a fresh prototype; refreshing also resets the session.
+
+Workshop production is under Rooms or Debug. Normal Engineer recruitment and placing manufactured doors/traps are pending; **Add test Engineer** verifies the staffed production service. Training Room, Library, Guard Post, Bridge, combat and campaign progression remain broader design work.
+
+## Code map
+
+| Change | Starting point |
+|---|---|
+| Level dimensions, openings and resource seams | [Level definitions](src/content/levels.ts) |
+| Room prices, footprints, capacity and services | [Room definitions](src/content/rooms.ts) and [room checklist](room-development-checklist.md) |
+| Character capabilities and recipes | [Characters](src/content/characters.ts), [recipes](src/content/recipes.ts) |
+| Work pace and shared needs | [Tuning](src/content/tuning.ts), [simulation](src/game/simulation.ts), [food production](src/game/food.ts) |
+| Construction, furnishing and path access | [Rooms](src/game/rooms.ts), [navigation](src/game/navigation.ts) |
+| Prototype meshes, textures and animations | [Scene](src/view/scene.ts), [surfaces](src/view/surfaces.ts), [residents](src/view/residents.ts), [effects](src/view/effects.ts) |
+| Sidebar and grid input | [Sidebar](src/ui/sidebar.ts), [selection](src/ui/selection.ts) |
+| Repeatable debug examples | [Room studio data](src/content/room-lab.ts) |
+
+The simulation has no Babylon.js or DOM dependency. Focused Node tests exercise discovery, mining, resource conservation, navigation, layout access, needs, free construction and staffed crafting. Graphics remain procedural prototype assets guided by the concepts; see the [graphics pass notes](graphics-pass.md).
+
 ## Start here for a new session
 
 1. Read [Game rules](game-rules.md) for the core loop, agreed constraints, and open mechanics.
-   Read the [Development plan](development-plan.md) for the confirmed TypeScript + Babylon.js stack, iteration guidelines, and M1–M8 scope (including M5.1) before implementation work. Follow the [room development checklist](room-development-checklist.md) when adding rooms.
+   Read the [Development plan](development-plan.md) for the confirmed TypeScript + Babylon.js stack, iteration guidelines, and M1–M9 scope (including M5.1) before implementation work. Follow the [room development checklist](room-development-checklist.md) when adding rooms.
 2. Read the relevant detailed documents below before changing a system. Each distinguishes agreed direction from proposals and unresolved balance.
 3. For visual work, inspect the [approved terrain reference](concept-art/terrain/resource-terrain-v2.png), then the relevant current gallery and its prompt records.
 4. Check the working tree and recent Git history before editing. Keep related design documents, gallery links, and prompt records consistent when making changes.
@@ -31,12 +58,12 @@ Current design documents define gameplay. Concept art illustrates the direction;
 | [Rooms and structures](rooms.md) | Room catalog, purposes and outputs, attraction, arbitrary footprints, automatic furnishings, capacity, floors and wall identity, doors, traps, and reinforcement |
 | [Levels and underground contents](levels.md) | Terrain, resources, discovery, hidden spaces, regions and inhabitants, attacks, candidate strongholds, and level-authoring considerations |
 | [Gameplay interface](gameplay-interface.md) | Left sidebar, minimap, rooms/defenses/spells/dwarfs panels, selection and camera controls, messages, inspection, and a clear gameplay view |
-| [Development plan](development-plan.md) | Confirmed TypeScript + Babylon.js browser stack, development guidelines, M1–M8 milestones including M5.1, completion checks, and progress record; implementation progress is tracked in the plan |
+| [Development plan](development-plan.md) | Confirmed TypeScript + Babylon.js browser stack, development guidelines, M1–M9 milestones including M5.1, completion checks, and progress record; implementation progress is tracked in the plan |
 | [Room development checklist](room-development-checklist.md) | Reusable procedure for adding rooms, shared-system integration, room debug view, and layout/function checks |
 
 ## Current scope and constraints
 
-- **Browser play and development:** use TypeScript + Babylon.js. Prioritize fast iteration and extensible characters, levels, rooms, and features. Game saves, multiplayer, and production hardening are outside the current development plan. Commit completed chunks and every milestone. M1–M8, including M5.1, are recorded in the [Development plan](development-plan.md); implementation is authorized and tracked in the development plan. Planned room debugging includes a room catalog with grid-based layout creation and a left-sidebar Debug menu with a free room construction flag.
+- **Browser play and development:** use TypeScript + Babylon.js. Prioritize fast iteration and extensible characters, levels, rooms, and features. Game saves, multiplayer, and production hardening are outside the current development plan. Commit completed chunks and every milestone. M1–M9, including M5.1, are recorded in the [Development plan](development-plan.md); implementation is authorized and tracked in the development plan. Room debugging includes a room catalog with grid-based layout creation and a left-sidebar Debug menu with a free room construction flag.
 - **Fresh settlements:** each level starts with a small mining crew and an established Stone Hearth around a dormant Hearthstone awakened during arrival. Other residents are recruited locally. Dwarfs arrive through the Hearthstone's runic connection. Enemies destroy the core to win; it has a fixed location and no upgrades. There is no expedition leader.
 - **One terrain layer:** excavation and construction use large square cells. Intact earth, gold-bearing terrain, and bedrock share one full height above a common walkable floor. Bedrock generally forms continuous seams with grid-shaped boundaries. Ordinary unmined earth cells can remain inside an excavation. There are no terraced mining layers or stacked playable floors.
 - **Discovery matters:** caves, ruins, passages, and inhabited chambers can already be excavated but remain hidden until breached and seen. Camera movement must not reveal concealed areas.

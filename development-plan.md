@@ -1,6 +1,6 @@
 # Browser game development plan
 
-Status: **implementation authorized on 2026-09-07.** TypeScript and Babylon.js are confirmed. This document records the user's requested M1–M8 sequence, including M5.1, and replaces the earlier proposed roadmap. The user authorized all milestones on 2026-09-07; proceed in sequence.
+Status: **M1–M9 complete, including M5.1.** TypeScript and Babylon.js are confirmed. This document records the user's requested sequence and replaces the earlier proposed roadmap. The user authorized implementation on 2026-09-07 and subsequently requested a graphics and animation pass as M9, which was added after M8 was complete. Verification and prototype limitations are recorded below.
 
 Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [Rooms](rooms.md), [Levels](levels.md), and [Gameplay interface](gameplay-interface.md). This plan defines development order; systems outside the listed milestones remain part of the broader design where documented, without becoming requirements for these milestones. Every new room follows the [room development checklist](room-development-checklist.md).
 
@@ -29,6 +29,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 | M6 | Dormitory | Complete |
 | M7 | Kitchen | Complete |
 | M8 | Workshop | Complete |
+| M9 | Concept-art graphics and animation pass | Complete |
 
 ## M1 — Grid level and terrain
 
@@ -175,6 +176,14 @@ Follow the [room development checklist](room-development-checklist.md) and [Work
 
 Complete when the Workshop passes the checklist and a basic crafting job can be exercised from accepted work through resource use and output. Engineer recruitment and door/trap placement have not yet been assigned separate milestones: if unavailable during M8, use an explicit debug worker/job fixture to verify the room service and record those gameplay integrations as pending. An unstaffed Workshop does not manufacture automatically. Full combat, repair, and trap-replenishment systems are not required to verify this room.
 
+## M9 — Graphics and animation pass
+
+Added after verified M8 completion, as requested by the user. Review the approved terrain image and current Stone Hearth, Treasure Room, Dormitory, Kitchen, Workshop, Miner and female Engineer concepts. Refine the existing procedural graphics to better express their silhouettes, materials and atmosphere. Add appropriate activity animation to the existing systems: walking, mining, carrying, claiming, resting, eating and crafting, with restrained environmental movement and effects.
+
+Preserve the common terrain height, readable grid footprints, discovery boundaries, actual room capacities and clear world view. Effects must follow real activity and stored resources; keep all text and numerical feedback in the sidebar. Use modular code-generated assets for quick iteration. This pass does not add new gameplay systems or production asset infrastructure.
+
+Complete when terrain/resources, core, all four implemented rooms and both implemented character types have been visually reviewed against the concepts, activity animations have been exercised in the browser, and simulation/build checks still pass. Record remaining visual limitations honestly.
+
 ## Development record
 
 Prototype values remain provisional. Milestone commits are identifiable by their M-number in Git history.
@@ -213,3 +222,8 @@ Added Kitchen growing trays, cooking hearths, tables and brewing barrels; connec
 
 ### M8 — 2026-09-07
 Added Workshop benches, anvils and assembly tables, editable character/recipe definitions, the female Engineer, and queued door/trap manufacturing. Accessible stations require a capable worker; inputs are charged once at work start, and interrupted paid work resumes without charging again. Settlement attraction eligibility reports craft, bed and food support. Twenty simulation checks pass, including all room layouts and costs, staffed/unfunded/unstaffed production and interrupted work. Browser verified an L-shaped Workshop produces one reinforced door and one bolt trap, spending exactly 95 gold, with no console errors. An explicit Debug/Studio Engineer fixture exercises production; automatic recruitment and placing the manufactured defenses remain pending gameplay integrations, as allowed by M8. No combat or repair system was added.
+
+### M9 — 2026-09-07
+Reviewed the approved terrain, core, four implemented rooms and both character concepts. Added room paving and brass motifs, wall fittings and lanterns, embedded gold and gem details, contact shadows, core glow, detailed dwarf silhouettes, walking/work/carrying/claiming/eating/sleeping poses, excavation dust, crafting sparks and cooking steam. Added a repeatable four-room showcase using real services, test stocks and workers. Reduced repeated rendering work by retaining unchanged furnishings, combining static parts sharing materials, and restricting glow to light-emitting objects. Showcase loading yields between room builds.
+
+All 20 simulation checks pass, the final TypeScript/browser build passes, and root-document Markdown links resolve. Browser review covered normal terrain and core, four room types from multiple rotations/zoom levels, sleeping and active residents, mining/claiming/hauling, shared meal/rest cycles for all four test residents, and one completed door plus trap. The final browser console reported no errors. The working art remains procedural geometry and textures; the [graphics pass notes](graphics-pass.md) record references, animation hooks and visual limitations. Vite reports a large Babylon.js bundle; production splitting and deployment remain outside this local prototype milestone.
