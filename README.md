@@ -61,6 +61,7 @@ Current design documents define gameplay. Concept art illustrates the direction;
 |---|---|
 | [Game rules](game-rules.md) | Core loop, autonomous control, camera, campaign progression, Hearthstone and defeat, excavation, economy, recruitment, needs, defense, and extensible character/room definitions |
 | [Characters](characters.md) | Current dwarf roster, work, recruitment, pay, bedding, food, special facilities, training, and behavior proposals |
+| [Spells](spells.md) | Planned offensive, defensive and individual support spells; provisional research, preparation, gold costs, effects and targeting |
 | [Rooms and structures](rooms.md) | Room catalog, purposes and outputs, attraction, arbitrary footprints, automatic furnishings, capacity, floors and wall identity, doors, traps, and reinforcement |
 | [Levels and underground contents](levels.md) | Terrain, resources, discovery, hidden spaces, regions and inhabitants, attacks, candidate strongholds, and level-authoring considerations |
 | [Gameplay interface](gameplay-interface.md) | Left sidebar, minimap, rooms/defenses/spells/dwarfs panels, selection and camera controls, messages, inspection, and a clear gameplay view |
