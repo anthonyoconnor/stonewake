@@ -193,3 +193,5 @@ The proposed wall model has one visible reinforced state. Reinforced earth is ha
 - Room selling, refunds, and rebuilding damaged facilities.
 
 Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
+
+The Stone Hearth includes one fixed treasury chest using the shared gold-storage service. It starts empty and holds the normal construction cost of a 3×3 Treasure Room (currently 108 gold). It accepts miner deliveries and pays for construction/production through the shared balance, including when the starting allowance is exhausted. Its access square is preserved by automatic furnishings. Inspect the Hearth for live stored gold/capacity. It is not a room upgrade or an extra starting grant.

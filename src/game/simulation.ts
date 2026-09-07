@@ -23,7 +23,7 @@ function take(w:World,a:Resident,kind:Job['kind'],target:Point,work:Point,furnis
   const path=findPath(w,a,work);if(!path)return false;
   a.job={kind,target:{x:target.x,z:target.z},work:{x:work.x,z:work.z},progress:0,furnishing};a.path=path;a.retry=0;return true;
 }
-function storage(w:World,a:Resident){return nearest(a,w.furnishings.filter(f=>f.room==='treasure'&&f.stored<f.capacity));}
+function storage(w:World,a:Resident){return nearest(a,w.furnishings.filter(f=>f.service==='storage'&&f.stored<f.capacity));}
 function availableStorage(w:World,a:Resident){return storage(w,a).find(f=>findPath(w,a,f.access));}
 function choose(w:World,a:Resident){
   if(a.carrying){

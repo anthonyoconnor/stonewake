@@ -116,6 +116,7 @@ export class GameScene {
       const old=this.furnitureNodes.get(f.id);if(old?.signature===signature)continue;old?.node.dispose();
       const node=new TransformNode(`furnishing ${f.id}`,this.scene);node.parent=furnitureParent;
       this.furnitureNodes.set(f.id,{signature,node});this.furnitureRoot=node;
+      if(f.id==='hearth-treasury')node.position.y=.3;
       const wide=f.cells.some(p=>p.x!==f.x),deep=f.cells.some(p=>p.z!==f.z);
       this.shadow(f.x+(wide?.5:0),f.z+(deep?.5:0),wide?2.2:1.2,deep?2.2:1.2,this.furnitureRoot);
       const wood=this.material('chest wood','#60442e',true),metal=this.material('chest iron','#a28a5f');

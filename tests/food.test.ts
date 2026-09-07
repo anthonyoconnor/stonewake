@@ -17,7 +17,7 @@ test('residents finish meals in an irregular Kitchen without parking in access r
  for(let i=0;i<1000;i++)tick(w,.05);assert(w.agents.every(a=>a.meals>=1));
 });
 test('floor paint and growing beds alone do not create prepared meals',()=>{
- const w=createRoomLab();buildRoom(w,'kitchen',labLayout(w,'Single tile'));produceFood(w,100);assert.equal(w.furnishings.length,0);
+ const w=createRoomLab();buildRoom(w,'kitchen',labLayout(w,'Single tile'));produceFood(w,100);assert.equal(w.furnishings.filter(f=>f.room==='kitchen').length,0);
  buildRoom(w,'kitchen',[{x:9,z:10}]);for(let i=0;i<30;i++)produceFood(w,1);assert(w.furnishings.every(f=>f.service!=='cooking'||f.stored===0));
 });
 test('isolated Kitchen does not feed residents through a blocked route',()=>{

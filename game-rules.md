@@ -121,10 +121,10 @@ Work scheduling must allow genuinely spare miners to reinforce walls. Renewable 
 - Gold deposits provide finite wealth and are exhausted through excavation.
 - Gem deposits, represented visually as columns occupying square terrain cells, provide continuing, slower gold income under the current resource model.
 - Both provide the same spendable gold currency.
-- Miners extract and transport gold to Treasure Rooms.
+- Miners extract and transport gold to Treasure Rooms or the Stone Hearth treasury chest.
 - Treasure Room capacity comes from the accessible storage positions that fit its size and shape.
 - Undelivered gold does not become spendable until stored.
-- Mined gold or gem yields remain on the ground at the extraction site if no Treasure Room is available. Miners collect them once reachable storage has free capacity; full or unreachable storage must not cause resources to disappear. Both sources still produce the same gold currency.
+- Mined gold or gem yields remain on the ground at the extraction site if no reachable storage is available. Miners collect them once reachable storage has free capacity; full or unreachable storage must not cause resources to disappear. Both sources still produce the same gold currency.
 - Building, recruitment, wages, and applicable production costs draw from stored reserves.
 
 Exact extraction rates, carrying capacity, storage density, and spending costs remain open. Startup must provide usable funds before normal hauling is established; the form of starting storage is still to be chosen.

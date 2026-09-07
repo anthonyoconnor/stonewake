@@ -1,11 +1,11 @@
 import { type World,type Point,type Furnishing,key,tileAt,neighbors } from './types.ts';
 import {roomById} from '../content/rooms.ts';
 import {blocked,reachable} from './navigation.ts';
-export const goldTotal=(w:World)=>w.allowance+w.furnishings.filter(f=>f.room==='treasure').reduce((sum,f)=>sum+f.stored,0);
+export const goldTotal=(w:World)=>w.allowance+w.furnishings.filter(f=>f.service==='storage').reduce((sum,f)=>sum+f.stored,0);
 export function spendGold(w:World,amount:number) {
   if(goldTotal(w)<amount)return false;
   w.spent+=amount;const grant=Math.min(amount,w.allowance);w.allowance-=grant;amount-=grant;
-  for(const f of w.furnishings.filter(f=>f.room==='treasure')){const take=Math.min(amount,f.stored);f.stored-=take;amount-=take;}
+  for(const f of w.furnishings.filter(f=>f.service==='storage')){const take=Math.min(amount,f.stored);f.stored-=take;amount-=take;}
   return true;
 }
 export function roomQuote(w:World,type:string,points:Point[]) {
@@ -26,6 +26,7 @@ export function buildRoom(w:World,type:string,points:Point[]) {
 export function furnish(w:World) {
   // Retain valid objects; displaced storage remains in the world rather than vanishing.
   w.furnishings=w.furnishings.filter(f=>{
+    if(f.id==='hearth-treasury')return true;
     if(f.cells.every(p=>tileAt(w,p.x,p.z)?.room===f.room&&tileAt(w,p.x,p.z)?.terrain==='floor')&&tileAt(w,f.access.x,f.access.z)?.terrain==='floor')return true;
     const floor=w.tiles.find(t=>t.terrain==='floor'&&!t.core&&t.x===f.access.x&&t.z===f.access.z)??w.tiles.find(t=>t.terrain==='floor'&&!t.core);
     if(floor&&f.stored&&f.service==='storage')floor.loose+=f.stored;

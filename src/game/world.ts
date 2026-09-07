@@ -1,4 +1,5 @@
 import { type World, type LevelDefinition, type Point, tileAt } from './types.ts';
+import {roomById} from '../content/rooms.ts';
 export function createWorld(level: LevelDefinition): World {
   const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],elapsed:0,allowance:400,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{}};
   for(let z=0;z<w.height;z++) for(let x=0;x<w.width;x++) {
@@ -12,7 +13,17 @@ export function createWorld(level: LevelDefinition): World {
   }
   for(const p of [{x:21,z:23},{x:25,z:23},{x:23,z:27}]) reveal(w,p,8);
   for(const t of w.tiles) if(t.known&&t.terrain==='floor'&&Math.hypot(t.x-level.hearth.x,t.z-level.hearth.z)<7) t.claimed=true;
+  addHearthTreasury(w);
   return w;
+}
+// The chest occupies already-blocked core space; its approach stays on walkable floor.
+export function addHearthTreasury(w:World){
+  if(w.furnishings.some(f=>f.id==='hearth-treasury'))return;
+  const {x,z}=w.hearth;
+  const side=[{x:0,z:-1},{x:1,z:0},{x:0,z:1},{x:-1,z:0}].find(d=>tileAt(w,x+d.x*2,z+d.z*2)?.terrain==='floor');
+  if(!side)return;
+  const access={x:x+side.x*2,z:z+side.z*2};
+  w.furnishings.push({id:'hearth-treasury',room:'hearth',kind:'chest',service:'storage',x:x+side.x,z:z+side.z,rotation:0,cells:[],access,capacity:9*roomById('treasure')!.cost,stored:0});
 }
 // Sight is independent of camera and stops at the first solid cell.
 export function reveal(w:World, origin:Point, radius=6) {

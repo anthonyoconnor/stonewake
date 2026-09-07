@@ -10,7 +10,7 @@ import {queueCraft,attractionStatus} from '../game/crafting';
 import {recipes,recipeById} from '../content/recipes';
 import {actionIcon} from './icons';
 import {reachable} from '../game/navigation';
-import {key} from '../game/types';
+import {key,tileAt} from '../game/types';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
@@ -116,6 +116,7 @@ export class Sidebar {
         summary.textContent=`${s.tiles} squares · ${food} meals · ${count('dining').length} eating positions · ${count('brewing').reduce((sum,f)=>sum+f.stored,0)} ale. `;
         if(!count('growing').length||!count('cooking').length)summary.textContent+='Needs growing and cooking facilities.';else if(!count('dining').length)summary.textContent+='Needs room for a table.';else if(!food)summary.textContent+='Food is growing and cooking.';
       }}
+      if(p&&tileAt(w,p.x,p.z)?.core){const chest=w.furnishings.find(f=>f.id==='hearth-treasury');summary.textContent=chest?`Hearth treasury · ${chest.stored} / ${chest.capacity} gold`:'';}
     }
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
     const craftStatus=this.panel.querySelector('#craft-status');if(craftStatus){

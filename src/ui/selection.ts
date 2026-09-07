@@ -31,7 +31,7 @@ export class Selection {
   }
   updateCursor(){const tile=this.hover&&tileAt(this.view.world,this.hover.x,this.hover.z);const action=this.tool==='dig'?(this.dragAdds!==undefined?(this.dragAdds?'dig':'erase'):tile?.designated?'erase':tile?.known&&tile.terrain==='floor'?'inspect':'dig'):this.tool;this.view.canvas.style.cursor=actionCursor(action);}
   setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=tool;this.draw();this.onChange('');}
-  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.core?'Stone Hearth · Your stronghold’s heart.':`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);}
+  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.core?`Stone Hearth · Treasury ${this.view.world.furnishings.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.furnishings.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);}
   rectangle(a:Point,b:Point){const result:Point[]=[];for(let z=Math.min(a.z,b.z);z<=Math.max(a.z,b.z);z++)for(let x=Math.min(a.x,b.x);x<=Math.max(a.x,b.x);x++)result.push({x,z});return result;}
   draw(){
     this.updateCursor();this.preview.dispose();this.preview=new TransformNode('preview',this.view.scene);if(!this.hover||this.tool==='inspect')return;

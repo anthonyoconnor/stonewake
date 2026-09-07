@@ -7,7 +7,8 @@ import {buildRoom,goldTotal} from '../src/game/rooms.ts';
 import {findPath,canStand} from '../src/game/navigation.ts';
 function fixture(){
  const w=createWorld({id:'test',name:'Test',width:16,height:16,hearth:{x:4,z:4},openings:[[2,2,12,12]],seams:[{terrain:'gold',cells:[{x:10,z:7}]},{terrain:'gem',cells:[{x:10,z:9}]}]});
- for(const t of w.tiles){t.known=true;if(t.terrain==='floor')t.claimed=true;}addMiners(w);return w;
+ // Explicit no-storage fixture exercises the fallback when no treasury is available.
+ w.furnishings=[];for(const t of w.tiles){t.known=true;if(t.terrain==='floor')t.claimed=true;}addMiners(w);return w;
 }
 function run(w:World,seconds:number){for(let i=0;i<seconds*20;i++)tick(w,.05);}
 const plot=(x:number,z:number)=>Array.from({length:12},(_,i)=>({x:x+i%4,z:z+Math.floor(i/4)}));
@@ -45,4 +46,19 @@ test('toggling excavation cancels active mining and accepts hidden planning but 
  const hidden=tileAt(w,10,9)!;hidden.known=false;
  designate(w,[hidden,{x:4,z:4},{x:0,z:0}],'toggle');
  assert.equal(hidden.designated,true);assert.equal(hidden.known,false);assert.equal(tileAt(w,4,4)!.designated,false);assert.equal(tileAt(w,0,0)!.designated,false);
+});
+
+test('empty Hearth treasury recovers from zero gold and funds a furnished Treasure Room',()=>{
+ const w=createWorld({id:'recovery',name:'Recovery',width:16,height:16,hearth:{x:4,z:4},openings:[[2,2,12,12]],seams:[{terrain:'gold',cells:[{x:10,z:7},{x:11,z:7}]}]});
+ for(const t of w.tiles){t.known=true;if(t.terrain==='floor')t.claimed=true;}
+ w.allowance=0;addMiners(w);const chest=w.furnishings.find(f=>f.id==='hearth-treasury')!;
+ assert(chest);assert.equal(chest.stored,0);assert.equal(chest.capacity,108);
+ designate(w,[{x:10,z:7},{x:11,z:7}]);run(w,100);
+ assert.equal(chest.stored,108);assert.equal(goldTotal(w),108);
+ const layout=Array.from({length:9},(_,i)=>({x:7+i%3,z:3+Math.floor(i/3)}));
+ assert.equal(buildRoom(w,'treasure',layout),'Treasure Room built.');assert.equal(chest.stored,0);assert.equal(goldTotal(w),0);
+ assert.equal(w.furnishings.filter(f=>f.id==='hearth-treasury').length,1);
+ assert(w.furnishings.some(f=>f.room==='treasure'&&findPath(w,w.agents[0],f.access)));
+ run(w,70);assert.equal(goldTotal(w),72);assert.equal(w.spent,108);
+ assert(w.furnishings.includes(chest));assert(chest.stored<=chest.capacity);
 });
