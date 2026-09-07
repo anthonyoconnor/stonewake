@@ -30,7 +30,7 @@ Layout management is the primary activity. The position and connections of rooms
 
 Dwarfs handle their movement, jobs, needs, and fighting autonomously. There is no possession, individual movement command, or direct troop control.
 
-Proposed first rally model: one active marker at a time. Responders walk to it and engage enemies without further unit orders. The selection of responders, range, cost, and behavior after reaching the area remain open.
+The [Call to Arms spell](spells.md#call-to-arms-behavior) calls all fighting dwarfs to a selected point for a limited period, with one active rally at a time. Responders walk there and fight autonomously. Proposed starting values are 25 gold per cast, 45 seconds of duration including travel, and a 3-tile gathering radius; the spell document defines research, preparation, responder eligibility and expiry behavior. This rally remains planned content.
 
 Spells are accessed through the left sidebar. Available player-cast spells use a target selection when applicable; spell effects, costs, research order, and casting restrictions remain to be defined. Dwarf behavior stays autonomous.
 

@@ -87,7 +87,7 @@ The [dwarf concept gallery](concept-art/dwarfs/README.md) shows the current four
 - Food consumption, bed capacity, and room capacity per specialist.
 - Combat abilities and balance of the provisional shared training values.
 - Broader spell balance and campaign research progression.
-- How many fighters and support dwarfs answer a rally.
+- Playtest [Call to Arms](spells.md#call-to-arms-behavior) response priorities: all fighting types answer; noncombat support workers continue working, with critical survival needs allowed to override the rally.
 - Whether individual dwarf names or personalities are included.
 
 ## Implementation playbook
