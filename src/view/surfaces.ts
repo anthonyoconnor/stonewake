@@ -1,11 +1,11 @@
 import {DynamicTexture,type Scene} from '@babylonjs/core';
 
 // Small generated material sheets keep visual iteration independent of an asset pipeline.
-export const roomLooks:Record<string,{floor:string;trim:string;icon:string}>={
-  treasure:{floor:'#62655d',trim:'#c3a15c',icon:'◈'},
-  dormitory:{floor:'#796b58',trim:'#baa477',icon:'▱'},
-  kitchen:{floor:'#806d50',trim:'#d2bd8b',icon:'♧'},
-  workshop:{floor:'#49565b',trim:'#bca067',icon:'⚙'}
+export const roomLooks:Record<string,{floor:string;trim:string}>={
+  treasure:{floor:'#62655d',trim:'#c3a15c'},
+  dormitory:{floor:'#796b58',trim:'#baa477'},
+  kitchen:{floor:'#806d50',trim:'#d2bd8b'},
+  workshop:{floor:'#49565b',trim:'#bca067'}
 };
 export function surfaceTexture(scene:Scene,name:string){
   const tex=new DynamicTexture(`${name}-surface`,{width:256,height:256},scene,false);

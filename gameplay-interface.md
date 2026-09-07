@@ -43,7 +43,7 @@ Proposed orientation: keep the minimap fixed to the map and rotate the camera fo
 
 Use a grid of recognizable room icons. The current growable room catalog is Treasure Room, Dormitory, Kitchen, Workshop, Training Room, Library, and Guard Post. Bridge is available as a construction choice where the level permits it. The Stone Hearth is already established at level start and is not a room the player can repeatedly build or upgrade.
 
-Selecting an icon activates room designation. The sidebar shows the room's name, purpose, applicable cost, and the current footprint preview. Usable capacity and changes to it also appear here when they can be calculated. Do not print costs, tile counts, capacity numbers, or room names over the selected ground.
+Selecting an icon activates room designation. A compact display above the four-column icon grid shows the selected icon, room name and current gold cost per square (zero with free construction enabled). Each room has distinct shared vector artwork used by both its menu button and the world cursor. Unimplemented rooms are disabled and identified as planned; names remain available through button labels and hover titles. Repeated descriptions and per-button prices are omitted. Usable capacity and changes to it also appear here when they can be calculated. Do not print costs, tile counts, capacity numbers, or room names over the selected ground.
 
 The player can designate single cells, paint connected shapes, or drag across an area. Rectangular dragging is a convenience, not a minimum room shape. Repeated selections allow bends, narrow wings, and layouts around bedrock or retained earth cells.
 
@@ -76,6 +76,8 @@ Selecting a dwarf in the world opens its information in the sidebar. A locate ac
 ## Excavation, selection, and camera controls
 
 Excavation is the default cursor action at startup and after right-click or Escape cancels another operation. It is also available as a sidebar tool. Selecting diggable tiles toggles each tile once on release: marked tiles are cleared and unmarked tiles are marked, including mixed rectangular selections. Clicking an open floor or room inspects it. Marking diggable terrain uses a clear cell outline or surface treatment on the square grid. Bedrock cannot be designated for mining. The final highlight colors and pattern remain to be chosen.
+
+The world cursor communicates the action with a pickaxe for excavation, a pickaxe with a minus for clearing marks, an eye over inspectable open floor, or the selected room icon for construction. Right-click/Escape restores the contextual excavation cursor and clears the room choice. Native sidebar pointers remain normal. Cursor artwork contains no text or costs.
 
 Selection marks and placement previews are temporary action feedback. They may show which cells are affected and whether an action is valid, but contain no textual labels, numeric dimensions, or work-completion bars. The normal view does not need a bright permanent grid across every floor.
 
