@@ -20,7 +20,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 
 | Milestone | Outcome | Status |
 |---|---|---|
-| M1 | Fixed-size grid level with core, terrain, resources, and open spaces | Not started |
+| M1 | Fixed-size grid level with core, terrain, resources, and open spaces | Complete |
 | M2 | Camera scrolling/panning, zoom, and rotation | Not started |
 | M3 | Basic left sidebar and minimap, with gameplay controls left blank | Not started |
 | M4 | Autonomous miners, excavation, claiming, Treasure Room construction, and resource hauling | Not started |
@@ -177,4 +177,8 @@ Complete when the Workshop passes the checklist and a basic crafting job can be 
 
 ## Development record
 
-No milestones have started. After each milestone, record its completion date, relevant Git commit(s), verification, and known limitations here. Prototype values remain provisional unless the user explicitly adopts them as design rules.
+Prototype values remain provisional. Milestone commits are identifiable by their M-number in Git history.
+
+
+### M1 — 2026-09-07
+Implemented a 48 × 48 authored map, fixed Stone Hearth, six terrain types, hidden pre-opened caverns, camera-independent sight, and procedural stone/resource meshes. Verified the browser scene with no console errors, TypeScript/build, and two map/sight tests. Geometry and texture detail are prototype assets. Run with npm run dev.

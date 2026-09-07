@@ -4,7 +4,13 @@ A browser-playable, level-based underground management game inspired by Dungeon 
 
 The focus is on **layout management**: where to dig, how rooms connect, how far residents travel, and which routes attackers can use to reach the base's Hearthstone.
 
-This repository currently contains **game design documents, AI-generated concept art, and image-generation prompts**. It has no playable implementation, engine project, or build/test setup. The project name is a working description.
+This repository contains a **TypeScript + Babylon.js browser prototype**, game design documents, AI-generated concept art, and image-generation prompts. Implementation progress is recorded in the development plan. Stonewake is a provisional prototype title.
+
+## Run locally
+
+Use Node.js 24 or later. Run `npm install`, then `npm run dev` and open the local URL printed by Vite. Code and content changes reload automatically. `npm test` runs focused simulation checks, and `npm run build` checks TypeScript and creates a browser build. No account, server backend, or save system is used.
+
+Project-wide development instructions are in [AGENTS.md](AGENTS.md).
 
 ## Start here for a new session
 
