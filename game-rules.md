@@ -96,7 +96,7 @@ The core is the established defeat condition. Victory conditions are authored pe
 
 - Terrain uses square tiles. Rooms and fixtures align to that same grid.
 - Each level has one excavation layer and one common walkable floor height. An intact dirt, gold-bearing terrain, or bedrock cell occupies the full terrain height; excavation removes a diggable cell down to the floor. There are no half-height terrain cells, terraced mining levels, or stacked playable floors. A stepped outline changes the horizontal footprint, not the terrain height.
-- Miners excavate designated diggable tiles and establish usable territory.
+- Miners excavate designated diggable tiles and establish usable territory. Excavation is the default cursor operation; right-click or Escape returns to it. Reselecting a designated tile removes its excavation order.
 - Maps can contain hidden natural caves, passages, ancient ruins, and inhabited spaces that are already open.
 - These spaces remain concealed until the player breaks through and dwarfs gain visibility into them.
 - Impenetrable bedrock defines outer limits and internal barriers. It cannot be mined or destroyed and usually forms continuous seams or bands through the surrounding terrain.

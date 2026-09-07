@@ -14,7 +14,7 @@ Project-wide development instructions are in [AGENTS.md](AGENTS.md).
 
 ## Play and iterate
 
-Choose **Excavate** and drag across visible dirt, rock, gold or gems. Miners find reachable work, clear terrain and claim the floor. Choose a room and drag claimed squares to build; right-click or Escape cancels the current gesture. Start with a Treasure Room to receive mined riches. There is a provisional 400-gold starting allowance. Room capacity comes from accessible furnishings, so narrow or tiny layouts may not function yet.
+**Excavate is the default cursor action.** Click or drag across visible dirt, rock, gold or gems to toggle excavation: unmarked tiles are marked, and already marked tiles are cleared. Miners find reachable work, clear terrain and claim the floor. Choose a room and drag claimed squares to build; right-click or Escape cancels the current gesture and returns immediately to excavation. Click an open floor or room to inspect it. Start with a Treasure Room to receive mined riches. There is a provisional 400-gold starting allowance. Room capacity comes from accessible furnishings, so narrow or tiny layouts may not function yet.
 
 Pan with **WASD** or by moving the mouse to a window edge. Hold **Left Ctrl+A/D** or drag horizontally with the **middle mouse button** to orbit the viewed point at a fixed tilt; **Q/E** also rotates. Both panning methods preserve the camera angle. Zoom with the wheel, and press **Home** to return to the Hearthstone. The minimap also moves the camera. Camera movement does not reveal hidden terrain.
 

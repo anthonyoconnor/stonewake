@@ -13,8 +13,8 @@ export function addResidents(w:World,type:string,count=1) {
   const firstId=Math.max(0,...w.agents.map(a=>a.id))+1;
   for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:def.names[i%def.names.length],type,capabilities:[...def.capabilities],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false,crafted:0});}
 }
-export function designate(w:World,points:Point[],value=true) {
-  for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&t.known&&['dirt','rock','gold','gem'].includes(t.terrain))t.designated=value;}
+export function designate(w:World,points:Point[],value:boolean|'toggle'=true) {
+  for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&t.known&&['dirt','rock','gold','gem'].includes(t.terrain))t.designated=value==='toggle'?!t.designated:value;}
   w.revision++;
 }
 function reserved(w:World,kind:Job['kind'],p:Point){return w.agents.some(a=>a.job?.kind===kind&&key(a.job.target)===key(p));}

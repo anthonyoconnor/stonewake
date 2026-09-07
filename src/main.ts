@@ -22,6 +22,7 @@ window.addEventListener('beforeunload',event=>{
 });
 const selection=new Selection(view);
 const sidebar=new Sidebar(view,controls,selection);
+selection.setTool('dig');
 const residents=new ResidentView(view);
 let loadingStudio=false;
 sidebar.onLab=async(open,shape,type)=>{
@@ -50,7 +51,7 @@ sidebar.onLab=async(open,shape,type)=>{
     if(shape==='Adjacent rooms')buildRoom(next,'treasure',labLayout(next,'Compact').map(p=>({x:p.x+3,z:p.z-3})));
   }
   residents.reset();view.setWorld(next);controls.center(open?12:world.hearth.x,open?12:world.hearth.z);view.camera.radius=open?26:23;
-  selection.setTool(open?(type??sidebar.labType):'inspect');sidebar.show(open?'lab':'rooms');
+  selection.setTool(open?(type??sidebar.labType):'dig');sidebar.show(open?'lab':'rooms');
   loadingStudio=false;
 };
 sidebar.onFreeBuild=value=>{world.freeRoomBuilding=value;view.world.freeRoomBuilding=value;};
