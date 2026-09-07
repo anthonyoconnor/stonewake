@@ -187,3 +187,5 @@ These Dungeon Keeper screenshots are layout references. Their floating room stat
 - Messages explain the actual cause of a problem, can be dismissed and revisited, and do not form an uncontrolled stack.
 - Camera rotation, zoom, and minimap navigation preserve selection accuracy and fog of war.
 - Inspecting a dwarf never becomes direct troop control.
+
+Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.

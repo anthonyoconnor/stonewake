@@ -12,8 +12,8 @@ export function roomQuote(w:World,type:string,points:Point[]) {
   const def=roomById(type);const unique=[...new Map(points.map(p=>[key(p),p])).values()];
   const tiles=unique.map(p=>tileAt(w,p.x,p.z));
   if(!def?.implemented)return {valid:false,cost:0,tiles:[],reason:'This room is not available.'};
-  if(tiles.some(t=>!t||!t.known||t.terrain!=='floor'||!t.claimed||t.core||t.room&&t.room!==type))return {valid:false,cost:0,tiles:[],reason:'Select clear, claimed floor.'};
-  const fresh=tiles.filter(t=>t&&!t.room) as NonNullable<typeof tiles[number]>[];
+  const fresh=tiles.filter(t=>t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room) as NonNullable<typeof tiles[number]>[];
+  if(!fresh.length)return {valid:false,cost:0,tiles:[],reason:tiles.some(t=>t?.known&&t.room===type)?'This floor already belongs to the room.':'Select clear, claimed floor.'};
   const cost=w.freeRoomBuilding?0:fresh.length*def.cost;
   return {valid:cost<=goldTotal(w),cost,tiles:fresh,reason:cost>goldTotal(w)?'Not enough stored gold.':fresh.length?'Ready to build.':'This floor already belongs to the room.'};
 }

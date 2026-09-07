@@ -49,3 +49,23 @@ test('expansion preserves objects and stored contents; displaced gold survives',
 test('separate and corner-touching room patches stay separate',()=>{
  const w=createRoomLab();buildRoom(w,'treasure',[{x:8,z:8},{x:9,z:9}]);assert.equal(roomStats(w,{x:8,z:8}).tiles,1);assert.equal(w.furnishings.length,0);
 });
+
+test('all rooms skip invalid cells and charge only eligible new floor',()=>{
+ for(const room of roomDefinitions.filter(r=>r.implemented))for(const free of [false,true]){
+  const w=createRoomLab();w.freeRoomBuilding=free;
+  const points=Array.from({length:30},(_,i)=>({x:4+i%6,z:4+Math.floor(i/6)}));
+  const invalid=points.slice(0,6).map(p=>tileAt(w,p.x,p.z)!);
+  invalid[0].terrain='dirt';invalid[1].terrain='bedrock';invalid[2].known=false;invalid[3].claimed=false;invalid[4].core=true;invalid[5].room=room.id==='treasure'?'kitchen':'treasure';
+  const before=goldTotal(w),quote=roomQuote(w,room.id,[...points,points[10],{x:-1,z:4}]);
+  assert(quote.valid);assert.equal(quote.tiles.length,24);assert.equal(quote.cost,free?0:24*room.cost);
+  buildRoom(w,room.id,[...points,points[10],{x:-1,z:4}]);assert.equal(goldTotal(w),before-quote.cost);
+  for(const p of points.slice(6))assert.equal(tileAt(w,p.x,p.z)!.room,room.id);
+  assert(invalid.slice(0,5).every(t=>!t.room));assert.notEqual(invalid[5].room,room.id);
+  const access=reachable(w,{x:2,z:2});for(const f of w.furnishings)assert(access.has(key(f.access)));
+  assert(w.furnishings.some(f=>f.room===room.id));
+  const total=goldTotal(w);buildRoom(w,room.id,points);assert.equal(goldTotal(w),total);
+  assert.equal(roomQuote(w,room.id,points.slice(0,5)).valid,false);
+  const expansion={x:10,z:5};const cost=roomQuote(w,room.id,[points[10],expansion,points[0]]).cost;
+  buildRoom(w,room.id,[points[10],expansion,points[0]]);assert.equal(tileAt(w,10,5)!.room,room.id);assert.equal(goldTotal(w),total-cost);
+ }
+});

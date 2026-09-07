@@ -13,7 +13,7 @@ export class Selection {
     this.preview=new TransformNode('preview',view.scene);
     this.updateCursor();
     const canvas=view.canvas;
-    const pick=(e:PointerEvent)=>{const r=canvas.getBoundingClientRect();const hit=view.scene.pick(e.clientX-r.left,e.clientY-r.top,m=>!!m.metadata?.tile);const p=hit?.pickedMesh?.metadata?.tile as Point|undefined;return p&&(tileAt(view.world,p.x,p.z)?.known||['dig','erase'].includes(this.tool))?p:undefined;};
+    const pick=(e:PointerEvent)=>{const r=canvas.getBoundingClientRect();const hit=view.scene.pick(e.clientX-r.left,e.clientY-r.top,m=>!!m.metadata?.tile);const p=hit?.pickedMesh?.metadata?.tile as Point|undefined;return p&&(tileAt(view.world,p.x,p.z)?.known||this.tool!=='inspect')?p:undefined;};
     canvas.addEventListener('pointerdown',e=>{if(e.button===2){this.setTool('dig');return;}if(e.button!==0)return;this.start=pick(e);this.dragAdds=this.start&&['dig','erase'].includes(this.tool)?this.tool==='dig'&&!tileAt(view.world,this.start.x,this.start.z)?.designated:undefined;this.hover=this.start;this.draw();canvas.setPointerCapture(e.pointerId);});
     canvas.addEventListener('pointermove',e=>{this.hover=pick(e);this.draw();});
     canvas.addEventListener('pointerup',e=>{
@@ -37,10 +37,10 @@ export class Selection {
     this.updateCursor();this.preview.dispose();this.preview=new TransformNode('preview',this.view.scene);if(!this.hover||this.tool==='inspect')return;
     const cells=this.rectangle(this.start??this.hover,this.hover),room=!['dig','erase'].includes(this.tool),quote=room?roomQuote(this.view.world,this.tool,cells):undefined;
     for(const p of cells){const t=tileAt(this.view.world,p.x,p.z);if(!t||(!t.known&&room))continue;
-      const valid=quote?quote.valid:!t.known||['dirt','rock','gold','gem'].includes(t.terrain);
+      const valid=quote?quote.valid&&quote.tiles.includes(t):!t.known||['dirt','rock','gold','gem'].includes(t.terrain);
       const adding=valid&&(!!quote||this.tool==='dig'&&(this.dragAdds??!t.designated));
       const m=this.view.box('selection',p.x,t.known&&t.terrain==='floor'?.025:1.515,p.z,.95,.02,.95,this.view.material(adding?'preview yes':'preview no',adding?'#8ce3bb':'#e08172',false,.4),this.preview);m.material!.alpha=.42;m.isPickable=false;
     }
-    if(quote)this.onChange(`${cells.length} squares · ${quote.cost} gold · ${quote.reason}`);
+    if(quote)this.onChange(`${quote.tiles.length} buildable squares · ${quote.cost} gold · ${quote.reason}`);
   }
 }

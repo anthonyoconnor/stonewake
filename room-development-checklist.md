@@ -39,3 +39,5 @@ Run these practical checks for every room. Use the actual furnishing footprints 
 | Free-build flag on/off and insufficient gold | Creation and expansion use the effective cost and preserve all other placement rules. |
 
 The debug view is a rapid development aid. A resettable test layout is sufficient; saved layouts, a public editor, and persistence are outside the current plan.
+
+Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
