@@ -11,6 +11,24 @@ export function surfaceTexture(scene:Scene,name:string){
   const tex=new DynamicTexture(`${name}-surface`,{width:256,height:256},scene,false);
   const c=tex.getContext() as CanvasRenderingContext2D;let seed=31;
   const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  if(['raw ground','dirt','gold','rock','bedrock','gem'].includes(name)){
+    // Unworked earth has scattered grit and pebbles, without paving joints.
+    c.fillStyle='#b4a28b';c.fillRect(0,0,256,256);
+    for(let i=0;i<2400;i++){
+      c.fillStyle=i%2?'#fff0cd18':'#32271d20';
+      c.beginPath();c.ellipse(random()*256,random()*256,1+random()*6,1+random()*3,random()*Math.PI,0,Math.PI*2);c.fill();
+    }
+    for(let i=0;i<45;i++){
+      const x=random()*256,y=random()*256,r=2+random()*4;
+      c.fillStyle='#584f43';c.beginPath();c.ellipse(x,y,r,r*.65,.4,0,Math.PI*2);c.fill();
+      c.fillStyle='#c4b9a0';c.beginPath();c.ellipse(x-.5,y-1,r*.75,r*.4,.4,0,Math.PI*2);c.fill();
+    }
+    if(['rock','bedrock','gem'].includes(name))for(let i=0;i<18;i++){
+      const x=random()*256,y=random()*256;
+      c.strokeStyle='#383a3c88';c.lineWidth=1+random()*2;c.beginPath();c.moveTo(x,y);c.lineTo(x+random()*28-14,y+15);c.lineTo(x+random()*40-20,y+35);c.stroke();
+    }
+    tex.update();return tex;
+  }
   const wood=name.includes('wood'),room=name.startsWith('floor-'),paved=room||name==='hearth stone';
   const base=room?(roomLooks[name.slice(6)]?.floor??'#656963').slice(1):'ffffff';
   const rgb=[0,2,4].map(i=>parseInt(base.slice(i,i+2),16));

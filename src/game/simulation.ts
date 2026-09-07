@@ -55,6 +55,9 @@ function choose(w:World,a:Resident){
   if(a.capabilities.includes('mine'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&t.designated&&t.terrain==='gem'&&!reserved(w,'mine',t)))){
     for(const p of nearest(a,neighbors(w,t)))if(take(w,a,'mine',t,p))return;
   }
+  if(a.capabilities.includes('reinforce'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&!t.reinforced&&!t.designated&&['dirt','rock'].includes(t.terrain)&&!reserved(w,'reinforce',t)))){
+    for(const p of nearest(a,neighbors(w,t).filter(p=>p.claimed&&p.terrain==='floor')))if(take(w,a,'reinforce',t,p))return;
+  }
   const obstructs=w.furnishings.some(f=>Math.hypot(a.x-f.access.x,a.z-f.access.z)<.6)||w.agents.some(o=>o!==a&&o.job&&(Math.hypot(a.x-o.job.work.x,a.z-o.job.work.z)<.6||o.path.length&&Math.hypot(a.x-o.x,a.z-o.z)<.85));
   if(obstructs)for(const p of nearest(a,w.tiles.filter(t=>t.known&&t.terrain==='floor'&&!t.core&&Math.hypot(t.x-a.x,t.z-a.z)<6))){
     if(w.furnishings.some(f=>key(f.access)===key(p))||w.agents.some(o=>o!==a&&(Math.hypot(o.x-p.x,o.z-p.z)<.6||o.job&&key(o.job.work)===key(p))))continue;
@@ -66,6 +69,7 @@ function valid(w:World,a:Resident){
   const j=a.job!,t=tileAt(w,j.target.x,j.target.z);if(!t)return false;
   if(j.kind==='mine')return t.known&&t.designated&&['dirt','rock','gold','gem'].includes(t.terrain);
   if(j.kind==='claim')return t.terrain==='floor'&&!t.claimed;
+  if(j.kind==='reinforce')return t.known&&!t.reinforced&&!t.designated&&['dirt','rock'].includes(t.terrain)&&!!tileAt(w,j.work.x,j.work.z)?.claimed&&canStand(w,j.work);
   if(j.kind==='collect')return t.loose>0;
   if(j.kind==='idle')return canStand(w,j.work);
   if(j.kind==='sleep')return w.furnishings.some(f=>f.id===j.furnishing&&f.assigned===a.id)&&canStand(w,j.work);
@@ -111,8 +115,10 @@ export function tick(w:World,dt:number){
       a.activity=t.terrain==='gem'?'Extracting gems':'Excavating';const duration=t.terrain==='gem'?tuning.gemSeconds:t.terrain==='rock'?tuning.rockSeconds:tuning.mineSeconds;
       if(j.progress<duration)continue;
       if(t.terrain==='gem'){t.loose+=tuning.gemYield;t.source='gem';}
-      else {if(t.terrain==='gold'){t.loose+=t.gold;t.gold=0;t.source='gold';}t.terrain='floor';t.claimed=false;t.designated=false;}
+      else {if(t.terrain==='gold'){t.loose+=t.gold;t.gold=0;t.source='gold';}t.terrain='floor';t.claimed=false;t.designated=false;t.reinforced=false;}
       reveal(w,j.work);w.revision++;
+    }else if(j.kind==='reinforce'){
+      a.activity='Reinforcing wall';if(j.progress<tuning.reinforceSeconds)continue;t.reinforced=true;w.revision++;
     }else if(j.kind==='craft'){
       const order=w.craftOrders.find(o=>o.id===j.order)!,recipe=recipeById(order.recipe)!;
       if(!order.paid){if(!spendGold(w,recipe.cost)){releaseJob(w,a);a.retry=1;continue;}order.paid=true;w.revision++;}

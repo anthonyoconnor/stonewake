@@ -57,7 +57,7 @@ export class GameScene {
     const root=this.terrainRoot;
     if(!this.tileNodes.size)this.drawHearth();
     for(const t of this.world.tiles){
-      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.room,t.loose,t.designated,t.known?neighbors(this.world,t).map(n=>n.terrain+':'+n.known).join():null].join(':');
+      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.reinforced,t.room,t.loose,t.designated,t.known?neighbors(this.world,t).map(n=>n.terrain+':'+n.known+':'+n.reinforced).join():null].join(':');
       const old=this.tileNodes.get(id);if(old?.signature===signature)continue;old?.node.dispose();
       const node=new TransformNode(id,this.scene);node.parent=root;this.terrainRoot=node;this.drawTile(t);this.tileNodes.set(id,{signature,node});
     }
@@ -66,7 +66,8 @@ export class GameScene {
   drawTile(t:Tile) {
     const type=t.known?t.terrain:'unknown',solid=type!=='floor';
     const room=t.known&&t.room?roomById(t.room):undefined;
-    const mesh=this.box(`tile-${t.x}-${t.z}`,t.x,solid?.68:-.12,t.z,.997,solid?1.6:.24,.997,this.material(room?`floor-${room.id}`:type,room?(roomLooks[room.id]?.floor??room.color):colors[type],t.known));
+    const rawGround=type==='floor'&&!t.claimed&&!room&&!t.core;
+    const mesh=this.box(`tile-${t.x}-${t.z}`,t.x,solid?.68:-.12,t.z,.997,solid?1.6:.24,.997,this.material(room?`floor-${room.id}`:rawGround?'raw ground':t.known&&t.reinforced?'reinforced wall':type,room?(roomLooks[room.id]?.floor??room.color):rawGround?'#956c43':t.known&&t.reinforced?'#7c8588':colors[type],t.known));
     mesh.metadata={tile:{x:t.x,z:t.z}};
     if(t.designated){const m=this.box('dig designation',t.x,1.49,t.z,.94,.025,.94,this.material('designation','#53d8c6',false,.4));m.material!.alpha=.38;m.isPickable=false;}
     if(!t.known)return;
@@ -84,7 +85,7 @@ export class GameScene {
     }
     if(type==='floor'&&t.claimed&&!room&&!t.core){const m=this.box('claim inset',t.x,-.003,t.z,.055,.008,.055,this.material('claim','#ac9a72'));m.isPickable=false;}
 
-    if(room)for(const n of neighbors(this.world,t))if(n.known&&n.terrain!=='floor'){
+    if(room)for(const n of neighbors(this.world,t))if(n.known&&n.reinforced&&n.terrain!=='floor'){
       const dx=n.x-t.x,dz=n.z-t.z,trim=this.material(`wall-${room.id}`,(roomLooks[room.id]?.trim??room.color));
       for(const y of [.25,1.08])this.box('room wall trim',t.x+dx*.485,y,t.z+dz*.485,dx?.045:.98,.07,dz?.045:.98,trim).isPickable=false;
       this.box('wall panel',t.x+dx*.46,.66,t.z+dz*.46,dx?.06:.52,.58,dz?.06:.52,this.material('chest wood','#755334',true)).isPickable=false;
@@ -95,7 +96,7 @@ export class GameScene {
     }
     if(type==='floor')for(const n of neighbors(this.world,t))if(n.known&&n.terrain!=='floor'){
       const dx=n.x-t.x,dz=n.z-t.z,shade=this.box('wall foot shadow',t.x+dx*.42,.009,t.z+dz*.42,dx?.16:.997,.01,dz?.16:.997,this.material('wall shade','#191e22'));shade.isPickable=false;
-      if((t.x+t.z)%4===0){
+      if(n.reinforced&&(t.x+t.z)%4===0){
         const x=t.x+dx*.4,z=t.z+dz*.4,iron=this.material('lantern frame','#443d31');
         this.box('sconce bracket',x,.92,z,.16,.32,.16,iron).isPickable=false;
         this.box('lantern flame',x-dx*.035,.99,z-dz*.035,.1,.18,.1,this.material('lantern flame','#ffc779',false,.85)).isPickable=false;

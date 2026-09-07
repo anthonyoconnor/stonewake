@@ -1,6 +1,6 @@
 export interface CharacterDefinition {id:string;name:string;names:string[];color:string;capabilities:string[];appearance:'helmet'|'braids';attractionServices:string[]}
 export const characterDefinitions:CharacterDefinition[]=[
-  {id:'miner',name:'Miner',names:['Brokk','Orin','Thora'],color:'#b78638',capabilities:['mine','haul','claim'],appearance:'helmet',attractionServices:[]},
+  {id:'miner',name:'Miner',names:['Brokk','Orin','Thora'],color:'#b78638',capabilities:['mine','haul','claim','reinforce'],appearance:'helmet',attractionServices:[]},
   {id:'engineer',name:'Engineer',names:['Helga','Sigrid'],color:'#357a81',capabilities:['craft'],appearance:'braids',attractionServices:['craft']}
 ];
 export const characterById=(id:string)=>characterDefinitions.find(c=>c.id===id);

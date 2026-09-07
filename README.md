@@ -113,3 +113,7 @@ When adding or revising art, save the selected result in the appropriate `concep
 When updating the design, revise the relevant companion documents and this overview if the scope changes. Before committing, check local Markdown links, inspect changed artwork, review `git diff --check`, and confirm `git status` contains only intended changes. Use descriptive commits to preserve the design and art history.
 
 Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
+
+Excavated, unclaimed ground looks like bare earth with scattered stones; miners replace it with paving when claiming it. Spare miners reinforce ordinary walls bordering claimed floor, turning raw earth/rock into visible masonry. Room wall fittings appear after reinforcement. Enemy breaching is still future work.
+
+After development checks, leave the local Vite server running so the game remains available to play.
