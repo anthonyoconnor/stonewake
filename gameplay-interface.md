@@ -158,6 +158,16 @@ Icons need distinct silhouettes and consistent selected, unavailable, and alert 
 
 Build category contents from the registered room, dwarf, fixture, and spell definitions. A new type supplies its icon and information using the same panel structure; adding content should not require another permanent toolbar or assume a fixed four-type population layout. Display only content appropriate to the campaign and level unlock rules.
 
+## Development debug controls
+
+M5 adds a **Room Debug View** for inspecting all defined room types and testing implemented rooms in different layouts. M5.1 adds **Debug** as an option alongside the left-hand sidebar controls. Its panel provides access to the room view and a **Free room construction** toggle showing the current development flag state. These features are planned in the [development plan](development-plan.md); they are not implemented yet.
+
+The room view offers a catalog, room selection, and a resettable test area. Planned room entries remain clearly marked until implemented. Create and expand a selected room with the same click/drag grid gestures, previews, validation, automatic furnishings, and camera controls as normal gameplay. Use the sidebar to inspect usable capacity, stock/occupancy where applicable, and access or layout problems. New room definitions feed the catalog automatically.
+
+When free construction is enabled, room previews show zero effective construction cost and construction/expansion does not deduct gold. Other placement and capacity rules remain active. Disabling the flag restores normal room costs. The control applies to both the game and the room view and requires no saved preference.
+
+Debug panel interactions must not reach the world behind the sidebar. Keep the world free of floating labels and statistics in this view as well; use terrain highlights, furnishings, and sidebar details to inspect layouts. Follow the [room development checklist](room-development-checklist.md) for consistent checks.
+
 ## Reference images
 
 - [Left sidebar and minimap reference](references/gameplay-interface/dungeon-keeper-sidebar.png): supplied by the user for the left/right composition, minimap, and icon categories.

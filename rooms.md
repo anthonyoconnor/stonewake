@@ -149,6 +149,16 @@ The current room catalog supports the four core dwarf types. Additional rooms an
 
 Room definitions should describe their visual identity, compact and large furnishings, placement and access requirements, usable capacities, services or outputs, and eligible worker capabilities. The shared grid designation, automatic furnishing, navigation, capacity reporting, and recruitment systems should consume these definitions. A new room can then reuse those systems and introduce a new service only if needed. Recruitment relationships must allow shared rooms and multiple conditions rather than assume every room exists for exactly one dwarf type. See the [architecture requirements](game-rules.md#14-extensible-character-and-room-definitions).
 
+## Room development and debugging
+
+The [development plan](development-plan.md) schedules shared room support and a Room Debug View in M5, a sidebar Debug menu and free room construction flag in M5.1, then the Dormitory, Kitchen, and Workshop in M6–M8. These are planned features; no implementation exists yet.
+
+Every room addition follows the [room development checklist](room-development-checklist.md), which covers definitions, placement, automatic furnishings, capacity, access, services, sidebar feedback, and varied layout checks. Review the existing Treasure Room against the same checklist when establishing shared room support.
+
+The Room Debug View lists all defined room types, distinguishes planned entries from implemented rooms, and lets developers create and expand implemented rooms by selecting grid squares just as in gameplay. It uses the game's actual placement, furnishing, navigation, and rendering systems so its results can reveal gameplay problems. A resettable test area supports irregular shapes, walls, retained terrain, and bedrock without needing a separate editor or saved layouts.
+
+The development free-build flag makes all room creation and expansion free. It leaves the treasury unchanged by those actions and preserves claimed-floor, terrain, occupancy, access, and furnishing rules. Disabling it restores configured costs and affordability checks. Controls and diagnostic information belong in the left sidebar, as described in [Gameplay interface](gameplay-interface.md#development-debug-controls).
+
 ## Doors and traps
 
 These are fixtures placed on the grid, not additional specialist rooms. Engineers and the Workshop provide their manufacture and upkeep.
