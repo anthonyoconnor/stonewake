@@ -22,7 +22,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 |---|---|---|
 | M1 | Fixed-size grid level with core, terrain, resources, and open spaces | Complete |
 | M2 | Camera scrolling/panning, zoom, and rotation | Complete |
-| M3 | Basic left sidebar and minimap, with gameplay controls left blank | Not started |
+| M3 | Basic left sidebar and minimap, with gameplay controls left blank | Complete |
 | M4 | Autonomous miners, excavation, claiming, Treasure Room construction, and resource hauling | Not started |
 | M5 | Shared room rules, reusable room checklist, and room catalog/layout debugging view | Not started |
 | M5.1 | Free room construction flag and Debug option in the left sidebar | Not started |
@@ -186,3 +186,7 @@ Implemented a 48 × 48 authored map, fixed Stone Hearth, six terrain types, hidd
 
 ### M2 — 2026-09-07
 Added camera-relative WASD pan, middle-drag pan, Q/E rotation, wheel zoom with bounds, and Home to the Hearthstone. Verified rotation/pan/zoom and Home in the browser, with no console errors; TypeScript passes. Camera controls do not modify discovery.
+
+
+### M3 — 2026-09-07
+Added the left sidebar, known-terrain minimap with camera footprint and click navigation, empty category panels, help, and camera buttons. Verified the browser layout, minimap recentering, Home and help; TypeScript passes. Gameplay panels will be filled as their systems arrive. Diagnostic and economic text stays in the sidebar.
