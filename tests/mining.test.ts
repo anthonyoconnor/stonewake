@@ -38,11 +38,11 @@ test('cancelling a designation releases its worker',()=>{
  assert(w.agents.every(a=>a.job?.kind!=='mine'));assert.equal(tileAt(w,10,7)!.terrain,'gold');
 });
 
-test('toggling excavation cancels active mining and ignores hidden or non-diggable tiles',()=>{
+test('toggling excavation cancels active mining and accepts hidden planning but ignores known non-diggable tiles',()=>{
  const w=fixture(),ore=tileAt(w,10,7)!;
  designate(w,[ore],'toggle');run(w,1);assert(w.agents.some(a=>a.job?.kind==='mine'));
  designate(w,[ore],'toggle');run(w,10);assert(w.agents.every(a=>a.job?.kind!=='mine'));assert.equal(ore.terrain,'gold');
  const hidden=tileAt(w,10,9)!;hidden.known=false;
  designate(w,[hidden,{x:4,z:4},{x:0,z:0}],'toggle');
- assert.equal(hidden.designated,false);assert.equal(tileAt(w,4,4)!.designated,false);assert.equal(tileAt(w,0,0)!.designated,false);
+ assert.equal(hidden.designated,true);assert.equal(hidden.known,false);assert.equal(tileAt(w,4,4)!.designated,false);assert.equal(tileAt(w,0,0)!.designated,false);
 });

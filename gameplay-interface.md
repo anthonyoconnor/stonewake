@@ -79,6 +79,8 @@ Excavation is the default cursor action at startup and after right-click or Esca
 
 The world cursor communicates the action with a pickaxe for excavation, a pickaxe with a minus for clearing marks, an eye over inspectable open floor, or the selected room icon for construction. Right-click/Escape restores the contextual excavation cursor and clears the room choice. Native sidebar pointers remain normal. Cursor artwork contains no text or costs.
 
+Excavation can be planned into darkness. Hidden tiles accept the same marks regardless of their concealed contents. Miners work only discovered, reachable diggable targets; discovery automatically clears marks over existing open space or unmineable terrain. Unexplored plans do not reveal terrain, permit room construction, or grant visibility.
+
 Selection marks and placement previews are temporary action feedback. They may show which cells are affected and whether an action is valid, but contain no textual labels, numeric dimensions, or work-completion bars. The normal view does not need a bright permanent grid across every floor.
 
 Proposed mouse and keyboard defaults:

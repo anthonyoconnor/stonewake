@@ -106,6 +106,8 @@ The core is the established defeat condition. Victory conditions are authored pe
 
 Proposed visibility rule: explored terrain remains known, but current enemy positions require sight. Proposed territory rule: miners claim reachable floor before the player builds on it. Exact claiming and sight rules remain to be specified.
 
+Excavation can be planned into darkness. Hidden tiles accept the same marks regardless of their concealed contents. Miners work only discovered, reachable diggable targets; discovery automatically clears marks over existing open space or unmineable terrain. Unexplored plans do not reveal terrain, permit room construction, or grant visibility.
+
 ## 6. Wall reinforcement
 
 Miners reinforce exposed ordinary walls around claimed territory when they have no higher-priority excavation, resource collection, or hauling work.

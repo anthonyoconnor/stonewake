@@ -25,6 +25,6 @@ test('default excavation toggles once per gesture and cancelling construction re
   click();assert.equal(tileAt(world,10,10)!.designated,true);
   selection.setTool('treasure');win.dispatchEvent(Object.assign(new Event('keydown'),{key:'Escape'}));assert.equal(selection.tool,'dig');
   emit('pointermove',7,7);assert.equal(canvas.style.cursor,actionCursor('inspect'));click(7,7);assert.deepEqual(selection.selected,{x:7,z:7});
-  tileAt(world,12,10)!.known=false;click(12,10);assert.equal(tileAt(world,12,10)!.designated,false);
+  tileAt(world,12,10)!.known=false;tileAt(world,12,10)!.terrain='floor';emit('pointermove',12,10);assert.equal(canvas.style.cursor,actionCursor('dig'));click(12,10);assert.equal(tileAt(world,12,10)!.designated,true);assert.equal(tileAt(world,12,10)!.known,false);click(12,10);assert.equal(tileAt(world,12,10)!.designated,false);
  }finally{scene.dispose();engine.dispose();Reflect.deleteProperty(globalThis,'window');}
 });

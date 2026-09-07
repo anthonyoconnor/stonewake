@@ -14,7 +14,7 @@ export function addResidents(w:World,type:string,count=1) {
   for(let i=0;i<count&&i<positions.length;i++){const p=positions[i];w.agents.push({x:p.x,z:p.z,id:firstId+i,name:def.names[i%def.names.length],type,capabilities:[...def.capabilities],path:[],carrying:0,activity:'Looking for work',facing:0,retry:0,energy:1,rested:0,hunger:1,meals:0,meal:false,crafted:0});}
 }
 export function designate(w:World,points:Point[],value:boolean|'toggle'=true) {
-  for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&t.known&&['dirt','rock','gold','gem'].includes(t.terrain))t.designated=value==='toggle'?!t.designated:value;}
+  for(const p of points){const t=tileAt(w,p.x,p.z);if(t&&(!t.known||['dirt','rock','gold','gem'].includes(t.terrain)))t.designated=value==='toggle'?!t.designated:value;}
   w.revision++;
 }
 function reserved(w:World,kind:Job['kind'],p:Point){return w.agents.some(a=>a.job?.kind===kind&&key(a.job.target)===key(p));}
@@ -48,11 +48,11 @@ function choose(w:World,a:Resident){
   if(a.capabilities.includes('haul')&&availableStorage(w,a))for(const t of nearest(a,w.tiles.filter(t=>t.loose&&!reserved(w,'collect',t)))){
     for(const p of t.terrain==='floor'?[t]:neighbors(w,t))if(take(w,a,'collect',t,p))return;
   }
-  if(a.capabilities.includes('mine'))for(const t of nearest(a,w.tiles.filter(t=>t.designated&&t.terrain!=='gem'&&t.terrain!=='floor'&&!reserved(w,'mine',t)))){
+  if(a.capabilities.includes('mine'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&t.designated&&t.terrain!=='gem'&&t.terrain!=='floor'&&!reserved(w,'mine',t)))){
     for(const p of nearest(a,neighbors(w,t)))if(take(w,a,'mine',t,p))return;
   }
   if(a.capabilities.includes('claim'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&t.terrain==='floor'&&!t.claimed&&!reserved(w,'claim',t))))if(take(w,a,'claim',t,t))return;
-  if(a.capabilities.includes('mine'))for(const t of nearest(a,w.tiles.filter(t=>t.designated&&t.terrain==='gem'&&!reserved(w,'mine',t)))){
+  if(a.capabilities.includes('mine'))for(const t of nearest(a,w.tiles.filter(t=>t.known&&t.designated&&t.terrain==='gem'&&!reserved(w,'mine',t)))){
     for(const p of nearest(a,neighbors(w,t)))if(take(w,a,'mine',t,p))return;
   }
   const obstructs=w.furnishings.some(f=>Math.hypot(a.x-f.access.x,a.z-f.access.z)<.6)||w.agents.some(o=>o!==a&&o.job&&(Math.hypot(a.x-o.job.work.x,a.z-o.job.work.z)<.6||o.path.length&&Math.hypot(a.x-o.x,a.z-o.z)<.85));
@@ -64,7 +64,7 @@ function choose(w:World,a:Resident){
 }
 function valid(w:World,a:Resident){
   const j=a.job!,t=tileAt(w,j.target.x,j.target.z);if(!t)return false;
-  if(j.kind==='mine')return t.designated&&['dirt','rock','gold','gem'].includes(t.terrain);
+  if(j.kind==='mine')return t.known&&t.designated&&['dirt','rock','gold','gem'].includes(t.terrain);
   if(j.kind==='claim')return t.terrain==='floor'&&!t.claimed;
   if(j.kind==='collect')return t.loose>0;
   if(j.kind==='idle')return canStand(w,j.work);

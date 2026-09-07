@@ -65,9 +65,10 @@ export class GameScene {
   }
   drawTile(t:Tile) {
     const type=t.known?t.terrain:'unknown',solid=type!=='floor';
-    const room=t.room?roomById(t.room):undefined;
+    const room=t.known&&t.room?roomById(t.room):undefined;
     const mesh=this.box(`tile-${t.x}-${t.z}`,t.x,solid?.68:-.12,t.z,.997,solid?1.6:.24,.997,this.material(room?`floor-${room.id}`:type,room?(roomLooks[room.id]?.floor??room.color):colors[type],t.known));
     mesh.metadata={tile:{x:t.x,z:t.z}};
+    if(t.designated){const m=this.box('dig designation',t.x,1.49,t.z,.94,.025,.94,this.material('designation','#53d8c6',false,.4));m.material!.alpha=.38;m.isPickable=false;}
     if(!t.known)return;
     if(type==='gold')for(let i=0;i<9;i++){
       const m=this.box('branching gold seam',t.x-.42+i*.105,1.493,t.z+Math.sin(i*1.7+t.x)*.17,.15,.028,.04+(i%3)*.02,this.material('gold metal','#edb855',false,.2));m.rotation.y=Math.sin(i*2)*.9;m.isPickable=false;
@@ -82,7 +83,7 @@ export class GameScene {
       }
     }
     if(type==='floor'&&t.claimed&&!room&&!t.core){const m=this.box('claim inset',t.x,-.003,t.z,.055,.008,.055,this.material('claim','#ac9a72'));m.isPickable=false;}
-    if(t.designated){const m=this.box('dig designation',t.x,1.49,t.z,.94,.025,.94,this.material('designation','#53d8c6',false,.4));m.material!.alpha=.38;m.isPickable=false;}
+
     if(room)for(const n of neighbors(this.world,t))if(n.known&&n.terrain!=='floor'){
       const dx=n.x-t.x,dz=n.z-t.z,trim=this.material(`wall-${room.id}`,(roomLooks[room.id]?.trim??room.color));
       for(const y of [.25,1.08])this.box('room wall trim',t.x+dx*.485,y,t.z+dz*.485,dx?.045:.98,.07,dz?.045:.98,trim).isPickable=false;

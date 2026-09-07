@@ -24,7 +24,7 @@ export function reveal(w:World, origin:Point, radius=6) {
       for(let i=0;i<=steps;i++) {
         const t=tileAt(w,Math.round(origin.x+dx*i/(steps||1)),Math.round(origin.z+dz*i/(steps||1)));
         if(!t) break;
-        if(!t.known){t.known=true;changed=true;}
+        if(!t.known){t.known=true;if(!['dirt','rock','gold','gem'].includes(t.terrain))t.designated=false;changed=true;}
         if(t.terrain!=='floor') break;
       }
     }
