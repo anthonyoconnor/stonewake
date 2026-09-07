@@ -1,0 +1,48 @@
+# Concept art
+
+All project concept art is stored in this folder, grouped by subject. Keep the current concepts and their source references here. Superseded images and drafts have been removed; historical prompt records remain as provenance. Version numbers on retained filenames identify the selected revisions.
+
+## Visual direction
+
+[Open the style comparison](style-comparison-v1.png).
+
+![Four visual styles for the dwarven stronghold](style-comparison-v1.png)
+
+The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel art. Stylized 3D was selected, with an overhead camera that supports rotation and zoom. This early comparison establishes appearance; the current room roster and functions are defined in [Rooms](../rooms.md).
+
+## Dwarf characters
+
+[View the complete dwarf gallery](dwarfs/README.md).
+
+- [Miner](dwarfs/miner-v1.png)
+- [Engineer, female workshop crafter](dwarfs/engineer-v3.png)
+- [Warrior](dwarfs/warrior-v1.png)
+- [Runesmith, revised combined spell researcher](dwarfs/runesmith-v2.png)
+
+The gallery contains the current four-role roster shown above. Superseded sheets and concepts for removed or deferred roles have been removed. The [female Engineer prompt](dwarfs/prompts-v3.md), [merged-role prompts](dwarfs/prompts-v2.md), and [original prompts](dwarfs/prompts.md) are stored with the images in `dwarfs/`.
+
+## Terrain and resources
+
+[View the gold seam and gem column concept](terrain/README.md). This wider mining area combines one terrain layer, large square excavation cells, gold visible on top and exposed wall faces, persistent gem columns, and connected bedrock. The [revision prompt](terrain/prompts-v2.md), [original prompt](terrain/prompts.md), and user-supplied excavation reference are stored in `terrain/`.
+
+## Rooms and structures
+
+[View the room and structure gallery](rooms/README.md).
+
+Seven room sheets each explore compact, expanded, L-shaped, and continuous bedrock-seam layouts: [Library](rooms/library-v2.png), [Kitchen](rooms/kitchen-v2.png), [Workshop](rooms/workshop-v2.png), [Training Room](rooms/training-room-v2.png), [Treasure Room](rooms/treasure-room-v2.png), [Dormitory](rooms/dormitory-v2.png), and [Guard Post](rooms/guard-post-v2.png). Their revised terrain boundaries follow the square grid.
+
+[Stone Hearth](rooms/stone-hearth-v1.png) and [Bridge](rooms/bridge-v1.png) sheets each explore four terrain or placement contexts. The Hearth remains the same fixed structure in every example. All sheets and their [generation prompts](rooms/prompts.md) are stored in `rooms/`.
+
+The [terrain reference](rooms/terrain-grid-v2.png) distinguishes connected bedrock seams from individual unmined earth tiles left inside rooms. The current [terrain and room correction prompts](rooms/prompts-v2.md) are stored with the current images; earlier images have been removed.
+
+## Enemies
+
+[View the complete enemy gallery](enemies/README.md).
+
+- Upper workings: [Goblin Raider](enemies/goblin-raider-v1.png) and [Tunnel Burrower](enemies/tunnel-burrower-v1.png).
+- Fungal caves: [Cave Spider](enemies/cave-spider-v1.png) and [Spore Brute](enemies/spore-brute-v1.png).
+- Ancient halls: [Restless Guard](enemies/restless-guard-v1.png) and [Ancient Sentinel](enemies/ancient-sentinel-v1.png).
+- Crystal caverns: [Crystal Elemental](enemies/crystal-elemental-v1.png) and [Crystalback Stalker](enemies/crystalback-stalker-v1.png).
+- Volcanic depths: [Cinderling](enemies/cinderling-v1.png) and [Deepmaw](enemies/deepmaw-v1.png).
+
+Enemy concepts and their [generation prompts](enemies/prompts.md) are stored together in `enemies/`.

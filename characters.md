@@ -71,7 +71,7 @@ The initial gameplay scope is the four types listed above. Future types should b
 
 ## Character concept art
 
-The [dwarf concept gallery](concept-art/dwarfs/README.md) separates the current four-role roster from superseded and deferred concepts. The latest Engineer sheet depicts the agreed female character; the Runesmith sheet reflects the merged research role. Each sheet includes front, back, and overhead studies in the shared stylized 3D direction. Other appearance details remain visual proposals rather than changes to recruitment, needs, or combat rules. Exact prompts are retained with the images. All concept art is collected in the [concept-art folder](concept-art/README.md).
+The [dwarf concept gallery](concept-art/dwarfs/README.md) shows the current four-role roster; superseded and deferred character images have been removed. The latest Engineer sheet depicts the agreed female character; the Runesmith sheet reflects the merged research role. Each sheet includes front, back, and overhead studies in the shared stylized 3D direction. Other appearance details remain visual proposals rather than changes to recruitment, needs, or combat rules. Exact prompts are retained with the images. All concept art is collected in the [concept-art folder](concept-art/README.md).
 
 ## Decisions still open
 
