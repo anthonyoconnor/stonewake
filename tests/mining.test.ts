@@ -4,6 +4,7 @@ import {createWorld} from '../src/game/world.ts';
 import {tileAt,type World} from '../src/game/types.ts';
 import {addMiners,designate,tick} from '../src/game/simulation.ts';
 import {buildRoom,goldTotal} from '../src/game/rooms.ts';
+import {tuning} from '../src/content/tuning.ts';
 import {findPath,canStand} from '../src/game/navigation.ts';
 function fixture(){
  const w=createWorld({id:'test',name:'Test',width:16,height:16,hearth:{x:4,z:4},openings:[[2,2,12,12]],seams:[{terrain:'gold',cells:[{x:10,z:7}]},{terrain:'gem',cells:[{x:10,z:9}]}]});
@@ -22,7 +23,8 @@ test('mined gold waits on the ground, then reaches a new Treasure Room without l
 });
 test('gems persist and unreachable designations do not absorb workers',()=>{
  const w=fixture();designate(w,[{x:10,z:9}]);run(w,30);const gem=tileAt(w,10,9)!;
- assert.equal(gem.terrain,'gem');assert(gem.loose>=16);assert(w.agents.filter(a=>a.job?.kind==='mine').length<=1);
+ assert.equal(tuning.gemSeconds,tuning.goldSeconds);assert.equal(tuning.gemYield,tuning.goldYield);
+ assert.equal(gem.terrain,'gem');assert(gem.loose>=30);assert.equal(gem.loose%tuning.goldYield,0);assert(w.agents.filter(a=>a.job?.kind==='mine').length<=1);
  assert.equal(goldTotal(w),400);
 });
 test('construction rejects unclaimed and occupied floor without charging',()=>{

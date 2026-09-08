@@ -67,7 +67,7 @@ Starting resources must be usable before a Treasure Room is built. The prototype
 |---|---|
 | Excavatable earth or rock | Can be selected for mining; creates space for rooms and routes |
 | Gold deposit | Gold-bearing terrain cells form seams; produce gold while being excavated, then become exhausted |
-| Gem deposit | Represented as a gem column occupying the terrain grid; provides continuing, slower gold extraction and cannot be exhausted under the current resource model |
+| Gem deposit | Represented as a gem column occupying the terrain grid; its separately configurable extraction interval and batch size currently match a gold seam, and it cannot be exhausted under the current resource model |
 | Impenetrable bedrock | Cannot be excavated or destroyed; usually forms continuous seams and bands that define outer boundaries and internal barriers, with exposed outlines following whole grid tiles |
 | Retained unmined earth | Individual ordinary earth tiles or small groups left inside an excavation; block room space and movement until mined, and remain distinct from bedrock |
 | Natural cavern | Pre-existing open space concealed until discovered |

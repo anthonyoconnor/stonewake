@@ -123,7 +123,7 @@ Work scheduling must allow genuinely spare miners to reinforce walls. Renewable 
 ## 7. Resources and storage
 
 - Gold deposits provide finite wealth and are exhausted through excavation.
-- Gem deposits, represented visually as columns occupying square terrain cells, provide continuing, slower gold income under the current resource model.
+- Gem deposits, represented visually as columns occupying square terrain cells, provide continuing gold income. Their separately configurable extraction interval and batch size currently match gold seams.
 - Both provide the same spendable gold currency.
 - Miners extract and transport gold to Treasure Rooms or the Stone Hearth treasury chest.
 - Treasure Room capacity comes from floor tile count times its tunable storage per tile. Furnishing count and room shape do not change it; miners still need a reachable delivery route.
@@ -266,6 +266,6 @@ Build these boundaries while implementing the core types. Additional types, excl
 - Campaign objectives, unlock order, enemy behavior, and attack pacing.
 - Camera projection, tilt, zoom limits, input bindings, and foreground wall treatment.
 
-Finite gold seams are mined into the miner's bag in small batches (currently 15 gold per half-second, with a 45-gold bag). The pillar stays solid and designated until its remaining gold reaches zero. A full bag is delivered to reachable treasury storage, then the miner returns to the unfinished seam; an exhausted or cancelled seam sends any partial bag for delivery. With no reachable storage space, extraction leaves gold at the seam. If storage fills during travel, miners try another chest or return undelivered gold to the extraction site. Gold never becomes spendable while carried or on the ground. Renewable gem extraction retains its existing yield-and-collection behavior.
+Finite gold seams are mined into the miner's bag in small batches (currently 15 gold per half-second, with a 45-gold bag). The pillar stays solid and designated until its remaining gold reaches zero. A full bag is delivered to reachable treasury storage, then the miner returns to the unfinished seam; an exhausted or cancelled seam sends any partial bag for delivery. With no reachable storage space, extraction leaves gold at the seam. If storage fills during travel, miners try another chest or return undelivered gold to the extraction site. Gold never becomes spendable while carried or on the ground. Renewable gems extract the same 15-gold batch every half-second, retain their persistent column, and use the existing ground-pickup collection behavior.
 
 Current prototype controls include miner-built walls and reclaiming room tiles. Wall construction is deliberately slower than digging plus reinforcement; its default is 24 seconds. Reclaim refunds 50% of original paid cost, with no refund for free construction, and preserves displaced gold. Dwarfs prefer soft separation but may overlap briefly when necessary to keep moving; real terrain and gameplay obstacles remain solid while room furnishings are cosmetic. Shared balance values and the in-game editor are documented in [Configuration](configuration.md); additive room/dwarf implementation is documented in the [content playbook](content-playbook.md).
