@@ -10,7 +10,7 @@ export interface CharacterDefinition {
   attractionServices:string[]; levels:CharacterLevel[];
 }
 export const characterDefinitions:CharacterDefinition[]=[
-  {id:'miner',name:'Miner',names:['Brokk','Orin','Thora'],color:'#b78638',speedMultiplier:1,
+  {id:'miner',name:'Miner',names:['Brokk','Orin','Thora'],color:'#b78638',speedMultiplier:3 / 1.8, // 3 tiles/second at the default global walking speed.
     capabilities:['mine','haul','claim','reinforce','buildWall','defend'],appearance:'helmet',attractionServices:[],levels:[
       {level:1,wage:4,trainingSeconds:0,health:90,damage:4,attackSeconds:1.5,workMultiplier:1},
       {level:2,wage:5,trainingSeconds:20,health:105,damage:5,attackSeconds:1.5,workMultiplier:1.1},

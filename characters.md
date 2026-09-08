@@ -97,7 +97,7 @@ Level gains apply the new maximum health and preserve the amount of existing dam
 
 ## Miner recruitment
 
-Miners are bought directly; constructing a room does not attract free additional miners.
+Miners are bought directly; constructing a room does not attract free additional miners. Their default walking speed is 3 tiles per second at every level, before temporary speed effects. The Miner speed multiplier remains editable in Game configuration.
 
 - The Spells grid offers the innate Summon Miner spell with the current gold price visible. Clicking its enabled icon summons at the Hearthstone without research, preparation or a world target. The Dwarfs panel has no text recruitment button.
 - Payment comes from stored treasure, and the new miner appears beside the Hearthstone.
