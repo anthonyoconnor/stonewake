@@ -14,11 +14,11 @@ M10 encounters/raids, M11 Hearth defeat/objectives, M13 recruitment/wages and M1
 
 ## Run locally
 
-Use Node.js 24 or later. Run `npm install`, then `npm run dev` and open the local URL printed by Vite. Code and content changes reload automatically. `npm test` runs focused simulation checks, and `npm run build` checks TypeScript and creates a browser build. No account, server backend, or save system is used.
+Use Node.js 24 or later. Run `npm install`, then `npm run dev` and open the local URL printed by Vite. Code and content changes reload automatically. `npm test` selects focused checks from uncommitted changes; `npm run test:all` runs the full simulation suite, and `npm run build` checks TypeScript and creates a browser build. No account, server backend, or save system is used.
 
 Project-wide development instructions are in [AGENTS.md](AGENTS.md).
 
-For agent-driven iteration, see [Development tools](development-tools.md): shared scenarios, a development-only browser control interface, automatic job diagnostics, and `npm run verify -- <scope>`. `npm run typecheck` checks both source and tests. `npm run verify -- all --browser --production` runs complete simulation, browser and production-isolation checks with the local development server already running.
+For agent-driven iteration, see [Development tools](development-tools.md): shared scenarios, a development-only browser control interface, automatic job diagnostics, and `npm run verify -- <scope>`. `npm run typecheck` checks both source and tests. Use a focused scope for small changes, such as `npm run verify -- pricing`. Add `--browser=pricing` when checking its UI. Reserve `npm run verify -- all --browser=integration --production` for major integrations and milestones, with the local development server running. Documentation-only and clean-tree defaults run no executable checks.
 
 ## Stonehands
 

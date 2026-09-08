@@ -1,109 +1,53 @@
 import { spawnSync } from 'node:child_process';
-import { readdirSync, readFileSync, existsSync } from 'node:fs';
-import { resolve, dirname, relative } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { planChecks, browserChecks } from './verification.ts';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-process.chdir(root);
-const tests = readdirSync('tests')
-  .filter((f) => f.endsWith('.test.ts'))
-  .map((f) => `tests/${f}`)
-  .sort();
-const groups = {
-  enemies: ['enemies', 'encounters', 'defenses', 'spells', 'hearth'],
-  campaign: ['campaign', 'hearth', 'bridges', 'progression-research', 'development'],
-  bridges: ['bridges', 'movement', 'defenses', 'hearth', 'world'],
-  development: ['development', 'movement', 'progression-research', 'defenses', 'food'],
-  movement: ['movement', 'mining', 'gold-bags', 'defenses', 'spells', 'rooms'],
-  rooms: ['rooms', 'learning-rooms', 'reclaim', 'content-extension', 'food', 'recruitment', 'walls'],
-  research: ['progression-research', 'learning-rooms', 'spells', 'development'],
-  characters: ['character-levels', 'progression-research', 'learning-rooms', 'spells', 'settings', 'content-extension'],
-  defenses: ['defenses', 'spells', 'movement', 'development'],
-  encounters: ['encounters', 'defenses', 'spells', 'development'],
-  hearth: ['hearth', 'encounters', 'defenses', 'economy', 'development'],
-  morale: ['morale', 'economy', 'food', 'recruitment', 'gold-bags'],
-  economy: ['economy', 'recruitment', 'gold-bags', 'reclaim', 'development'],
-};
-const args = process.argv.slice(2),
-  watch = args.includes('--watch');
-const scope = args.find((a) => !a.startsWith('--')) ?? 'changed';
-
-// Follow local TS imports to select checks for changed dependencies; unknown files
-// fall back to the full suite. No hand-maintained source-to-test map is required.
-function dependencies(file, seen = new Set()) {
-  const absolute = resolve(file);
-  if (seen.has(absolute)) return seen;
-  seen.add(absolute);
-  for (const match of readFileSync(absolute, 'utf8').matchAll(
-    /(?:from\s*|import\s*\()\s*['"]([^'"]+)['"]/g,
-  )) {
-    if (!match[1].startsWith('.')) continue;
-    const target = resolve(dirname(absolute), match[1]);
-    const found = [target, `${target}.ts`, `${target}/index.ts`].find(
-      (p) => existsSync(p) && p.endsWith('.ts'),
-    );
-    if (found) dependencies(found, seen);
-  }
-  return seen;
-}
+process.chdir(resolve(dirname(fileURLToPath(import.meta.url)), '..'));
+const args = process.argv.slice(2), scope = args.find(a => !a.startsWith('--')) ?? 'changed';
 function changedFiles() {
-  const git = (...arguments_) => {
-    const result = spawnSync('git', arguments_, { encoding: 'utf8' });
-    if (result.status !== 0) throw new Error(result.stderr || 'Cannot read Git changes.');
+  const git = (...args) => {
+    const result = spawnSync('git', args, {encoding: 'utf8', windowsHide: true});
+    if (result.status !== 0) throw Error(result.stderr || 'Cannot read Git changes.');
     return result.stdout.split('\0').filter(Boolean);
   };
-  return [
-    ...new Set([
-      ...git('diff', '--name-only', '-z', 'HEAD'),
-      ...git('ls-files', '--others', '--exclude-standard', '-z'),
-    ]),
-  ];
+  return [...new Set([...git('diff', '--name-only', '-z', 'HEAD'), ...git('ls-files', '--others', '--exclude-standard', '-z')])];
 }
-function select() {
-  if (scope === 'all') return tests;
-  if (Object.hasOwn(groups, scope)) return tests.filter((t) => groups[scope].includes(t.slice(6, -8)));
-  if (scope !== 'changed') {
-    const matching = tests.filter((t) => t === scope || t === `tests/${scope}.test.ts`);
-    if (!matching.length)
-      throw new Error(
-        `Unknown scope ${scope}. Use changed, all, ${Object.keys(groups).join(', ')}, or a test filename.`,
-      );
-    return matching;
-  }
-  const changed = changedFiles();
-  if (!changed.length) return tests;
-  const graphs = new Map(tests.map((t) => [t, dependencies(t)]));
-  const selected = new Set();
-  for (const file of changed) {
-    if (/\.(md|png|jpg)$/.test(file)) continue;
-    const affected = tests.filter((t) => graphs.get(t).has(resolve(file)));
-    if (!affected.length) return tests;
-    affected.forEach((t) => selected.add(t));
-  }
-  return [...selected].sort();
-}
-function run(label, arguments_) {
+function run(label, command) {
+  const started = performance.now();
   console.log(`\n${label}`);
-  const start = performance.now();
-  const result = spawnSync(process.execPath, arguments_, { stdio: 'inherit' });
-  console.log(
-    `${label}: ${result.status === 0 ? 'PASS' : 'FAIL'} (${((performance.now() - start) / 1000).toFixed(1)}s)`,
-  );
+  const result = spawnSync(process.execPath, command, {stdio: 'inherit', windowsHide: true});
+  console.log(`${label}: ${result.status === 0 ? 'PASS' : 'FAIL'} (${((performance.now()-started)/1000).toFixed(1)}s)`);
   if (result.error) console.error(result.error.message);
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 try {
-  const selected = select();
-  console.log(
-    `Scope: ${scope}. Checks: ${selected.map((t) => relative('tests', t)).join(', ') || 'documentation only'}`,
-  );
+  for (const arg of args.filter(a => a.startsWith('--')))
+    if (!['--list','--watch','--production','--browser'].includes(arg) && !arg.startsWith('--browser=')) throw Error(`Unknown option: ${arg}`);
+  const browser = args.find(a => a.startsWith('--browser='))?.slice(10) ?? (args.includes('--browser') ? scope : undefined);
+  if (browser !== undefined && !browserChecks[browser]) throw Error(`Choose --browser=${Object.keys(browserChecks).join('|')}. Browser checks never default to a broad smoke run.`);
+  if (args.includes('--watch') && (browser || args.includes('--production'))) throw Error('Use --watch separately from browser/production checks.');
+  const plan = planChecks(scope, scope === 'changed' ? changedFiles() : []);
+  console.log(`Scope: ${scope}. Simulation: ${plan.tests.join(', ') || 'none'}.`);
+  console.log(`Typecheck: ${plan.typecheck || args.includes('--production') ? 'once' : 'none'}. Browser: ${browser ?? 'none'}. Production build: ${args.includes('--production') ? 'yes' : 'none'}.`);
+  if (plan.syntax.length) console.log(`Script syntax: ${plan.syntax.join(', ')}`);
+  if (plan.needsScope) {
+    const reason = plan.unresolved.length ? `Unmapped changes: ${plan.unresolved.join(', ')}.` : `Shared dependencies affect ${plan.tests.length} test files.`;
+    console.log(`${reason} Choose a focused scope/test (for example: npm run verify -- pricing), or explicitly choose all. No tests ran.`);
+    process.exit(args.includes('--list') ? 0 : 2);
+  }
   if (args.includes('--list')) process.exit(0);
-  run('Typecheck source and tests', ['node_modules/typescript/bin/tsc', '-p', 'tsconfig.tests.json']);
-  if (selected.length) run('Simulation checks', ['--test', ...(watch ? ['--watch'] : []), ...selected]);
-  if (args.includes('--browser')) run('Browser checks', ['scripts/browser-smoke.mjs']);
+  if (!plan.tests.length && !plan.syntax.length && !plan.typecheck && !browser && !args.includes('--production')) {
+    console.log('No executable changes to verify. Use an explicit scope to check committed code.');
+    process.exit(0);
+  }
+  for (const file of plan.syntax) run(`Syntax: ${file}`, ['--check', file]);
+  if (plan.typecheck || args.includes('--production')) run('Typecheck source and tests', ['node_modules/typescript/bin/tsc', '-p', 'tsconfig.tests.json']);
+  if (plan.tests.length) run('Simulation checks', ['--test', ...(args.includes('--watch') ? ['--watch'] : []), ...plan.tests]);
+  if (browser) for (const command of browserChecks[browser]) run(`Browser: ${command.join(' ')}`, command);
   if (args.includes('--production')) {
     run('Production build', ['node_modules/vite/bin/vite.js', 'build']);
-    run('Production isolation check', ['scripts/browser-smoke.mjs', '--production']);
+    run('Production isolation', ['scripts/browser-smoke.mjs', '--production']);
   }
 } catch (error) {
   console.error(error.message);

@@ -62,27 +62,50 @@ The typed [command union](src/dev/controller.ts) supports `bridge`, `remove-brid
 
 ## Verify a change
 
+Use the smallest check that covers the change. A test script is not a prerequisite for every edit.
+
+| Change | Routine verification |
+|---|---|
+| Documentation only | Review the text and links; no executable checks |
+| Small logic or balance change | Relevant simulation tests and one source/test typecheck |
+| UI or rendering change | Add only the relevant browser check; simulation tests if logic changes |
+| Major integration or milestone | Full simulation suite, relevant integration/visual browser checks and production build/isolation |
+
 ```sh
-npm run verify                       # Typecheck source/tests, select checks from uncommitted changes
-npm run verify -- research            # Explicit subsystem
-npm run verify -- characters          # Level progression, combat, settings and related services
-npm run verify -- movement --browser  # Focused simulation plus browser smoke check
-npm run verify -- all --browser --production
+npm test                              # Same focused default as npm run verify
+npm run verify -- pricing             # Pricing/construct + settings tests; one typecheck
+npm run verify -- miner-work-pool      # One regression file; one typecheck
+npm run verify -- pricing --browser   # Add only the pricing UI check
+npm run verify -- workforce --browser=workforce
+npm run verify -- verification --list # Preview without running anything
+# Major integrations/milestones only:
+npm run verify -- all --browser=integration --production
 ```
 
-Scopes: `changed` (default), `all`, `development`, `movement`, `rooms`, `characters`, `research`, `defenses`, `encounters`, `economy`, `hearth`, `morale`, `enemies`, `campaign`, or a test filename such as `gold-bags`. The `characters` group covers level definitions/progression, learning rooms, combat and spells, settings, and additive content. Changed-file selection follows local imports from each test. Unknown dependencies, changes outside that graph, or a clean working tree conservatively run the full suite. Documentation-only changes still typecheck. The printed file list makes selection reviewable.
+The default `changed` scope considers uncommitted changes. Clean trees and documentation-only changes do nothing. Changed test files select themselves; other TypeScript edits follow local test imports. If shared dependencies select more than six files, or a change is outside that graph, the runner prints the candidates and asks the developer/agent to choose a focused scope or explicitly choose `all`. It never silently falls back to the full suite. Resolve that choice from task context without asking the user. Changed JavaScript tools receive syntax checks. New behavior still needs relevant tests or a targeted manual check; an empty automatic selection is not evidence that it works.
 
-Add `--list` to inspect the selected tests without running them.
+Scopes live in [verification.ts](scripts/verification.ts): pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
 
-`--browser` uses the running development server, defaulting to port 5173; set `GAME_URL` to use another. `--production` builds and launches a temporary preview on port 4179 to check that the development API, simulation panel and URL scenario overrides are absent, then closes only that preview. It does not stop the development server. Avoid `--watch` with these one-shot browser flags.
+Browser checks are opt-in and independently selectable with `--browser=<name>`. Names: pricing, workforce, characters, models, rooms, movement, hounds, defenses, campaign, interface, smoke, integration. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface and campaign checks sequentially. Other subsystem browser scripts remain explicit tools for their owning changes.
 
-Browser checks use a separate headless browser and never attach to an existing player tab. Windows defaults to installed Edge. Set `BROWSER_CHANNEL=chrome` to use Chrome. Other platforms use Playwright Chromium; install it once with `npx playwright install chromium` if needed. Screenshots go to ignored `test-results/`.
+The consolidated workforce browser script replaces the old dwarfs, characters, Stonehands and summon-miner scripts:
 
-`node scripts/rooms-browser.mjs` runs the focused room browser playtest against the same running server and browser settings. It constructs unfurnished single-tile Kitchen, Dormitory and Training Rooms through normal commands, verifies sidebar capacity, autonomous needs, level-1-to-2 advancement and released capacity during cooldown, then checks retraining toward level 3 and the furnished showcase. It uses the same ignored screenshot directory.
+```sh
+node scripts/workforce-browser.mjs overview # Roster counts, filters, needs, details and locate
+node scripts/workforce-browser.mjs pricing  # Creation charges, configuration and affordability only
+node scripts/workforce-browser.mjs stats    # Injury-preserving stats and one real training level/UI update
+node scripts/workforce-browser.mjs models   # Stonehand/Miner silhouettes and close-up renders
+node scripts/workforce-browser.mjs all      # Explicitly run all four, sequentially
+```
 
-`node scripts/miners-browser.mjs` checks sustained resource assignments, limited role changes, no interrupted excavation/construction, distinct mining targets and completed excavation/walls with deliveries in the shared `miner-work` yard. Use `npm run verify -- miner-work-pool` for focused allocation checks.
+Complete progression, combat XP, support and price rules belong in simulation tests. Browser checks verify their UI integration without repeating every simulation case. General research/casting is owned by interface/spell checks, not pricing checks. Full pose sweeps remain in `scripts/character-visuals-browser.mjs` for animation changes and milestones. Startup smoke only checks initialization, controls and one simulation step; deeper development-tool checks belong to the development tests and debug browser script.
 
-Other commands: `npm run typecheck`, `npm run test:watch -- research` and `npm run format -- path/to/changed-file.ts`. Watch runs an initial typecheck and watches the selected tests/dependencies; rerun typecheck after edits and restart the watcher when changing scope. Apply formatting to touched modules rather than making unrelated changes across the repository.
+Keep `npm run dev` running for browser checks (default port 5173; override with `GAME_URL`). They launch a separate headless browser and never attach to a player tab. Windows defaults to Edge; use `BROWSER_CHANNEL=chrome` for Chrome. Other platforms use Playwright Chromium. Run browser workloads one at a time and hold source edits during a run to avoid reloads. Screenshots remain in ignored `test-results/`; capture them when useful for changed visuals.
+
+`--production` explicitly builds with Vite after the single typecheck, then starts temporary preview port 4179 to verify that development controls are absent. Do not also run `npm run build`. Standalone `npm run build` still checks source types for people invoking it directly. Build/config/dependency changes may warrant production verification; ordinary numeric edits do not.
+
+`npm run test:watch -- <scope>` runs one initial typecheck and watches the selected tests. Restart when changing scope, and rerun typecheck after TypeScript edits. Use watch separately from browser/production flags. Once relevant checks pass, repeat or broaden only for a new edit, failure or unresolved concern.
+
 
 ## Failures and ownership
 
@@ -114,14 +137,14 @@ New job execution must satisfy the exhaustive handler table. Preserve the explic
 ## Enemy, campaign and presentation checks
 
 - `enemy-roster` is the supplied five-gallery enemy test yard; `region-upper`, `region-fungal`, `region-ancient`, `region-crystal` and `region-volcanic` are separate normal-rules settlements with hidden regional enemy pairs and onward objectives. They use normal starting crew/gold and no supplied defenders or defenses.
-- `character-models` shows the four dwarfs on clear floor for comparing silhouettes and equipment. Use `showcase` for actual work/needs and `spells` for combat.
+- `character-models` shows the current character roster on clear floor for comparing silhouettes and equipment. Use `showcase` for actual work/needs and `spells` for combat.
 - `npm run verify -- enemies` selects enemy/encounter/combat regression checks; `npm run verify -- campaign` selects campaign, objective and crossing checks.
 - `node scripts/enemies-browser.mjs`, `node scripts/campaign-browser.mjs`, `node scripts/interface-browser.mjs`, `node scripts/environment-browser.mjs --profile` and `node scripts/character-visuals-browser.mjs` cover the new systems. Run browser workloads one at a time and hold source edits during a run to avoid HMR resets. Environment profiling takes settled frame samples after warm-up.
 - The development `enemy` command accepts `type`, `spawn` and `target` and calls actual enemy placement; the harness also has a named species selector. Campaign travel/restart checks use the ordinary sidebar actions. All screenshots/reports stay in ignored `test-results/`.
 
-Stonehand verification: `node --test tests/stonehands.test.ts`, `node scripts/miners-browser.mjs --stonehands`, and `node scripts/summon-miner-browser.mjs` (the historical filename now tests Create Stonehand). The Character Model Studio includes Stonehand and retained Miner silhouettes side by side.
+Stonehand verification: `node --test tests/stonehands.test.ts`, `node scripts/miners-browser.mjs --stonehands`, and `node scripts/workforce-browser.mjs pricing`. The Character Model Studio includes Stonehand and retained Miner silhouettes side by side.
 
-`node scripts/stonehands-browser.mjs` verifies the smaller silhouette against the retained Miner, captures close-up renders, and checks construct-only sidebar details.
+`node scripts/workforce-browser.mjs models` verifies the smaller silhouette against the retained Miner, captures close-up renders, ; construct-only details are checked by overview mode.
 
 ## Cave Hound checks
 
