@@ -1,7 +1,7 @@
-import { minerPurchaseStatus } from '../game/recruitment';
+import { stonehandPurchaseStatus } from '../game/recruitment';
 import { actionIcon } from './icons';
 import type { Sidebar } from './sidebar';
-import { summonMinerSpell, spellDefinitions, spellDescription } from '../content/spells';
+import { summonStonehandSpell, spellDefinitions, spellDescription } from '../content/spells';
 import { castSpell, queueResearch, cancelResearch } from '../game/research';
 import { reachable } from '../game/navigation';
 import { key } from '../game/types';
@@ -10,8 +10,8 @@ import { dismissRally } from '../game/spell-effects';
 import { actionAvailability } from './action-help';
 
 export function showSpells(sidebar: Sidebar) {
-  sidebar.panel.innerHTML = `<div id="selected-spell" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Spell choices">${[summonMinerSpell,...spellDefinitions].map(s=>`<button class="room-choice spell-choice" data-spell="${s.id}" aria-label="${s.name}" title="${s.name}">${actionIcon(s.id)}<span class="spell-state" aria-hidden="true"></span></button>`).join('')}</div><article data-spell-details="summon-miner" hidden><p>Summon one Miner at the Hearth. Available without research.</p><p id="summon-miner-status" class="muted"></p></article>${spellDefinitions.map((s) => `<article data-spell-details="${s.id}" hidden><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div></article>`).join('')}<details class="production"><summary>Library research</summary><label>Research spell<select id="research-spell"><option value="">Choose a spell</option>${spellDefinitions.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></label><p class="muted">Library floor area determines how many Runesmiths can research at once. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div></details><p id="active-spells" class="muted"></p>`;
-  sidebar.panel.dataset.selectedSpell=spellDefinitions.some(s=>s.id===sidebar.selection.tool)?sidebar.selection.tool:summonMinerSpell.id;
+  sidebar.panel.innerHTML = `<div id="selected-spell" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Spell choices">${[summonStonehandSpell,...spellDefinitions].map(s=>`<button class="room-choice spell-choice" data-spell="${s.id}" aria-label="${s.name}" title="${s.name}">${actionIcon(s.id)}<span class="spell-state" aria-hidden="true"></span></button>`).join('')}</div><article data-spell-details="summon-stonehand" hidden><p>Assemble a fragile worker at the Hearth. No food, beds, wages or training.</p><p id="summon-stonehand-status" class="muted"></p></article>${spellDefinitions.map((s) => `<article data-spell-details="${s.id}" hidden><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div></article>`).join('')}<details class="production"><summary>Library research</summary><label>Research spell<select id="research-spell"><option value="">Choose a spell</option>${spellDefinitions.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></label><p class="muted">Library floor area determines how many Runesmiths can research at once. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div></details><p id="active-spells" class="muted"></p>`;
+  sidebar.panel.dataset.selectedSpell=spellDefinitions.some(s=>s.id===sidebar.selection.tool)?sidebar.selection.tool:summonStonehandSpell.id;
   const inspect=(id:string)=>{sidebar.panel.dataset.selectedSpell=id;sidebar.update();};
   sidebar.panel.querySelector<HTMLSelectElement>('#research-spell')!.onchange=()=>{
     if(!sidebar.panel.querySelector<HTMLSelectElement>('#research-spell')!.value)return;
@@ -26,7 +26,7 @@ export function showSpells(sidebar: Sidebar) {
       if(b.getAttribute('aria-disabled')==='true')return;
       const id=b.dataset.spell!;
       sidebar.panel.dataset.selectedSpell=id;
-      if(id===summonMinerSpell.id){
+      if(id===summonStonehandSpell.id){
         sidebar.selection.setTool('dig');
         sidebar.root.querySelector('#feedback')!.textContent=castSpell(sidebar.view.world,id);
       }else{
@@ -63,20 +63,20 @@ export function updateSpells(sidebar: Sidebar) {
       .filter((f) => f.service === 'research' && routes.some((r) => r.has(key(f.access))))
       .reduce((sum, f) => sum + f.capacity, 0);
     researchCapacity.textContent = `${workers.length} capable researcher${workers.length === 1 ? '' : 's'} · Capacity for ${capacity} researcher${capacity === 1 ? '' : 's'}${workers.length ? '' : '. Build a Library and provide spare accommodation and food support to attract a Runesmith.'}`;
-    const quote=minerPurchaseStatus(w),summonSelected=sidebar.panel.dataset.selectedSpell===summonMinerSpell.id;
-    const summonChoice=sidebar.panel.querySelector<HTMLButtonElement>('[data-spell="summon-miner"]')!;
+    const quote=stonehandPurchaseStatus(w),summonSelected=sidebar.panel.dataset.selectedSpell===summonStonehandSpell.id;
+    const summonChoice=sidebar.panel.querySelector<HTMLButtonElement>('[data-spell="summon-stonehand"]')!;
     summonChoice.classList.toggle('active',summonSelected);
     summonChoice.classList.toggle('spell-ready',quote.eligible);
     summonChoice.setAttribute('aria-pressed',String(summonSelected));
-    summonChoice.title=`Summon Miner · ${quote.price} gold · ${quote.eligible?'Ready':quote.message}`;
+    summonChoice.title=`Create Stonehand · ${quote.price} gold · ${quote.eligible?'Ready':quote.message}`;
     summonChoice.setAttribute('aria-label',summonChoice.title);
     summonChoice.querySelector('.spell-state')!.textContent=quote.eligible?'◆':'◇';
-    sidebar.panel.querySelector<HTMLElement>('[data-spell-details="summon-miner"]')!.hidden=!summonSelected;
-    sidebar.panel.querySelector('#summon-miner-status')!.textContent=`${quote.miners} living Miners · ${quote.message}`;
+    sidebar.panel.querySelector<HTMLElement>('[data-spell-details="summon-stonehand"]')!.hidden=!summonSelected;
+    sidebar.panel.querySelector('#summon-stonehand-status')!.textContent=`${quote.stonehands} Stonehands · ${quote.message}`;
     actionAvailability(summonChoice,quote.eligible,summonChoice.title);
     if(summonSelected){
       const header=sidebar.panel.querySelector<HTMLElement>('#selected-spell')!;
-      const summary=actionIcon(summonMinerSpell.id)+`<div><strong>Summon Miner</strong><span class="room-price"><b>${quote.price}</b> gold / cast</span></div>`;
+      const summary=actionIcon(summonStonehandSpell.id)+`<div><strong>Create Stonehand</strong><span class="room-price"><b>${quote.price}</b> gold / cast</span></div>`;
       if(header.dataset.summary!==summary){header.dataset.summary=summary;header.innerHTML=summary;}
     }
     for (const spell of spellDefinitions) {

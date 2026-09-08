@@ -1,5 +1,5 @@
 import {type World,type Point,key} from './types.ts';
-import {characterDefinitions,characterById} from '../content/characters.ts';
+import {characterDefinitions,characterById,isConstruct} from '../content/characters.ts';
 import {tuning} from '../content/tuning.ts';
 import {canStand,reachable} from './navigation.ts';
 import {alive} from './spell-effects.ts';
@@ -14,6 +14,7 @@ export function recruitmentStatus(w:World,type:string){
   if(w.outcome)return no('The level has ended.');
   const def=characterById(type);if(!def)return no('Unknown resident type.');
   const start=hearthArrival(w);if(!start)return no('Needs an open Hearth arrival route.');
+  if(def.construct)return {eligible:true,message:'Hearth arrival route is available.',capacity:Infinity};
   const routes=reachable(w,start),usable=w.roomServices.filter(f=>routes.has(key(f.access)));
   let slots=Infinity;
   for(const service of def.attractionServices){
@@ -23,7 +24,7 @@ export function recruitmentStatus(w:World,type:string){
     if(capacity<=residents)return no(`Needs spare ${service} capacity.`);
     slots=Math.min(slots,capacity-residents);
   }
-  const population=w.agents.filter(alive).length;
+  const population=w.agents.filter(a=>alive(a)&&!isConstruct(a.type)).length;
   const beds=usable.filter(f=>f.service==='rest').length-population;
   if(beds<=0)return no('Needs spare bed capacity.');
   const foodSlots=usable.filter(f=>f.service==='dining').length-population;
@@ -46,6 +47,22 @@ export function recruitSpecialist(w:World,spawn:(type:string,origin:Point)=>bool
   }
 }
 export const livingMiners=(w:World)=>w.agents.filter(a=>a.type==='miner'&&alive(a)).length;
+export function stonehandPurchaseStatus(w:World){
+  const result={...recruitmentStatus(w,'stonehand'),price:tuning.stonehandCost,stonehands:w.agents.filter(a=>a.type==='stonehand'&&alive(a)).length};
+  if(!result.eligible)return result;
+  const routes=reachable(w,hearthArrival(w)!);
+  if(!w.tiles.some(t=>t.claimed&&canStand(w,t)&&routes.has(key(t))&&!w.agents.some(a=>Math.hypot(a.x-t.x,a.z-t.z)<.6)))
+    return {...result,eligible:false,message:'Needs a free arrival square beside the Hearth.'};
+  if(goldTotal(w)<result.price)return {...result,eligible:false,message:`Needs ${result.price} gold to create a Stonehand.`};
+  return {...result,message:'Ready at the Hearth. No food, beds or wages.'};
+}
+export function purchaseStonehand(w:World,spawn:(type:string,origin:Point)=>boolean){
+  const status=stonehandPurchaseStatus(w);
+  if(!status.eligible)return {ok:false,message:status.message,price:status.price};
+  if(!spawn('stonehand',hearthArrival(w)!))return {ok:false,message:'No free Stonehand arrival square.',price:status.price};
+  spendGold(w,status.price);w.revision++;
+  return {ok:true,message:`Stonehand assembled for ${status.price} gold.`,price:status.price};
+}
 export const minerPrice=(w:World)=>tuning.minerMinimumCost+tuning.minerCostStep*livingMiners(w);
 export function minerPurchaseStatus(w:World){
   const status=recruitmentStatus(w,'miner'),price=minerPrice(w),miners=livingMiners(w);

@@ -25,7 +25,7 @@ export function createEconomyLab(freeRoomBuilding = false) {
   placeDefense(w, 'timber-door', { x: 7, z: 10 });
   const door = w.defenses![0];
   setDoorMode(w, door.id, 'locked');
-  for (const type of characterDefinitions.map((c) => c.id)) addResidents(w, type, 1, { x: 10, z: 10 });
+  for (const type of characterDefinitions.filter(c=>!c.construct).map((c) => c.id)) addResidents(w, type, 1, { x: 10, z: 10 });
   // Explicit fixture setup brings one payday forward without changing global tuning.
   w.nextPaydayAt = 10;
   setDoorMode(w, door.id, 'closed');

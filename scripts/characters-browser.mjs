@@ -57,7 +57,7 @@ try {
   for (const c of characterDefinitions)
     shortTraining[`${c.name} levels`] = Object.fromEntries(c.levels.filter(level => level.level > 1).map(level => [`${c.name} · level ${level.level} · training seconds to enter`, 2]));
   await configure(shortTraining);
-  await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+  await page.getByRole('button', { name: 'Workforce', exact: true }).click();
   let agents = await residents();
   assert(agents.every(a => a.level === 1), 'Every type begins at level 1');
   const seen = new Map(agents.map(a => [a.id, new Set([1])]));
@@ -103,7 +103,7 @@ try {
 
   await configure({ 'Warrior levels': { 'Warrior · level 5 · maximum health': 300, 'Warrior · level 5 · attack damage': 30, 'Warrior · level 5 · attack interval seconds': .8, 'Warrior · level 5 · work speed multiplier': 1.25 } });
   assert.equal((await residents()).find(a => a.id === warrior.id).maxHealth, 300);
-  await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+  await page.getByRole('button', { name: 'Workforce', exact: true }).click();
   await page.locator('[data-dwarf-role="warrior"]').click();
   const row = page.locator(`[data-resident="${warrior.id}"]`);
   await row.evaluate(element => { element.open = true; });
@@ -127,7 +127,7 @@ try {
   await page.evaluate(() => window.strongholdDev.advance(1.2));
   const afterFight=(await residents()).find(a=>a.id===fighter.id);
   assert(afterFight.experience>fighter.experience,'Combat continues earning XP during training cooldown');
-  await page.getByRole('button',{name:'Dwarfs',exact:true}).click();
+  await page.getByRole('button',{name:'Workforce',exact:true}).click();
   await page.locator('[data-dwarf-role="warrior"]').click();
   const fighterRow=page.locator(`[data-resident="${fighter.id}"]`);
   await fighterRow.evaluate(element => { element.open = true; });

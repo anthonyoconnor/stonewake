@@ -9,7 +9,7 @@ try {
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(`${process.env.GAME_URL ?? 'http://127.0.0.1:5173'}/?scenario=economy&paused=1`);
   await page.waitForFunction(() => window.strongholdDev?.version === 1);
-  await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+  await page.getByRole('button', { name: 'Workforce', exact: true }).click();
   assert.equal(await page.locator('[data-dwarf-count]').count(), 16);
   assert.equal(await page.locator('.resident-row').count(), 0);
   assert.equal(await page.locator('#buy-miner').isVisible(), false);

@@ -46,6 +46,7 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `spells` | Existing prepared-spell and Warrior combat yard |
 | `crowded-kitchen` | Six hungry miners sharing food and accommodation |
 | `research-interruption` | Runesmith, queued research, food and beds; interrupt via needs or research pause |
+| `stonehands` | Three mechanical workers using the same terrain work yard; no living support requirements |
 | `miner-work` | Three supported Miners, marked gold/gems and earth, loose gold and wall plans; shared work allocation and resource coverage |
 | `locked-door-hauling` | Loose gold across a locked door; verify failure then resume by changing door mode |
 | `encounters` | Hidden camp beyond a mineable gate, warned entrance waves, real traps/Warriors, source clearing and repeat rules |
@@ -117,3 +118,7 @@ New job execution must satisfy the exhaustive handler table. Preserve the explic
 - `npm run verify -- enemies` selects enemy/encounter/combat regression checks; `npm run verify -- campaign` selects campaign, objective and crossing checks.
 - `node scripts/enemies-browser.mjs`, `node scripts/campaign-browser.mjs`, `node scripts/interface-browser.mjs`, `node scripts/environment-browser.mjs --profile` and `node scripts/character-visuals-browser.mjs` cover the new systems. Run browser workloads one at a time and hold source edits during a run to avoid HMR resets. Environment profiling takes settled frame samples after warm-up.
 - The development `enemy` command accepts `type`, `spawn` and `target` and calls actual enemy placement; the harness also has a named species selector. Campaign travel/restart checks use the ordinary sidebar actions. All screenshots/reports stay in ignored `test-results/`.
+
+Stonehand verification: `node --test tests/stonehands.test.ts`, `node scripts/miners-browser.mjs --stonehands`, and `node scripts/summon-miner-browser.mjs` (the historical filename now tests Create Stonehand). The Character Model Studio includes Stonehand and retained Miner silhouettes side by side.
+
+`node scripts/stonehands-browser.mjs` verifies the smaller silhouette against the retained Miner, captures close-up renders, and checks construct-only sidebar details.

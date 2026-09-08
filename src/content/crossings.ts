@@ -1,6 +1,6 @@
 import { type LevelDefinition } from '../game/types.ts';
 import { createWorld } from '../game/world.ts';
-import { addMiners } from '../game/simulation.ts';
+import { addStonehands } from '../game/simulation.ts';
 
 const column = (x: number) => Array.from({ length: 18 }, (_, z) => ({ x, z }));
 export const crossingLevel: LevelDefinition = {
@@ -42,6 +42,6 @@ export const crossingLevel: LevelDefinition = {
 export function createCrossingScenario(free = false) {
   const w = createWorld(crossingLevel);
   w.freeRoomBuilding = free;
-  addMiners(w);
+  addStonehands(w);
   return w;
 }

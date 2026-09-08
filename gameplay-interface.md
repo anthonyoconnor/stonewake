@@ -1,6 +1,6 @@
 # Gameplay interface
 
-The player interface uses a compact, persistent left sidebar with four main categories: Rooms, Defenses, Spells and Dwarfs. The M20 update separates ordinary actions from development tools, makes unavailable actions explainable by keyboard as well as mouse, and keeps messages and inspection within the sidebar.
+The player interface uses a compact, persistent left sidebar with four main categories: Rooms, Defenses, Spells and Workforce. The M20 update separates ordinary actions from development tools, makes unavailable actions explainable by keyboard as well as mouse, and keeps messages and inspection within the sidebar.
 
 ## Current player interface
 
@@ -80,19 +80,21 @@ Click a placed fixture with Inspect or the default floor-inspection action. Its 
 
 ### Spells
 
-Spells use the same four-column icon grid and selected-item header as Rooms, with distinct vector artwork for every spell. The header shows the selected name and gold cost per cast; only that spell’s effect, research progress and Research/Resume and Pause controls appear below the grid. Small icon markers distinguish unresearched, researching/preparing, paused and ready states, with full names and states in accessible labels and hover titles. Library staffing details are expandable. Clicking an enabled icon activates the spell directly: Summon Miner summons immediately, while targeted spells enter targeting. There is no separate Cast button. Icons are dimmed and disabled when unaffordable, unprepared, blocked by support/access, already active (rally/barrier), or the area has ended. Hover shows the cost and reason; enabled icons also support keyboard activation. Hover/focus inspects details without casting. Library research includes a spell selector to reach Research/Resume and Pause even when a casting icon is disabled. A spell needing a world target enters targeting mode; the player clicks a valid location to cast it and can cancel before casting.
+Spells use the same four-column icon grid and selected-item header as Rooms, with distinct vector artwork for every spell. The header shows the selected name and gold cost per cast; only that spell’s effect, research progress and Research/Resume and Pause controls appear below the grid. Small icon markers distinguish unresearched, researching/preparing, paused and ready states, with full names and states in accessible labels and hover titles. Library staffing details are expandable. Clicking an enabled icon activates the spell directly: Create Stonehand summons immediately, while targeted spells enter targeting. There is no separate Cast button. Icons are dimmed and disabled when unaffordable, unprepared, blocked by support/access, already active (rally/barrier), or the area has ended. Hover shows the cost and reason; enabled icons also support keyboard activation. Hover/focus inspects details without casting. Library research includes a spell selector to reach Research/Resume and Pause even when a casting icon is disabled. A spell needing a world target enters targeting mode; the player clicks a valid location to cast it and can cancel before casting.
 
 Use an understated target outline or effect preview when useful. No floating spell name, cost, range number, or cooldown counter appears in the world. Any defined cooldown or research progress belongs in the spell panel. Unavailable spells have a distinct icon state, with the reason available on selection or focus.
 
 Runesmiths research spells in the Library. The current [training, research and arrival controls](#training-research-and-arrival-controls) expose the provisional spell list, casting costs, research/preparation progress and restrictions. No additional magical currency or individual Runesmith orders are used.
 
-### Dwarfs
+### Workforce
 
-The Dwarfs tab opens with a compact icon matrix: Miner, Engineer, Warrior and Runesmith role icons down the side, and Idle, Working, Needs and Combat icons across the top. Each cell shows its live population count; zero counts are muted. Hover labels and accessible names explain the icons. Click a count to list matching residents, or a role icon to show that whole type. Expand a resident for work, needs, pay, training and condition details, with a Locate dwarf button. Pay, wellbeing and specialist attraction details are grouped in an expandable section below the matrix.
+Stonehand details show health, cargo and current work, with a short note that they need no food, beds, wages or training. Dwarf details retain their living needs and progression.
+
+The Workforce tab opens with a compact icon matrix: Stonehand, retained Miner, Engineer, Warrior and Runesmith role icons down the side, and Idle, Working, Needs and Combat icons across the top. Each cell shows its live population count; zero counts are muted. Hover labels and accessible names explain the icons. Click a count to list matching residents, or a role icon to show that whole type. Expand a resident for work, needs, pay, training and condition details, with a Locate worker button. Pay, wellbeing and specialist attraction details are grouped in an expandable section below the matrix.
 
 Activity groups use current simulation state, including travel toward the current job. Working includes hauling, construction, training and Hearthstone activation; Needs includes eating, sleeping, collecting pay and departure; Combat includes pursuit and rally response. Idle includes waiting for available work. These are activity counts, not unmet-need warnings; wellbeing warnings remain available separately.
 
-Miner recruitment uses the Summon Miner icon in Spells. There is no text recruitment button in Dwarfs. Summon Miner needs no Library research or preparation, and clicking its enabled icon summons at the Hearthstone without world targeting. Its header and icon tooltip show the current 50 + 25 × living Miners gold cost and explain missing support. Specialist attraction requirements remain in the expandable population details.
+Create Stonehand in Spells assembles a worker at the Hearth for a fixed 25 gold, with no Library research or food/bed support requirement. Its tooltip explains missing gold or arrival access. The original Miner has no ordinary recruitment icon. Specialist attraction requirements remain in expandable population details.
 
 Selecting a dwarf in the world opens its information in the sidebar. A locate action from the population panel can center the camera on that dwarf. Inspection is informational: it does not enable individual movement orders, possession, manual job assignment, or selecting an army to command.
 
@@ -102,13 +104,13 @@ Selecting a dwarf in the world opens its information in the sidebar. A locate ac
 
 Training Room and Library use the same construction controls as the other rooms. Selecting either reports floor area, total capacity, occupied slots and reachable capacity in the left sidebar. Explain a real blocked route or a full room; missing furniture never causes an unavailable-service message.
 
-The Dwarfs panel shows each resident's type, activity, character level and maximum level, current/maximum health, attack damage and interval, work-speed bonus and food/rest state. It also shows the next level, its shared XP requirement, earned XP, training/combat earning rates and personal training cooldown, or a maximum-level message. Each training visit ends after one gained level and releases its room slot during cooldown. Specialists show their actual arrival requirements and missing support. There are no individual training or movement orders. [Character levels](characters.md#character-levels-and-training) owns the progression rules and balance tables.
+The Workforce panel shows each resident's type, activity, character level and maximum level, current/maximum health, attack damage and interval, work-speed bonus and food/rest state. It also shows the next level, its shared XP requirement, earned XP, training/combat earning rates and personal training cooldown, or a maximum-level message. Each training visit ends after one gained level and releases its room slot during cooldown. Specialists show their actual arrival requirements and missing support. There are no individual training or movement orders. [Character levels](characters.md#character-levels-and-training) owns the progression rules and balance tables.
 
 The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume and Pause controls, plus direct icon activation. Initial research is selected by the player; Runesmiths choose reachable Library slots autonomously. A cast is available only when prepared and affordable. Targeting follows the selected spell's definition. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active effect time stays in the sidebar. See [Spells](spells.md) for effects, costs, targeting and implementation status.
 
 **Debug → Test harnesses → Load visual showcase** builds example rooms through normal gameplay construction and adds test residents, gold, craft orders and research orders. Kitchens provide room support without initial food stock. The [configuration guide](configuration.md) identifies the source of the showcase contents. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
 
-The studio starts with automatic arrivals disabled. **Test automatic specialist arrivals** enables normal room/support checks in that test world. The Dwarfs panel reports time until the next check and the specific missing capacity for each type.
+The studio starts with automatic arrivals disabled. **Test automatic specialist arrivals** enables normal room/support checks in that test world. The Workforce panel reports time until the next check and the specific missing capacity for each type.
 
 Excavation is the default cursor action at startup and after right-click or Escape cancels another operation. The first tile determines the entire excavation gesture at pointer-down: an unmarked tile starts adding, and a marked tile starts removing. The action stays fixed across mixed selections, with matching cursor and preview; changes apply on release. Adding preserves existing marks, and removing leaves unmarked tiles unchanged. Single clicks still toggle their tile. Clicking an open floor or room inspects it. Marking diggable terrain uses a clear cell outline or surface treatment on the square grid. Bedrock cannot be designated for mining. The final highlight colors and pattern remain to be chosen.
 
@@ -134,7 +136,7 @@ Proposed mouse and keyboard defaults:
 
 Bindings are proposals and should be remappable. The sidebar provides Home and zoom icons; rotation uses the keyboard or middle drag. Closing, refreshing or leaving an active game requests browser confirmation to protect its in-memory session; Ctrl+W itself remains browser-controlled. Input over the sidebar must never excavate, build, or cast into the world behind it; scrolling a panel must not zoom the camera. Reselect marked tiles to remove excavation designations; previews distinguish adding from removing marks. There are no separate excavation or erase buttons.
 
-Camera rotation preserves the world-grid alignment of selections. Dwarfs and enemies still move continuously within the free space rather than following selection squares. Camera motion never grants visibility through concealed terrain.
+Camera rotation preserves the world-grid alignment of selections. Workforce and enemies still move continuously within the free space rather than following selection squares. Camera motion never grants visibility through concealed terrain.
 
 Call to arms uses a recognizable rally marker in the world and an active state on its sidebar button. The player can place or cancel the rally from these controls; responders move and fight autonomously. The proposed one-active-rally model remains in [Game rules](game-rules.md#2-player-control). Response rules, costs, and range remain open.
 
@@ -151,7 +153,7 @@ The world may show excavation markings, room footprints, a restrained selection 
 | Food provision | Kitchen decoration and residents eating or waiting for access | Kitchen resident support and capacity/access messages; no food inventory |
 | Gold storage | Gold piles reflecting stored wealth and miners carrying deliveries | Sidebar gold total and Treasure Room details |
 | Excavation or reinforcement | Miners working, debris, changing surfaces, and the resulting terrain state | Selected work information when needed |
-| Research, crafting, and training | Dwarfs using their facilities and the physical work activity | Relevant sidebar category; dwarf level, next XP requirement, shared progress and training cooldown in the Dwarfs panel |
+| Research, crafting, and training | Workforce using their facilities and the physical work activity | Relevant sidebar category; dwarf level, next XP requirement, shared progress and training cooldown in the Workforce panel |
 | Damage and combat | Impact effects, character reactions, and readable damage to structures | Selected condition information and attack messages |
 | Persistent unmet needs | Relevant behavior such as searching or leaving work, without exaggerated repeated effects | Dwarf information and a message identifying the cause |
 | Threat to the Stone Hearth | Attacks and damage effects on the core | Priority warning and minimap emphasis |
@@ -182,10 +184,10 @@ Example message wording below illustrates placement and clarity; it does not def
 |---|---|---|
 | Library capacity is occupied | More Library room capacity is needed. | Locate room |
 | Kitchen support cannot meet population | More Kitchen capacity is needed. | Open Kitchen information |
-| Residents cannot reach available food | Dwarfs cannot reach a Kitchen. | Locate the affected area |
+| Residents cannot reach available food | Workforce cannot reach a Kitchen. | Locate the affected area |
 | Too little reachable accommodation | More Dormitory capacity is needed. | Open Dormitory information |
 | Insufficient stored gold for wages | There is not enough stored gold for payday. | Open treasure information |
-| Treasury is inaccessible | Dwarfs cannot reach a Treasure Room to collect pay. | Locate the affected area |
+| Treasury is inaccessible | Workforce cannot reach a Treasure Room to collect pay. | Locate the affected area |
 | A spell becomes available | A new spell is ready. | Open spells |
 | The core is attacked | The Stone Hearth is under attack. | Locate Hearthstone |
 
@@ -193,7 +195,7 @@ Objective briefings, discovered-area explanations, and tutorial guidance use the
 
 The **Hearth** button beneath the gold/population totals opens starting-core health, the onward objective and current campaign briefing. The sidebar distinguishes undiscovered, unreachable, contested, awaiting an available resident, approaching, activating and complete. The stone has no mesh or location disclosure before normal discovery. After discovery, **Activate onward Hearthstone** requests an autonomous physical visit; interruptions reset work and retry the request. Local completion or core defeat shows a persistent sidebar result and **Restart area**, freezing ordinary gameplay while allowing inspection and camera movement. In a development scenario, restart reloads that same scenario. A completed campaign area offers travel to its named next area; the final area shows the resolved journey and **Begin a new journey**.
 
-**Resident needs** groups shortage warnings by cause near the sidebar footer, with an individual Dismiss action per group. Escalation reopens a warning; restoring its support clears it. The Dwarfs panel shows wellbeing counts, each resident’s cause/status and a control to reopen dismissed warnings. Blocked departures explain the missing Hearth route. All text remains in the sidebar.
+**Resident needs** groups shortage warnings by cause near the sidebar footer, with an individual Dismiss action per group. Escalation reopens a warning; restoring its support clears it. The Workforce panel shows wellbeing counts, each resident’s cause/status and a control to reopen dismissed warnings. Blocked departures explain the missing Hearth route. All text remains in the sidebar.
 
 ## Readability and future content
 

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
+const scenario = process.argv.includes('--stonehands') ? 'stonehands' : 'miner-work';
+const worker = scenario === 'stonehands' ? 'stonehand' : 'miner';
 
 const browser = await chromium.launch({
   headless: true,
@@ -13,8 +15,8 @@ try {
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(message.text());
   });
-  await page.goto(`${process.env.GAME_URL ?? 'http://127.0.0.1:5173'}/?scenario=miner-work&paused=1`);
-  await page.waitForFunction(() => window.strongholdDev?.status().scenario === 'miner-work');
+  await page.goto(`${process.env.GAME_URL ?? 'http://127.0.0.1:5173'}/?scenario=${scenario}&paused=1`);
+  await page.waitForFunction(s => window.strongholdDev?.status().scenario === s, scenario);
   const result = await page.evaluate(async () => {
     const api = window.strongholdDev;
     let covered = 0,
@@ -69,10 +71,10 @@ try {
     result.state.roomServices.some((s) => s.stored > 0),
     'Workers bank income',
   );
-  await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
-  await page.locator('[data-dwarf-role="miner"]').click();
+  await page.getByRole('button', { name: 'Workforce', exact: true }).click();
+  await page.locator(`[data-dwarf-role="${worker}"]`).click();
   mkdirSync('test-results', { recursive: true });
-  await page.screenshot({ path: 'test-results/miner-work-pool.png' });
+  await page.screenshot({ path: `test-results/${scenario}-work-pool.png` });
   assert.deepEqual(result.errors, []);
   assert.deepEqual(errors, []);
   console.log(

@@ -21,9 +21,9 @@ try {
   await page.waitForFunction(() => window.strongholdDev?.status().scenario === 'stronghold');
   const minerControl = async (method, status = false) => {
     await page.getByRole('button', { name: 'Spells', exact: true }).click();
-    const control = page.locator(status ? '#summon-miner-status' : '[data-spell="summon-miner"]');
+    const control = page.locator(status ? '#summon-stonehand-status' : '[data-spell="summon-stonehand"]');
     const result = method === 'textContent' && !status ? await control.getAttribute('title') : await control[method]();
-    await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+    await page.getByRole('button', { name: 'Workforce', exact: true }).click();
     await page.locator('.population-details').evaluate(e => { e.open = true; });
     return result;
   };
@@ -171,7 +171,7 @@ try {
     const defeated = w;
     await advance(5);
     assert.equal((await state()).elapsed, defeated.elapsed, 'Defeat stops the simulation');
-    await panel('Dwarfs');
+    await panel('Workforce');
     assert(await minerControl('isDisabled'));
     await command({ kind: 'buy-miner' });
     await command({ kind: 'activate-hearth' });
@@ -217,7 +217,7 @@ try {
   }
   if (scope !== 'm11') {
     await load('morale');
-    await panel('Dwarfs');
+    await panel('Workforce');
     let w = await state();
     const originalTypes = w.agents.map((a) => a.type).sort();
     assert.deepEqual(originalTypes, ['engineer', 'miner', 'runesmith', 'warrior']);
@@ -259,7 +259,7 @@ try {
 
     // Restoring wage access before a physical exit saves residents even after they start leaving.
     await load('morale');
-    await panel('Dwarfs');
+    await panel('Workforce');
     await advance(360);
     w = await state();
     assert(w.agents.length === 4 && w.agents.every((a) => a.morale.leaving && a.morale.blocked));
@@ -289,7 +289,7 @@ try {
 
     // Sustained independent food/pay shortages are grouped, dismissible and recoverable in the UI.
     await load('morale');
-    await panel('Dwarfs');
+    await panel('Workforce');
     await command({ kind: 'reclaim', points: kitchen });
     await advance(180);
     w = await state();
@@ -326,8 +326,8 @@ try {
     assert.equal(w.departures?.length ?? 0, 0, 'A blocked exit never removes a dwarf remotely');
     assert.equal(await foodAlert.count(), 1, 'Escalation to departure reopens a dismissed warning');
     assert(
-      (await minerControl('textContent')).includes('75'),
-      'Blocked departing Miner still counts in the next price',
+      (await minerControl('textContent')).includes('25'),
+      'Stonehand price stays fixed while a dwarf is departing',
     );
     assert.equal((await page.locator('#dwarf-total').textContent()).trim(), '4');
     const beforeExitGold = accountedGold(w);
@@ -355,8 +355,8 @@ try {
       'Departures release support assignments',
     );
     assert(
-      (await minerControl('textContent')).includes('50'),
-      'The next Miner price falls after actual departure',
+      (await minerControl('textContent')).includes('25'),
+      'Stonehand price stays fixed after dwarf departure',
     );
     assert.equal((await page.locator('#dwarf-total').textContent()).trim(), '0');
     await screenshot('m14-dwarfs-departed', page.locator('#morale-summary'));

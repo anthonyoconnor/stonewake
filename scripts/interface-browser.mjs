@@ -114,7 +114,7 @@ try {
   assert.equal(await page.locator('#active-tool').textContent(), 'Excavate');
   assert(await page.locator('#unit-inspection').isVisible());
   await page.locator('#close-inspection').click(); assert(!(await page.locator('#unit-inspection').isVisible()));
-  await panel('Dwarfs'); await page.locator('[data-dwarf-role="warrior"]').click();
+  await panel('Workforce'); await page.locator('[data-dwarf-role="warrior"]').click();
   await page.locator('.resident-row summary').first().click(); await page.locator('[data-locate-dwarf]').first().click();
   assert(await page.locator('#unit-inspection').isVisible()); await snap('residents');
 
@@ -133,7 +133,7 @@ try {
   // At small desktop viewports the fixed essentials remain onscreen and panel actions scroll into view.
   for (const viewport of [{ width: 1024, height: 768 }, { width: 800, height: 600 }]) {
     await page.setViewportSize(viewport); await load('stronghold');
-    for (const category of ['Rooms', 'Defenses', 'Spells', 'Dwarfs', 'Help', 'Debug']) {
+    for (const category of ['Rooms', 'Defenses', 'Spells', 'Workforce', 'Help', 'Debug']) {
       await panel(category);
       const layout = await page.evaluate(() => {
         const side = document.querySelector('#sidebar'), panel = document.querySelector('#panel');
@@ -161,7 +161,7 @@ try {
     }
   }
   w = await state(); assert.equal(w.outcome, 'defeat'); assert(warned, 'Real Hearth damage produces a priority message');
-  await panel('Dwarfs');
+  await panel('Workforce');
   const enemy = w.enemies.find(e => e.health > 0 && w.tiles[Math.round(e.z)*w.width+Math.round(e.x)]?.known);
   assert(enemy); await page.getByRole('button', {name:'Return to Hearthstone',exact:true}).click(); await clickTile(enemy.x,enemy.z);
   assert(await page.locator('#unit-inspection').isVisible());

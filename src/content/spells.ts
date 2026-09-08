@@ -1,3 +1,4 @@
+export const summonStonehandSpell={id:'summon-stonehand',name:'Create Stonehand'} as const;
 // Innate Hearth spell: its live gold cost comes from the recruitment service.
 export const summonMinerSpell = { id: 'summon-miner', name: 'Summon Miner' } as const;
 export interface SpellDefinition {

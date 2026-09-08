@@ -1,3 +1,4 @@
+import { isConstruct } from '../content/characters.ts';
 import { type World, type Resident, key } from './types.ts';
 import { reachable } from './navigation.ts';
 
@@ -6,7 +7,7 @@ import { reachable } from './navigation.ts';
 export function assignRoomSupport(w: World) {
   const routes = new Map<number, Set<string>>();
   const components: Set<string>[] = [];
-  for (const a of w.agents) {
+  for (const a of w.agents.filter(a => !isConstruct(a.type))) {
     const position = key({ x: Math.round(a.x), z: Math.round(a.z) });
     let component = components.find((cells) => cells.has(position));
     if (!component) {
@@ -24,7 +25,7 @@ export function assignRoomSupport(w: World) {
         slot.assigned = undefined;
       else assigned.add(slot.assigned);
     }
-    for (const a of w.agents) {
+    for (const a of w.agents.filter(a => !isConstruct(a.type))) {
       if (assigned.has(a.id)) continue;
       const slot = slots
         .filter((f) => f.assigned === undefined && routes.get(a.id)?.has(key(f.access)))

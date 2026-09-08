@@ -3,7 +3,7 @@ import { canStand, findPath, reachable } from './navigation.ts';
 import { reveal } from './world.ts';
 import { tuning } from '../content/tuning.ts';
 import { assignRoomSupport } from './food.ts';
-import { characterById, characterLevel } from '../content/characters.ts';
+import { characterById, characterLevel, isConstruct } from '../content/characters.ts';
 import { recruitSpecialist } from './recruitment.ts';
 import { tickDefenses } from './defenses.ts';
 import { alive, tickSpellEffects } from './spell-effects.ts';
@@ -19,6 +19,7 @@ import { tickEncounters } from './encounters.ts';
 import { initializePay, tickPayday, shouldSeekPay } from './wages.ts';
 import { tickHearth, finishHearth, shouldSeekHearth } from './hearth.ts';
 import { initializeMorale, tickMorale, tickDeparture } from './morale.ts';
+export const addStonehands = (w: World, count = tuning.startingStonehands) => addResidents(w, 'stonehand', count);
 export const addMiners = (w: World, count = tuning.startingMiners) => addResidents(w, 'miner', count);
 export function addResidents(w: World, type: string, count = 1, origin?: Point) {
   if (w.outcome) return 0;
@@ -112,8 +113,9 @@ export function tick(w: World, dt: number) {
   tickHearth(w);
   const workPool = createWorkPool(w);
   for (const a of [...w.agents]) {
-    if (a.job?.kind !== 'sleep') a.energy = Math.max(0, a.energy - dt / tuning.restInterval);
-    if (a.job?.kind !== 'eat') a.hunger = Math.max(0, a.hunger - dt / tuning.hungerInterval);
+    if (isConstruct(a.type)) { a.energy = 1; a.hunger = 1; }
+    if (!isConstruct(a.type) && a.job?.kind !== 'sleep') a.energy = Math.max(0, a.energy - dt / tuning.restInterval);
+    if (!isConstruct(a.type) && a.job?.kind !== 'eat') a.hunger = Math.max(0, a.hunger - dt / tuning.hungerInterval);
     if (tickDeparture(w,a,dt)) continue;
     if (tickFighter(w, a, dt, releaseJob, moveResident)) continue;
     if (shouldSeekPay(w,a)) releaseJob(w,a,'Collecting due wages');

@@ -29,7 +29,7 @@ test('combat rewards successful hits at twice training pace for fighters and def
  for(const type of characterDefinitions.map(c=>c.id)){
   const w=createRoomLab();addResidents(w,type);const a=w.agents[0];Object.assign(a,{x:8,z:8});
   const e=addRaider(w,{x:9,z:8},{x:8,z:8})!;e.pinnedUntil=1000;
-  tick(w,.05);assert.equal(a.experience,type==='miner'?0:characterStats(a).attackSeconds*2,type);
+  tick(w,.05);assert.equal(a.experience,characterLevel(type,1)===characterLevel(type,2)?0:characterStats(a).attackSeconds*2,type);
   const xp=a.experience;e.x=11;
   tickFighter(w,a,.05,()=>{},()=>false);assert.equal(a.experience,xp,'Pursuing or standing near an enemy grants no XP');
   e.x=9;e.health=0;tickFighter(w,a,.05,()=>{},()=>false);assert.equal(a.experience,xp,'Dead enemies grant no XP');

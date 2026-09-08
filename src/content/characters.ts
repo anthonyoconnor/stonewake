@@ -6,10 +6,15 @@ export interface CharacterLevel {
 }
 export interface CharacterDefinition {
   id:string; name:string; names:string[]; color:string; speedMultiplier:number;
-  capabilities:string[]; appearance:'helmet'|'braids'|'warrior'|'runesmith';
+  construct?:boolean;
+  capabilities:string[]; appearance:'helmet'|'braids'|'warrior'|'runesmith'|'stonehand';
   attractionServices:string[]; levels:CharacterLevel[];
 }
 export const characterDefinitions:CharacterDefinition[]=[
+  {id:'stonehand',name:'Stonehand',names:['Clink','Tick','Chip'],color:'#b89158',speedMultiplier:3 / 1.8,
+    construct:true,capabilities:['mine','haul','claim','reinforce','buildWall'],appearance:'stonehand',attractionServices:[],levels:[
+      {level:1,wage:0,trainingSeconds:0,health:30,damage:0,attackSeconds:1.5,workMultiplier:1}
+    ]},
   {id:'miner',name:'Miner',names:['Brokk','Orin','Thora'],color:'#b78638',speedMultiplier:3 / 1.8, // 3 tiles/second at the default global walking speed.
     capabilities:['mine','haul','claim','reinforce','buildWall','defend'],appearance:'helmet',attractionServices:[],levels:[
       {level:1,wage:4,trainingSeconds:0,health:90,damage:4,attackSeconds:1.5,workMultiplier:1}
@@ -40,8 +45,9 @@ export const characterDefinitions:CharacterDefinition[]=[
     ]}
 ];
 export const characterById=(id:string)=>characterDefinitions.find(c=>c.id===id);
-export const maxCharacterLevel=(type:string)=>(characterById(type)??characterDefinitions[0]).levels.length;
+export const isConstruct=(id:string)=>characterById(id)?.construct===true;
+export const maxCharacterLevel=(type:string)=>(characterById(type)??characterById('miner')!).levels.length;
 export function characterLevel(type:string,level=1):CharacterLevel {
-  const rows=(characterById(type)??characterDefinitions[0]).levels;
+  const rows=(characterById(type)??characterById('miner')!).levels;
   return rows[Math.max(0,Math.min(rows.length-1,Math.floor(level)-1))];
 }

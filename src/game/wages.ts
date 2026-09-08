@@ -1,5 +1,5 @@
 import { type World, type Resident, type RoomService } from './types.ts';
-import { characterLevel } from '../content/characters.ts';
+import { characterLevel, isConstruct } from '../content/characters.ts';
 import { tuning } from '../content/tuning.ts';
 import { canStand, findPath, reachable } from './navigation.ts';
 import { goldTotal } from './rooms.ts';
@@ -14,7 +14,7 @@ export function initializePay(a: Resident) {
 export function tickPayday(w: World) {
   if (w.outcome) return;
   while (w.elapsed + 1e-8 >= w.nextPaydayAt) {
-    for (const a of w.agents.filter(alive)) {
+    for (const a of w.agents.filter(a => alive(a) && !isConstruct(a.type))) {
       const pay = initializePay(a);
       // Earned payments keep their value when tuning changes later.
       pay.due.push({ at: w.nextPaydayAt, amount: characterLevel(a.type, a.level).wage });
@@ -84,7 +84,7 @@ export function wageStatus(w: World, a: Resident) {
 }
 
 export function payrollStatus(w: World) {
-  const statuses = w.agents.filter(alive).map((a) => wageStatus(w, a));
+  const statuses = w.agents.filter(a => alive(a) && !isConstruct(a.type)).map((a) => wageStatus(w, a));
   return {
     due: statuses.reduce((sum, p) => sum + p.due, 0),
     unpaid: statuses.filter((p) => p.payments > 0).length,
@@ -96,6 +96,7 @@ export function payrollStatus(w: World) {
 }
 
 export function choosePayJob(w: World, a: Resident) {
+  if (isConstruct(a.type)) return false;
   const pending = a.pay?.due[0];
   if (!pending || funding(w, a, pending.amount).state !== 'due') return false;
   for (const f of availablePayStations(w, a)) if (take(w, a, 'pay', f, f.access, f.id)) return true;
@@ -103,6 +104,7 @@ export function choosePayJob(w: World, a: Resident) {
 }
 
 export function shouldSeekPay(w: World, a: Resident) {
+  if (isConstruct(a.type)) return false;
   if (
     !a.job ||
     ['pay', 'eat', 'sleep', 'collect', 'deliver', 'drop'].includes(a.job.kind) ||

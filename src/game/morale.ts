@@ -1,6 +1,6 @@
 import { type World, type Resident, type Point, key, tileAt } from './types.ts';
 import { tuning } from '../content/tuning.ts';
-import { characterById } from '../content/characters.ts';
+import { characterById, isConstruct } from '../content/characters.ts';
 import { reachable, canStand, findPath } from './navigation.ts';
 import { wageStatus } from './wages.ts';
 import { hearthArrival } from './recruitment.ts';
@@ -50,7 +50,7 @@ export function initializeMorale(w: World, a: Resident) {
 }
 
 function missingSupport(w: World) {
-  const residents = w.agents.filter(alive).sort((a, b) => a.id - b.id);
+  const residents = w.agents.filter(a => alive(a) && !isConstruct(a.type)).sort((a, b) => a.id - b.id);
   const components: Set<string>[] = [];
   const routes = new Map<number, Set<string>>();
   for (const a of residents) {
@@ -92,7 +92,7 @@ function missingSupport(w: World) {
 export function tickMorale(w: World, dt: number) {
   if (w.outcome) return;
   const shortages = missingSupport(w);
-  for (const a of w.agents.filter(alive)) {
+  for (const a of w.agents.filter(a => alive(a) && !isConstruct(a.type))) {
     const state = initializeMorale(w, a);
     state.active = shortages.get(a.id) ?? [];
     for (const cause of moraleCauses)
@@ -184,7 +184,7 @@ export function moraleStatus(w: World, a: Resident) {
 export function moraleAlerts(w: World) {
   return moraleCauses.flatMap((id) => {
     const residents = w.agents.filter(
-      (a) => alive(a) && a.morale?.active.includes(id) && a.morale.unmet[id] >= tuning.moraleGraceSeconds,
+      (a) => alive(a) && !isConstruct(a.type) && a.morale?.active.includes(id) && a.morale.unmet[id] >= tuning.moraleGraceSeconds,
     );
     if (!residents.length) return [];
     const severity: MoraleSeverity = residents.some(
@@ -215,7 +215,7 @@ export function dismissMoraleAlert(w: World, cause: MoraleCause) {
 }
 
 export function moraleSummary(w: World) {
-  const states = w.agents.filter(alive).map((a) => moraleStatus(w, a).stage);
+  const states = w.agents.filter(a => alive(a) && !isConstruct(a.type)).map((a) => moraleStatus(w, a).stage);
   return {
     content: states.filter((s) => s === 'content').length,
     unhappy: states.filter((s) => s === 'unhappy').length,
@@ -229,7 +229,7 @@ export function moraleSummary(w: World) {
 
 export function tickDeparture(w: World, a: Resident, dt: number) {
   const state = a.morale;
-  if (w.outcome || !state?.leaving) return false;
+  if (isConstruct(a.type) || w.outcome || !state?.leaving) return false;
   if (a.job) releaseJob(w, a, 'Leaving through the Hearth');
   const exit = hearthArrival(w);
   if (!exit) {

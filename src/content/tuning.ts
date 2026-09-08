@@ -1,14 +1,16 @@
 // Balance values live here; labels/ranges also generate the in-game tuning editor.
 const value=(value:number,label:string,group:string,min:number,max:number,step=.1,note='Applies live.')=>({value,label,group,min,max,step,note});
 export const tuningSpec={
+ stonehandCost:value(25,'Create Stonehand · gold','Economy & world',0,10000,1,'Fixed cost; no food, beds or wages.'),
+ startingStonehands:value(3,'Starting Stonehands','Economy & world',1,30,1,'New stronghold only.'),
  mineSeconds:value(2.8,'Excavate dirt · seconds','Mining & work',.1,120),
  rockSeconds:value(4,'Excavate rock · seconds','Mining & work',.1,120),
  goldSeconds:value(.5,'Gold extraction interval · seconds','Mining & work',.05,30,.05),
  goldYield:value(15,'Gold per extraction','Mining & work',1,1000,1),
  gemSeconds:value(.5,'Gem extraction interval · seconds','Mining & work',.05,30,.05),
  gemYield:value(15,'Gold per gem extraction','Mining & work',1,1000,1),
- minersPerResourceWorker:value(3,'Miners per resource worker','Mining & work',1,30,1,'Reserve about one resource worker per this many available miners, with a minimum of one when marked gold or gems are reachable.'),
- minerAssignmentSeconds:value(20,'Miner assignment duration · work seconds','Mining & work',1,120,1,'Keep the same kind of work for this much productive time. Travel and delivery do not consume a resource assignment; finish the current task before rebalancing.'),
+ minersPerResourceWorker:value(3,'Workers per resource worker','Mining & work',1,30,1,'Reserve about one resource worker per this many available workers, with a minimum of one when marked gold or gems are reachable.'),
+ minerAssignmentSeconds:value(20,'Worker assignment duration · work seconds','Mining & work',1,120,1,'Keep the same kind of work for this much productive time. Travel and delivery do not consume a resource assignment; finish the current task before rebalancing.'),
  carry:value(45,'Bag capacity · gold','Mining & work',1,1000,1,'Applies to new loads; existing bags are preserved.'),
  claimSeconds:value(.5,'Claim floor · seconds','Mining & work',.1,60),
  reinforceSeconds:value(6,'Reinforce wall · seconds','Mining & work',.1,180),
@@ -42,7 +44,7 @@ export const tuningSpec={
  hungerThreshold:value(.3,'Seek meal below hunger','Needs & food',.05,.95,.05),
  eatSeconds:value(4,'Eat meal · seconds','Needs & food',.1,120),
  startingGold:value(400,'Starting gold','Economy & world',0,100000,1,'New stronghold only.'),
- startingMiners:value(3,'Starting miners','Economy & world',1,30,1,'New stronghold only.'),
+ startingMiners:value(3,'Legacy starting Miners','Economy & world',1,30,1,'New stronghold only.'),
  seamGold:value(90,'Gold per seam tile','Economy & world',1,10000,1,'New stronghold only.'),
  hearthRoomTiles:value(9,'Hearth storage · Treasure Room squares','Economy & world',1,100,1,'New stronghold only; multiplied by Treasure Room cost.'),
  reclaimRatio:value(.5,'Room reclaim fraction','Economy & world',0,.95,.05,'Fraction of original payment; rounded down per tile.'),

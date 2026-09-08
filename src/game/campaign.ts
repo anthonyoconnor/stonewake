@@ -1,7 +1,7 @@
 import { campaignStage, campaignStages } from '../content/campaign.ts';
 import { spellById } from '../content/spells.ts';
 import { createWorld } from './world.ts';
-import { addMiners } from './simulation.ts';
+import { addStonehands } from './simulation.ts';
 import { enableRecruitment } from './recruitment.ts';
 import type { World } from './types.ts';
 
@@ -36,7 +36,7 @@ function enterArea(state: CampaignState, free: boolean): World {
       unlocked: true,
       paused: true,
     }));
-  addMiners(w);
+  addStonehands(w);
   enableRecruitment(w);
   return w;
 }

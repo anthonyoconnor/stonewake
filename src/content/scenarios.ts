@@ -14,7 +14,7 @@ import { createMoraleLab } from './morale-lab.ts';
 import { createEconomyLab } from './economy-lab.ts';
 import { createMinerWorkLab } from './miner-work-lab.ts';
 import { buildRoom } from '../game/rooms.ts';
-import { addMiners, addResidents, designate } from '../game/simulation.ts';
+import { addStonehands, addMiners, addResidents, designate } from '../game/simulation.ts';
 import { queueCraft } from '../game/crafting.ts';
 import { queueResearch } from '../game/research.ts';
 import { setDoorMode } from '../game/defenses.ts';
@@ -26,7 +26,7 @@ export const rect = (x: number, z: number, width: number, depth: number) =>
   Array.from({ length: width * depth }, (_, i) => ({ x: x + (i % width), z: z + Math.floor(i / width) }));
 
 export function populateShowcase(world: World) {
-  addMiners(world);
+  addStonehands(world);
   for (const type of ['engineer', 'warrior', 'runesmith']) addResidents(world, type);
   for (const resident of world.agents) {
     resident.energy = 0.2;
@@ -73,6 +73,7 @@ export const scenarioFactories = {
   'region-crystal': (free) => createEnemyRegion('crystal', free),
   'region-volcanic': (free) => createEnemyRegion('volcanic', free),
   economy: createEconomyLab,
+  stonehands: (free) => createMinerWorkLab(free, 'stonehand'),
   'miner-work': createMinerWorkLab,
   hearth: createHearthLab,
   'hearth-defeat': createHearthDefeatLab,

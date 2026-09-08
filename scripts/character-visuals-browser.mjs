@@ -44,7 +44,7 @@ try {
   }
   if (!haulOnly) {
     const actors = await page.evaluate(() => window.strongholdDev.state().agents);
-    for (const role of ['miner', 'engineer', 'warrior', 'runesmith']) {
+    for (const role of ['stonehand', 'engineer', 'warrior', 'runesmith']) {
       const actor = actors.find((a) => a.type === role);
       assert(actor);
       await capture(role, actor.id, -Math.PI / 5, 4);
@@ -59,7 +59,7 @@ try {
     const poses = () =>
       page.evaluate(() =>
         window.visualBabylon.EngineStore.LastCreatedScene.transformNodes
-          .filter((n) => n.name.startsWith('dwarf-'))
+          .filter((n) => (n.name.startsWith('dwarf-') || n.name.startsWith('stonehand-')))
           .map((n) => [n.name, ...n.position.asArray(), ...n.rotation.asArray()]),
       );
     const pausedPose = await poses();
@@ -99,9 +99,9 @@ try {
         const armPose = () =>
           page.evaluate(
             (id) =>
-              window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName(`dwarf-${id}`)
+              (window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName(`dwarf-${id}`) ?? window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName(`stonehand-${id}`))
                 .getDescendants()
-                .filter((n) => n.name === 'arm pivot')
+                .filter((n) => n.name === 'arm pivot' || n.name === 'stonehand shoulder')
                 .map((n) => n.rotation.x),
             worker.id,
           );
@@ -131,7 +131,7 @@ try {
       if (!actor) {
         const fall = await page.evaluate(
           () =>
-            window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName('dwarf-1')?.rotation.z,
+            window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName('stonehand-1')?.rotation.z,
         );
         assert(
           fall !== undefined && fall >= 0,
@@ -141,7 +141,7 @@ try {
         await page.evaluate(() => window.strongholdDev.advance(3));
         assert.equal(
           await page.evaluate(
-            () => !!window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName('dwarf-1'),
+            () => !!window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName('stonehand-1'),
           ),
           false,
           'Defeat model is released',
@@ -155,7 +155,7 @@ try {
     await page.evaluate(() => window.strongholdDev.advance(0.5));
     const reduced = await page.evaluate(() =>
       window.visualBabylon.EngineStore.LastCreatedScene.transformNodes
-        .filter((n) => n.name.startsWith('dwarf-'))
+        .filter((n) => (n.name.startsWith('dwarf-') || n.name.startsWith('stonehand-')))
         .map((n) => n.scaling.y),
     );
     assert(
@@ -192,9 +192,9 @@ try {
       assert(
         await page.evaluate(
           (id) =>
-            window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName(`dwarf-${id}`)
+            (window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName(`dwarf-${id}`) ?? window.visualBabylon.EngineStore.LastCreatedScene.getTransformNodeByName(`stonehand-${id}`))
               .getDescendants()
-              .find((n) => n.name === 'carried riches')
+              .find((n) => n.name === 'carried riches' || n.name === 'stonehand cargo')
               .isEnabled(),
           carrier.id,
         ),

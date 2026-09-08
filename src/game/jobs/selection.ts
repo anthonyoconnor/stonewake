@@ -1,3 +1,4 @@
+import { isConstruct } from '../../content/characters.ts';
 import { type World, type Resident, tileAt, neighbors, key } from '../types.ts';
 import { canStand } from '../navigation.ts';
 import { tuning } from '../../content/tuning.ts';
@@ -23,7 +24,7 @@ export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool
     a.retry = tuning.retrySeconds;
     return;
   }
-  if (a.energy < tuning.restThreshold) {
+  if (!isConstruct(a.type) && a.energy < tuning.restThreshold) {
     const beds = nearest(
       a,
       w.roomServices.filter((f) => f.service === 'rest' && f.assigned === a.id),
@@ -34,7 +35,7 @@ export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool
         return;
       }
   }
-  if (a.hunger < tuning.hungerThreshold) {
+  if (!isConstruct(a.type) && a.hunger < tuning.hungerThreshold) {
     const slot = foodSupport(w, a);
     if (slot && take(w, a, 'eat', slot, slot.access, slot.id)) return;
   }
@@ -113,9 +114,9 @@ export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool
     ? wageStatus(w, a).message
     : waitingForGold
       ? 'Waiting for production gold'
-      : a.hunger < tuning.hungerThreshold
+      : !isConstruct(a.type) && a.hunger < tuning.hungerThreshold
         ? 'Needs spare reachable Kitchen capacity'
-        : a.energy < tuning.restThreshold
+        : !isConstruct(a.type) && a.energy < tuning.restThreshold
           ? 'Needs spare reachable Dormitory capacity'
           : a.capabilities.includes('research')
             ? 'Waiting for Library research'

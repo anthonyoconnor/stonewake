@@ -1,14 +1,14 @@
 import { createWorld } from '../game/world.ts';
-import { addMiners, designate } from '../game/simulation.ts';
+import { addResidents, designate } from '../game/simulation.ts';
 import { buildRoom } from '../game/rooms.ts';
 import { planWalls } from '../game/walls.ts';
 import { tileAt } from '../game/types.ts';
 
-export function createMinerWorkLab(free = false) {
+export function createMinerWorkLab(free = false, worker = 'miner') {
   const earth = Array.from({ length: 8 }, (_, i) => ({ x: 9, z: 3 + i }));
   const w = createWorld({
     id: 'miner-work',
-    name: 'Miner work pool',
+    name: worker === 'stonehand' ? 'Stonehand work pool' : 'Miner work pool',
     width: 20,
     height: 18,
     hearth: { x: 4, z: 9 },
@@ -47,7 +47,7 @@ export function createMinerWorkLab(free = false) {
     { x: 7, z: 13 },
     { x: 8, z: 13 },
   ]);
-  addMiners(w, 3);
+  addResidents(w, worker, 3);
   designate(w, [...earth, { x: 14, z: 4 }, { x: 15, z: 4 }, { x: 14, z: 11 }]);
   planWalls(w, [
     { x: 11, z: 13 },

@@ -73,11 +73,11 @@ test('travel carries completed research and building unlocks into an independent
   assert.equal(next.spent, 0);
   assert.equal(next.elapsed, 0);
   assert.equal(next.nextPaydayAt, tuning.paydaySeconds);
-  assert.equal(next.agents.length, tuning.startingMiners);
+  assert.equal(next.agents.length, tuning.startingStonehands);
   assert(
     next.agents.every(
       (a) =>
-        a.type === 'miner' &&
+        a.type === 'stonehand' &&
         a.level === 1 &&
         a.hunger === 1 &&
         a.energy === 1 &&

@@ -15,15 +15,15 @@ export function dwarfActivity(a: Resident): string {
   if (a.job && ['eat', 'sleep', 'pay'].includes(a.job.kind)) return 'needs';
   return a.job && a.job.kind !== 'idle' ? 'work' : 'idle';
 }
-const roleIcons: Record<string, string> = { miner: 'dig', engineer: 'workshop', warrior: 'guard', runesmith: 'library' };
+const roleIcons: Record<string, string> = { stonehand: 'stonehand', miner: 'dig', engineer: 'workshop', warrior: 'guard', runesmith: 'library' };
 const filters = new WeakMap<Sidebar, { type: string; activity?: string }>();
 
 export function showDwarfs(s: Sidebar) {
   filters.delete(s);
-  s.panel.innerHTML = `<p class="eyebrow">DWARF ACTIVITY <span id="activity-total"></span></p>
-    <table class="dwarf-activity" aria-label="Dwarfs by role and activity"><thead><tr><th scope="col"><span class="sr-only">Role</span></th>${activities.map(a => `<th scope="col" title="${a.help}">${actionIcon(a.icon)}<span class="sr-only">${a.name}</span></th>`).join('')}</tr></thead>
+  s.panel.innerHTML = `<p class="eyebrow">WORKFORCE ACTIVITY <span id="activity-total"></span></p>
+    <table class="dwarf-activity" aria-label="Workforce by role and activity"><thead><tr><th scope="col"><span class="sr-only">Role</span></th>${activities.map(a => `<th scope="col" title="${a.help}">${actionIcon(a.icon)}<span class="sr-only">${a.name}</span></th>`).join('')}</tr></thead>
     <tbody>${characterDefinitions.map(c => `<tr><th scope="row"><button data-dwarf-role="${c.id}" title="${c.name}: show all" aria-label="${c.name}: show all">${actionIcon(roleIcons[c.id] ?? 'guard')}</button></th>${activities.map(a => `<td><button data-dwarf-count="${c.id}:${a.id}" aria-pressed="false">0</button></td>`).join('')}</tr>`).join('')}</tbody></table>
-    <p class="activity-hint">Choose a count to inspect dwarfs.</p><p id="dwarf-filter" class="eyebrow"></p><div id="residents-list"></div>
+    <p class="activity-hint">Choose a count to inspect workers.</p><p id="dwarf-filter" class="eyebrow"></p><div id="residents-list"></div>
     <details class="population-details"><summary>Pay & wellbeing</summary><div id="population-management"><div id="arrival-status" class="muted"></div></div></details>`;
   s.panel.querySelectorAll<HTMLButtonElement>('[data-dwarf-count], [data-dwarf-role]').forEach(b => b.onclick = () => {
     const [type, activity] = (b.dataset.dwarfCount ?? b.dataset.dwarfRole!).split(':');

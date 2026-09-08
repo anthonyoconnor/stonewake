@@ -135,23 +135,9 @@ Work scheduling must allow genuinely spare miners to reinforce walls. Renewable 
 
 Exact extraction rates, carrying capacity, storage density, and spending costs remain balance choices. Startup provides a provisional gold allowance and the Stone Hearth treasury chest so usable storage exists before a Treasure Room is built.
 
-## 8. Miner purchases
+## 8. Stonehand creation
 
-The player recruits miners directly at the Hearthstone. The interface displays the cost before purchase, stored gold is deducted, and the miner arrives beside the core.
-
-The price depends on the current number of living miners:
-
-- More miners means a higher next recruitment cost.
-- A miner dying or leaving lowers the next cost again, down to the minimum price.
-- Starting miners count toward the workforce.
-- Lifetime purchases do not influence the price.
-- The next level calculates prices from its own starting workforce.
-
-A possible simple formula for testing is:
-
-`next_cost = minimum_cost + (cost_step * current_miner_count)`
-
-Miner recruitment is the innate Summon Miner spell in the Spells icon grid. Clicking its enabled icon summons at the Hearth without research, preparation or selecting a world target; the old Dwarfs text recruitment action is removed. The prototype uses this linear formula with a 50-gold minimum and 25 gold per living Miner, including the starting crew. A purchase needs spare reachable Dormitory and Kitchen support, a clear claimed arrival square connected to the Hearth, and enough shared gold. Failed purchases spend nothing. Death or departure lowers the next price; lifetime purchases do not count. These values are editable and provisional. Purchased miners have the same wages, food and rest needs as other residents.
+Stonehands are the normal terrain workers: three start each area, and Create Stonehand assembles another at the Hearth for a flat 25 gold without research or preparation. Creation requires shared gold and a free, reachable claimed arrival square; failed attempts spend nothing. These small mechanical constructs have 30 health, no attacks, no food, beds, wages, morale, training or XP. They work whenever reachable tasks exist, use the shared work pool and keep each assignment for 20 productive seconds, including resource ownership across delivery trips. About one worker per three available workers stays assigned to marked, reachable gold or gems (minimum one). Destruction drops carried gold and releases the job. Prices and health are provisional editable values. The original dwarf Miner and its model remain available in debug scenarios for a possible future basic fighter; that repurposing is not implemented.
 
 ## 9. Attraction and arrival
 
@@ -187,7 +173,7 @@ All dwarfs get food from the Kitchen, provisionally one supported resident per f
 
 Each unmet support requirement has its own clock: food, accommodation, pay and required role facilities. Missing assigned reachable Kitchen/Dormitory capacity counts as a shortage; ordinary eating/sleeping visits and occupied workstations do not. Required role capacity serves residents in ID order within their reachable component, using the same character requirements as attraction. Pay shortage begins after the wage grace and ends when payment becomes actionable, so a dwarf can stay and collect restored pay.
 
-A shortage has 120 seconds of grace, followed by a grouped warning and 180 further unresolved seconds before departure. Timers do not add together; the longest active shortage controls escalation. Restored support removes its active warning immediately and recovers accumulated grievance at two seconds per second. A dismissed warning stays dismissed at its current severity, reappears if it escalates, and can be reopened in Dwarfs. All values are tunable.
+A shortage has 120 seconds of grace, followed by a grouped warning and 180 further unresolved seconds before departure. Timers do not add together; the longest active shortage controls escalation. Restored support removes its active warning immediately and recovers accumulated grievance at two seconds per second. A dismissed warning stays dismissed at its current severity, reappears if it escalates, and can be reopened in Workforce. All values are tunable.
 
 Departing residents release jobs, including activation, and walk through the starting Hearth using ordinary movement. They ignore rally and do not pursue combat; enemies can still attack them. A blocked route waits and repaths without teleporting. Fixing the serious active cause before the dwarf reaches the exit cancels departure and resumes normal needs/work. Bed/food population allocation remains until actual exit so blocked residents retain support. At exit, carried gold drops onto the Hearth approach, reservations release, population and attraction capacity update, and Miner prices fall with the living Miner count. Earned production/research progress remains; previously collected pay stays spent and unpaid claims leave with the resident.
 
@@ -258,7 +244,7 @@ Build these boundaries while implementing the core types. Additional types, excl
 
 - Wage values, eating/rest intervals, and room capacities per tile.
 - Cosmetic furnishing footprints, compact and large variants, and visual arrangement rules for irregular rooms; these never change service capacity or routes.
-- Miner price curve, starting crew, starting storage, and resource quantities.
+- Stonehand creation cost, starting crew, starting storage, and resource quantities.
 - Recovery if every miner is lost and the player cannot afford a replacement; no extra defeat rule or free replacement has been agreed.
 - Spell casting, research order, and Library use after available research is complete.
 - Balance of per-type level statistics, active training durations and personal cooldown; the level sequence and one-level-per-visit rule are established.

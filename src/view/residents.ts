@@ -5,6 +5,7 @@ import {characterById} from '../content/characters';
 import {characterStats} from '../game/progression';
 import type {Resident} from '../game/types';
 import {residentSurface,costumeDetails} from './resident-detail';
+import {createStonehandModel} from './stonehands';
 type Pose={rotation:number[];arms:number[];legs:number[];y:number};
 type Model={root:TransformNode;legs:TransformNode[];arm:TransformNode;leftArm:TransformNode;tool:TransformNode;load:TransformNode;shadow:Mesh;trainingWeights:TransformNode[];shield?:TransformNode;book?:TransformNode;actor?:Resident;lastX?:number;lastZ?:number;lastTime?:number;stride:number;walking:boolean;pose?:Pose;removedAt?:number};
 export class ResidentView {
@@ -13,6 +14,7 @@ export class ResidentView {
   constructor(public view:GameScene){}
   reset(){for(const m of this.nodes.values()){m.root.dispose();m.shadow.dispose();}this.nodes.clear();}
   create(id:number,type:string):Model{
+    if(characterById(type)?.construct)return createStonehandModel(this.view,id);
     const v=this.view,def=characterById(type)!,engineer=def.appearance==='braids',warrior=def.appearance==='warrior',runesmith=def.appearance==='runesmith';
     const root=new TransformNode(`dwarf-${id}`,v.scene),cloth=residentSurface(v,`${type} cloth`,def.color),skin=residentSurface(v,'skin','#c99a76'),leather=residentSurface(v,'leather','#513c2c'),iron=residentSurface(v,'steel','#56636a',true),brass=residentSurface(v,'brass','#a48a55',true);
     const hair=residentSurface(v,`${type} hair`,warrior?'#302e2c':runesmith?'#b9b7a8':'#694026'),ivory=residentSurface(v,'ivory','#c4bb9d');
@@ -126,7 +128,7 @@ export class ResidentView {
       m.lastTime=time;m.lastX=a.x;m.lastZ=a.z;m.actor=a;
       const walking=m.walking,j=a.job,working=!!j&&!a.path.length&&!walking,phase=m.stride,reduced=this.reduced.matches;
       m.root.position.set(a.x,walking?Math.abs(Math.sin(phase))*.025:0,a.z);m.root.rotation.set(0,a.facing,0);
-      m.root.scaling.y=1+(reduced?0:Math.sin(time*2+a.id)*.008);m.shadow.position.set(a.x,.025,a.z);
+      m.root.scaling.y=1+(reduced||characterById(a.type)?.construct?0:Math.sin(time*2+a.id)*.008);m.shadow.position.set(a.x,.025,a.z);
       m.legs.forEach((leg,i)=>leg.rotation.x=walking?Math.sin(phase+i*Math.PI)*.4:0);
       m.arm.rotation.x=walking?Math.sin(phase)*.22:0;m.leftArm.rotation.x=walking?-Math.sin(phase)*.35:0;
       m.arm.rotation.z=0;m.leftArm.rotation.z=0;
@@ -144,7 +146,7 @@ export class ResidentView {
         if(j.target.x!==j.work.x||j.target.z!==j.work.z)m.root.rotation.y=Math.atan2(j.target.x-j.work.x,j.target.z-j.work.z);
         if(j.kind==='mine'||j.kind==='craft'||j.kind==='reinforce'||j.kind==='buildWall'||j.kind==='buildBridge'){
           const swing=Math.sin(j.progress*Math.PI*4);m.arm.rotation.x=-.75+swing*.95;m.leftArm.rotation.x=-.15;m.root.rotation.x=.06+Math.max(0,swing)*.1;
-        }else if(j.kind==='claim'){m.root.position.y=-.09;m.root.rotation.x=.35;m.arm.rotation.x=-.9;m.leftArm.rotation.x=-.6;}
+        }else if(j.kind==='claim'){m.root.position.y=characterById(a.type)?.construct?-.035:-.09;m.root.rotation.x=.35;m.arm.rotation.x=-.9;m.leftArm.rotation.x=-.6;}
         else if(j.kind==='train'){
           const lift=a.id%2===0,cycle=Math.sin(j.progress*4);
           for(const weight of m.trainingWeights)weight.setEnabled(lift);

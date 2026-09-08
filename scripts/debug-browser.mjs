@@ -23,7 +23,7 @@ try {
    assert.equal(await page.evaluate(()=>window.strongholdDev.status().elapsed),elapsed);
    await page.getByRole('button',{name:'Resume simulation',exact:true}).click();
    await page.waitForFunction(()=>window.strongholdDev.status().elapsed>0);
-   await page.getByRole('button',{name:'Dwarfs',exact:true}).click();
+   await page.getByRole('button',{name:'Workforce',exact:true}).click();
    assert.equal(await page.getByRole('button',{name:'Return to stronghold',exact:true}).count(),1);
    await page.getByRole('button',{name:'Test harnesses',exact:true}).click();
  }

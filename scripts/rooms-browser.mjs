@@ -41,7 +41,7 @@ try {
   assert.equal(dwarf.level, 2, 'The first training visit advances a new dwarf from level 1 to 2');
   assert.notEqual(dwarf.job?.kind, 'train', 'Training slot releases after gaining a level');
   assert(dwarf.nextTrainingAt > state.elapsed, 'Completed training starts a personal cooldown');
-  await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+  await page.getByRole('button', { name: 'Workforce', exact: true }).click();
   await page.locator('[data-dwarf-role="engineer"]').click();
   assert((await page.locator('#residents-list').textContent()).includes('Training cooldown'));
   const remaining = dwarf.nextTrainingAt - state.elapsed;

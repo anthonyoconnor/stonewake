@@ -1,3 +1,4 @@
+import { isConstruct } from '../../content/characters.ts';
 import { tuning } from '../../content/tuning.ts';
 import { bridgeWorkSite } from '../bridges.ts';
 import { alive } from '../spell-effects.ts';
@@ -101,8 +102,8 @@ const availableMiner = (a: Resident) =>
   a.combatTarget === undefined &&
   !a.rallying &&
   !a.morale?.leaving &&
-  a.energy >= tuning.restThreshold &&
-  a.hunger >= tuning.hungerThreshold &&
+  (isConstruct(a.type) || a.energy >= tuning.restThreshold) &&
+  (isConstruct(a.type) || a.hunger >= tuning.hungerThreshold) &&
   (!a.job || !['eat', 'sleep', 'pay', 'activate'].includes(a.job.kind));
 
 function chooseGroup(w: World, a: Resident, pool: WorkPool, group: Group, preserveAssignment = false) {
@@ -156,8 +157,8 @@ function staffingGroup(w: World, a: Resident): Group | undefined {
     !a.morale?.leaving &&
     a.combatTarget === undefined &&
     !a.rallying &&
-    a.energy >= tuning.restThreshold &&
-    a.hunger >= tuning.hungerThreshold &&
+    (isConstruct(a.type) || a.energy >= tuning.restThreshold) &&
+    (isConstruct(a.type) || a.hunger >= tuning.hungerThreshold) &&
     (!a.job || ['collect', 'deliver', 'drop'].includes(a.job.kind))
   )
     return assignment.group;

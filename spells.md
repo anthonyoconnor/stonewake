@@ -4,7 +4,7 @@
 
 The catalog below is implemented in the browser prototype. Its numerical values remain provisional starting points for playtesting.
 
-Summon Miner is an innate Hearth spell available from the start; it requires no Library, research, preparation or world target. Its cost is recalculated as 50 gold + 25 per living Miner. Each successful cast summons one Miner through the existing Hearth arrival service, with spare reachable Dormitory/Kitchen support, gold and a free arrival route required. Failed casts spend nothing. Deaths and departures reduce the next price.
+Create Stonehand is an innate Hearth action available from the start for a fixed 25 gold. It needs no Library, research, preparation, food or bed capacity. Each cast assembles one Stonehand with an open Hearth route, a free claimed arrival square and enough shared gold. Failed casts spend nothing. Legacy Summon Miner remains callable only by development fixtures.
 
 Hearth Prospect and global Hearth Haste have been removed. The catalog uses targeted casting, individual effects and the shared Library research/preparation service. Offensive spells work against authored encounters/raids and debug-spawned enemies.
 
@@ -16,7 +16,7 @@ Research and preparation times are seconds of active work by one Runesmith at no
 
 | Spell / stable ID | Role and target | Initial research | Repeat preparation | Cast cost | Effect and duration |
 |---|---|---:|---:|---:|---|
-| **Summon Miner** / `summon-miner` | Recruitment; automatic Hearth arrival | None | None | 50 + 25 × living Miners gold | Instantly summons one Miner; existing support and arrival checks apply. |
+| **Create Stonehand** / `summon-stonehand` | Mechanical worker; automatic Hearth arrival | None | None | 25 gold | Assembles one fragile Stonehand; no support slots required. |
 | **Haste** / `dwarf-haste` | Support; one living friendly dwarf | 45 s | 20 s | 25 gold | +50% movement, work and attack speed for 20 s. Does not speed up hunger, fatigue or other needs. |
 | **Slow** / `enemy-slow` | Defensive control; one living enemy, including strong enemies | 60 s | 25 s | 30 gold | -40% movement and attack speed for 15 s. Does not reduce damage per hit. |
 | **Stoneguard** / `stoneguard` | Defense; one living friendly dwarf | 60 s | 30 s | 35 gold | A stone shield absorbs damage equal to 40% of the dwarf's maximum health. Ends when depleted or after 20 s. |
@@ -28,9 +28,11 @@ Research and preparation times are seconds of active work by one Runesmith at no
 
 [Character levels](characters.md#character-levels-and-training) define each dwarf type's current health, damage, attack interval and work rate. Training applies those statistics to combat as well as work. The test Raider has 120 health and attacks for 20 damage once per second. These combat values remain provisional. Health-based buffs scale with the target's maximum health. Stoneguard absorbs incoming damage and passes any excess through to health; there is no separate armor-mitigation model yet.
 
+Friendly support spells also accept Stonehands: Haste accelerates their work, Stoneguard absorbs damage and Mending Rune repairs health. Call to Arms only calls fighting dwarfs.
+
 ## Research and casting rules
 
-- Except for the innate Summon Miner spell, a functional Library and an available research-capable Runesmith are needed to research or replenish a spell. Initially allow all catalog research choices without a prerequisite tree; the longer research times make the larger tactical effects later investments. Campaign unlocks remain open.
+- Except for the innate Create Stonehand action, a functional Library and an available research-capable Runesmith are needed to research or replenish a spell. Initially allow all catalog research choices without a prerequisite tree; the longer research times make the larger tactical effects later investments. Campaign unlocks remain open.
 - Retain one prepared charge per spell for the whole stronghold. Different spells can be researched or prepared in separate reachable Library service slots, with capacity set by room floor area. Researchers cannot combine on the same order. Pausing or losing a slot retains progress, unlocks and prepared charges; decorative desks and shelves have no gameplay effect.
 - A successful cast consumes the charge and gold, then queues preparation immediately. There is no separate cooldown; repeat preparation is the reuse gate and can benefit from research-speed bonuses. Prepared spells can still be cast without an active researcher.
 - Casting is instant after valid target selection. Dwarf buffs target a currently visible friendly dwarf; hostile spells target currently visible enemies. Use the world's visibility rules, never camera position or unexplored terrain. Casting has no additional distance limit from the Hearth or researcher, allowing support at a distant explored battlefront.
@@ -55,7 +57,7 @@ These response priorities, radius and timing are provisional. The agreed behavio
 
 Use the existing left-sidebar Spells panel for research, costs, readiness and targeting, with right-click or Escape cancelling target selection. Selected-unit details show health, shield amount and effect time remaining in the sidebar. Use restrained physical effects such as stone armor, rune glows and thunder impacts in the world; do not add floating text, numbers, health bars or timers.
 
-Open **Spells → Library research**, choose a spell and Research. Once ready and affordable, click its enabled icon, then click a valid dwarf, enemy or floor point. Summon Miner activates immediately on its icon. Casting returns to excavation after success; right-click or Escape cancels targeting without charge. Unit selection and successful targeted casts show level, health, combat/work statistics and effects in the sidebar. Spell targeting and enemy visibility require current line of sight within the normal sight radius of a living dwarf or the Hearth; camera movement does not grant sight. Haste multiplies the target's level-defined work rate and accelerates attacks and active training practice; it does not accelerate personal training cooldown, effect timers or needs.
+Open **Spells → Library research**, choose a spell and Research. Once ready and affordable, click its enabled icon, then click a valid dwarf, enemy or floor point. Create Stonehand activates immediately on its icon. Casting returns to excavation after success; right-click or Escape cancels targeting without charge. Unit selection and successful targeted casts show level, health, combat/work statistics and effects in the sidebar. Spell targeting and enemy visibility require current line of sight within the normal sight radius of a living dwarf or the Hearth; camera movement does not grant sight. Haste multiplies the target's level-defined work rate and accelerates attacks and active training practice; it does not accelerate personal training cooldown, effect timers or needs.
 
 Definitions and tunable effect values live in [spell definitions](src/content/spells.ts), with research and casting in [research](src/game/research.ts), effect timers/damage in [spell effects](src/game/spell-effects.ts), and fighter response in [combat](src/game/combat.ts). **Game configuration** exposes research/preparation costs and effect values; active effects retain their cast-time values. The rally uses a ground rune; remaining time, responding/unreachable counts and Dismiss stay in the sidebar. Barrier health and duration also stay in the spell panel.
 

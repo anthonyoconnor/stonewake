@@ -2,7 +2,7 @@
 
 [Return to concept art](../README.md).
 
-Visual proposals for small expendable rune-powered labor constructs, replacing the thematic role of dwarf Miners. They work continuously without food or accommodation. Gameplay replacement is not implemented by this concept-art change.
+Approved visual direction for small expendable rune-powered labor constructs, replacing the thematic role of dwarf Miners. They work continuously without food or accommodation. Stonehands now replace the normal starting and purchased labor crew. The original Miner definition/model remains for later reuse.
 
 ![Stonehands: smaller mechanical worker with front, back, game view, mining and hauling](stonehands-v2.png)
 

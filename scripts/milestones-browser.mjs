@@ -20,9 +20,9 @@ try {
   await page.waitForFunction(() => window.strongholdDev?.status().scenario === 'stronghold');
   const minerControl = async (method, status = false) => {
     await page.getByRole('button', { name: 'Spells', exact: true }).click();
-    const control = page.locator(status ? '#summon-miner-status' : '[data-spell="summon-miner"]');
+    const control = page.locator(status ? '#summon-stonehand-status' : '[data-spell="summon-stonehand"]');
     const result = method === 'textContent' && !status ? await control.getAttribute('title') : await control[method]();
-    await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+    await page.getByRole('button', { name: 'Workforce', exact: true }).click();
     await page.locator('.population-details').evaluate(e => { e.open = true; });
     return result;
   };
@@ -38,24 +38,16 @@ try {
 
   if (scope !== 'm10') {
     // Purchases are ordinary sidebar actions and account for the starting crew.
-    await panel('Dwarfs');
+    await panel('Workforce');
     before = await state();
-    const startingMiners = before.agents.filter((a) => a.type === 'miner').length;
-    assert((await minerControl('textContent')).includes(String(50 + 25 * startingMiners)));
-    assert(
-      await minerControl('isDisabled'),
-      'An unsupported starting settlement explains unavailable purchases',
-    );
-    assert.match(
-      await minerControl('textContent', true),
-      /bed|accommodation|kitchen|food/i,
-    );
-    await command({ kind: 'buy-miner' });
-    assert.equal(balance(await state()), balance(before), 'Failed purchase spends nothing');
-    assert.equal((await state()).agents.length, before.agents.length);
+    assert((await minerControl('textContent')).includes('25'));
+    assert(await minerControl('isEnabled'), 'Stonehands need no settlement support');
+    await minerControl('click');
+    assert.equal(balance(await state()), balance(before)-25);
+    assert.equal((await state()).agents.length,before.agents.length+1);
 
     await load('economy');
-    await panel('Dwarfs');
+    await panel('Workforce');
     before = await state();
     const originals = before.agents.map((a) => a.id);
     assert.equal(originals.length, 4);
@@ -63,23 +55,23 @@ try {
       before.agents.every((a) => a.x > 7),
       'Wage fixture starts all four types beyond the treasury passage',
     );
-    assert((await minerControl('textContent')).includes('75'));
+    assert((await minerControl('textContent')).includes('25'));
     assert(await minerControl('isEnabled'));
     await page.locator('.population-details').evaluate(e => { e.open = true; });
     await minerControl('click');
     after = await state();
     assert.equal(after.agents.length, before.agents.length + 1);
-    assert.equal(balance(after), balance(before) - 75, 'Purchase spends its displayed price exactly once');
+    assert.equal(balance(after), balance(before) - 25, 'Purchase spends its displayed price exactly once');
     assert(
-      (await minerControl('textContent')).includes('100'),
-      'Price rises with living Miners',
+      (await minerControl('textContent')).includes('25'),
+      'Stonehand price stays fixed',
     );
     const purchased = after.agents.find((a) => !originals.includes(a.id));
-    assert.equal(purchased.type, 'miner');
-    assert(purchased.x < 7, 'Bought Miner appears through the base Hearth arrival route');
+    assert.equal(purchased.type, 'stonehand');
+    assert(purchased.x < 7, 'Created Stonehand appears through the base Hearth arrival route');
     await minerControl('scrollIntoViewIfNeeded', true);
     await page.screenshot({ path: 'test-results/m13-miner-purchase.png' });
-    console.log('M13: sidebar Miner purchase, exact price and failure feedback verified.');
+    console.log('M13: sidebar Stonehand creation, exact price and failure feedback verified.');
 
     // Observe real travel and job execution, rather than marking wages paid in a fixture.
     const beforePay = balance(after);
@@ -103,15 +95,15 @@ try {
       'Every dwarf type physically enters the treasury side to collect',
     );
     assert(originals.every((id) => after.agents.find((a) => a.id === id)?.pay.collections === 1));
-    assert.equal(beforePay - balance(after), 33, 'All residents, including the new arrival, collect on the shared payday');
+    assert.equal(beforePay - balance(after), 29, 'Only the four dwarfs collect wages');
     assert.equal(
       after.agents.find((a) => a.id === purchased.id).pay.collections,
-      1,
-      'New arrivals join the shared first payday',
+      0,
+      'Stonehands do not join payroll',
     );
     await advance(5);
     after = await state();
-    assert.equal(beforePay - balance(after), 33, 'Paid wages are not deducted again on later ticks');
+    assert.equal(beforePay - balance(after), 29, 'Paid wages are not deducted again on later ticks');
     assert(originals.every((id) => after.agents.find((a) => a.id === id)?.pay.due.length === 0));
     await page.locator('[data-dwarf-role="miner"]').click();
     assert.match(await page.locator('#residents-list').textContent(), /pay|wage/i);
@@ -122,7 +114,7 @@ try {
 
     // A locked physical route is different from a lack of gold; restoring it resumes collection.
     await load('economy');
-    await panel('Dwarfs');
+    await panel('Workforce');
     before = await state();
     const door = before.defenses.find((d) => d.type === 'timber-door');
     assert(door);
@@ -145,12 +137,12 @@ try {
     );
     assert.equal(balance(before) - balance(after), 29);
     await load('economy');
-    await panel('Dwarfs');
+    await panel('Workforce');
     after = await state();
     assert.equal(after.elapsed, 0);
     assert(after.agents.every((a) => a.pay.collections === 0 && a.pay.due.length === 0));
     assert(
-      (await minerControl('textContent')).includes('75'),
+      (await minerControl('textContent')).includes('25'),
       'Fresh scenario restores the living-population price',
     );
     console.log(
