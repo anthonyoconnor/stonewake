@@ -1,3 +1,4 @@
+import { terrainOpaque } from './terrain.ts';
 import {tuning} from '../content/tuning.ts';
 import { type World, type LevelDefinition, type Point, tileAt } from './types.ts';
 import {roomById} from '../content/rooms.ts';
@@ -46,7 +47,7 @@ export function reveal(w:World, origin:Point, radius=tuning.sightRadius) {
         if(!t) break;
         if(!t.known){t.known=true;if(!['dirt','rock','gold','gem'].includes(t.terrain))t.designated=false;changed=true;}
         const door=doorAt(w,t);
-        if(t.terrain!=='floor'||door&&!doorIsOpen(w,door)||barrierAt(w,t)) break;
+        if(terrainOpaque(t)||door&&!doorIsOpen(w,door)||barrierAt(w,t)) break;
       }
     }
   }

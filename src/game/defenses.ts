@@ -1,3 +1,4 @@
+import { terrainOpaque } from './terrain.ts';
 import {type World,type Point,type Defense,type DoorMode,type Enemy,tileAt,key} from './types.ts';
 import {defenseById,defenseDirections,raiderDefinition} from '../content/defenses.ts';
 import {defenseAt,doorAt,isDoor,doorIsOpen,doorOccupied,passageFrom} from './doors.ts';
@@ -13,7 +14,7 @@ export function defenseQuote(w:World,type:string,p:Point){
   if(!t?.known||t.terrain!=='floor'||!t.claimed||t.core||t.onward||t.room||t.wallPlanned||t.loose||defenseAt(w,p)||blocked(w,p)||w.roomServices.some(f=>f.id==='hearth-treasury'&&key(f.access)===key(p)))return invalid('Choose clear, claimed floor outside a room.');
   let rotation=0;
   if(def.kind==='door'){
-    const wall=(x:number,z:number)=>{const t=tileAt(w,x,z);return !!t?.known&&t.terrain!=='floor';};
+    const wall=(x:number,z:number)=>{const t=tileAt(w,x,z);return !!t?.known&&terrainOpaque(t);};
     const floor=(x:number,z:number)=>{const t=tileAt(w,x,z);return !!t?.known&&t.terrain==='floor'&&!t.core&&!t.wallPlanned&&!blocked(w,t,undefined,{walker:'breach'});};
     if(wall(p.x,p.z-1)&&wall(p.x,p.z+1)&&floor(p.x-1,p.z)&&floor(p.x+1,p.z))rotation=0;
     else if(wall(p.x-1,p.z)&&wall(p.x+1,p.z)&&floor(p.x,p.z-1)&&floor(p.x,p.z+1))rotation=1;
@@ -70,7 +71,8 @@ export function boltTarget(w:World,d:Defense){
   // Sample the centerline; a bolt is not a resident-sized collision capsule.
   for(let step=.5;step<=distance;step+=.1){
     const p={x:Math.round(d.x+direction.x*step),z:Math.round(d.z+direction.z*step)},door=doorAt(w,p);
-    if(blocked(w,p,undefined,{walker:'breach'})||door&&!doorIsOpen(w,door)){distance=step-.1;break;}
+    const tile=tileAt(w,p.x,p.z);
+    if(!tile||terrainOpaque(tile)||tile.core||tile.onward||door&&!doorIsOpen(w,door)){distance=step-.1;break;}
   }
   return w.enemies?.filter(e=>e.health>0).map(e=>({e,along:(e.x-d.x)*direction.x+(e.z-d.z)*direction.z,across:Math.abs((e.x-d.x)*direction.z-(e.z-d.z)*direction.x)})).filter(t=>t.along>.05&&t.along<=distance&&t.across<=.35).sort((a,b)=>a.along-b.along||a.e.id-b.e.id)[0]?.e;
 }

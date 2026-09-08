@@ -1,3 +1,4 @@
+import { bridgeWorkSite } from '../bridges.ts';
 import { type World, type Resident, tileAt } from '../types.ts';
 import { canStand } from '../navigation.ts';
 import { wallEligible } from '../walls.ts';
@@ -8,6 +9,7 @@ export function validJob(w: World, a: Resident) {
   const j = a.job!,
     t = tileAt(w, j.target.x, j.target.z);
   if (!t) return false;
+  if(j.kind === 'buildBridge'){const p=tileAt(w,j.work.x,j.work.z);return !!p&&bridgeWorkSite(w,t,p);}
   if (j.kind === 'mine')
     return t.known && t.designated && ['dirt', 'rock', 'gold', 'gem'].includes(t.terrain);
   if (j.kind === 'claim') return t.terrain === 'floor' && !t.claimed;

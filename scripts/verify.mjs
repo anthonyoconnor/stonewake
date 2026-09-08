@@ -10,6 +10,7 @@ const tests = readdirSync('tests')
   .map((f) => `tests/${f}`)
   .sort();
 const groups = {
+  bridges: ['bridges', 'movement', 'defenses', 'hearth', 'world'],
   development: ['development', 'movement', 'progression-research', 'defenses', 'food'],
   movement: ['movement', 'mining', 'gold-bags', 'defenses', 'spells', 'rooms'],
   rooms: ['rooms', 'learning-rooms', 'reclaim', 'content-extension', 'food', 'recruitment', 'walls'],

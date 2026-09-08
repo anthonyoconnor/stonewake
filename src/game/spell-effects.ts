@@ -1,3 +1,4 @@
+import { terrainOpaque } from './terrain.ts';
 import {type World,type Point,type Resident,type Enemy,tileAt} from './types.ts';
 import {doorAt,doorIsOpen} from './doors.ts';
 import {tuning} from '../content/tuning.ts';
@@ -14,7 +15,7 @@ export function spellLine(w:World,from:Point,to:Point){
   const steps=Math.max(1,Math.ceil(Math.hypot(from.x-to.x,from.z-to.z)/.1));
   for(let i=1;i<=steps;i++){
     const p={x:Math.round(from.x+(to.x-from.x)*i/steps),z:Math.round(from.z+(to.z-from.z)*i/steps)},t=tileAt(w,p.x,p.z),door=doorAt(w,p);
-    if(!t||t.terrain!=='floor'||door&&!doorIsOpen(w,door)||barrierAt(w,p))return false;
+    if(!t||terrainOpaque(t)||door&&!doorIsOpen(w,door)||barrierAt(w,p))return false;
   }
   return true;
 }

@@ -1,3 +1,4 @@
+import { bridgeWorkSite } from '../bridges.ts';
 import { type World, type Resident, tileAt, neighbors, key } from '../types.ts';
 import { canStand } from '../navigation.ts';
 import { tuning } from '../../content/tuning.ts';
@@ -40,6 +41,10 @@ export function chooseJob(w: World, a: Resident) {
   }
   if (choosePayJob(w, a)) return;
   if (chooseHearthJob(w, a)) return;
+  if(a.capabilities.includes('buildWall'))
+    for(const t of nearest(a,w.tiles.filter(t=>t.bridgePlanned&&!reserved(w,'buildBridge',t))))
+      for(const p of nearest(a,neighbors(w,t).filter(p=>bridgeWorkSite(w,t,p))))
+        if(take(w,a,'buildBridge',t,p))return;
   if (canTrain(w, a))
     for (const f of availableStations(w, a, 'training')) if (take(w, a, 'train', f, f.access, f.id)) return;
   if (a.capabilities.includes('research'))

@@ -1,13 +1,17 @@
 import type { EncounterDefinition, EncounterState } from './encounters.ts';
 import type { HearthState, OnwardHearthDefinition, OnwardHearthState } from './hearth.ts';
 import type { MoraleCause, MoraleState } from './morale.ts';
-export type Terrain = 'floor' | 'dirt' | 'rock' | 'bedrock' | 'gold' | 'gem';
+export type Terrain = 'floor' | 'dirt' | 'rock' | 'bedrock' | 'gold' | 'gem' | 'water' | 'lava' | 'chasm';
 export interface Point { x: number; z: number }
 export interface Tile extends Point {
   terrain: Terrain;
   known: boolean;
   claimed: boolean;
   reinforced?: boolean;
+  bridge?: boolean;
+  bridgePlanned?: boolean;
+  bridgeProgress?: number;
+  bridgePaid?: number;
   wallPlanned?: boolean;
   wallProgress?: number;
   designated: boolean;
@@ -68,7 +72,7 @@ export interface RoomService extends Point {
 }
 export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
 export interface ResearchOrder {id:number;spell:string;state:'queued'|'working'|'ready';progress:number;unlocked:boolean;paused?:boolean;worker?:number}
-export interface Job { kind:'mine'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'|'train'|'research'|'pay'|'activate'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
+export interface Job { kind:'mine'|'buildBridge'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'|'train'|'research'|'pay'|'activate'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
 export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;

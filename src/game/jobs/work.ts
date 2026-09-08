@@ -1,3 +1,5 @@
+import { finishBridge } from '../bridges.ts';
+import { bridgeSettings } from '../terrain.ts';
 import { type World, type Resident, type Job, tileAt } from '../types.ts';
 import { reveal } from '../world.ts';
 import { tuning } from '../../content/tuning.ts';
@@ -22,6 +24,11 @@ type JobHandler = (
   work: number,
 ) => boolean;
 const handlers = {
+  buildBridge: (w,a,j,t,dt,work) => {
+    a.activity='Building stone bridge';t.bridgeProgress=(t.bridgeProgress??0)+work;
+    if(t.bridgeProgress<bridgeSettings.seconds)return false;
+    finishBridge(w,t);reveal(w,j.work);return true;
+  },
   activate: (w,a,j,t,dt) => performHearthJob(w,a,dt),
   pay: (w, a) => collectWage(w, a),
   mine: (w, a, j, t, dt, work) => {

@@ -24,6 +24,8 @@ const artwork:Record<string,string>={
  library:'<path d="M7 15Q20 8 32 16Q44 8 57 15V48Q44 41 32 49Q20 41 7 48Z" fill="#947049"/><path d="M10 13Q23 10 32 17Q42 10 54 13V43Q42 40 32 47Q21 40 10 43Z" fill="#e8d4a0"/><path d="M32 17V45M15 22l11 2M15 29l11 2M15 36l11 2M38 24l11-2M38 31l11-2M38 38l11-2" stroke="#917351" stroke-width="2"/><path d="M28 12H35V28L31 24 28 27Z" fill="#658dba"/>',
  guard:'<path d="M12 12 32 6 52 12V31Q49 45 32 55Q15 45 12 31Z" fill="url(#steel)"/><path d="M17 16 32 11 47 16V30Q45 40 32 49Q20 41 17 30Z" fill="#557580"/><path d="m32 17 10 12-10 16-10-16Z" fill="url(#gold)"/><path d="M32 22V36" stroke="#fff0bf" stroke-width="3"/>',
 };
+artwork.bridge='<path d="M6 28 32 14 58 28 32 44Z" fill="url(#steel)"/><path d="M6 28V41L14 46V34M50 33V46L58 41V28M19 23 44 37M32 17 56 30" fill="none" stroke="#d8c99c" stroke-width="4"/>';
+artwork['remove-bridge']=artwork.reclaim;
 artwork['timber-door']=artwork.door.replace('M21 28H43M21 44H43','M24 20V53M32 20V53M40 20V53').replace('stroke-width="5"','stroke-width="2"');
 artwork['reinforced-door']=artwork.door;
 artwork['steel-door']=artwork.door.replace('url(#wood)','url(#steel)')+'<path d="M24 22 40 50M40 22 24 50" stroke="#dbe3d6" stroke-width="3"/>';

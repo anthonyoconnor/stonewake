@@ -1,3 +1,4 @@
+import { planBridges, removeBridges } from '../game/bridges.ts';
 import { createScenario, scenarioIds, type ScenarioId } from '../content/scenarios.ts';
 import { type World, type Point, type DoorMode } from '../game/types.ts';
 import { addResidents, designate } from '../game/simulation.ts';
@@ -14,6 +15,7 @@ import { requestHearthActivation } from '../game/hearth.ts';
 
 export type DevCommand =
   | { kind: 'build'; room: string; points: Point[] }
+  | { kind: 'bridge' | 'remove-bridge'; points: Point[] }
   | { kind: 'reclaim'; points: Point[] }
   | { kind: 'dig' | 'wall'; points: Point[]; enabled?: boolean }
   | { kind: 'free-build' | 'arrivals'; enabled: boolean }
@@ -93,6 +95,8 @@ export class DevelopmentController {
     if (points.some((p) => !Number.isInteger(p.x) || !Number.isInteger(p.z)))
       throw new Error('Grid commands require integer coordinates.');
     switch (command.kind) {
+      case 'bridge': return planBridges(w,command.points);
+      case 'remove-bridge': return removeBridges(w,command.points);
       case 'build':
         return buildRoom(w, command.room, command.points);
       case 'reclaim':

@@ -1,3 +1,5 @@
+import { bridgeQuote, planBridges, removeBridges } from '../game/bridges.ts';
+import { isHazard } from '../game/terrain.ts';
 import {TransformNode} from '@babylonjs/core';
 import {type Point,tileAt} from '../game/types.ts';
 import type {GameScene} from '../view/scene';
@@ -33,11 +35,13 @@ export class Selection {
           if(message.includes(' cast.')){this.setTool('dig');if(target&&target.kind!=='point')this.onUnitInspect(target);}
           this.onChange(message);
         }
-        else if(this.tool==='dig'&&points.length===1&&tileAt(view.world,end.x,end.z)?.known&&tileAt(view.world,end.x,end.z)?.terrain==='floor'){
+        else if(this.tool==='dig'&&points.length===1&&tileAt(view.world,end.x,end.z)?.known&&(tileAt(view.world,end.x,end.z)?.terrain==='floor'||isHazard(tileAt(view.world,end.x,end.z)!))){
           const unit=targetAt(view.world,'dwarf-haste',end)??targetAt(view.world,'enemy-slow',end);
           if(unit)this.onUnitInspect(unit);else this.inspect(end);
         }
         else if(this.tool==='dig'||this.tool==='erase'){designate(view.world,points,this.dragAdds??false);this.onChange(this.tool==='dig'?'Excavation updated.':'Excavation marks removed.');}
+        else if(this.tool==='bridge')this.onChange(planBridges(view.world,points));
+        else if(this.tool==='remove-bridge')this.onChange(removeBridges(view.world,points));
         else if(this.tool==='wall')this.onChange(planWalls(view.world,points,this.dragAdds??true));
         else if(this.tool==='reclaim')this.onChange(reclaimRoom(view.world,points));
         else if(defenseById(this.tool)){this.onChange(placeDefense(view.world,this.tool,end,this.rotation));this.selected=end;}
@@ -49,9 +53,9 @@ export class Selection {
     const cancel=()=>this.setTool('dig');
     canvas.addEventListener('contextmenu',cancel);window.addEventListener('keydown',e=>{if(e.key==='Escape')cancel();if(e.key.toLowerCase()==='r'&&defenseById(this.tool)?.kind==='bolt'&&!(e.target instanceof HTMLElement&&e.target.closest('input,select,textarea,dialog'))){this.rotation=(this.rotation+1)%4;this.draw();}});
   }
-  updateCursor(){const tile=this.hover&&tileAt(this.view.world,this.hover.x,this.hover.z);const action=this.tool==='dig'?(this.dragAdds!==undefined?(this.dragAdds?'dig':'erase'):tile?.designated?'erase':tile?.known&&tile.terrain==='floor'?'inspect':'dig'):this.tool;this.view.canvas.style.cursor=spellById(this.tool)?'crosshair':actionCursor(action);}
+  updateCursor(){const tile=this.hover&&tileAt(this.view.world,this.hover.x,this.hover.z);const action=this.tool==='dig'?(this.dragAdds!==undefined?(this.dragAdds?'dig':'erase'):tile?.designated?'erase':tile?.known&&(tile.terrain==='floor'||isHazard(tile))?'inspect':'dig'):this.tool;this.view.canvas.style.cursor=spellById(this.tool)?'crosshair':actionCursor(action);}
   setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=this.view.world.outcome?'inspect':tool;this.draw();this.onChange('');}
-  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.onward?'Onward Hearthstone · Awaken the ancient network':t.core?`Stone Hearth · Treasury ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);this.onInspect(p);}
+  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.onward?'Onward Hearthstone · Awaken the ancient network':t.core?`Stone Hearth · Treasury ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.bridge?'Stone bridge over '+t.terrain:t.bridgePlanned?'Bridge planned · '+Math.floor(t.bridgeProgress??0)+' seconds worked':t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);this.onInspect(p);}
   rectangle(a:Point,b:Point){const result:Point[]=[];for(let z=Math.min(a.z,b.z);z<=Math.max(a.z,b.z);z++)for(let x=Math.min(a.x,b.x);x<=Math.max(a.x,b.x);x++)result.push({x,z});return result;}
   draw(feedback=true){
     this.updateCursor();this.preview.dispose();this.preview=new TransformNode('preview',this.view.scene);if(this.view.world.outcome||!this.hover||this.tool==='inspect')return;
@@ -62,6 +66,14 @@ export class Selection {
       const radius=spell.radius??.55;
       for(let i=0;i<24;i++){const angle=i/24*Math.PI*2,m=this.view.box('spell target',p.x+Math.cos(angle)*radius,.07,p.z+Math.sin(angle)*radius,.13,.025,.13,mat,this.preview);m.isPickable=false;}
       if(feedback)this.onChange(`${spell.name} · ${error||'Click to cast'} · ${spell.cost} gold`);return;
+    }
+    if(this.tool==='bridge'||this.tool==='remove-bridge'){
+      const cells=this.rectangle(this.start??this.hover,this.hover),q=bridgeQuote(this.view.world,cells),adding=this.tool==='bridge';
+      for(const p of cells){const t=tileAt(this.view.world,p.x,p.z);if(!t?.known)continue;
+        const valid=adding?q.valid&&q.tiles.includes(t):!!(t.bridge||t.bridgePlanned);
+        const m=this.view.box('bridge preview',p.x,.04,p.z,.94,.025,.94,this.view.material(valid?'bridge yes':'bridge no',valid?'#8ce3bb':'#e08172',false,.3),this.preview);m.isPickable=false;
+      }
+      if(feedback)this.onChange(adding?q.tiles.length+' bridge squares · '+q.cost+' gold · '+q.reason:'Remove bridges / cancel plans · Occupied or isolating removal is blocked.');return;
     }
     const defense=defenseById(this.tool);
     if(defense){
@@ -78,7 +90,7 @@ export class Selection {
     for(const p of cells){const t=tileAt(this.view.world,p.x,p.z);if(!t||(!t.known&&room))continue;
       const valid=reclaim?reclaim.tiles.includes(t):this.tool==='wall'?wallEligible(this.view.world,t):quote?quote.valid&&quote.tiles.includes(t):!t.known||['dirt','rock','gold','gem'].includes(t.terrain);
       const adding=valid&&(!!quote||this.tool==='wall'&&(this.dragAdds??!t.wallPlanned)||this.tool==='dig'&&(this.dragAdds??!t.designated));
-      const m=this.view.box('selection',p.x,t.known&&t.terrain==='floor'?.025:1.515,p.z,.95,.02,.95,this.view.material(adding?'preview yes':'preview no',adding?'#8ce3bb':'#e08172',false,.4),this.preview);m.material!.alpha=.42;m.isPickable=false;
+      const m=this.view.box('selection',p.x,t.known&&(t.terrain==='floor'||isHazard(t))?.025:1.515,p.z,.95,.02,.95,this.view.material(adding?'preview yes':'preview no',adding?'#8ce3bb':'#e08172',false,.4),this.preview);m.material!.alpha=.42;m.isPickable=false;
     }
     if(quote&&feedback){const def=roomById(this.tool);this.onChange(`${quote.tiles.length} buildable squares · ${quote.cost} gold · +${quote.addedCapacity} ${def?.service==='storage'?'gold storage':'dwarf capacity'} · ${quote.reason}`);}
     if(reclaim&&feedback)this.onChange(`${reclaim.tiles.length} room squares · ${reclaim.refund} gold refund`);

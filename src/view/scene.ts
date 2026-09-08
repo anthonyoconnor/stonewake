@@ -1,3 +1,4 @@
+import { isHazard, hazardDefinitions } from '../game/terrain';
 import {drawFurnishingModel,type FurnishingDisplay} from './furnishing-models';
 import {tuning} from '../content/tuning';
 import { Engine, Scene, ArcRotateCamera, Vector3, Color3, Color4, HemisphericLight, DirectionalLight, PointLight, MeshBuilder, StandardMaterial, DynamicTexture, TransformNode, GlowLayer, Mesh } from '@babylonjs/core';
@@ -60,13 +61,29 @@ export class GameScene {
     const root=this.terrainRoot;
     if(!this.tileNodes.size)this.drawHearth();
     for(const t of this.world.tiles){
-      const id=`${t.x},${t.z}`,signature=[t.terrain,t.known,t.claimed,t.reinforced,t.wallPlanned,t.room,t.loose,t.designated,t.known?neighbors(this.world,t).map(n=>n.terrain+':'+n.known+':'+n.reinforced).join():null].join(':');
+      const id=`${t.x},${t.z}`,signature=[t.bridge,t.bridgePlanned,t.terrain,t.known,t.claimed,t.reinforced,t.wallPlanned,t.room,t.loose,t.designated,t.known?neighbors(this.world,t).map(n=>n.bridge+':'+n.terrain+':'+n.known+':'+n.reinforced).join():null].join(':');
       const old=this.tileNodes.get(id);if(old?.signature===signature)continue;old?.node.dispose();
       const node=new TransformNode(id,this.scene);node.parent=root;this.terrainRoot=node;this.drawTile(t);this.tileNodes.set(id,{signature,node});
     }
     this.terrainRoot=root;this.drawFurniture();
   }
   drawTile(t:Tile) {
+    if(t.known&&isHazard(t)){
+      const hazard=hazardDefinitions[t.terrain as keyof typeof hazardDefinitions];
+      const base=this.box('tile-'+t.x+'-'+t.z,t.x,-.2,t.z,.997,.12,.997,this.material(t.terrain,hazard.color,false,t.terrain==='lava'?.6:0));base.metadata={tile:{x:t.x,z:t.z}};
+      if(t.terrain!=='chasm')for(let i=0;i<3;i++){
+        const stripe=this.box('flow',t.x+Math.sin(t.z+i*3)*.18,-.132,t.z+(i-1)*.27,.42,.01,.025,this.material(t.terrain+' ripple',t.terrain==='lava'?'#ffb04c':'#5aabb3',false,.25));stripe.rotation.y=Math.sin(t.x+i)*.3;stripe.isPickable=false;
+      }
+      if(t.bridge){
+        const stone=this.material('bridge stone','#9b947e',true);
+        const deck=this.box('stone bridge deck',t.x,-.08,t.z,.997,.16,.997,stone);deck.metadata={tile:{x:t.x,z:t.z}};
+        for(const offset of [-.25,.25])this.box('deck joint',t.x,.004,t.z+offset,.95,.008,.018,this.material('bridge joints','#565343')).isPickable=false;
+        for(const n of neighbors(this.world,t))if(isHazard(n)&&!n.bridge){
+          const dx=n.x-t.x,dz=n.z-t.z;this.box('bridge edge',t.x+dx*.46,.07,t.z+dz*.46,dx?.07:.98,.14,dz?.07:.98,stone).isPickable=false;
+        }
+      }else if(t.bridgePlanned){const m=this.box('bridge plan',t.x,.015,t.z,.88,.035,.88,this.material('bridge blueprint','#86b6cc',false,.3));m.material!.alpha=.5;m.isPickable=false;}
+      return;
+    }
     const type=t.known?t.terrain:'unknown',solid=type!=='floor';
     const room=t.known&&t.room?roomById(t.room):undefined;
     const rawGround=type==='floor'&&!t.claimed&&!room&&!t.core;

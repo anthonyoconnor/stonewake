@@ -19,7 +19,7 @@ The campaign reclaims separate sites within a lost dwarven kingdom. Each level i
 - A level ends in defeat if enemies destroy the Stone Hearth protecting the Hearthstone.
 - Every level has a separate onward Hearthstone that the player must find and reach to open progression to the next area. Its difficult approach supplies the primary level objective.
 
-The campaign premise, level structure and onward Hearthstone objective are established. The example maps, enemy roster, exact approaches and activation details below are proposals rather than a final campaign list. M11 implements objective/defeat using an enemy-held land route. Hazardous crossings remain M16 and campaign travel M18.
+The campaign premise, level structure and onward Hearthstone objective are established. The example maps, enemy roster, exact approaches and activation details below are proposals rather than a final campaign list. M11 implements objective/defeat using an enemy-held land route. M16 adds the Emberwater Crossing scenario with water, lava, chasms and constructed stone bridges. Campaign travel remains M18.
 
 ## Onward Hearthstone objective
 
@@ -57,7 +57,7 @@ Starting resources must be usable before a Treasure Room is built. The prototype
 | Natural passage | Connects regions and creates potential movement or attack routes |
 | Ancient dwarven ruins | May contain open chambers, damaged facilities, sealed routes, and discoveries |
 | Inhabited tunnels or chambers | May contain nests, camps, defenses, inhabitants, or treasure |
-| Water, lava, or chasms | Proposed terrain obstacles that constrain routes and building space; exact crossing rules remain open |
+| Water, lava, or chasms | Implemented impassable terrain with open sight/projectile paths; Miner-built stone bridges cross water/lava, while chasms remain unbridgeable |
 | Map entrance or deep passage | A physical entry location for external hostile groups; does not need to be the dwarf arrival route |
 
 Miners can reinforce ordinary exposed walls around claimed territory. Bedrock needs no reinforcement. Finite resource extraction can change the shape of a passage, while permanent gem deposits and bedrock remain obstacles around which the base must be planned.
@@ -85,6 +85,10 @@ Selection overlays must distinguish designated excavation from the natural gold 
 - Camera rotation, zoom, and any foreground wall fading must preserve discovery boundaries; they cannot expose hidden chambers or inhabitants through solid terrain.
 - Diggable terrain and bedrock must be distinguishable where exposed, so the player can make informed excavation choices.
 - Whether distant resource deposits appear on the planning map is still open; hidden inhabitants and open chambers must remain concealed until discovered.
+
+## Emberwater Crossing (M16)
+
+The `crossings` scenario is a 28×18 authored map using normal starting Miners and allowance, accessible gold seams and a gem deposit. Map-spanning water and lava bands prevent a land bypass; the player constructs both crossings before reaching the onward stone. An optional chasm pocket stays unbridgeable. See [bridge rules](rooms.md#bridges-and-hazardous-crossings) for costs, construction, reclaim and occupancy. Discovery across the gap never activates the objective. There is no new enemy type or campaign link in this scenario.
 
 ## Inhabitants and regions
 

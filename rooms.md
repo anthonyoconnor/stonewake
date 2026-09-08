@@ -110,7 +110,7 @@ The [room concept gallery](concept-art/rooms/README.md) illustrates each growabl
 | Guard Post | Clearly marked defensive floor emblem | Guard insignia where walls are present | Standing guard positions first, then a signal fitting or equipment rack if circulation allows |
 | Bridge | Repeating deck tiles and visible edges | No room wall treatment required | Edges and supports adapt to connected bridge tiles; doors or other permitted fixtures must preserve a usable crossing |
 
-The Stone Hearth is a fixed structure, and doors and traps retain their individual footprints. They are exceptions to expandable room furnishing. Bridge surfaces follow their placed tiles rather than using interior furniture. Details of bridge routing and eligible fixtures remain open.
+The Stone Hearth is a fixed structure, and doors and traps retain their individual footprints. They are exceptions to expandable room furnishing. Bridge surfaces follow their placed tiles rather than using interior furniture. Details of bridge routing and eligible fixtures follow the bridge rules below.
 
 ## Room catalog
 
@@ -125,7 +125,21 @@ The Stone Hearth is a fixed structure, and doors and traps retain their individu
 | Training Room | Provides shared training for every dwarf type | Warriors | Stat increases for the dwarfs using its accessible training positions |
 | Library | Houses spell research | Runesmiths | Research progress and researched spells |
 | Guard Post | Establishes a place for available defenders to gather and guard | None directly | Local defensive presence and quicker response |
-| Bridge | Connects traversable floor across a suitable water or lava gap | None | A route for dwarfs and enemies; crossing rules remain to be defined |
+| Bridge | Connects traversable floor across a suitable water or lava gap | None | A Miner-built stone route across water/lava for dwarfs and enemies; chasms are unbridgeable |
+
+## Bridges and hazardous crossings
+
+Water, lava and chasms are map-authored, impassable terrain on the single layer. They allow sight and projectiles across them; camera movement never discovers terrain. There is no contact damage or swimming: units cannot enter an unbridged hazard. Chasms cannot be bridged in this prototype.
+
+Choose **Bridge** in the construction tools and click or drag discovered water/lava. Each connected plan must reach claimed land or an existing bridge/plan connected to land. Miners build one square at a time while standing on reachable adjacent claimed land or a completed bridge. Corner contact provides no support. Bent, branching, wide and single-square bridges use the same rules; no maximum supported water/lava span is imposed. A single shore supports construction, and reaching the opposite shore opens the crossing.
+
+Each square costs provisionally **20 shared gold and eight seconds of Miner work**, tunable in src/game/terrain.ts. Gold is charged once when planned; unaffordable selections do nothing. Free room construction makes bridge plans free but preserves discovery, support, access and work requirements. Interrupted work remains on the tile. Plans never provide traversal. Completed stone decks remain at the common floor height and carry both dwarfs and enemies through shared navigation.
+
+Bridges supply no room service capacity, attract nobody, and have no interior furnishings. Procedural deck joints and edge blocks adapt to neighboring tiles and are cosmetic. Rooms, walls, doors and traps cannot be built on bridge tiles. Ordinary rooms continue to use land-only construction and their normal capacity rules.
+
+Choose **Remove bridge** to cancel plans or reclaim decks. Cancelled plans refund all paid gold; completed decks refund the normal room reclaim fraction. Free squares refund zero. The operation rejects occupied decks, loose gold, removal that cuts any living unit off from currently reachable land, and sections that would leave remaining decks/plans unsupported. Remove unsupported sections together. Removal restores the original hazard, invalidates paths, and cancels affected work on the next tick; no tile or payment is recreated by a stale job. Bridges have no damage, collapse or maintenance system in M16.
+
+The **crossings / Emberwater Crossing** scenario starts with ordinary crew, allowance and resources. It requires a water crossing followed by lava to reach the onward Hearthstone; an optional chasm pocket demonstrates the unbridgeable rule. Load it through Debug → Additional test scenarios. Border Foothold remains the default level; campaign links belong to M18.
 
 ## Stone Hearth and Hearthstone
 

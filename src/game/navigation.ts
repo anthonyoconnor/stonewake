@@ -1,3 +1,4 @@
+import { terrainWalkable } from './terrain.ts';
 import {type Point,type World,tileAt,key} from './types.ts';
 import {tuning} from '../content/tuning.ts';
 import {doorBlocks,passageFrom,type Passage,type Walker} from './doors.ts';
@@ -5,7 +6,7 @@ import {barrierAt} from './spell-effects.ts';
 export function blocked(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}):boolean {
   const t=tileAt(w,p.x,p.z);
   const enemy=passage.walker==='enemy'||passage.walker==='breach';
-  return !t||(!t.known&&!enemy)||t.terrain!=='floor'||t.core||!!t.onward||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p));
+  return !t||(!t.known&&!enemy)||!terrainWalkable(t)||t.core||!!t.onward||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p));
 }
 export function canStand(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}) {
   const r=tuning.radius;

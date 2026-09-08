@@ -51,11 +51,12 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `economy` | One resident of each type, spare support, first payday at 10 seconds and treasury access controlled by one door |
 | `hearth` | Defended mineable approach to a hidden onward stone; physical activation and local success |
 | `hearth-defeat` | Same gate/encounters with fewer supplied defenses; natural core destruction |
+| `crossings` | Ordinary starting economy; paid Miner-built water/lava crossings to the onward Hearthstone, plus an unbridgeable chasm |
 | `morale` | All four supported types behind a lockable treasury/exit route; reclaim support, recover or test departures |
 
 Room construction uses normal validation, furnishing and costs, including the free-room flag. Explicit test allowances, prepared charges, needs and initial stock are fixture setup. They are not gameplay rewards. Add a new named factory for a useful reproduction instead of copying its setup into a browser script and a separate test.
 
-The typed [command union](src/dev/controller.ts) supports `build`, `reclaim`, `dig`, `wall`, `free-build`, `arrivals`, `spawn`, `needs`, `craft`, `research`, `pause-research`, `cast`, `place-defense`, `remove-defense`, `door`, `raider`, `buy-miner`, `advance-encounter` and `activate-hearth`. Purchases use normal support/price/arrival checks. Encounter timer advancement retains discovery, warning duration and physical route checks. Construction, research, spells and defenses call their real services. Spawn/needs commands are explicit test setup. Activation requests use actual discovery, movement and security rules. Ended areas reject mutation commands; load/restart remains available. There is no generic arbitrary-state mutation command.
+The typed [command union](src/dev/controller.ts) supports `bridge`, `remove-bridge`, `build`, `reclaim`, `dig`, `wall`, `free-build`, `arrivals`, `spawn`, `needs`, `craft`, `research`, `pause-research`, `cast`, `place-defense`, `remove-defense`, `door`, `raider`, `buy-miner`, `advance-encounter` and `activate-hearth`. Purchases use normal support/price/arrival checks. Encounter timer advancement retains discovery, warning duration and physical route checks. Construction, research, spells and defenses call their real services. Spawn/needs commands are explicit test setup. Activation requests use actual discovery, movement and security rules. Ended areas reject mutation commands; load/restart remains available. There is no generic arbitrary-state mutation command.
 
 ## Verify a change
 

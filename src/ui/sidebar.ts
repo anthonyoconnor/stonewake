@@ -1,3 +1,4 @@
+import { bridgeSettings } from '../game/terrain.ts';
 import {showSpells,updateSpells} from './spells';
 import {characterDefinitions,maxCharacterLevel} from '../content/characters';
 import {tuning} from '../content/tuning';
@@ -48,7 +49,7 @@ export class Sidebar {
       <section class="map-section"><div class="eyebrow"><span>${view.world.name}</span><span class="live-dot"></span></div><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas><div class="map-caption"><span>THE UPPER WORKINGS</span><span>48 × 48</span></div></section>
       <div class="reserves"><div><span class="gold-symbol">◆</span><strong id="gold-total">0</strong><small>GOLD</small></div><div><span>♟</span><strong id="dwarf-total">0</strong><small>DWARFS</small></div></div>
       <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs','debug'].map(id=>`<button data-category="${id}" aria-label="${id[0].toUpperCase()+id.slice(1)}" title="${id}"><span>${glyphs[id]}</span><small>${id}</small></button>`).join('')}</nav>
-      <div class="work-tools"><button data-tool="dig">${actionIcon('dig')} Excavate</button><button data-tool="erase" aria-label="Remove excavation marks" title="Clear excavation">${actionIcon('erase')}</button><button data-tool="wall" aria-label="Build walls" title="Build walls">${actionIcon('wall')}</button><button data-tool="reclaim" aria-label="Reclaim room tiles" title="Reclaim room tiles">${actionIcon('reclaim')}</button></div>
+      <div class="work-tools"><button data-tool="bridge" title="Build stone bridges">Bridge</button><button data-tool="remove-bridge" title="Remove bridges or cancel bridge plans">Remove bridge</button><button data-tool="dig">${actionIcon('dig')} Excavate</button><button data-tool="erase" aria-label="Remove excavation marks" title="Clear excavation">${actionIcon('erase')}</button><button data-tool="wall" aria-label="Build walls" title="Build walls">${actionIcon('wall')}</button><button data-tool="reclaim" aria-label="Reclaim room tiles" title="Reclaim room tiles">${actionIcon('reclaim')}</button></div>
       <div id="panel" class="panel"></div>
       <div id="unit-inspection" class="feedback" hidden></div>
       <div id="feedback" class="feedback" role="status">Choose a task for your stronghold.</div>
@@ -158,15 +159,16 @@ export class Sidebar {
     const id=this.selection.tool,room=roomDefinitions.find(r=>r.id===id);
     this.root.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>{const selected=b.dataset.room===id;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
     const header=this.panel.querySelector<HTMLElement>('#selected-action');if(!header)return;
-    const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+price+':'+room?.capacityPerTile+':'+tuning.reclaimRatio+':'+wallBuildDuration();
+    const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+this.view.world.freeRoomBuilding+':'+bridgeSettings.cost+':'+bridgeSettings.seconds+':'+price+':'+room?.capacityPerTile+':'+tuning.reclaimRatio+':'+wallBuildDuration();
     if(header.dataset.selection===signature)return;header.dataset.selection=signature;
+    if(id==='bridge'||id==='remove-bridge'){const detail=id==='bridge'?(this.view.world.freeRoomBuilding?0:bridgeSettings.cost)+' gold / square · '+bridgeSettings.seconds+' seconds of Miner work':'Plans refund paid gold · Decks refund '+Math.round(tuning.reclaimRatio*100)+'%';header.innerHTML='<div><strong>'+ (id==='bridge'?'Build stone bridges':'Remove bridges')+'</strong><span class="room-price">'+detail+'</span><span class="room-price">Water and lava · No rooms or fixtures on bridges</span></div>';return;}
     header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='reclaim'?'Reclaim room tiles':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='reclaim'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% of paid cost back</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span><span class="room-price">${room!.capacityPerTile} ${room!.service==='storage'?'gold storage':'dwarf capacity'} / square</span>`}</div>`;
   }
   drawMap(){
     const c=this.minimap.getContext('2d')!,w=this.view.world,sx=this.minimap.width/w.width,sz=this.minimap.height/w.height;
     c.fillStyle='#0c1319';c.fillRect(0,0,240,170);
-    const color:Record<string,string>={dirt:'#6f5a43',rock:'#91938a',bedrock:'#3c4d55',gold:'#dba949',gem:'#857ab9',floor:'#8b8067'};
-    for(const t of w.tiles)if(t.known){c.fillStyle=t.core?'#8de3e5':t.room?roomDefinitions.find(r=>r.id===t.room)!.color:color[t.terrain];c.fillRect(t.x*sx,t.z*sz,sx+.4,sz+.4);}
+    const color:Record<string,string>={dirt:'#6f5a43',rock:'#91938a',bedrock:'#3c4d55',gold:'#dba949',gem:'#857ab9',floor:'#8b8067',water:'#286e86',lava:'#df5423',chasm:'#101323'};
+    for(const t of w.tiles)if(t.known){c.fillStyle=t.core?'#8de3e5':t.bridge?'#bdad86':t.room?roomDefinitions.find(r=>r.id===t.room)!.color:color[t.terrain];c.fillRect(t.x*sx,t.z*sz,sx+.4,sz+.4);}
     c.strokeStyle='#ddd4b2';c.lineWidth=1;c.beginPath();
     const scene=this.view.scene,e=this.view.engine;
     const width=this.view.canvas.clientWidth,height=this.view.canvas.clientHeight;

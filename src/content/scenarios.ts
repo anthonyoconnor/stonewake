@@ -1,3 +1,4 @@
+import { createCrossingScenario } from './crossings.ts';
 import { prototypeLevel } from './levels.ts';
 import { createWorld } from '../game/world.ts';
 import { createRoomLab, showcaseRooms } from './room-lab.ts';
@@ -67,6 +68,7 @@ export const scenarioFactories = {
   hearth: createHearthLab,
   'hearth-defeat': createHearthDefeatLab,
   morale: createMoraleLab,
+  crossings: createCrossingScenario,
   'crowded-kitchen': (free) => {
     const w = createRoomLab();
     w.freeRoomBuilding = free;

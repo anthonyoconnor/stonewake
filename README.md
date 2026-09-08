@@ -10,7 +10,7 @@ This repository contains a **TypeScript + Babylon.js browser prototype**, game d
 
 The [current implementation inventory](development-plan.md#current-implementation-status) lists every planned room, structure and dwarf, its availability, and remaining integrations. **M1–M9 completion covers the prototype milestones, not the full design.** Use that inventory for what is added or missing; the catalogs below describe the intended game.
 
-M10 encounters/raids, M11 Hearth defeat/objectives, M13 recruitment/wages and M14 dissatisfaction/departure are implemented. The [remaining roadmap](development-plan.md#remaining-feature-roadmap--m10m19) covers guarding/retreat, door maintenance, bridges/hazards, more enemies, campaign travel and integrated balance. The Border Foothold has a separate Hearthstone hidden in its northern enemy camp. Discover and physically activate it to complete the area; actual travel to another area remains M18. See [Levels](levels.md#onward-hearthstone-objective).
+M10 encounters/raids, M11 Hearth defeat/objectives, M13 recruitment/wages and M14 dissatisfaction/departure are implemented. The [remaining roadmap](development-plan.md#remaining-feature-roadmap--m10m19) covers guarding/retreat, door maintenance, more enemies, campaign travel and integrated balance. The Border Foothold has a separate Hearthstone hidden in its northern enemy camp. Discover and physically activate it to complete the area; actual travel to another area remains M18. See [Levels](levels.md#onward-hearthstone-objective).
 
 ## Run locally
 
@@ -51,6 +51,12 @@ The ordinary Border Foothold now has a concealed northern camp and an eastern ra
 Click the compact **Hearth** button beneath the gold/population totals for core health and the onward objective. After discovery, request activation: an available dwarf must walk beside the stone and secure it for eight uninterrupted seconds. Nearby enemies or urgent needs interrupt work; the request retries automatically. Success and defeat freeze the area, show a sidebar result and offer **Restart area**. The starting base and treasury stay fixed.
 
 Additional scenarios include `hearth` (a defended objective approach), `hearth-defeat` (the same approach without enough supplied defenses) and `morale` (all four types behind a lockable treasury/exit route). `node scripts/hearth-morale-browser.mjs` checks these flows in the browser.
+
+## Hazardous crossings
+
+**Bridge** in the construction tools plans stone bridges over discovered water or lava connected to claimed shore. Miners build them for 20 gold and eight seconds of work per square. Free room construction removes the gold cost. Chasms remain impassable. **Remove bridge** cancels plans or reclaims unoccupied decks when remaining routes and support are preserved. Rooms and fixtures stay on land.
+
+Try **Debug → Test harnesses → Additional test scenarios → crossings** (Emberwater Crossing): normal starting crew, resources and gold, with water and lava between the base and onward Hearthstone. The map is also available at `?scenario=crossings&paused=1` during development. See [bridge rules](rooms.md#bridges-and-hazardous-crossings). Run `node scripts/bridges-browser.mjs` against the local server using `GAME_URL` if needed.
 
 ## Code map
 

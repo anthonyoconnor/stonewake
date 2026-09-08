@@ -24,4 +24,6 @@ The user authorized implementation of all milestones M1–M8, including M5.1, on
 
 The user subsequently authorized implementing **M10 and M13 using agents in parallel** on 2026-09-07. This supersedes the planning-only status for those two milestones. Other unfinished milestones remain planned unless separately authorized. M10 and M13 are now implemented and verified; their completed scope/checks are in `development-history.md`. Keep coordinating shared files for future parallel work.
 
-The user subsequently authorized **M11 and M14 in parallel** on 2026-09-07. They are now implemented and verified; accepted scope and checks are archived in `development-history.md`. M12 and M15–M19 remain planned unless separately authorized.
+The user subsequently authorized **M11 and M14 in parallel** on 2026-09-07. They are now implemented and verified; accepted scope and checks are archived in `development-history.md`. M12, M15 and M17–M19 remain planned unless separately authorized.
+
+The user subsequently authorized **M16** in this task. It is implemented and verified; its crossing scenario, bridge rules and completion checks are documented in the development plan, rooms/levels documents and development history.
