@@ -261,7 +261,7 @@ Build these boundaries while implementing the core types. Additional types, excl
 - Spell casting, research order, and Library use after available research is complete.
 - Balance of per-type level statistics, active training durations and personal cooldown; the level sequence and one-level-per-visit rule are established.
 - Rally response rules and guard scheduling.
-- Bedrock readability, sight, resource visibility, and claiming details.
+- Bedrock readability, sight and claiming details. Gold and gems are always visible on the minimap and full map; other discoveries still require exploration.
 - Reinforcement strength, core repairs, doors, traps, and bridges.
 - Campaign objectives, unlock order, enemy behavior, and attack pacing.
 - Camera projection, tilt, zoom limits, input bindings, and foreground wall treatment.

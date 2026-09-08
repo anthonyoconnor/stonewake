@@ -58,7 +58,7 @@ export class Sidebar {
     this.root=document.createElement('aside');this.root.id='sidebar';this.root.setAttribute('aria-label','Stronghold controls');
     this.root.innerHTML=`
       <header class="brand"><span class="crest">◇</span><div><h1>STONEWAKE</h1><p>RECLAIM THE DEEP</p></div></header>
-      <section class="map-section"><div class="eyebrow"><span>${view.world.name}</span><button id="show-map" aria-label="Show full map" title="Show full map (M)" aria-keyshortcuts="M" aria-haspopup="dialog">⛶</button></div><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas><div class="map-caption"><span>EXPLORED TERRAIN</span><span>48 × 48</span></div></section>
+      <section class="map-section"><div class="eyebrow"><span>${view.world.name}</span><button id="show-map" aria-label="Show full map" title="Show full map (M)" aria-keyshortcuts="M" aria-haspopup="dialog">⛶</button></div><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas><div class="map-caption"><span>TERRAIN & RESOURCES</span><span>48 × 48</span></div></section>
       <div class="reserves"><div><span class="gold-symbol">◆</span><strong id="gold-total">0</strong><small>GOLD</small></div><div><span>♟</span><strong id="dwarf-total">0</strong><small>DWARFS</small></div></div>
       <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs'].map(id=>`<button data-category="${id}" aria-label="${id[0].toUpperCase()+id.slice(1)}" title="${id[0].toUpperCase()+id.slice(1)}" aria-controls="panel"><span>${glyphs[id]}</span><small>${id}</small></button>`).join('')}</nav>
       <div id="panel" class="panel" tabindex="-1"></div>

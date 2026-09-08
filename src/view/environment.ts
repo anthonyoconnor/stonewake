@@ -280,32 +280,50 @@ export function crystalMesh(
 }
 
 export function goldSeams(view: GameScene, t: Tile) {
-  const gold = view.material('gold metal', '#e5b455', false, 0.08);
-  const vein = (name: string, points: Vector3[], radius: number) => {
-    const m = MeshBuilder.CreateTube(name, { path: points, radius, tessellation: 4, cap: 3 }, view.scene);
+  const gold = view.material('embedded gold metal', '#edb855', false, 0.16);
+  // Broad, shallow mineral fragments read as ore in the bank, not wires on its surface.
+  const fragment = (x: number, y: number, z: number, width: number, height: number, depth: number) => {
+    const m = MeshBuilder.CreateIcoSphere(
+      'embedded gold fragment',
+      { radius: 1, subdivisions: 1, flat: true },
+      view.scene,
+    );
+    m.position.set(x, y, z);
+    m.scaling.set(width, height, depth);
     m.material = gold;
     m.parent = view.terrainRoot;
     m.isPickable = false;
+    return m;
   };
-  const top = Array.from(
-    { length: 8 },
-    (_, i) => new Vector3(t.x - 0.49 + i * 0.14, 1.486, t.z + Math.sin(i * 1.7 + t.x) * 0.16),
-  );
-  vein('branching gold seam', top, 0.017);
-  for (const i of [1, 3, 5])
-    vein('fine gold vein', [top[i], top[i].add(new Vector3(0.08, 0, i % 4 === 1 ? 0.24 : -0.24))], 0.009);
+  for (let i = 0; i < 11; i++) {
+    const phase = i * 1.7 + t.x * 2.3 + t.z * 0.9;
+    const m = fragment(
+      t.x - 0.38 + (i % 6) * 0.145,
+      1.487,
+      t.z + Math.sin(phase) * 0.22 + (i < 6 ? -0.08 : 0.12),
+      0.085 + (i % 3) * 0.025,
+      0.025,
+      0.045 + (i % 2) * 0.022,
+    );
+    m.rotation.y = Math.sin(phase * 2) * 0.9;
+  }
   for (const n of neighbors(view.world, t))
     if (n.known && (n.terrain === 'floor' || isHazard(n))) {
       const dx = n.x - t.x,
         dz = n.z - t.z;
-      const points = Array.from({ length: 7 }, (_, i) => {
-        const offset = Math.sin(i * 1.5 + t.z) * 0.24;
-        return new Vector3(t.x + dx * 0.512 + dz * offset, 0.11 + i * 0.216, t.z + dz * 0.512 + dx * offset);
-      });
-      vein('embedded gold seam', points, 0.022);
-      for (const i of [1, 3, 5]) {
-        const p = points[i];
-        vein('gold tributary', [p, p.add(new Vector3(dz * 0.19, 0.1, dx * 0.19))], 0.012);
+      for (let i = 0; i < 12; i++) {
+        const phase = i * 2.1 + t.x + t.z * 1.3;
+        const offset = ((i % 3) - 1) * 0.27 + Math.sin(phase) * 0.04;
+        const m = fragment(
+          t.x + dx * 0.512 + dz * offset,
+          0.21 + Math.floor(i / 3) * 0.32 + Math.cos(phase) * 0.045,
+          t.z + dz * 0.512 + dx * offset,
+          dx ? 0.028 : 0.09 + (i % 2) * 0.035,
+          0.065 + (i % 3) * 0.023,
+          dz ? 0.028 : 0.09 + (i % 2) * 0.035,
+        );
+        if (dx) m.rotation.x = Math.sin(phase) * 0.6;
+        else m.rotation.z = Math.sin(phase) * 0.6;
       }
     }
 }

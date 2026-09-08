@@ -44,7 +44,7 @@ The remaining active milestone is M19: integrated balance and broader full-level
 
 **Input controls:** defense icons require a built Workshop and finished stock, then activate placement directly. Bridge and Wall use icons in the fixed bottom row of Rooms, with Sell in its lower-right corner. The excavation toolbar is removed. Sell handles rooms, bridges/plans and defenses with existing refund/safe-removal rules. Left-sidebar in-game controls use text sparingly; tooltips and expandable details carry explanations.
 
-**Map navigation:** M or the expand icon beside the minimap opens a full-level map with the same terrain colors and fog of war. Both maps omit the camera overlay; the full map supports click-to-center and M/Escape/close dismissal.
+**Map navigation:** M or the expand icon beside the minimap opens a full-level map with the same terrain colors and fog of war. Both maps show every gold seam and gem deposit through fog to guide exploration; other unknown terrain and inhabitants remain hidden. They omit the camera overlay; the full map supports click-to-center and M/Escape/close dismissal.
 
 **Known limits:** local objective completion freezes the area; the two-area campaign offers explicit travel and a verified final endpoint. One normal-cost campaign route is verified; M19 still covers broader balance, alternate approaches and recovery from losses. Core repairs are not supported. Departing dwarfs ignore rally and do not fight back; retreat/guard behavior is deferred. Large populations with inaccessible or unfunded wages repeat path queries during needs/pay scheduling; profile and consolidate those queries in M19 if normal-level populations make this significant. All timings and resources remain provisional until integrated balance.
 
