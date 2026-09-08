@@ -41,6 +41,14 @@ const residents = new ResidentView(view);
 const defenses = new DefenseView(view);
 const magic = new SpellView(view);
 let development: DevelopmentController | undefined;
+let localPaused = false;
+let retainedPaused = false;
+sidebar.isPaused = () => development?.paused ?? localPaused;
+sidebar.onPause = (paused) => {
+  localPaused = paused;
+  if (development) development.paused = paused;
+  if (view.world.spellTest) view.world.spellTest.paused = false;
+};
 let accumulator = 0;
 const refresh = () => {
   residents.update();
@@ -57,6 +65,7 @@ sidebar.onLab = async (open, shape, type) => {
     sidebar.root.querySelector('#feedback')!.textContent = 'Preparing the visual showcase…';
     await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   }
+  if (open && !sidebar.lab) retainedPaused = sidebar.isPaused();
   sidebar.lab = open;
   selection.selected = undefined;
   selection.start = undefined;
@@ -97,6 +106,7 @@ sidebar.onLab = async (open, shape, type) => {
   sidebar.inspectedUnit = undefined;
   furnish(next);
   view.setWorld(next);
+  sidebar.onPause(open ? true : retainedPaused);
   controls.center(open ? (shape === 'defenses' ? 18 : 12) : world.hearth.x, open ? 12 : world.hearth.z);
   view.camera.radius = open ? 26 : tuning.homeZoom;
   view.camera.beta = shape === 'defenses' ? 0.35 : tuning.initialTilt;
@@ -135,6 +145,7 @@ if (import.meta.env.DEV)
       () => view.world,
       (next, id) => {
         if (loadingStudio) throw new Error('Wait for the room studio to finish loading.');
+        if (id !== 'stronghold' && !sidebar.lab) retainedPaused = localPaused;
         if (id === 'stronghold') world = next;
         sidebar.lab = id !== 'stronghold';
         sidebar.inspectedUnit = undefined;
@@ -171,7 +182,7 @@ view.engine.runRenderLoop(() => {
     !document.hidden &&
     !sidebar.tuningDialog.open &&
     !view.world.spellTest?.paused &&
-    !development?.paused
+    !sidebar.isPaused()
   ) {
     accumulator += dt;
     while (accumulator >= 0.05) {

@@ -13,11 +13,10 @@ export function showDefenses(s:Sidebar){
   s.panel.querySelector<HTMLSelectElement>('#defense-facing')!.onchange=e=>{s.selection.rotation=Number((e.target as HTMLSelectElement).value);s.selection.draw();};
   s.panel.querySelector<HTMLButtonElement>('#inspect-defense')!.onclick=()=>s.selection.setTool('inspect');
   if(s.view.world.defenseTest){
-    const test=document.createElement('section');test.className='spell-card';test.innerHTML='<h3>Test yard</h3><p class="muted">Test stock is supplied. Raiders follow the corridor and break shut doors. This test does not include dwarf combat or Hearth damage.</p><div class="lab-actions"><button id="send-raider">Send test raider</button><button id="send-hauler">Send dwarf for gold</button></div><div id="test-enemies"></div><button id="reset-defense-yard" class="wide">Reset defense yard</button><button id="leave-defense-yard" class="wide">Return to stronghold</button>';s.panel.append(test);
+    const test=document.createElement('section');test.className='spell-card';test.innerHTML='<h3>Test yard</h3><p class="muted">Test stock is supplied. Raiders follow the corridor and break shut doors. This test does not include dwarf combat or Hearth damage.</p><div class="lab-actions"><button id="send-raider">Send test raider</button><button id="send-hauler">Send dwarf for gold</button></div><div id="test-enemies"></div><button id="reset-defense-yard" class="wide">Reset defense yard</button>';s.panel.append(test);
     test.querySelector<HTMLButtonElement>('#send-raider')!.onclick=()=>{const w=s.view.world;addRaider(w,w.defenseTest!.spawn,w.defenseTest!.target);updateDefenses(s);};
     test.querySelector<HTMLButtonElement>('#send-hauler')!.onclick=()=>{const w=s.view.world;if(!w.agents.some(a=>a.type==='miner'))addResidents(w,'miner');tileAt(w,27,12)!.loose+=20;w.revision++;feedback(s,'Gold placed beyond the door. An available Miner will collect it if a route is open.');};
     test.querySelector<HTMLButtonElement>('#reset-defense-yard')!.onclick=()=>s.onLab(true,'defenses');
-    test.querySelector<HTMLButtonElement>('#leave-defense-yard')!.onclick=()=>s.onLab(false);
   }
   updateDefenses(s);
 }

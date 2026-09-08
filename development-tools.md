@@ -27,7 +27,9 @@ dev.status(); // Scenario, paused/busy state, elapsed simulation time and recent
 
 `pause()` pauses continuous simulation; `pause(false)` resumes it. `advance(seconds)` always pauses first, uses 0.05-second ticks, rounds upward to a whole tick and accepts 0–600 seconds per call. It yields between batches so rendering stays responsive. Await it before another command/load. Sidebar/world gestures are disabled during advancement. Existing configuration-dialog, hidden-tab and spell-yard pauses still apply to continuous play; explicit advancement runs the requested simulation ticks regardless.
 
-Debug → Simulation tools exposes scenario loading, pause/resume, stepping, a 10-second advance, and resident diagnostics. Numbers and diagnostic text stay in the left sidebar.
+Debug opens current-world tools and explicitly shared session settings. Debug → Test harnesses contains fresh test-world launchers and additional scenarios. Every harness/layout starts paused; the shared Pause/Resume control and Return to stronghold appear on every test panel. Returning restores the retained stronghold and its prior pause state. Step and Advance controls in the harness panel leave the test paused. Restart stronghold is only offered in the ordinary game. Numbers and diagnostic text stay in the left sidebar.
+
+Make all dwarfs tired/hungry sets every resident to 10% energy/food (adding Miners only if empty). Build a reachable Dormitory/Kitchen and resume to observe recovery. Add test dwarf bypasses natural arrival requirements and reports a missing spawn square. `node scripts/debug-browser.mjs` verifies menu separation, paused harnesses, return, stepping and needs setup.
 
 ## Shared scenarios
 

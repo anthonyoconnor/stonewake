@@ -49,6 +49,7 @@ export function installDevelopment(
     inspect: (id) => controller.inspect(id),
     load: (id) =>
       checked(() => {
+        sidebar.onPause(controller.paused);
         const result = controller.load(id);
         refresh();
         return result;
@@ -56,6 +57,8 @@ export function installDevelopment(
     pause: (paused = true) =>
       checked(() => {
         controller.paused = paused;
+        sidebar.onPause(paused);
+        if(getWorld().spellTest)getWorld().spellTest!.paused=false;
       }),
     command: (command) =>
       checked(() => {
@@ -68,6 +71,7 @@ export function installDevelopment(
       checkIdle();
       const steps = stepCount(seconds);
       controller.paused = true;
+      sidebar.onPause(true);
       busy = true;
       // Freeze sidebar/world gestures while yielding frames. Camera/rendering stay available.
       const sidebarInert = sidebar.root.inert;
@@ -124,17 +128,17 @@ function mountDevelopmentPanel(sidebar: Sidebar, api: BrowserDevelopment) {
   const panel = document.createElement('section');
   panel.className = 'development-panel';
   const title = document.createElement('h3');
-  title.textContent = 'Simulation tools';
+  title.textContent = 'Additional test scenarios';
   panel.append(title);
   const scenario = document.createElement('select');
   scenario.setAttribute('aria-label', 'Development scenario');
-  for (const id of scenarioIds) {
+  for (const id of scenarioIds.filter(id=>!['stronghold','room-lab','showcase','defenses','spells'].includes(id))) {
     const option = document.createElement('option');
     option.value = id;
     option.textContent = id;
     scenario.append(option);
   }
-  if (api.status().scenario !== 'custom') scenario.value = api.status().scenario;
+  if ([...scenario.options].some(o=>o.value===api.status().scenario)) scenario.value = api.status().scenario;
   panel.append(scenario);
   const feedback = document.createElement('p');
   feedback.className = 'muted';
@@ -154,7 +158,9 @@ function mountDevelopmentPanel(sidebar: Sidebar, api: BrowserDevelopment) {
     panel.append(b);
   };
   button('Load scenario paused', () => api.load(scenario.value as ScenarioId));
-  button('Pause / resume simulation', () => api.pause(!api.status().paused));
+
+  if(!sidebar.lab){sidebar.panel.append(panel);return;}
+  const help=document.createElement('p');help.className='muted';help.textContent='Time controls affect this test world and leave it paused. Resume above for continuous play.';panel.append(help);
   button('Step 0.05 seconds', () => api.advance(0.05));
   button('Advance 10 seconds', () => api.advance(10));
   const resident = document.createElement('select');
@@ -172,5 +178,5 @@ function mountDevelopmentPanel(sidebar: Sidebar, api: BrowserDevelopment) {
     output.textContent = JSON.stringify(api.inspect(Number(resident.value)), null, 2);
   });
   panel.append(feedback, output);
-  sidebar.panel.prepend(panel);
+  sidebar.panel.append(panel);
 }

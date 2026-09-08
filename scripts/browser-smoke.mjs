@@ -44,7 +44,7 @@ try {
   if (production) {
     await page.getByRole('button', { name: 'Debug', exact: true }).click();
     assert.equal(await page.evaluate(() => typeof window.strongholdDev), 'undefined');
-    assert.equal(await page.getByRole('heading', { name: 'Simulation tools' }).count(), 0);
+    assert.equal(await page.getByRole('heading', { name: 'Additional test scenarios' }).count(), 0);
     assert.equal(await page.locator('.map-section .eyebrow span').first().textContent(), 'Border Foothold');
     console.log('PASS: production ignores scenario URL and exposes no development API or simulation panel.');
   } else {
@@ -87,6 +87,7 @@ try {
       window.strongholdDev.command({ kind: 'free-build', enabled: false });
       window.strongholdDev.load('room-lab');
     });
+    await page.getByRole('button', { name: 'Test harnesses', exact: true }).click();
     await page.getByRole('button', { name: 'Step 0.05 seconds', exact: true }).click();
     await page.waitForFunction(() => !window.strongholdDev.status().busy);
     assert.equal(await page.evaluate(() => window.strongholdDev.status().elapsed), 0.05);
@@ -95,6 +96,7 @@ try {
     const minerId = await page.evaluate(
       () => window.strongholdDev.state().agents.find((a) => a.type === 'miner').id,
     );
+    await page.getByRole('button', { name: 'Test harnesses', exact: true }).click();
     await page.getByLabel('Diagnostic resident').selectOption(String(minerId));
     await page.getByRole('button', { name: 'Inspect resident diagnostics', exact: true }).click();
     assert((await page.locator('.diagnostic-output').textContent()).includes('No route to work square'));
