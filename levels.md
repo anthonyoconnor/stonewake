@@ -17,8 +17,23 @@ The campaign reclaims separate sites within a lost dwarven kingdom. Each level i
 - Campaign research and building unlocks remain available on subsequent levels under the current working design.
 - Available dwarf types and rooms must have continuing uses across the campaign. A new level changes their application rather than invalidating them.
 - A level ends in defeat if enemies destroy the Stone Hearth protecting the Hearthstone.
+- Every level has a separate onward Hearthstone that the player must find and reach to open progression to the next area. Its difficult approach supplies the primary level objective.
 
-The campaign premise and level structure are established. The example maps, enemy roster, and objective details below are proposals rather than a final campaign list.
+The campaign premise, level structure and onward Hearthstone objective are established. The example maps, enemy roster, exact approaches and activation details below are proposals rather than a final campaign list. Implementation is planned in M11 (objective/defeat), M16 (hazardous crossings) and M18 (campaign travel).
+
+## Onward Hearthstone objective
+
+Every level contains two distinct Hearthstone roles: the starting Hearthstone anchors the settlement and receives recruits, while a newly discovered Hearthstone opens the route onward. Finding and reaching the latter restores another connection in the lost kingdom's ancient runic network, explaining the expedition's progress from area to area.
+
+- The onward Hearthstone is map-authored and initially concealed by normal fog of war. Camera movement, objective text and minimap markers must not reveal its undiscovered location.
+- It is usually positioned somewhere hard to reach: within an enemy base or hostile region, beyond a lava crossing, or behind another terrain or route obstacle. Layout, excavation, combat and construction solve the approach; the challenge must be achievable with that level's resources and available tools.
+- Discovery and access are separate. Seeing the stone across lava or through a distant opening does not complete the objective. Dwarfs must be able to physically reach its interaction area using ordinary traversal rules.
+- Once the site is reached and made ready, the Hearthstone allows progression to the next area. Proposed interaction: a living dwarf reaches an accessible position, secures the immediate site and activates the connection; a sidebar action then lets the player proceed. The required dwarf capability, nearby-enemy condition, activation duration/cost and whether readiness can be lost remain open. No individual movement commands or remote activation are implied.
+- The starting Stone Hearth remains the defeat target throughout the level. The onward stone does not become another treasury/recruitment core or move the player's base. Its damage/repair policy, if any, must avoid permanently blocking the campaign.
+- Campaign travel begins a fresh foothold in the next area. Research/building unlocks carry forward under the working design; local armies and stockpiles stay behind. The implementation uses session memory without adding save infrastructure.
+- The last authored area's Hearthstone needs an explicit end-of-content or story-completion result. The ultimate campaign ending and total number of areas are not yet fixed.
+
+Optional camp-clearing, relic or district tasks can shape the approach, but do not replace the shared Hearthstone objective. Exact positions and defenses vary by level.
 
 ## Starting area
 
@@ -98,11 +113,11 @@ Hostile groups must have a route to the base or a clearly defined way to create 
 
 | Candidate stronghold | Terrain and existing spaces | Main challenge | Proposed objective | Uses for recurring systems |
 |---|---|---|---|---|
-| Border Foothold | Compact starting cavern, buried guard chambers, nearby gold, and one initial hostile region | Establishing food, beds, storage, and a defended route | Secure the surrounding passages and clear the nearby hostile camp | Introduces excavation, needs, reinforcement, and defense |
-| Flooded Workings | Separated mining chambers, water channels, bedrock ridges, and abandoned tunnels | Restricted construction space and longer travel routes | Reclaim a central mining district and secure its approaches | Storage placement, bridges, exploration, and dispersed defenses |
-| Fallen City | Large hidden halls, occupied districts, intersecting streets, and buried connections | Defending several fronts as the city opens up | Reclaim designated districts and defeat their occupying forces | Every specialist supports a growing network of rooms and guard positions |
-| Crystal Divide | Valuable gem deposits across a network of caverns and narrow passages | Sustaining the economy while protecting remote workers | Secure the gem region and remove its principal threat | Mining capacity, treasury access, spells, and defensive corridors |
-| Royal Deep | Extensive ruins, multiple hostile regions, a vulnerable core approach, and limited safe expansion | Maintaining a large settlement during a prolonged reclamation | Break the occupation and survive its final counterattack | Combines all available rooms, roles, and defenses |
+| Border Foothold | Compact starting cavern, buried guard chambers, nearby gold, and one initial hostile region | Establishing food, beds, storage, and a defended route | Find and reach the onward Hearthstone inside the nearby hostile camp | Introduces excavation, needs, reinforcement, and defense |
+| Flooded Workings | Separated mining chambers, water channels, bedrock ridges, and abandoned tunnels | Restricted construction space and longer travel routes | Reach the onward Hearthstone in a mining district isolated by water channels | Storage placement, bridges, exploration, and dispersed defenses |
+| Fallen City | Large hidden halls, occupied districts, intersecting streets, and buried connections | Defending several fronts as the city opens up | Discover and secure the onward Hearthstone in an occupied central hall | Every specialist supports a growing network of rooms and guard positions |
+| Crystal Divide | Valuable gem deposits across a network of caverns and narrow passages | Sustaining the economy while protecting remote workers | Find the onward Hearthstone beyond guarded gem caverns and a difficult chasm crossing | Mining capacity, treasury access, spells, and defensive corridors |
+| Royal Deep | Extensive ruins, multiple hostile regions, a vulnerable core approach, and limited safe expansion | Maintaining a large settlement during a prolonged reclamation | Reach an onward Hearthstone surrounded by lava within an enemy-held deep stronghold | Combines all available rooms, roles, and defenses |
 
 This table is a concept list, not a commitment to five levels or a fixed order. Basic shared systems must remain available wherever they are required for survival. Later maps should not arbitrarily prohibit previously unlocked rooms or dwarf types. The same Kitchen supports all residents, the Workshop supplies doors and traps, the Library researches spells, and the Training Room develops every dwarf type. Confined or dispersed maps can favor several smaller Kitchens and training facilities instead of one central room.
 
@@ -122,13 +137,14 @@ Every playable level needs:
 - Clear excavation choices, hidden discoveries, and readable indestructible boundaries.
 - Specified inhabitants, their starting locations, and their allowed attack routes.
 - At least one meaningful defensive planning problem around the core or its approaches.
-- An explicit victory condition beyond merely keeping the Hearth intact.
+- A separate, initially hidden onward Hearthstone, a challenging but solvable approach, explicit readiness conditions and a next-area link or authored endpoint. Discovery alone must not complete an inaccessible objective.
 - Continued uses for every available room and dwarf type, including shared training and useful spell research, with more than one viable approach to major obstacles where practical.
 - Reachable room floor in confined and irregular spaces, with predictable capacity and readable floors, walls and cosmetic furnishings from different camera directions.
 
 ## Decisions still open
 
-- Campaign length, level order, objectives, and unlock sequence.
+- Campaign length, level order, unlock sequence and final story endpoint.
+- Onward Hearthstone activation conditions, interaction timing/cost, damage policy and exact approaches; finding and reaching one in every level is agreed.
 - Initial miner counts, usable starting storage, and starting gold.
 - Resource placement visibility, environmental hazards, and bridge behavior.
 - Enemy roster, nest activation rules, raid timing, and warning systems.

@@ -172,6 +172,8 @@ Example message wording below illustrates placement and clarity; it does not def
 
 Objective briefings, discovered-area explanations, and tutorial guidance use the same message system. Objectives remain available through the sidebar help/information view rather than a permanent text checklist over the world.
 
+Planned M11/M18 objective flow: explain that the player must find and reach a new Hearthstone to open the next area. Track undiscovered, discovered but inaccessible, and ready-to-proceed states in the sidebar; the final activation rules may add intermediate states. Do not reveal its location before normal discovery or complete the objective just because the camera can see it across a gap. Once ready, offer a clear **Proceed to next area** action; never transition automatically on discovery. Distinguish this onward stone from the starting Stone Hearth, whose health and destruction warning belong in the same sidebar. The final authored area presents an explicit endpoint instead of a broken travel action.
+
 ## Readability and future content
 
 Icons need distinct silhouettes and consistent selected, unavailable, and alert states. Show names and explanations in a sidebar help area on hover or keyboard focus so an icon-only toolbar does not require guessing. Keep these explanations within the sidebar or message card. Support readable UI scaling and keyboard focus without adding labels to the gameplay world.

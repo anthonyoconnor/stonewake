@@ -8,7 +8,7 @@ Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Levels](le
 
 This document records the agreed direction and the current working rules. Proposals and unresolved mechanics are identified explicitly. Numerical balance values are not final. The companion documents expand the inventories without committing to an implementation or a final campaign roster.
 
-The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records the agreed M1–M9 sequence, including M5.1, and guidelines for rapid iteration and extensible content. The room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Implementation is authorized; progress is tracked in the development plan.
+The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records completed M1–M9, including M5.1, planned M10–M19, and guidelines for rapid iteration and extensible content. The room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Authorization and progress are tracked in the development plan.
 
 ## 1. Player role and core loop
 
@@ -16,7 +16,7 @@ The player manages a dwarven expedition reclaiming a lost underground kingdom, o
 
 The core loop is:
 
-**Excavate -> discover resources and spaces -> build facilities -> recruit and support dwarfs -> research and prepare defenses -> explore and fight -> reclaim the stronghold.**
+**Excavate -> discover resources and spaces -> build facilities -> recruit and support dwarfs -> research and prepare defenses -> find and reach the onward Hearthstone -> open the route to the next area.**
 
 Layout management is the primary activity. The position and connections of rooms, storage, doors, traps, and passages determine how well the settlement functions and defends itself.
 
@@ -73,6 +73,8 @@ Necessary messages appear as dismissible cards associated with icons above the q
 ## 3. Campaign and level start
 
 - Each level is a different stronghold with its own terrain, inhabitants, resources, and objectives.
+- Each level contains a new Hearthstone to discover and reach, distinct from the starting base Hearthstone. It opens the route to the next area through the ancient runic network.
+- This onward Hearthstone is usually in a difficult location: inside an enemy base or hostile region, beyond lava, or behind other substantial access obstacles. Overcoming that approach is the level's primary objective.
 - A small starting mining crew establishes each foothold.
 - The local population is otherwise recruited fresh. Armies and stockpiles do not transfer from the previous settlement.
 - Research and building unlocks carry forward under the current working design.
@@ -90,7 +92,7 @@ The Hearthstone is a magical crystal connected to the ancient dwarven runic trav
 - It does not require a separate power grid or energy-production system.
 - Enemies win by reaching and destroying it.
 
-The core is the established defeat condition. Victory conditions are authored per level. Health, repair behavior, and exact footprint remain open.
+Destruction of the starting core is the established defeat condition. The onward Hearthstone is the level's progression objective; it does not replace or relocate the starting core. Finding it must respect discovery, and merely seeing it across an impassable gap does not establish access. [Levels](levels.md#onward-hearthstone-objective) owns the objective and provisional activation rules. Starting-core health and repair behavior remain open. These objective/defeat systems are planned in M11, with campaign travel in M18.
 
 ## 5. Grid, excavation, and discovery
 

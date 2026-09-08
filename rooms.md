@@ -117,6 +117,7 @@ The Stone Hearth is a fixed structure, and doors and traps retain their individu
 | Room or structure | Purpose | Dwarfs attracted | Output or continuing service |
 |---|---|---|---|
 | Stone Hearth | Protects the awakened Hearthstone; anchors the base and receives new dwarfs | Arrival point for eligible specialists and purchased miners | Dwarf arrival access and the fixed structure enemies must destroy to win |
+| Onward Hearthstone | A separate, hidden map-authored crystal in a difficult location | None | Finding and reaching it opens progression to the next area; planned in M11/M18 |
 | Treasure Room | Stores delivered gold and provides wage collection points | None directly | Gold storage capacity; does not generate money |
 | Dormitory | Provides sleeping and resting space | Supports every resident type | Bed capacity and rest |
 | Kitchen | Provides shared food support and a place to eat | None directly; supports all arrivals | Resident support from floor area; enlarge it or build several to support the population |
@@ -139,6 +140,8 @@ The Hearthstone is the natural magical crystal. The Stone Hearth is the protecti
 - No separate power distribution, fuel, or electricity management system is required.
 
 Core health and whether the damaged structure can be repaired remain open.
+
+Every level also contains a separate onward Hearthstone, usually in an enemy-held area or beyond a difficult terrain obstacle such as lava. It is an authored objective, not a player-built room or an upgrade to the starting core. The player must discover and reach it to open the route to the next area. It does not provide another recruitment point or treasury. [Levels](levels.md#onward-hearthstone-objective) defines this agreed purpose and the provisional activation details; implementation is pending.
 
 ## Treasure Room
 
