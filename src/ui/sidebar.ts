@@ -215,7 +215,7 @@ export class Sidebar {
     const list=this.root.querySelector('#residents-list');
     if(list){const markup=residents.map(a=>{
       const stats=characterStats(a),next=nextCharacterLevel(a),progress=a.experience??0;
-      const training=next?`Next: level ${next.level}<br>Experience ${Math.min(progress,next.trainingSeconds).toFixed(1)} / ${next.trainingSeconds} XP<br>Training 1 XP/s · Combat ${tuning.combatExperienceRate}× rate on hits<br>${(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds (combat still earns XP)`:`${a.job?.kind==='train'?'Training now':'Ready to train'} · One level per visit`}`:'Maximum level reached';
+      const training=maxCharacterLevel(a.type)===1?'No training or leveling':next?`Next: level ${next.level}<br>Experience ${Math.min(progress,next.trainingSeconds).toFixed(1)} / ${next.trainingSeconds} XP<br>Training 1 XP/s · Combat ${tuning.combatExperienceRate}× rate on hits<br>${(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds (combat still earns XP)`:`${a.job?.kind==='train'?'Training now':'Ready to train'} · One level per visit`}`:'Maximum level reached';
       return `<details class="resident-row" data-resident="${a.id}"><summary><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><span class="muted">${a.activity}</span></summary><button data-locate-dwarf="${a.id}" class="wide">Locate dwarf</button><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}<br><span class="resident-pay">${residentPayText(w,a)}</span><br><span class="resident-morale">${residentMoraleText(w,a)}</span></small></details>`;
     }).join('');
     const template=document.createElement('template');template.innerHTML=markup;
@@ -249,7 +249,7 @@ export class Sidebar {
           else if(room.service==='dining')summary.textContent+=`Supports ${usable} dwarf${usable===1?'':'s'} · ${assigned} assigned · ${occupied} eating. `;
           else summary.textContent+=`${occupied} occupied · ${Math.max(0,usable-occupied)} available. `;
           if(usable<s.capacity)summary.textContent+=`${s.capacity-usable} capacity unreachable. `;
-          if(room.service==='training')summary.textContent+=`All dwarf types gain one level per visit, then wait ${tuning.trainingInterval} seconds before training again. `;
+          if(room.service==='training')summary.textContent+=`Specialists gain one level per visit, then wait ${tuning.trainingInterval} seconds before training again. `;
           if(room.service==='research')summary.textContent+='Choose research in the Spells panel. ';
           summary.textContent+='Furniture is decorative.';
         }

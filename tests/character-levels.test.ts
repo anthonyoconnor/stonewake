@@ -29,7 +29,7 @@ test('combat rewards successful hits at twice training pace for fighters and def
  for(const type of characterDefinitions.map(c=>c.id)){
   const w=createRoomLab();addResidents(w,type);const a=w.agents[0];Object.assign(a,{x:8,z:8});
   const e=addRaider(w,{x:9,z:8},{x:8,z:8})!;e.pinnedUntil=1000;
-  tick(w,.05);assert.equal(a.experience,characterStats(a).attackSeconds*2,type);
+  tick(w,.05);assert.equal(a.experience,type==='miner'?0:characterStats(a).attackSeconds*2,type);
   const xp=a.experience;e.x=11;
   tickFighter(w,a,.05,()=>{},()=>false);assert.equal(a.experience,xp,'Pursuing or standing near an enemy grants no XP');
   e.x=9;e.health=0;tickFighter(w,a,.05,()=>{},()=>false);assert.equal(a.experience,xp,'Dead enemies grant no XP');
@@ -49,7 +49,7 @@ test('combat XP respects zero damage, carries level surplus and stops at the cap
 });
 
 test('new residents start at level 1 and level-up raises health while retaining wounds and never reviving',()=>{
- for(const def of characterDefinitions){
+ for(const def of characterDefinitions.filter(c=>c.levels.length>1)){
   const w=createRoomLab();addResidents(w,def.id);const a=w.agents[0],first=characterLevel(def.id,1),second=characterLevel(def.id,2);
   assert.equal(a.level,1);assert.equal(a.health,first.health);assert.equal(a.maxHealth,first.health);
   a.health!-=17;assert(levelUp(w,a));assert.equal(a.level,2);assert.equal(a.maxHealth,second.health);assert.equal(a.health,second.health-17);
@@ -58,7 +58,7 @@ test('new residents start at level 1 and level-up raises health while retaining 
 });
 
 test('training uses the target character-level row, retains one-level visits and respects Haste',()=>{
- for(const def of characterDefinitions){
+ for(const def of characterDefinitions.filter(c=>c.levels.length>1)){
   const w=createRoomLab();buildRoom(w,'training',[{x:8,z:8}]);addResidents(w,def.id);const a=w.agents[0];Object.assign(a,{x:8,z:8});
   const duration=characterLevel(def.id,2).trainingSeconds;
   run(w,duration-.1);assert.equal(a.level,1,def.id);assert((a.experience??0)>duration-.2,def.id);
@@ -110,4 +110,12 @@ test('higher worker levels speed actual crafting and normal ticks preserve expli
  });
  for(const w of worlds){run(w,3.8);assert.equal(w.agents[0].health,100);assert.equal(w.agents[0].maxHealth,100);}
  assert.equal(worlds[0].outputs['timber-door'],undefined);assert.equal(worlds[1].outputs['timber-door'],1);
+});
+
+test('miners skip available training and never gain levels or combat XP',()=>{
+ const w=createRoomLab();buildRoom(w,'training',[{x:8,z:8}]);addResidents(w,'miner');const a=w.agents[0];
+ Object.assign(a,{x:8,z:8});run(w,25);
+ assert.notEqual(a.job?.kind,'train');assert.equal(a.level,1);assert.equal(a.experience,0);
+ assert.equal(gainExperience(w,a,10000,'combat'),false);assert.equal(levelUp(w,a),false);
+ assert.equal(a.level,1);assert.equal(characterStats(a).wage,4);
 });

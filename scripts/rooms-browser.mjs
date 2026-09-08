@@ -18,7 +18,7 @@ try {
     const api = window.strongholdDev;
     for (const [room, x] of [['kitchen', 8], ['dormitory', 9], ['training', 10]])
       api.command({ kind: 'build', room, points: [{ x, z: 16 }] });
-    api.command({ kind: 'spawn', type: 'miner', count: 1 });
+    api.command({ kind: 'spawn', type: 'engineer', count: 1 });
     api.command({ kind: 'needs', id: api.state().agents[0].id, hunger: .1, energy: .1 });
   });
   let state = await page.evaluate(() => window.strongholdDev.state());
@@ -42,7 +42,7 @@ try {
   assert.notEqual(dwarf.job?.kind, 'train', 'Training slot releases after gaining a level');
   assert(dwarf.nextTrainingAt > state.elapsed, 'Completed training starts a personal cooldown');
   await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
-  await page.locator('[data-dwarf-role="miner"]').click();
+  await page.locator('[data-dwarf-role="engineer"]').click();
   assert((await page.locator('#residents-list').textContent()).includes('Training cooldown'));
   const remaining = dwarf.nextTrainingAt - state.elapsed;
   await page.evaluate(seconds => window.strongholdDev.advance(seconds), Math.max(.05, remaining - 1));

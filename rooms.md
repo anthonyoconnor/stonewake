@@ -10,7 +10,7 @@ See the [current implementation inventory](development-plan.md#current-implement
 
 ## Design status
 
-The grid, adaptable room shapes, distinctive floors and walls, fixed Hearthstone, treasure storage, shared food and accommodation, doors, traps, and spell research are established parts of the design. Room capacity is floor area multiplied by a tunable value per tile. Furniture is entirely cosmetic: it never supplies capacity, blocks movement or sight, or makes a room unusable. The Workshop attracts Engineers and makes doors and traps; the Library attracts Runesmiths and researches spells; the Training Room attracts Warriors and lets all dwarfs train. The Kitchen supports residents without food inventories or processing chains. Exact prices, rates, capacities and art arrangements remain balance and visual choices.
+The grid, adaptable room shapes, distinctive floors and walls, fixed Hearthstone, treasure storage, shared food and accommodation, doors, traps, and spell research are established parts of the design. Room capacity is floor area multiplied by a tunable value per tile. Furniture is entirely cosmetic: it never supplies capacity, blocks movement or sight, or makes a room unusable. The Workshop attracts Engineers and makes doors and traps; the Library attracts Runesmiths and researches spells; the Training Room attracts Warriors and lets specialists train. The Kitchen supports residents without food inventories or processing chains. Exact prices, rates, capacities and art arrangements remain balance and visual choices.
 
 ## Training Room and Library prototype rules
 
@@ -107,7 +107,7 @@ The [room concept gallery](concept-art/rooms/README.md) illustrates each growabl
 | Dormitory | Warm stone with woven floor borders | Timber trim and simple personal-storage fittings | Individual beds, then repeated bed arrangements and small lockers wherever access remains clear |
 | Kitchen | Earthy food-service tiles with mushroom and tankard motifs | Cookware, timber trim, and barrel-end signs | Mushroom beds, stoves, tables, benches and casks as visual food-service details; no ingredient, meal or ale stocks |
 | Workshop | Fitted dark stone with brass geometric markings | Tool boards, metal braces, and mechanical fittings | Compact craft benches and anvils, then larger assembly tables, mechanism racks, and repair positions for doors and traps |
-| Training Room | Marked practice lanes and clear training emblems on flagstones | Practice equipment, banners, and target motifs | Compact practice stations, then dummies, targets, weights, and larger exercise areas with safe clearance; all dwarf types can use the room |
+| Training Room | Marked practice lanes and clear training emblems on flagstones | Practice equipment, banners, and target motifs | Compact practice stations, then dummies, targets, weights, and larger exercise areas with safe clearance; Engineers, Warriors and Runesmiths can use the room |
 | Library | Blue rune-inlaid stone with book or script motifs | Short bookshelves, carved script, and reading lights | Compact shelves and lecterns, then research tables and rows of free-standing shelves only where aisles fit |
 | Guard Post | Clearly marked defensive floor emblem | Guard insignia where walls are present | Standing guard positions first, then a signal fitting or equipment rack if circulation allows |
 | Bridge | Repeating deck tiles and visible edges | No room wall treatment required | Edges and supports adapt to connected bridge tiles; doors or other permitted fixtures must preserve a usable crossing |
@@ -124,7 +124,7 @@ The Stone Hearth is a fixed structure, and doors and traps retain their individu
 | Dormitory | Provides sleeping and resting space | Supports every resident type | Bed capacity and rest |
 | Kitchen | Provides shared food support and a place to eat | None directly; supports all arrivals | Resident support from floor area; enlarge it or build several to support the population |
 | Workshop | Makes the stronghold's defensive fixtures | Engineers | Doors and traps; repairs and replacement mechanisms are proposed ongoing work |
-| Training Room | Provides shared training for every dwarf type | Warriors | Stat increases for the dwarfs using its accessible training positions |
+| Training Room | Provides shared training for specialists | Warriors | Stat increases for the dwarfs using its accessible training positions |
 | Library | Houses spell research | Runesmiths | Research progress and researched spells |
 | Guard Post | Establishes a place for available defenders to gather and guard | None directly | Local defensive presence and quicker response |
 | Bridge | Connects traversable floor across a suitable water or lava gap | None | A Miner-built stone route across water/lava for dwarfs and enemies; chasms are unbridgeable |
@@ -189,7 +189,7 @@ Food support and accommodation must serve existing residents as well as qualify 
 
 The Workshop combines metalworking and mechanism assembly in one facility. The Library is the single spell-research facility. Gold, labor, room capacity, and food support this simplified draft; separate equipment production, ore processing, and magical currencies are not established systems.
 
-Training is available to every dwarf type. The player supplies room capacity, and dwarfs train autonomously through their type's defined levels. [Characters](characters.md#character-levels-and-training) records advancement rules and balance. Capacity feedback shows occupied and available training positions; cooldown does not occupy a slot, and training provides no accommodation.
+Training is available to Engineers, Warriors and Runesmiths. Miners do not train or gain experience or levels. The player supplies room capacity, and dwarfs train autonomously through their type's defined levels. [Characters](characters.md#character-levels-and-training) records advancement rules and balance. Capacity feedback shows occupied and available training positions; cooldown does not occupy a slot, and training provides no accommodation.
 
 The room catalog supports the [dwarf roster](characters.md). Additional rooms and more powerful dwarf types can be introduced later, after the core gameplay works.
 

@@ -14,7 +14,7 @@ import {createWorld} from '../src/game/world.ts';
 import {tileAt,type World} from '../src/game/types.ts';
 import {rect,run,until} from './helpers/simulation.ts';
 
-test('every dwarf type trains autonomously, shares the level cap and gains usable work speed',()=>{
+test('specialists train autonomously to their cap while miners keep fixed work speed',()=>{
  const cadence=tuning.trainingInterval;
  const times=characterDefinitions.map(def=>def.levels.map(row=>row.trainingSeconds));
  tuning.trainingInterval=1;for(const def of characterDefinitions)for(const row of def.levels)if(row.level>1)row.trainingSeconds=.5;
@@ -24,11 +24,11 @@ test('every dwarf type trains autonomously, shares the level cap and gains usabl
   assert(w.agents.every(a=>a.level===1));
   until(w,()=>w.agents.every(a=>a.level===maxCharacterLevel(a.type)));
   assert(w.agents.every(a=>workRate(w,a)===characterLevel(a.type,5).workMultiplier));run(w,70);
-  assert(w.agents.every(a=>a.level===5&&a.job?.kind!=='train'));
+  assert(w.agents.every(a=>a.level===maxCharacterLevel(a.type)&&a.job?.kind!=='train'));
  }finally{tuning.trainingInterval=cadence;characterDefinitions.forEach((def,i)=>def.levels.forEach((row,j)=>row.trainingSeconds=times[i][j]));}
  const w=createRoomLab();addResidents(w,'miner');const a=w.agents[0];Object.assign(a,{x:11,z:12,level:5});
  designate(w,[{x:12,z:12}]);run(w,tuning.mineSeconds-.3);
- assert.equal(tileAt(w,12,12)!.terrain,'floor','A trained miner completes actual excavation before the untrained duration.');
+ assert.notEqual(tileAt(w,12,12)!.terrain,'floor','Miner work speed stays fixed even with a stale higher level.');
 });
 
 test('training and research release for shared meals and rest, then continue their earned progress',()=>{

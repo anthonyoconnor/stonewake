@@ -643,3 +643,9 @@ Paused rendering samples after warm-up at 1440×1000 on Intel Iris Plus/ANGLE D3
 - Replaced the thin M21 gold lines with broader shallow faceted fragments on terrain tops and exposed faces, using the approved terrain sheet and pre-M21 captures as references. Shared material and merged decorative meshes preserve terrain picking and gameplay geometry.
 - Both the minimap and full map now show all gold seams and gem deposits through fog. This reveals resource locations without discovering surrounding terrain, caves, enemies or the onward Hearthstone, and without changing mining access. Exhausted gold is removed from the resource display.
 - Verified nine focused mining/discovery simulation checks and the production build. The resource browser check sampled every unexplored tile on both map canvases, checked navigation without discovery or enemy activation, checked depleted-gold redraw and captured normal/close/reverse gold views. All checks passed with no browser errors; captures and report are in ignored test-results/resources/.
+
+## 2026-09-08 — Miners no longer train or level up
+
+Removed Miner levels 2–5 from the editable definition. Shared progression now excludes Miners from training and XP automatically; their base stats and 4-gold wages stay fixed. Updated the sidebar, room description, design documents and progression fixtures.
+
+Verification: all 36 character-scope simulation checks passed, including real self-defense without Miner XP and available training ignored by Miners. Headless Edge playtest used a normally built Training Room with two Miners and an Engineer: Miners stayed at level 1 with zero XP, the Engineer reached level 2, and the Miner sidebar displayed no training or leveling. No browser runtime errors. Source/test typecheck and diff whitespace checks passed.

@@ -159,7 +159,7 @@ Other dwarf types are attracted by suitable facilities and a settlement able to 
 |---|---|---|
 | Workshop | Engineer | Manufactures doors and traps |
 | Library | Runesmith | Researches spells |
-| Training Room | Warrior | Lets every dwarf type train to increase its stats |
+| Training Room | Warrior | Lets specialists train to increase its stats |
 
 Together with directly purchased Miners, these specialists form the four dwarf types in the current gameplay scope. Additional types and rooms can be introduced later through the shared definition systems described below.
 
@@ -175,7 +175,7 @@ The current prototype admits at most one eligible specialist every 45 seconds, r
 
 All resident dwarfs, including miners, require pay, bedding, food, and the facilities appropriate to their role.
 
-All dwarfs share one payday every 120 game seconds from the start of the area. New arrivals join the next scheduled payday and receive their full current wage, with no back pay. Level 1 wages are 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths; each additional level adds 1 gold for Miners and 2 gold for specialists. Wages are explicit editable values in each character level row. Each payment uses the level reached when payday arrives; later level or configuration changes do not alter existing debt. Dwarfs physically visit an accessible Treasure Room or the starter Hearth treasury and spend one second collecting each payment; only then is gold deducted. The shared allowance and storage reachable from that dwarf fund the payment, so disconnected reserves cannot pay them remotely. Insufficient total gold and inaccessible treasury/gold are reported separately. Ordinary travel and queues have a 45-second grace before an overdue warning; M14 pay dissatisfaction starts only while overdue wages lack sufficient accessible funding or a reachable treasury.
+All dwarfs share one payday every 120 game seconds from the start of the area. New arrivals join the next scheduled payday and receive their full current wage, with no back pay. Level 1 wages are 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths; Miners remain at 4 gold, and each additional specialist level adds 2 gold. Wages are explicit editable values in each character level row. Each payment uses the level reached when payday arrives; later level or configuration changes do not alter existing debt. Dwarfs physically visit an accessible Treasure Room or the starter Hearth treasury and spend one second collecting each payment; only then is gold deducted. The shared allowance and storage reachable from that dwarf fund the payment, so disconnected reserves cannot pay them remotely. Insufficient total gold and inaccessible treasury/gold are reported separately. Ordinary travel and queues have a 45-second grace before an overdue warning; M14 pay dissatisfaction starts only while overdue wages lack sufficient accessible funding or a reachable treasury.
 
 Immediate combat, carried-resource delivery and food/rest take priority over wages; due, funded wages precede training and ordinary work. Interrupted visits retain the debt, release their collection space and spend no gold. Reclaiming or blocking a treasury cancels access safely. Collection rechecks funds after travel so construction, spells and other collectors cannot double-spend them. Times and amounts are tunable prototype values.
 

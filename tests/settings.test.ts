@@ -25,7 +25,7 @@ test('settings validate atomically and drive new-world economy and live mining',
 
 test('per-character level settings validate atomically and preserve injury when health is synchronized',()=>{
  const original=settingValues();try{
-  const changes={...original,'dwarf.miner.level.1.health':120,'dwarf.warrior.level.3.damage':21,'dwarf.warrior.level.3.attackSeconds':.8,'dwarf.miner.level.2.trainingSeconds':23,'dwarf.miner.level.2.workMultiplier':1.2};
+  const changes={...original,'dwarf.miner.level.1.health':120,'dwarf.warrior.level.3.damage':21,'dwarf.warrior.level.3.attackSeconds':.8,'dwarf.engineer.level.2.trainingSeconds':23,'dwarf.engineer.level.2.workMultiplier':1.2};
   assert(applySettings({...changes,'dwarf.miner.level.1.health':0}));
   assert.equal(characterLevel('warrior',3).damage,original['dwarf.warrior.level.3.damage']);
   const w=createWorld(prototypeLevel);addMiners(w,2);
@@ -34,7 +34,7 @@ test('per-character level settings validate atomically and preserve injury when 
   for(const a of w.agents)syncCharacterHealth(a);
   assert.equal(injured.maxHealth,120);assert.equal(injured.health,100);assert.equal(dead.health,0);
   assert.equal(characterLevel('warrior',3).damage,21);assert.equal(characterLevel('warrior',3).attackSeconds,.8);
-  assert.equal(characterLevel('miner',2).trainingSeconds,23);assert.equal(characterLevel('miner',2).workMultiplier,1.2);
+  assert.equal(characterLevel('engineer',2).trainingSeconds,23);assert.equal(characterLevel('engineer',2).workMultiplier,1.2);
   assert(!settings.some(s=>['tuning.trainingLevels','tuning.trainingBonus','tuning.trainingSeconds'].includes(s.id)));
   assert.equal(characterLevel('miner',1).trainingSeconds,0);
  }finally{assert.equal(applySettings(original),'');}

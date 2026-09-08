@@ -19,7 +19,7 @@ export const roomDefinitions:RoomDefinition[]=[
     {kind:'anvil',width:1,depth:1},
     {kind:'assembly',width:2,depth:1}
   ]},
-  {id:'training',look:{icon:'training',floor:'#785849',trim:'#c89c62',motif:'training'},name:'Training Room',color:'#985d44',cost:22,description:'Floor area limits concurrent trainees. Each dwarf gains one level, leaves, then waits for their cooldown. Attracts Warriors.',implemented:true,service:'training',capacityPerTile:1,furnishings:[
+  {id:'training',look:{icon:'training',floor:'#785849',trim:'#c89c62',motif:'training'},name:'Training Room',color:'#985d44',cost:22,description:'Floor area limits concurrent trainees. Each specialist gains one level, leaves, then waits for their cooldown. Attracts Warriors.',implemented:true,service:'training',capacityPerTile:1,furnishings:[
     {kind:'dummy',width:1,depth:1},
     {kind:'weights',width:2,depth:1}
   ]},

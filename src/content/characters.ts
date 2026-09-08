@@ -12,11 +12,7 @@ export interface CharacterDefinition {
 export const characterDefinitions:CharacterDefinition[]=[
   {id:'miner',name:'Miner',names:['Brokk','Orin','Thora'],color:'#b78638',speedMultiplier:3 / 1.8, // 3 tiles/second at the default global walking speed.
     capabilities:['mine','haul','claim','reinforce','buildWall','defend'],appearance:'helmet',attractionServices:[],levels:[
-      {level:1,wage:4,trainingSeconds:0,health:90,damage:4,attackSeconds:1.5,workMultiplier:1},
-      {level:2,wage:5,trainingSeconds:20,health:105,damage:5,attackSeconds:1.5,workMultiplier:1.1},
-      {level:3,wage:6,trainingSeconds:35,health:120,damage:6,attackSeconds:1.5,workMultiplier:1.2},
-      {level:4,wage:7,trainingSeconds:55,health:140,damage:7,attackSeconds:1.5,workMultiplier:1.3},
-      {level:5,wage:8,trainingSeconds:80,health:160,damage:8,attackSeconds:1.5,workMultiplier:1.4}
+      {level:1,wage:4,trainingSeconds:0,health:90,damage:4,attackSeconds:1.5,workMultiplier:1}
     ]},
   {id:'engineer',name:'Engineer',names:['Helga','Sigrid'],color:'#357a81',speedMultiplier:1,
     capabilities:['craft','defend'],appearance:'braids',attractionServices:['craft'],levels:[
