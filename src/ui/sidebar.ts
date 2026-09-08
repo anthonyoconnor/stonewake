@@ -32,6 +32,7 @@ import {mountEncounterAlerts,mountEncounterPanel,updateEncounters} from './encou
 import {mountHearth,showHearth,updateHearth} from './hearth';
 import {mountMoraleAlerts,mountMoralePanel,updateMorale,residentMoraleText} from './morale';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
+const constructionTools=`<button class="room-choice" data-tool="bridge" title="Build bridges" aria-label="Build bridges">${actionIcon('bridge')}</button><button class="room-choice" data-tool="wall" title="Build walls" aria-label="Build walls">${actionIcon('wall')}</button><span aria-hidden="true"></span><button class="room-choice" data-tool="sell" title="Sell rooms, bridges or defenses" aria-label="Sell">${actionIcon('sell')}</button>`;
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
   tuningDialog=new TuningDialog();
@@ -51,7 +52,6 @@ export class Sidebar {
       <section class="map-section"><div class="eyebrow"><span>${view.world.name}</span><button id="show-map" aria-label="Show full map" title="Show full map (M)" aria-keyshortcuts="M" aria-haspopup="dialog">⛶</button></div><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas><div class="map-caption"><span>THE UPPER WORKINGS</span><span>48 × 48</span></div></section>
       <div class="reserves"><div><span class="gold-symbol">◆</span><strong id="gold-total">0</strong><small>GOLD</small></div><div><span>♟</span><strong id="dwarf-total">0</strong><small>DWARFS</small></div></div>
       <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs','debug'].map(id=>`<button data-category="${id}" aria-label="${id[0].toUpperCase()+id.slice(1)}" title="${id}"><span>${glyphs[id]}</span><small>${id}</small></button>`).join('')}</nav>
-      <div class="work-tools"><button data-tool="bridge" title="Build stone bridges">Bridge</button><button data-tool="remove-bridge" title="Remove bridges or cancel bridge plans">Remove bridge</button><button data-tool="dig">${actionIcon('dig')} Excavate</button><button data-tool="erase" aria-label="Remove excavation marks" title="Clear excavation">${actionIcon('erase')}</button><button data-tool="wall" aria-label="Build walls" title="Build walls">${actionIcon('wall')}</button><button data-tool="reclaim" aria-label="Reclaim room tiles" title="Reclaim room tiles">${actionIcon('reclaim')}</button></div>
       <div id="panel" class="panel"></div>
       <div id="unit-inspection" class="feedback" hidden></div>
       <div id="feedback" class="feedback" role="status">Choose a task for your stronghold.</div>
@@ -101,7 +101,7 @@ export class Sidebar {
       this.panel.innerHTML='<p class="eyebrow">TEST HARNESSES</p><p class="muted">Open a fresh, paused test world. Your stronghold is retained in memory. Loading another harness or layout discards the current test world.</p><button id="debug-lab" class="wide">Room layouts</button><p class="muted">Empty claimed floor for constructing rooms and checking access and capacity.</p>';
       this.panel.querySelector<HTMLButtonElement>('#debug-lab')!.onclick=()=>this.onLab(true);
     }else if(category==='lab'){
-      this.panel.innerHTML=`<p class="eyebrow">ROOM LAYOUT STUDIO</p><label>Room catalog<select id="lab-room">${roomDefinitions.map(r=>`<option value="${r.id}" ${r.id===this.labType?'selected':''} ${r.implemented?'':'disabled'}>${r.name}${r.implemented?'':' · planned'}</option>`).join('')}</select></label><label>Example footprint<select id="lab-shape">${labShapes.map(s=>`<option ${s===this.labShape?'selected':''}>${s}</option>`).join('')}</select></label><div class="lab-actions"><button id="load-layout">Load layout</button><button id="reset-layout">Clear layout</button></div><p class="muted">Drag claimed squares to create or expand a room. Right-click returns to excavation; click a floor to inspect.</p><div id="room-summary"></div><p class="muted">Structures: Stone Hearth · fixed<br>Bridge · planned</p>`;
+      this.panel.innerHTML=`<p class="eyebrow">ROOM LAYOUT STUDIO</p><label>Room catalog<select id="lab-room">${roomDefinitions.map(r=>`<option value="${r.id}" ${r.id===this.labType?'selected':''} ${r.implemented?'':'disabled'}>${r.name}${r.implemented?'':' · planned'}</option>`).join('')}</select></label><label>Example footprint<select id="lab-shape">${labShapes.map(s=>`<option ${s===this.labShape?'selected':''}>${s}</option>`).join('')}</select></label><div class="lab-actions"><button id="load-layout">Load layout</button><button id="reset-layout">Clear layout</button></div><p class="muted">Drag claimed squares to create or expand a room. Right-click returns to excavation; click a floor to inspect.</p><div id="room-summary"></div><div class="room-grid" role="group" aria-label="Construction tools">${constructionTools}</div>`;
       this.panel.querySelector<HTMLSelectElement>('#lab-room')!.onchange=e=>{this.labType=(e.target as HTMLSelectElement).value;this.selection.setTool(this.labType);};
       this.panel.querySelector<HTMLSelectElement>('#lab-shape')!.onchange=e=>this.labShape=(e.target as HTMLSelectElement).value;
       this.panel.querySelector<HTMLButtonElement>('#load-layout')!.onclick=()=>this.onLab(true,this.labShape,this.labType);
@@ -112,7 +112,7 @@ export class Sidebar {
       const arrivals=document.createElement('label');arrivals.className='toggle';arrivals.innerHTML=`<input id="lab-arrivals" type="checkbox" ${this.view.world.recruitment?.enabled?'checked':''}> Test automatic specialist arrivals`;arrivals.title='Use normal room, bed and food requirements in this test world.';this.panel.append(arrivals);
       arrivals.querySelector<HTMLInputElement>('input')!.onchange=e=>enableRecruitment(this.view.world,(e.target as HTMLInputElement).checked);
     }else if(category==='rooms'){
-      this.panel.innerHTML=`<div id="selected-action" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Room choices">${roomDefinitions.map(r=>`<button class="room-choice" data-room="${r.id}" aria-label="${r.name}${r.implemented?'':' (planned)'}" title="${r.name}${r.implemented?'':' · planned'}" ${r.implemented?'':'disabled'}>${actionIcon(r.id)}</button>`).join('')}</div><div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
+      this.panel.innerHTML=`<div id="selected-action" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Room choices">${roomDefinitions.map(r=>`<button class="room-choice" data-room="${r.id}" aria-label="${r.name}${r.implemented?'':' (planned)'}" title="${r.name}${r.implemented?'':' · planned'}" ${r.implemented?'':'disabled'}>${actionIcon(r.id)}</button>`).join('')}${'<span aria-hidden="true"></span>'.repeat((4-roomDefinitions.length%4)%4)}${constructionTools}</div><div id="room-summary" class="muted"></div><button id="open-lab" class="wide">Room layouts</button>`;
       this.panel.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.room!));
       this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
     }else if(category==='defenses')showDefenses(this);
@@ -120,6 +120,7 @@ export class Sidebar {
     else if(category==='spells')showSpells(this);
     else if(category==='hearth')showHearth(this);
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
+    this.panel.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.tool!));
     if(category==='dwarfs'){mountEconomy(this);mountMoralePanel(this);}
     if(category==='defenses')mountEncounterPanel(this);
     if(category==='debug'&&this.view.world.encounters?.length)mountEncounterPanel(this,true);
@@ -160,12 +161,13 @@ export class Sidebar {
   }
   updateSelection(){
     const id=this.selection.tool,room=roomDefinitions.find(r=>r.id===id);
+    this.panel.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>{b.disabled=!!this.view.world.outcome;b.classList.toggle('active',b.dataset.tool===id);b.setAttribute('aria-pressed',String(b.dataset.tool===id));});
     this.root.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>{const selected=b.dataset.room===id;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
     const header=this.panel.querySelector<HTMLElement>('#selected-action');if(!header)return;
     const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+this.view.world.freeRoomBuilding+':'+bridgeSettings.cost+':'+bridgeSettings.seconds+':'+price+':'+room?.capacityPerTile+':'+tuning.reclaimRatio+':'+wallBuildDuration();
     if(header.dataset.selection===signature)return;header.dataset.selection=signature;
-    if(id==='bridge'||id==='remove-bridge'){const detail=id==='bridge'?(this.view.world.freeRoomBuilding?0:bridgeSettings.cost)+' gold / square · '+bridgeSettings.seconds+' seconds of Miner work':'Plans refund paid gold · Decks refund '+Math.round(tuning.reclaimRatio*100)+'%';header.innerHTML='<div><strong>'+ (id==='bridge'?'Build stone bridges':'Remove bridges')+'</strong><span class="room-price">'+detail+'</span><span class="room-price">Water and lava · No rooms or fixtures on bridges</span></div>';return;}
-    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='reclaim'?'Reclaim room tiles':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='reclaim'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% of paid cost back</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span><span class="room-price">${room!.capacityPerTile} ${room!.service==='storage'?'gold storage':'dwarf capacity'} / square</span>`}</div>`;
+    if(id==='bridge'){header.innerHTML=actionIcon('bridge')+`<div><strong>Build bridges</strong><span class="room-price">${this.view.world.freeRoomBuilding?0:bridgeSettings.cost} gold / square · ${bridgeSettings.seconds}s work</span></div>`;return;}
+    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='sell'?'Sell':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='sell'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% rooms/decks · Plans 100% · Defenses 0%</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span><span class="room-price">${room!.capacityPerTile} ${room!.service==='storage'?'gold storage':'dwarf capacity'} / square</span>`}</div>`;
   }
   drawMap(){
     drawMap(this.minimap,this.view.world);

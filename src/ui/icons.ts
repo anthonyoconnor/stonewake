@@ -27,7 +27,7 @@ const artwork:Record<string,string>={
 artwork['summon-miner']='<ellipse cx="32" cy="48" rx="25" ry="10" fill="none" stroke="#7fdde1" stroke-width="4"/><path d="M15 27Q15 10 32 10Q49 10 49 27Z" fill="url(#gold)"/><path d="M14 27H50" stroke="#fbe4a2" stroke-width="5"/><path d="M21 29H43V39L32 52 21 39Z" fill="url(#copper)"/><path d="M28 32H36" stroke="#f9cba4" stroke-width="7"/><path d="M50 5V19M43 12H57" stroke="#b9ffff" stroke-width="3"/>';
 artwork['activity-idle']='<path d="M23 20Q23 8 35 10Q49 11 46 24Q45 30 33 34V40" fill="none" stroke="url(#gold)" stroke-width="7"/><circle cx="33" cy="50" r="4" fill="url(#gold)"/>';
 artwork.bridge='<path d="M6 28 32 14 58 28 32 44Z" fill="url(#steel)"/><path d="M6 28V41L14 46V34M50 33V46L58 41V28M19 23 44 37M32 17 56 30" fill="none" stroke="#d8c99c" stroke-width="4"/>';
-artwork['remove-bridge']=artwork.reclaim;
+artwork.sell='<path d="M9 25 26 8H49V31L30 50Z" fill="url(#gold)"/><circle cx="41" cy="17" r="4" fill="#26353b"/><path d="M24 23H34M24 29H34M29 19V34" stroke="#705131" stroke-width="3"/><path d="M8 43 18 38 32 42 45 36Q53 34 54 40L35 54H17Z" fill="url(#steel)"/>';
 artwork['timber-door']=artwork.door.replace('M21 28H43M21 44H43','M24 20V53M32 20V53M40 20V53').replace('stroke-width="5"','stroke-width="2"');
 artwork['reinforced-door']=artwork.door;
 artwork['steel-door']=artwork.door.replace('url(#wood)','url(#steel)')+'<path d="M24 22 40 50M40 22 24 50" stroke="#dbe3d6" stroke-width="3"/>';

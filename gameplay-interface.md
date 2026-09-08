@@ -26,6 +26,8 @@ This document defines the interface, not additional simulation rules. Exact dime
 
 Proposed starting proportion: roughly one fifth of the width for the sidebar at a normal desktop aspect ratio. Scale the interface for readability rather than locking it to an exact pixel width. Keep the minimap and essential controls visible when the available panel space changes; scroll or page the choice grid inside the sidebar if needed.
 
+Use text sparingly in the left-hand in-game input panel. Prefer recognizable icons with direct activation and enabled/disabled states. Keep short costs/status only when useful; place labels, explanations and secondary controls in tooltips or expandable details. The separate construction toolbar is removed. Excavation and clearing marks use the default mouse behavior with no buttons. Rooms has a fixed final four-cell row: Bridge, Wall, an empty cell, and Sell in the lower-right corner. This row stays in place regardless of the selected tool. Sell replaces separate room-reclaim and bridge-removal controls, and also dismantles placed defenses. Room/deck refunds, full bridge-plan refunds, zero defense refunds and bridge removal protections remain unchanged.
+
 The sidebar can use restrained dwarven stone, metal, and rune motifs. Borders and decoration must not compete with the icons or reduce useful viewing space. Text and numbers are permitted in the sidebar, but long explanations should appear only when requested or as messages.
 
 ## Minimap
@@ -54,7 +56,7 @@ Room floors and available wall treatments identify the room as soon as it is des
 
 ### Defenses
 
-Defenses use the same four-column icon grid and selected-item header as Rooms. Timber, reinforced and steel doors have distinct artwork. Selecting a fixture shows its name, finished stock, manufacturing gold/work cost, purpose and placement requirements; hover titles also report stock. Bolt facing controls appear only for the bolt trap. Workshop production and placed-fixture inspection remain available below the choices.
+Defenses use the same four-column icon grid and selected-item header as Rooms. Icons are dimmed and disabled until a Workshop with crafting capacity exists and the item is in stock, and when the area has ended. Clicking an enabled icon starts placement directly; availability is checked again on the world click, including if the Workshop was sold after selecting the tool. Tooltips report stock and the reason an icon is disabled. Timber, reinforced and steel doors have distinct artwork. Selecting a fixture shows its name, finished stock, manufacturing gold/work cost, purpose and placement requirements; hover titles also report stock. Bolt facing controls appear only for the bolt trap. Workshop production and placed-fixture inspection remain available below the choices.
 
 Selecting a fixture gives a grid-aligned placement preview in the world. A valid preview and an invalid preview use different outlines or patterns as well as color. Explain an invalid location in the sidebar or message area, not beside the cursor.
 
@@ -94,7 +96,7 @@ The Spells panel lists editable spell definitions with their effects, research/p
 
 The studio starts with automatic arrivals disabled. **Test automatic specialist arrivals** enables normal room/support checks in that test world. The Dwarfs panel reports time until the next check and the specific missing capacity for each type.
 
-Excavation is the default cursor action at startup and after right-click or Escape cancels another operation. It is also available as a sidebar tool. The first tile determines the entire excavation gesture at pointer-down: an unmarked tile starts adding, and a marked tile starts removing. The action stays fixed across mixed selections, with matching cursor and preview; changes apply on release. Adding preserves existing marks, and removing leaves unmarked tiles unchanged. Single clicks still toggle their tile. Clicking an open floor or room inspects it. Marking diggable terrain uses a clear cell outline or surface treatment on the square grid. Bedrock cannot be designated for mining. The final highlight colors and pattern remain to be chosen.
+Excavation is the default cursor action at startup and after right-click or Escape cancels another operation. The first tile determines the entire excavation gesture at pointer-down: an unmarked tile starts adding, and a marked tile starts removing. The action stays fixed across mixed selections, with matching cursor and preview; changes apply on release. Adding preserves existing marks, and removing leaves unmarked tiles unchanged. Single clicks still toggle their tile. Clicking an open floor or room inspects it. Marking diggable terrain uses a clear cell outline or surface treatment on the square grid. Bedrock cannot be designated for mining. The final highlight colors and pattern remain to be chosen.
 
 The world cursor communicates the action with a pickaxe for excavation, a pickaxe with a minus for clearing marks, the normal pointer over inspectable open floor, or the selected room icon for construction. Right-click/Escape restores the contextual excavation cursor and clears the room choice. Native sidebar pointers remain normal. Cursor artwork contains no text or costs.
 
@@ -116,7 +118,7 @@ Proposed mouse and keyboard defaults:
 | Mouse wheel over the world | Zoom in or out |
 | Click the minimap | Recenter the camera |
 
-Bindings are proposals and should be remappable. The sidebar provides Home and zoom icons; rotation uses the keyboard or middle drag. Closing, refreshing or leaving an active game requests browser confirmation to protect its in-memory session; Ctrl+W itself remains browser-controlled. Input over the sidebar must never excavate, build, or cast into the world behind it; scrolling a panel must not zoom the camera. Reselect marked tiles to remove excavation designations; previews distinguish adding from removing marks. The explicit erase tool remains available.
+Bindings are proposals and should be remappable. The sidebar provides Home and zoom icons; rotation uses the keyboard or middle drag. Closing, refreshing or leaving an active game requests browser confirmation to protect its in-memory session; Ctrl+W itself remains browser-controlled. Input over the sidebar must never excavate, build, or cast into the world behind it; scrolling a panel must not zoom the camera. Reselect marked tiles to remove excavation designations; previews distinguish adding from removing marks. There are no separate excavation or erase buttons.
 
 Camera rotation preserves the world-grid alignment of selections. Dwarfs and enemies still move continuously within the free space rather than following selection squares. Camera motion never grants visibility through concealed terrain.
 

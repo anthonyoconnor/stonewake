@@ -6,6 +6,12 @@ import {blocked,findPath,clearLine} from './navigation.ts';
 import {alive,slowRate,damageEnemy,damageResident,damageBarrier,spellLine} from './spell-effects.ts';
 import {tryAttackHearth} from './hearth.ts';
 
+// Player tool availability, also checked when confirming an already-selected tool.
+export function defenseToolStatus(w:World,type:string){
+  const stock=w.outputs[type]??0;
+  const reason=w.outcome?'Area ended.':!w.roomServices.some(f=>f.service==='craft'&&f.capacity>0)?'Build a Workshop.':stock<1?'Manufacture this item in the Workshop.':'';
+  return {available:!reason,stock,reason};
+}
 export function defenseQuote(w:World,type:string,p:Point){
   const def=defenseById(type),t=tileAt(w,p.x,p.z);
   const invalid=(reason:string)=>({valid:false,reason,rotation:0});

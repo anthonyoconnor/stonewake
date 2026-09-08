@@ -2,14 +2,14 @@ import type {Sidebar} from './sidebar';
 import {defenseDefinitions,defenseById,defenseDirections} from '../content/defenses';
 import {recipeById} from '../content/recipes';
 import {defenseAt,isDoor,doorIsOpen,doorOccupied} from '../game/doors';
-import {setDoorMode,removeDefense,addRaider} from '../game/defenses';
+import {defenseToolStatus,setDoorMode,removeDefense,addRaider} from '../game/defenses';
 import {addResidents} from '../game/simulation';
 import {type DoorMode,tileAt} from '../game/types';
 import {actionIcon} from './icons';
 const feedback=(s:Sidebar,message:string)=>{s.root.querySelector('#feedback')!.textContent=message;};
 export function showDefenses(s:Sidebar){
-  s.panel.innerHTML=`<div id="defense-inspector"></div><details id="build-defenses" open><summary>Build defenses</summary><div id="selected-defense" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Defense choices">${defenseDefinitions.map(d=>`<button data-defense="${d.id}" class="room-choice" aria-label="${d.name}" title="${d.name}">${actionIcon(d.id)}</button>`).join('')}</div><p id="defense-description" class="muted"></p><p class="muted">Manufacture in the Workshop, then place from stock on clear claimed floor. Doors fit one-square passages between walls.</p><div id="bolt-facing-controls"><label>Bolt facing<select id="defense-facing">${defenseDirections.map((d,i)=>`<option value="${i}" ${i===s.selection.rotation?'selected':''}>${d.name}</option>`).join('')}</select></label><p class="muted">R rotates a bolt before placement.</p></div><button id="inspect-defense" class="wide">Inspect placed defense</button></details><details><summary>Placed defenses</summary><div id="placed-defenses"></div></details>`;
-  s.panel.querySelectorAll<HTMLButtonElement>('[data-defense]').forEach(b=>b.onclick=()=>{s.selection.selected=undefined;s.selection.setTool(b.dataset.defense!);updateDefenses(s);});
+  s.panel.innerHTML=`<div id="defense-inspector"></div><details id="build-defenses" open><summary>Build defenses</summary><div id="selected-defense" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Defense choices">${defenseDefinitions.map(d=>`<button data-defense="${d.id}" class="room-choice" aria-label="${d.name}" title="${d.name}">${actionIcon(d.id)}</button>`).join('')}</div><p id="defense-description" class="muted"></p><div id="bolt-facing-controls"><label>Bolt facing<select id="defense-facing">${defenseDirections.map((d,i)=>`<option value="${i}" ${i===s.selection.rotation?'selected':''}>${d.name}</option>`).join('')}</select></label><p class="muted">R rotates a bolt before placement.</p></div><button id="inspect-defense" class="wide">Inspect placed defense</button></details><details><summary>Placed defenses</summary><div id="placed-defenses"></div></details>`;
+  s.panel.querySelectorAll<HTMLButtonElement>('[data-defense]').forEach(b=>b.onclick=()=>{if(!defenseToolStatus(s.view.world,b.dataset.defense!).available)return;s.selection.selected=undefined;s.selection.setTool(b.dataset.defense!);updateDefenses(s);});
   s.panel.querySelector<HTMLSelectElement>('#defense-facing')!.onchange=e=>{s.selection.rotation=Number((e.target as HTMLSelectElement).value);s.selection.draw();};
   s.panel.querySelector<HTMLButtonElement>('#inspect-defense')!.onclick=()=>s.selection.setTool('inspect');
   if(s.view.world.defenseTest){
@@ -24,7 +24,12 @@ export function updateDefenses(s:Sidebar){
   const inspector=s.panel.querySelector<HTMLElement>('#defense-inspector');if(!inspector)return;
   const w=s.view.world;
   for(const def of defenseDefinitions){
-    const button=s.panel.querySelector(`[data-defense="${def.id}"]`)!;button.classList.toggle('active',s.selection.tool===def.id);button.setAttribute('aria-pressed',String(s.selection.tool===def.id));button.setAttribute('title',`${def.name} · ${w.outputs[def.id]??0} in stock`);
+    const status=defenseToolStatus(w,def.id),button=s.panel.querySelector<HTMLButtonElement>(`[data-defense="${def.id}"]`)!;
+    button.disabled=!status.available;
+    button.classList.toggle('active',s.selection.tool===def.id);
+    button.setAttribute('aria-pressed',String(s.selection.tool===def.id));
+    button.title=`${def.name} · ${status.stock} in stock · ${status.reason||'Click to place'}`;
+    button.setAttribute('aria-label',button.title);
   }
   const selectedDef=defenseById(s.selection.tool);
   const header=s.panel.querySelector<HTMLElement>('#selected-defense')!;

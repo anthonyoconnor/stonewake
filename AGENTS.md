@@ -13,6 +13,7 @@ Completed milestones and dated verification records are in [development-history.
 - Maintain a quick local run/reload/reset workflow and usable debugging controls. Debug room construction must use the actual gameplay systems.
 - Follow `room-development-checklist.md` for every room. Verify automatic furnishings, capacity, access, irregular layouts, and the free room construction flag.
 - Preserve the single terrain layer, autonomous continuous movement, shared gold currency, and information in the left sidebar. Do not add floating world text, numbers, health bars, or progress bars.
+- Use text sparingly in the left-hand in-game input panel. Prefer recognizable icons with enabled/disabled states and direct activation; keep costs and short status visible where useful, and put labels, explanations and secondary controls in tooltips or expandable details.
 - Consult approved concept art for visual direction. Use recognizable prototype geometry; do not treat concept sheets as production assets or fixed room templates.
 - Run focused simulation checks and browser playtests for changed behavior. Avoid unrelated hardening and tests that merely duplicate implementation.
 - Commit reasonable completed chunks and always commit at milestone completion. Check `git diff --check`, review the changes, and keep the working tree limited to intended work. Do not commit generated builds or dependencies.
