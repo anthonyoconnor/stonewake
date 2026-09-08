@@ -104,16 +104,16 @@ test('reclaiming active learning rooms releases reservations and preserves progr
  for(const {room,type,job} of learningRooms){
   const w=createRoomLab(),plot=rect(8,8);buildRoom(w,room,plot);addResidents(w,type);research(w,room);
   const a=w.agents[0];
-  const progress=()=>room==='training'?(a.trainingProgress??0):(w.researchOrders?.find(o=>o.worker===a.id)?.progress??0);
+  const progress=()=>room==='training'?(a.experience??0):(w.researchOrders?.find(o=>o.worker===a.id)?.progress??0);
   until(w,()=>a.job?.kind===job&&progress()>.2);
   const oldProgress=progress(),oldLevel=a.level??1,order=w.researchOrders?.find(o=>o.worker===a.id);
   reclaimRoom(w,plot);tick(w,.05);
   assert.notEqual(a.job?.kind,job,room);
   assert.equal(w.roomServices.filter(f=>f.room===room).length,0,room);
-  if(room==='training')assert.equal(a.trainingProgress,oldProgress);
+  if(room==='training')assert.equal(a.experience,oldProgress);
   else {assert.equal(order!.progress,oldProgress);assert.equal(order!.state,'queued');assert.equal(order!.worker,undefined);}
   buildRoom(w,room,plot);
-  until(w,()=>room==='training'?(a.trainingProgress??0)>oldProgress||(a.level??1)>oldLevel:(order!.progress>oldProgress||order!.state==='ready'));
+  until(w,()=>room==='training'?(a.experience??0)>oldProgress||(a.level??1)>oldLevel:(order!.progress>oldProgress||order!.state==='ready'));
  }
 });
 

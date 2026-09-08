@@ -1,5 +1,5 @@
 // Each row is the complete result of reaching that level. Training time is the
-// active practice required to enter the row, not a lifetime experience total.
+// XP required to enter the row (1 XP per training second), not lifetime XP.
 export interface CharacterLevel {
   level:number; trainingSeconds:number; health:number; damage:number;
   attackSeconds:number; workMultiplier:number;

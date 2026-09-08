@@ -63,7 +63,7 @@ export interface Resident extends Point {
   energy:number;rested:number;hunger:number;meals:number;
   avoidFacility?:string;avoidUntil?:number;
   crafted:number;
-  level?:number;trainingProgress?:number;nextTrainingAt?:number;
+  level?:number;experience?:number;nextTrainingAt?:number;
   health?:number;maxHealth?:number;hitAt?:number;nextAttackAt?:number;effects?:SpellEffect[];
   combatTarget?:number;rallying?:boolean;rallyUnreachable?:boolean;recovering?:boolean;
 }

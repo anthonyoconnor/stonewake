@@ -53,7 +53,7 @@ export function addResidents(w: World, type: string, count = 1, origin?: Point) 
       meals: 0,
       crafted: 0,
       level: 1,
-      trainingProgress: 0,
+      experience: 0,
       nextTrainingAt: w.elapsed,
       health: characterLevel(type, 1).health,
       maxHealth: characterLevel(type, 1).health,

@@ -20,7 +20,7 @@ export const settings:Setting[]=[
   field(`dwarf.${c.id}.level.${level.level}.damage`,`${c.name} · level ${level.level} · attack damage`,`${c.name} levels`,level,'damage',0,1000,.1,'Applies live to combat.'),
   field(`dwarf.${c.id}.level.${level.level}.attackSeconds`,`${c.name} · level ${level.level} · attack interval seconds`,`${c.name} levels`,level,'attackSeconds',.1,30,.1,'Used when scheduling the next attack.'),
   field(`dwarf.${c.id}.level.${level.level}.workMultiplier`,`${c.name} · level ${level.level} · work speed multiplier`,`${c.name} levels`,level,'workMultiplier',.1,10,.05,'Applies live to productive work and research; training keeps its own duration.'),
-  ...(level.level===1?[]:[field(`dwarf.${c.id}.level.${level.level}.trainingSeconds`,`${c.name} · level ${level.level} · training seconds to enter`,`${c.name} levels`,level,'trainingSeconds',.1,600,.1,'Practice required to enter this level; partial progress is retained.')])
+  ...(level.level===1?[]:[field(`dwarf.${c.id}.level.${level.level}.trainingSeconds`,`${c.name} · level ${level.level} · training seconds to enter`,`${c.name} levels`,level,'trainingSeconds',.1,600,.1,'Shared XP requirement: 1 XP per training second; combat contributes to the same total. Earned XP is retained.')])
  ])),
  ...recipes.flatMap(r=>[
   field(`recipe.${r.id}.cost`,`${r.name} · input gold`,'Crafting',r,'cost',0,10000,1,'Unpaid work only.'),

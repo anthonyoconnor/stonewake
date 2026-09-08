@@ -4,7 +4,7 @@ import { tuning } from '../../content/tuning.ts';
 import { recipeById } from '../../content/recipes.ts';
 import { spendGold } from '../rooms.ts';
 import { wallBuildDuration } from '../walls.ts';
-import { workRate, nextCharacterLevel, levelUp } from '../progression.ts';
+import { workRate, gainExperience } from '../progression.ts';
 import { researchDuration } from '../research.ts';
 import { spellById } from '../../content/spells.ts';
 import { hasteRate } from '../spell-effects.ts';
@@ -128,13 +128,7 @@ const handlers = {
   },
   train: (w, a, j, t, dt, work) => {
     a.activity = 'Training';
-    const next = nextCharacterLevel(a);
-    if (!next) return true;
-    a.trainingProgress = (a.trainingProgress ?? 0) + dt * hasteRate(w, a);
-    if (a.trainingProgress < next.trainingSeconds) return false;
-    levelUp(w, a);
-
-    return true;
+    return gainExperience(w, a, dt * hasteRate(w, a), 'training');
   },
   research: (w, a, j, t, dt, work) => {
     const order = w.researchOrders!.find((o) => o.id === j.order)!,

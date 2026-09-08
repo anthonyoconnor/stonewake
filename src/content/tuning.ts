@@ -12,6 +12,7 @@ export const tuningSpec={
  reinforceSeconds:value(6,'Reinforce wall · seconds','Mining & work',.1,180),
  wallBuildSeconds:value(24,'Build wall · seconds','Mining & work',1,600,1,'Must exceed rock/dirt excavation plus reinforcement.'),
  trainingInterval:value(45,'Cooldown after gaining a training level · seconds','Training & research',1,600,1),
+ combatExperienceRate:value(2,'Combat experience · training rate multiplier','Training & research',0,10,.1,'Successful melee hits grant this many XP per base attack-interval second. Training grants 1 XP per second; Haste speeds both.'),
  recruitmentSeconds:value(45,'Specialist arrival interval · seconds','Economy & world',1,600,1,'One eligible arrival per interval; requires spare service, bed and food capacity.'),
  speed:value(1.8,'Walking speed · tiles/second','Movement',.1,10),
  radius:value(.17,'Terrain collision radius · tiles','Movement',.05,.24,.01),

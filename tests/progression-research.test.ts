@@ -34,8 +34,8 @@ test('every dwarf type trains autonomously, shares the level cap and gains usabl
 test('training and research release for shared meals and rest, then continue their earned progress',()=>{
  for(const type of ['warrior','runesmith']){
   const w=createRoomLab();buildRoom(w,type==='warrior'?'training':'library',rect(8,8,4,4));buildRoom(w,'dormitory',rect(2,2,5,5));buildRoom(w,'kitchen',rect(8,2,6,5));addResidents(w,type);queueResearch(w,'dwarf-haste');
-  const a=w.agents[0];until(w,()=>type==='warrior'?(a.trainingProgress??0)>.3:(w.researchOrders![0].progress>.3));
-  const progress=type==='warrior'?a.trainingProgress!:w.researchOrders![0].progress;
+  const a=w.agents[0];until(w,()=>type==='warrior'?(a.experience??0)>.3:(w.researchOrders![0].progress>.3));
+  const progress=type==='warrior'?a.experience!:w.researchOrders![0].progress;
   a.energy=.1;a.hunger=.1;tick(w,.05);assert.equal(a.job?.kind,'sleep');
   until(w,()=>a.rested>0&&a.meals>0);
   until(w,()=>type==='warrior'?(a.level??1)>1:w.researchOrders![0].state==='ready');

@@ -1,7 +1,8 @@
 import {type World,type Resident,type Point} from './types.ts';
 import {findPath,canStand} from './navigation.ts';
 import {alive,hasteRate,damageEnemy,spellLine,visible} from './spell-effects.ts';
-import {characterStats} from './progression.ts';
+import {characterStats,gainExperience} from './progression.ts';
+import {tuning} from '../content/tuning.ts';
 export const combatDefaults={noticeRadius:6,reach:1.05,criticalNeed:.1};
 type JobRelease=(w:World,a:Resident)=>void;
 type Move=(w:World,a:Resident,dt:number)=>boolean;
@@ -20,7 +21,12 @@ export function tickFighter(w:World,a:Resident,dt:number,release:JobRelease,move
     a.facing=Math.atan2(target.x-a.x,target.z-a.z);
     if(distance(target)<=combatDefaults.reach){
       a.path=[];a.activity='Fighting';
-      if((a.nextAttackAt??0)<=w.elapsed){const stats=characterStats(a);damageEnemy(w,target,stats.damage,'dwarf');a.nextAttackAt=w.elapsed+stats.attackSeconds/hasteRate(w,a);}
+      if((a.nextAttackAt??0)<=w.elapsed){
+        const stats=characterStats(a),before=target.health;
+        damageEnemy(w,target,stats.damage,'dwarf');
+        a.nextAttackAt=w.elapsed+stats.attackSeconds/hasteRate(w,a);
+        if(target.health<before)gainExperience(w,a,stats.attackSeconds*tuning.combatExperienceRate,'combat');
+      }
     }else {
       a.path=findPath(w,a,{x:Math.round(target.x),z:Math.round(target.z)})??[];move(w,a,dt);a.activity=a.path.length?'Approaching enemy':'Enemy unreachable';
     }

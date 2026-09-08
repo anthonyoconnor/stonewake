@@ -20,6 +20,22 @@ export function levelUp(w:World,a:Resident){
   // Set a baseline before changing level for residents without explicit HP yet.
   a.maxHealth??=characterStats(a).health;a.health??=a.maxHealth;
   a.level=next.level;syncCharacterHealth(a);
-  a.trainingProgress=0;a.nextTrainingAt=w.elapsed+tuning.trainingInterval;
+  a.experience=0;a.nextTrainingAt=w.elapsed+tuning.trainingInterval;
   w.revision++;return true;
+}
+
+// Training and real melee hits share one next-level requirement. Combat can
+// carry earned surplus onward; a training visit always ends at its first level.
+export function gainExperience(w:World,a:Resident,amount:number,source:'training'|'combat'){
+  if(!alive(a)||!nextCharacterLevel(a)||!Number.isFinite(amount)||amount<=0)return false;
+  let progress=(a.experience??0)+amount;
+  a.experience=progress;
+  let gained=false,next=nextCharacterLevel(a);
+  while(next&&progress>=next.trainingSeconds){
+    progress-=next.trainingSeconds;
+    levelUp(w,a);gained=true;
+    if(source==='training')break;
+    next=nextCharacterLevel(a);a.experience=next?progress:0;
+  }
+  return gained;
 }

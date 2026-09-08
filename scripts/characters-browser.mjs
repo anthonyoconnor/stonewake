@@ -102,7 +102,29 @@ try {
   assert((await row.textContent()).includes('Base damage 30 · Interval 0.8s'));
   assert((await row.textContent()).includes('Base work 25% bonus'));
   await page.screenshot({ path: 'test-results/character-levels-configured.png' });
+
+  // Shared XP advances through real combat, without a Training Room.
+  await page.evaluate(() => window.strongholdDev.load('spells'));
+  await configure({ 'Warrior levels': { 'Warrior · level 2 · training seconds to enter': 6, 'Warrior · level 3 · training seconds to enter': 30 }, 'Training & research': { 'Cooldown after gaining a training level · seconds': 45 } });
+  await page.evaluate(() => {
+    const api=window.strongholdDev,a=api.state().agents.find(a=>a.type==='warrior');
+    api.command({kind:'cast',spell:'stoneguard',target:{kind:'dwarf',id:a.id}});
+    api.command({kind:'raider',spawn:{x:a.x+1,z:a.z},target:{x:a.x,z:a.z}});
+  });
+  await page.evaluate(() => window.strongholdDev.advance(2.2));
+  const fighter=(await residents()).find(a=>a.type==='warrior');
+  assert.equal(fighter.level,2,'Three successful melee hits grant level 2');
+  assert(fighter.nextTrainingAt>2.2);
+  await page.evaluate(() => window.strongholdDev.advance(1.2));
+  const afterFight=(await residents()).find(a=>a.id===fighter.id);
+  assert(afterFight.experience>fighter.experience,'Combat continues earning XP during training cooldown');
+  await page.getByRole('button',{name:'Dwarfs',exact:true}).click();
+  const fighterRow=page.locator(`[data-resident="${fighter.id}"]`);
+  assert((await fighterRow.textContent()).includes('Experience'));
+  assert((await fighterRow.textContent()).includes('combat still earns XP'));
+  await fighterRow.evaluate(element=>element.scrollIntoView({block:'center'}));
+  await page.screenshot({path:'test-results/character-combat-xp.png'});
   assert.deepEqual(await page.evaluate(() => window.strongholdDev.status().errors), []);
   assert.deepEqual(errors, []);
-  console.log('PASS: all four types advance from level 1 to 5 with per-level stats, cooldown and cap; editable level fields; current and retained world health preserve injuries.');
+  console.log('PASS: all types train through levels 1–5; live stats and injuries; real melee combat grants shared XP and levels during training cooldown.');
 } finally { await browser.close(); }

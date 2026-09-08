@@ -5,10 +5,48 @@ import {characterDefinitions,characterLevel} from '../src/content/characters.ts'
 import {tuning} from '../src/content/tuning.ts';
 import {buildRoom} from '../src/game/rooms.ts';
 import {addResidents,tick} from '../src/game/simulation.ts';
-import {characterStats,levelUp,syncCharacterHealth} from '../src/game/progression.ts';
+import {characterStats,levelUp,syncCharacterHealth,gainExperience} from '../src/game/progression.ts';
 import {addRaider} from '../src/game/defenses.ts';
 import {queueCraft} from '../src/game/crafting.ts';
 import {run,until} from './helpers/simulation.ts';
+import {tickFighter} from '../src/game/combat.ts';
+
+test('successful hits share training XP, level during cooldown and retain wounds and surplus',()=>{
+ const w=createRoomLab();buildRoom(w,'training',[{x:8,z:8}]);addResidents(w,'warrior');const a=w.agents[0];
+ Object.assign(a,{x:8,z:8});run(w,14);assert.equal(a.level,1);assert(a.experience!>=13.9);
+ a.nextTrainingAt=1000;a.health=100;
+ const enemy=addRaider(w,{x:9,z:8},{x:8,z:8})!;enemy.pinnedUntil=1000;
+ tick(w,.05);assert.equal(a.level,2);assert.equal(a.maxHealth,165);assert.equal(a.health,125);
+ assert(a.experience!>.9&&a.experience!<1.1,'Combat keeps excess XP toward the next level');
+ assert.equal(a.job,undefined);assert.equal(a.combatTarget,enemy.id);
+ const xp=a.experience;tick(w,.05);assert.equal(a.experience,xp,'Waiting between attacks grants no extra XP');
+ run(w,1.1);assert(a.experience!>xp!,'Hits continue earning XP during the training cooldown');
+ enemy.health=0;a.nextTrainingAt=0;const before=a.experience!;run(w,.5);
+ assert(a.experience!>before,'Training resumes from combat-earned progress');
+});
+
+test('combat rewards successful hits at twice training pace for fighters and defending workers',()=>{
+ for(const type of characterDefinitions.map(c=>c.id)){
+  const w=createRoomLab();addResidents(w,type);const a=w.agents[0];Object.assign(a,{x:8,z:8});
+  const e=addRaider(w,{x:9,z:8},{x:8,z:8})!;e.pinnedUntil=1000;
+  tick(w,.05);assert.equal(a.experience,characterStats(a).attackSeconds*2,type);
+  const xp=a.experience;e.x=11;
+  tickFighter(w,a,.05,()=>{},()=>false);assert.equal(a.experience,xp,'Pursuing or standing near an enemy grants no XP');
+  e.x=9;e.health=0;tickFighter(w,a,.05,()=>{},()=>false);assert.equal(a.experience,xp,'Dead enemies grant no XP');
+ }
+ const w=createRoomLab();addResidents(w,'warrior');const a=w.agents[0];Object.assign(a,{x:8,z:8,effects:[{id:'haste',kind:'haste',strength:1,until:100}]});
+ const e=addRaider(w,{x:9,z:8},{x:8,z:8})!;e.pinnedUntil=100;
+ run(w,.6);assert.equal(a.experience,4,'Haste earns XP through more frequent hits, without multiplying each hit twice');
+});
+
+test('combat XP respects zero damage, carries level surplus and stops at the cap',()=>{
+ const w=createRoomLab();addResidents(w,'warrior');const a=w.agents[0];Object.assign(a,{x:8,z:8});
+ const stats=characterStats(a),damage=stats.damage;
+ try{stats.damage=0;const e=addRaider(w,{x:9,z:8},{x:8,z:8})!;e.pinnedUntil=100;tick(w,.05);assert.equal(a.experience,0);}finally{stats.damage=damage;}
+ gainExperience(w,a,50,'combat');assert.equal(a.level,3);assert.equal(a.experience,5);
+ gainExperience(w,a,10000,'combat');assert.equal(a.level,5);assert.equal(a.experience,0);
+ assert.equal(gainExperience(w,a,10,'combat'),false);assert.equal(a.experience,0);
+});
 
 test('new residents start at level 1 and level-up raises health while retaining wounds and never reviving',()=>{
  for(const def of characterDefinitions){
@@ -23,8 +61,8 @@ test('training uses the target character-level row, retains one-level visits and
  for(const def of characterDefinitions){
   const w=createRoomLab();buildRoom(w,'training',[{x:8,z:8}]);addResidents(w,def.id);const a=w.agents[0];Object.assign(a,{x:8,z:8});
   const duration=characterLevel(def.id,2).trainingSeconds;
-  run(w,duration-.1);assert.equal(a.level,1,def.id);assert((a.trainingProgress??0)>duration-.2,def.id);
-  run(w,.15);assert.equal(a.level,2,def.id);assert.equal(a.trainingProgress,0);assert.equal(a.nextTrainingAt!>w.elapsed,true);
+  run(w,duration-.1);assert.equal(a.level,1,def.id);assert((a.experience??0)>duration-.2,def.id);
+  run(w,.15);assert.equal(a.level,2,def.id);assert.equal(a.experience,0);assert.equal(a.nextTrainingAt!>w.elapsed,true);
  }
  const w=createRoomLab();buildRoom(w,'training',[{x:8,z:8}]);addResidents(w,'runesmith');const a=w.agents[0];
  Object.assign(a,{x:8,z:8,level:2,effects:[{id:'test-haste',kind:'haste',strength:1,until:100}]});syncCharacterHealth(a);
