@@ -27,7 +27,7 @@ The gallery contains the current four-role roster shown above. Superseded sheets
 
 ## Stonehands labor constructs
 
-[View the Stonehands concept sheet](stonehands/README.md): a proposed expendable rune-powered worker with front, back, overhead, mining and hauling views. This is visual exploration for replacing dwarf Miners; the gameplay replacement is not yet implemented. [Generation prompt](stonehands/prompts.md).
+[View the Stonehands concept sheet](stonehands/README.md): the revised small, fragile mechanical worker has exposed linkages and a rune core, with front, back, overhead, mining and hauling views. This is visual exploration for replacing dwarf Miners; the gameplay replacement is not yet implemented. [Revision prompt](stonehands/prompts-v2.md).
 
 ## Terrain and resources
 
