@@ -57,6 +57,7 @@ try {
     );
     assert((await page.locator('#buy-miner').textContent()).includes('75'));
     assert(await page.locator('#buy-miner').isEnabled());
+    await page.locator('.population-details').evaluate(e => { e.open = true; });
     await page.locator('#buy-miner').click();
     after = await state();
     assert.equal(after.agents.length, before.agents.length + 1);
@@ -104,7 +105,9 @@ try {
     after = await state();
     assert.equal(beforePay - balance(after), 29, 'Paid wages are not deducted again on later ticks');
     assert(originals.every((id) => after.agents.find((a) => a.id === id)?.pay.due.length === 0));
+    await page.locator('[data-dwarf-role="miner"]').click();
     assert.match(await page.locator('#residents-list').textContent(), /pay|wage/i);
+    await page.locator('.population-details').evaluate(e => { e.open = true; });
     await page.locator('#payroll-status').scrollIntoViewIfNeeded();
     await page.screenshot({ path: 'test-results/m13-wages-collected.png' });
 

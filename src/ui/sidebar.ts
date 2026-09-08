@@ -1,3 +1,4 @@
+import { showDwarfs, updateDwarfs } from './dwarfs';
 import { bridgeSettings } from '../game/terrain.ts';
 import {showSpells,updateSpells} from './spells';
 import {characterDefinitions,maxCharacterLevel} from '../content/characters';
@@ -115,7 +116,7 @@ export class Sidebar {
       this.panel.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.room!));
       this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
     }else if(category==='defenses')showDefenses(this);
-    else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
+    else if(category==='dwarfs')showDwarfs(this);
     else if(category==='spells')showSpells(this);
     else if(category==='hearth')showHearth(this);
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
@@ -180,11 +181,26 @@ export class Sidebar {
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
     this.root.querySelector('#gold-total')!.textContent=String(goldTotal(w));this.root.querySelector('#dwarf-total')!.textContent=String(w.agents.length);
-    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>{
+    const residents=updateDwarfs(this);
+    const list=this.root.querySelector('#residents-list');
+    if(list){const markup=residents.map(a=>{
       const stats=characterStats(a),next=nextCharacterLevel(a),progress=a.experience??0;
       const training=next?`Next: level ${next.level}<br>Experience ${Math.min(progress,next.trainingSeconds).toFixed(1)} / ${next.trainingSeconds} XP<br>Training 1 XP/s · Combat ${tuning.combatExperienceRate}× rate on hits<br>${(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds (combat still earns XP)`:`${a.job?.kind==='train'?'Training now':'Ready to train'} · One level per visit`}`:'Maximum level reached';
-      return `<div class="resident-row" data-resident="${a.id}"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}<br><span class="resident-pay">${residentPayText(w,a)}</span><br><span class="resident-morale">${residentMoraleText(w,a)}</span></small></div>`;
+      return `<details class="resident-row" data-resident="${a.id}"><summary><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><span class="muted">${a.activity}</span></summary><button data-locate-dwarf="${a.id}" class="wide">Locate dwarf</button><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}<br><span class="resident-pay">${residentPayText(w,a)}</span><br><span class="resident-morale">${residentMoraleText(w,a)}</span></small></details>`;
     }).join('');
+    const template=document.createElement('template');template.innerHTML=markup;
+    const ids=new Set(residents.map(a=>String(a.id)));
+    list.querySelectorAll<HTMLElement>('[data-resident]').forEach(row=>{if(!ids.has(row.dataset.resident!))row.remove();});
+    for(const fresh of Array.from(template.content.children)){
+      const id=(fresh as HTMLElement).dataset.resident;
+      const row=list.querySelector<HTMLElement>(`[data-resident="${id}"]`);
+      if(!row){list.append(fresh);continue;}
+      for(const selector of ['summary','small']){
+        const current=row.querySelector(selector)!,next=fresh.querySelector(selector)!;
+        if(current.innerHTML!==next.innerHTML)current.innerHTML=next.innerHTML;
+      }
+    }}
+    list?.querySelectorAll<HTMLButtonElement>('[data-locate-dwarf]').forEach(b=>b.onclick=()=>{const a=w.agents.find(a=>a.id===Number(b.dataset.locateDwarf));if(a){this.controls.center(a.x,a.z);this.inspectedUnit={kind:'dwarf',id:a.id};this.update();}});
     const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`Specialists arrive through the Hearth when rooms and settlement have spare capacity. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);

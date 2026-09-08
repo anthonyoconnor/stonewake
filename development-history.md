@@ -509,3 +509,9 @@ Provisional rules and limits: 20 gold/eight Miner-work seconds per square; water
 Added M and an expand icon beside the minimap to open the entire level in a larger map with preserved aspect ratio and shared minimap colors/discovery. Removed the camera footprint and center marker. M, Escape, the close button and click-to-center dismiss the map; camera input is suspended while it is open, and simulation keeps its existing pause state. Help and interface documentation updated.
 
 Verification: TypeScript check and production build passed (existing large-bundle warning). Browser checks passed in Edge for keyboard toggle/repeat handling, icon, Escape, close button, click dismissal, fog pixels, aspect ratio and 1440×900 / 800×600 sizing, with no runtime errors. Inspected the rendered full map. Focused world and selection simulation checks passed.
+
+## 2026-09-07 — Icon-based dwarf activity panel
+
+- Replaced the expanded population report with a role-by-activity icon matrix (Idle, Working, Needs, Combat), live counts, muted zeros, hover/accessibility labels and count/role filters. Individual residents expand to show existing statistics and a camera Locate action. Stable resident elements preserve expanded state during updates.
+- Grouped recruitment, payroll, wellbeing and attraction information under an expandable section. Updated the existing browser scripts for the new disclosure/filter controls.
+- Verification: `npm run verify -- characters` (35 checks and source/test typecheck), `npm run build`, `node scripts/dwarfs-browser.mjs` (counts, live need transitions, filters, stable details, locate, management disclosure and narrow layout), and `git diff --check`. Browser screenshots are in ignored `test-results/`. No gameplay rules changed.

@@ -29,7 +29,7 @@ export function mountMoralePanel(sidebar: Sidebar) {
     sidebar.root.querySelector<HTMLDetailsElement>('#morale-alerts')!.open = true;
     sidebar.update();
   };
-  sidebar.panel.prepend(section);
+  (sidebar.panel.querySelector('#population-management') ?? sidebar.panel).prepend(section);
 }
 export function updateMorale(sidebar: Sidebar) {
   const w = sidebar.view.world,

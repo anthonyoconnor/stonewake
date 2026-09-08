@@ -307,6 +307,7 @@ try {
     assert.equal(await payAlert.count(), 1, 'Dismissing one cause preserves the other warning');
     await advance(2);
     assert.equal(await foodAlert.count(), 0, 'Dismissal survives ordinary simulation updates');
+    await page.locator('.population-details').evaluate(e => { e.open = true; });
     await page.locator('#reopen-morale').click();
     assert.equal(await foodAlert.count(), 1, 'The Dwarfs panel can reopen dismissed need warnings');
     await page.locator('[data-dismiss-morale="food"]').click();

@@ -40,6 +40,8 @@ Other broad systems still pending include guard duty, retreat, door repairs/upgr
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight Miner-work seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 
+**Dwarf overview:** role/activity icon counts open filtered resident lists with expandable stats and camera location. Recruitment, wages, wellbeing and attraction details are expandable below the grid.
+
 **Map navigation:** M or the expand icon beside the minimap opens a full-level map with the same terrain colors and fog of war. Both maps omit the camera overlay; the full map supports click-to-center and M/Escape/close dismissal.
 
 **Known limits:** local objective completion freezes the area with a restart; travel waits for M18. Core repairs are not supported. Departing dwarfs ignore rally and do not fight back; retreat/guard behavior remains M12. Large populations with inaccessible or unfunded wages repeat path queries during needs/pay scheduling; profile and consolidate those queries in M19 if normal-level populations make this significant. All timings and resources remain provisional until integrated balance.
