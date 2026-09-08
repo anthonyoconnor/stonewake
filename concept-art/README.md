@@ -33,6 +33,10 @@ The gallery contains the current four-role roster shown above. Superseded sheets
 
 [View the Cave Hound concept sheet](cave-hounds/README.md): a rugged dwarven companion explored for early defense and scouting, with profile, overhead, scent-tracking and protective poses. Gameplay remains a proposal. [Generation prompt](cave-hounds/prompts-v1.md).
 
+## Tunnel badgers
+
+[View the Tunnel Badger concept sheet](tunnel-badgers/README.md): a low, sturdy animal companion explored for early defense and scouting, with powerful digging paws and a simple dwarven collar. Gameplay remains a proposal. [Generation prompt](tunnel-badgers/prompts-v1.md).
+
 ## Terrain and resources
 
 [View the gold seam and gem column concept](terrain/README.md). This wider mining area combines one terrain layer, large square excavation cells, gold visible on top and exposed wall faces, persistent gem columns, and connected bedrock. The [revision prompt](terrain/prompts-v2.md), [original prompt](terrain/prompts.md), and user-supplied excavation reference are stored in `terrain/`.
