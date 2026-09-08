@@ -10,7 +10,7 @@ import { alive, tickSpellEffects } from './spell-effects.ts';
 import { tickFighter } from './combat.ts';
 import { releaseJob } from './jobs/common.ts';
 import { chooseJob } from './jobs/selection.ts';
-import { createWorkPool, coverResourceVacancy } from './jobs/pool.ts';
+import { createWorkPool, recordPoolWork } from './jobs/pool.ts';
 import { validJob } from './jobs/validation.ts';
 import { performJob } from './jobs/work.ts';
 import { moveResident } from './movement.ts';
@@ -133,13 +133,12 @@ export function tick(w: World, dt: number) {
     }
     if (!a.job) continue;
     if (!moveResident(w, a, dt)) continue;
+    recordPoolWork(w, a, dt);
     if (!performJob(w, a, dt)) continue;
     recordJob(w, a, 'completed', 'Work finished');
     a.job = undefined;
     a.path = [];
   }
-  if (Math.floor((w.elapsed - dt) * 2) !== Math.floor(w.elapsed * 2))
-    coverResourceVacancy(w, workPool);
   tickEncounters(w);
   tickDefenses(w, dt);
   finishHearth(w);

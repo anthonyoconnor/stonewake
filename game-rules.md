@@ -112,7 +112,7 @@ Proposed visibility rule: explored terrain remains known, but current enemy posi
 
 Excavation can be planned into darkness. Hidden tiles accept the same marks regardless of their concealed contents. Miners work only discovered, reachable diggable targets; discovery automatically clears marks over existing open space or unmineable terrain. Unexplored plans do not reveal terrain, permit room construction, or grant visibility.
 
-Miners share a work pool, reserving individual targets and spreading across kinds of work. Reachable, marked gold or gems receive about one in three available miners, with a minimum of one; remaining miners divide hauling, excavation, construction and claiming. Needs, delivery, combat and requested Hearth activation still apply. [Miner work allocation](characters.md#miner-work-allocation) defines replacement workers, the tunable ratio and lone-miner deliveries.
+Miners share a work pool, reserving individual targets and spreading across kinds of work. Reachable, marked gold or gems receive about one in three available miners, with a minimum of one; remaining miners divide hauling, excavation, construction and claiming. Miners keep an assignment for 20 productive seconds and finish their current tile before rebalancing; travel and resource delivery preserve their working commitment. Needs, delivery, combat and requested Hearth activation still apply. [Miner work allocation](characters.md#miner-work-allocation) defines replacement workers, the tunable ratio and lone-miner deliveries.
 
 ## 6. Wall reinforcement
 

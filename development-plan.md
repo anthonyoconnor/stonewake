@@ -29,7 +29,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 | Dwarf type | Current status | Remaining integration |
 |---|---|---|
-| Miner | Implemented: starting crew and paid purchases, shared work pool with resource coverage, mining, hauling, claiming, reinforcement, wall and bridge construction; shared food/rest/wages/departure, fixed level 1 without training or XP and adjacent self-defense | Retreat deferred |
+| Miner | Implemented: starting crew and paid purchases, shared work pool with resource coverage and 20-second productive assignments, mining, hauling, claiming, reinforcement, wall and bridge construction; shared food/rest/wages/departure, fixed level 1 without training or XP and adjacent self-defense | Retreat deferred |
 | Engineer | Implemented: normal Workshop-based arrivals, crafting, shared food/rest/wages/departure, levels 1–5 and adjacent self-defense; also in Debug | Repairs deferred |
 | Warrior | Implemented: normal arrivals, shared needs/wages/departure, levels 1–5, autonomous melee combat and Call to Arms response | Broader combat balance; guard posts and retreat deferred |
 | Runesmith | Implemented: normal Library-based arrivals, appearance, research/preparation, shared food/rest/wages/departure, levels 1–5 and adjacent self-defense; also in Debug | Additional personal combat abilities |

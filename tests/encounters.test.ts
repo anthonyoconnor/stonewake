@@ -107,9 +107,10 @@ test('sealed raid waits without stacked waves; normal excavation discovers a cam
     w.defenses!.some((d) => d.triggeredAt > 0),
     'Natural enemies activate normal traps',
   );
-  assert(w.agents.some((a) => a.type === 'warrior' && (a.experience ?? 0) > 0));
   const campCount = w.enemies!.filter((e) => e.sourceId === 'buried-camp').length;
   run(w, 30);
+  // Traps can clear the camp while Warriors eat; later raids still exercise melee.
+  assert(w.agents.some((a) => a.type === 'warrior' && (a.experience ?? 0) > 0));
   assert.equal(w.enemies!.filter((e) => e.sourceId === 'buried-camp').length, campCount);
   assert(entrance.waves >= 2, 'Defeated external wave eventually repeats');
   const fresh = createEncounterLab();
