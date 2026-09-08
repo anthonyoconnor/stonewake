@@ -25,6 +25,10 @@ The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel 
 
 The gallery contains the current four-role roster shown above. Superseded sheets and concepts for removed or deferred roles have been removed. The [female Engineer prompt](dwarfs/prompts-v3.md), [merged-role prompts](dwarfs/prompts-v2.md), and [original prompts](dwarfs/prompts.md) are stored with the images in `dwarfs/`.
 
+## Stonehands labor constructs
+
+[View the Stonehands concept sheet](stonehands/README.md): a proposed expendable rune-powered worker with front, back, overhead, mining and hauling views. This is visual exploration for replacing dwarf Miners; the gameplay replacement is not yet implemented. [Generation prompt](stonehands/prompts.md).
+
 ## Terrain and resources
 
 [View the gold seam and gem column concept](terrain/README.md). This wider mining area combines one terrain layer, large square excavation cells, gold visible on top and exposed wall faces, persistent gem columns, and connected bedrock. The [revision prompt](terrain/prompts-v2.md), [original prompt](terrain/prompts.md), and user-supplied excavation reference are stored in `terrain/`.
