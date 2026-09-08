@@ -1,5 +1,7 @@
 # M9 graphics and animation notes
 
+The next graphics update is planned as [M21 terrain and environments](development-plan.md#m21--terrain-and-environment-graphics-update) and [M22 character models and animations](development-plan.md#m22--character-models-and-animations-update). Both use the current concept galleries and prompts as references and improve the existing game; the M9 notes below describe the earlier baseline, not completion of these new milestones.
+
 M9 was added after M8 completion on 2026-09-07, following the user's requested sequence. The pass uses editable Babylon.js geometry and small generated material textures. It does not require an external modeling or asset build pipeline.
 
 ## Reference review

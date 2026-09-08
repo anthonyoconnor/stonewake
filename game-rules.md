@@ -1,5 +1,7 @@
 # Game rules
 
+Roadmap scope: Guard Posts, guard duty, emergency retreat and door repairs/upgrades in place are deferred outside the active roadmap following removal of M12 and M15. Any descriptions below of those features remain proposals; they are not requirements for enemy, campaign or balance milestones.
+
 Working design for a level-based dwarven stronghold management game inspired by Dungeon Keeper.
 
 Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Levels](levels.md), and [Gameplay interface](gameplay-interface.md).

@@ -1,5 +1,7 @@
 # Characters
 
+Roadmap scope: guard duty, emergency retreat and Engineer door repairs are deferred outside the active roadmap following removal of M12 and M15. References below remain design proposals. Character model and animation improvements are planned in [M22](development-plan.md#m22--character-models-and-animations-update).
+
 Working design for the dwarven stronghold game. Companion documents: [Rooms](rooms.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
 ## Implementation status

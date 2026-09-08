@@ -10,7 +10,7 @@ This repository contains a **TypeScript + Babylon.js browser prototype**, game d
 
 The [current implementation inventory](development-plan.md#current-implementation-status) lists every planned room, structure and dwarf, its availability, and remaining integrations. **M1–M9 completion covers the prototype milestones, not the full design.** Use that inventory for what is added or missing; the catalogs below describe the intended game.
 
-M10 encounters/raids, M11 Hearth defeat/objectives, M13 recruitment/wages and M14 dissatisfaction/departure are implemented. The [remaining roadmap](development-plan.md#remaining-feature-roadmap--m10m19) covers guarding/retreat, door maintenance, more enemies, campaign travel and integrated balance. The Border Foothold has a separate Hearthstone hidden in its northern enemy camp. Discover and physically activate it to complete the area; actual travel to another area remains M18. See [Levels](levels.md#onward-hearthstone-objective).
+M10 encounters/raids, M11 Hearth defeat/objectives, M13 recruitment/wages and M14 dissatisfaction/departure are implemented. The [remaining roadmap](development-plan.md#remaining-feature-roadmap) covers more enemies, campaign travel, the overall player interface and left control panel, terrain/environment graphics, character models/animations and integrated balance. Guarding/retreat and door repairs/upgrades are deferred outside the active roadmap. The Border Foothold has a separate Hearthstone hidden in its northern enemy camp. Discover and physically activate it to complete the area; actual travel to another area remains M18. See [Levels](levels.md#onward-hearthstone-objective).
 
 ## Run locally
 

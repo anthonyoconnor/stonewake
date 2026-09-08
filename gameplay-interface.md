@@ -1,5 +1,7 @@
 # Gameplay interface
 
+The overall player interface and left control panel cleanup are planned in [M20](development-plan.md#m20--overall-player-interface-and-left-control-panel), including action discovery, consistent controls, inspection, messages, maps and campaign flows. The descriptions below remain the current baseline until that milestone is implemented.
+
 Development builds additionally expose scenario loading, pause/step/advance controls and a resident diagnostic inspector under Debug → Simulation tools. These controls and the browser automation interface are absent from production builds. See [Development tools](development-tools.md) for usage and shared scenario definitions; detailed diagnostic text remains inside the left sidebar.
 
 Working interface design for the dwarven stronghold game. Companion documents: [Game rules](game-rules.md), [Rooms](rooms.md), [Characters](characters.md), and [Levels](levels.md).

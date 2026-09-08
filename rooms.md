@@ -1,5 +1,7 @@
 # Rooms and structures
 
+Roadmap scope: Guard Posts/guard duty and door repairs/upgrades in place are deferred outside the active roadmap following removal of M12 and M15. References below to these features remain design proposals, not scheduled implementation requirements. Existing doors and traps remain implemented.
+
 Working design for the dwarven stronghold game. Companion documents: [Characters](characters.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
 ## Implementation status
