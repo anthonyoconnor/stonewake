@@ -10,7 +10,7 @@ function fixture(){
  // Explicit no-storage fixture exercises the fallback when no treasury is available.
  w.furnishings=[];for(const t of w.tiles){t.known=true;if(t.terrain==='floor')t.claimed=true;}addMiners(w);return w;
 }
-function run(w:World,seconds:number){for(let i=0;i<seconds*20;i++)tick(w,.05);}
+import {run} from './helpers/simulation.ts';
 const plot=(x:number,z:number)=>Array.from({length:12},(_,i)=>({x:x+i%4,z:z+Math.floor(i/4)}));
 test('mined gold waits on the ground, then reaches a new Treasure Room without loss',()=>{
  const w=fixture();designate(w,[{x:10,z:7}]);run(w,30);

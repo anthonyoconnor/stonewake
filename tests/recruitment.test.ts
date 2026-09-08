@@ -7,8 +7,7 @@ import {produceFood} from '../src/game/food.ts';
 import {addResidents,tick} from '../src/game/simulation.ts';
 import {enableRecruitment,hearthArrival,recruitmentStatus} from '../src/game/recruitment.ts';
 import {tileAt,type World} from '../src/game/types.ts';
-const rect=(x:number,z:number,width:number,depth:number)=>Array.from({length:width*depth},(_,i)=>({x:x+i%width,z:z+Math.floor(i/width)}));
-const run=(w:World,seconds:number)=>{for(let i=0;i<seconds*20;i++)tick(w,.05);};
+import {rect,run} from './helpers/simulation.ts';
 function settlement(){
  const w=createRoomLab();buildRoom(w,'dormitory',rect(2,2,7,5));buildRoom(w,'kitchen',rect(9,2,7,5));buildRoom(w,'training',rect(8,9,3,3));buildRoom(w,'library',rect(13,14,3,3));buildRoom(w,'workshop',rect(8,17,3,3));
  for(let i=0;i<100;i++)produceFood(w,1);return w;

@@ -10,9 +10,7 @@ import {workRate} from '../src/game/progression.ts';
 import {queueResearch,cancelResearch,castSpell} from '../src/game/research.ts';
 import {createWorld} from '../src/game/world.ts';
 import {tileAt,type World} from '../src/game/types.ts';
-const rect=(x:number,z:number,width:number,depth:number)=>Array.from({length:width*depth},(_,i)=>({x:x+i%width,z:z+Math.floor(i/width)}));
-const run=(w:World,seconds:number)=>{for(let i=0;i<seconds*20;i++)tick(w,.05);};
-const until=(w:World,predicate:()=>boolean,seconds=90)=>{for(let i=0;i<seconds*20&&!predicate();i++)tick(w,.05);assert(predicate(),'Expected condition before timeout.');};
+import {rect,run,until} from './helpers/simulation.ts';
 
 test('every dwarf type trains autonomously, shares the level cap and gains usable work speed',()=>{
  const cap=tuning.trainingLevels;tuning.trainingLevels=1;

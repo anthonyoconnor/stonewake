@@ -1,3 +1,4 @@
+import {drawFurnishingModel} from './furnishing-models';
 import {tuning} from '../content/tuning';
 import { Engine, Scene, ArcRotateCamera, Vector3, Color3, Color4, HemisphericLight, DirectionalLight, PointLight, MeshBuilder, StandardMaterial, DynamicTexture, TransformNode, GlowLayer, Mesh } from '@babylonjs/core';
 import { type World, type Tile,neighbors } from '../game/types';
@@ -133,109 +134,7 @@ export class GameScene {
       const node=new TransformNode(`furnishing ${f.id}`,this.scene);node.parent=furnitureParent;
       this.furnitureNodes.set(f.id,{signature,node});this.furnitureRoot=node;
       if(f.id==='hearth-treasury')node.position.y=.3;
-      const wide=f.cells.some(p=>p.x!==f.x),deep=f.cells.some(p=>p.z!==f.z);
-      this.shadow(f.x+(wide?.5:0),f.z+(deep?.5:0),wide?2.2:1.2,deep?2.2:1.2,this.furnitureRoot);
-      const wood=this.material('chest wood','#60442e',true),metal=this.material('chest iron','#a28a5f');
-      if(model==='bed'){
-        const bed=new TransformNode(f.id,this.scene);bed.parent=this.furnitureRoot;
-        bed.position.set(f.x+(f.rotation?.5:0),0,f.z+(f.rotation?0:.5));bed.rotation.y=f.rotation?Math.PI/2:0;
-        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{this.box(n,x,y,z,w,h,d,m,bed).isPickable=false;};
-        part('bed frame',0,.19,0,.75,.22,1.75,wood);part('blanket',0,.34,.17,.68,.14,1.25,this.material('blanket','#6c8278'));part('pillow',0,.37,-.6,.62,.14,.32,this.material('linen','#ddccaa'));
-        part('headboard',0,.46,-.83,.76,.48,.08,wood);part('blanket fold',0,.43,-.29,.69,.045,.15,this.material('blanket trim','#b0b18e'));
-        for(const x of [-.28,.28])part('woven blanket border',x,.417,.2,.025,.015,1.1,this.material('blanket trim','#b0b18e'));
-        for(const x of [-.34,.34])for(const z of [-.82,.82])part('bedpost',x,.3,z,.1,.6,.1,wood);
-        continue;
-      }
-      if(['mushrooms','stove','table','barrel'].includes(model)){
-        const root=new TransformNode(f.id,this.scene);root.parent=this.furnitureRoot;root.position.set(f.x,0,f.z);
-        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{this.box(n,x,y,z,w,h,d,m,root).isPickable=false;};
-        const cylinder=(n:string,x:number,y:number,z:number,h:number,d:number,m:StandardMaterial)=>{const mesh=MeshBuilder.CreateCylinder(n,{height:h,diameter:d,tessellation:10},this.scene);mesh.position.set(x,y,z);mesh.parent=root;mesh.material=m;mesh.isPickable=false;return mesh;};
-        if(model==='mushrooms'){
-          part('growing tray',0,.15,0,.82,.3,.82,wood);part('soil',0,.31,0,.72,.03,.72,this.material('soil','#3c3127'));
-          for(let i=0;i<Math.min(6,f.stored);i++){
-            const x=-.22+i%3*.22,z=-.16+Math.floor(i/3)*.32;
-            cylinder('mushroom stalk',x,.41,z,.18,.045,this.material('stalk','#e5d3ad'));
-            const cap=MeshBuilder.CreateSphere('mushroom cap',{diameter:.2,segments:6},this.scene);cap.position.set(x,.5,z);cap.scaling.y=.55;cap.parent=root;cap.material=this.material(i%2?'red cap':'cream cap',i%2?'#b85b34':'#d6b881');cap.isPickable=false;
-          }
-        }else if(model==='stove'){
-          part('cooking hearth',0,.25,0,.75,.5,.75,this.material('stove stone','#4a504c',true));part('coals',0,.2,-.38,.4,.17,.025,this.material('fire','#ed9b47',false,.6));cylinder('cooking pot',0,.63,0,.24,.46,this.material('pot','#383c3f'));
-          if(f.stored)cylinder('prepared food',0,.77,0,.02,.38,this.material('stew','#c8a059'));
-        }else if(model==='barrel'){
-          cylinder('brew barrel',0,.37,0,.72,.6,wood);
-          for(const y of [.13,.59]){const ring=MeshBuilder.CreateTorus('barrel hoop',{diameter:.59,thickness:.045,tessellation:12},this.scene);ring.position.y=y;ring.parent=root;ring.material=metal;ring.isPickable=false;}
-          part('tap',0,.24,-.36,.07,.13,.12,metal);
-        }else{
-          part('tabletop',0,.52,0,.8,.12,.76,wood);for(const x of [-.3,.3])for(const z of [-.27,.27])part('table leg',x,.26,z,.07,.5,.07,wood);
-          if(this.world.agents.some(a=>a.job?.kind==='eat'&&a.job.furnishing===f.id))cylinder('meal plate',0,.6,0,.025,.25,this.material('plate','#d4c5a0'));
-        }
-        continue;
-      }
-      if(['bench','anvil','assembly'].includes(model)){
-        const root=new TransformNode(f.id,this.scene);root.parent=this.furnitureRoot;
-        root.position.set(f.x+(model==='assembly'&&!f.rotation?.5:0),0,f.z+(model==='assembly'&&f.rotation?.5:0));root.rotation.y=f.rotation?Math.PI/2:0;
-        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{this.box(n,x,y,z,w,h,d,m,root).isPickable=false;};
-        const iron=this.material('workshop iron','#57626a');
-        if(model==='anvil'){part('anvil plinth',0,.15,0,.65,.3,.65,wood);part('anvil waist',0,.42,0,.25,.3,.27,iron);part('anvil top',0,.59,0,.7,.12,.32,iron);}
-        else{
-          const width=model==='assembly'?1.7:.78;
-          part('work bench',0,.55,0,width,.17,.7,wood);for(const x of [-width/2+.08,width/2-.08])for(const z of [-.25,.25])part('bench leg',x,.25,z,.09,.5,.09,wood);
-          part('vice',.21,.7,0,.16,.18,.23,iron);part('parts tray',-.2,.66,.05,.24,.03,.28,metal);
-          for(const x of [-.3,0]){part('bench tool handle',x,.66,-.2,.03,.03,.2,wood);part('bench tool head',x,.69,-.28,.13,.06,.055,iron);}
-          if(model==='assembly')for(const x of [-.65,.6]){const gear=MeshBuilder.CreateTorus('mechanism gear',{diameter:.26,thickness:.055,tessellation:8},this.scene);gear.position.set(x,.66,.12);gear.material=metal;gear.parent=root;gear.isPickable=false;}
-        }
-        if(f.outputCount){
-          part('finished assembly',0,.73,.13,.42,.09,.34,f.output==='timber-door'||f.output==='reinforced-door'?wood:iron);
-          if(f.output==='bolt-trap'){
-            const spring=MeshBuilder.CreateTorus('trap spring',{diameter:.2,thickness:.035,tessellation:8},this.scene);spring.position.set(0,.82,.13);spring.material=metal;spring.parent=root;spring.isPickable=false;
-            part('bolt mechanism',0,.86,.13,.035,.035,.34,iron);
-          }else if(f.output==='spike-trap')for(const x of [-.13,0,.13]){const spike=MeshBuilder.CreateCylinder('finished trap spike',{height:.15,diameterBottom:.055,diameterTop:0,tessellation:6},this.scene);spike.position.set(x,.85,.13);spike.material=iron;spike.parent=root;spike.isPickable=false;}
-          else for(const z of [.04,.22])part('door reinforcement',0,.79,z,.4,.03,.045,metal);
-        }
-        continue;
-      }
-      if(['dummy','weights','lectern','bookshelf'].includes(model)){
-        const large=model==='weights'||model==='bookshelf',root=new TransformNode(f.id,this.scene);root.parent=this.furnitureRoot;
-        root.position.set(f.x+(large&&!f.rotation?.5:0),0,f.z+(large&&f.rotation?.5:0));root.rotation.y=f.rotation?Math.PI/2:0;
-        const part=(n:string,x:number,y:number,z:number,w:number,h:number,d:number,m:StandardMaterial)=>{const mesh=this.box(n,x,y,z,w,h,d,m,root);mesh.isPickable=false;return mesh;};
-        const cylinder=(n:string,x:number,y:number,z:number,h:number,d:number,m:StandardMaterial)=>{const mesh=MeshBuilder.CreateCylinder(n,{height:h,diameter:d,tessellation:10},this.scene);mesh.position.set(x,y,z);mesh.parent=root;mesh.material=m;mesh.isPickable=false;return mesh;};
-        const iron=this.material('training iron','#5f686c'),linen=this.material('parchment','#e0d1aa'),blue=this.material('research inlay','#6db6c9',false,.12);
-        if(model==='dummy'){
-          part('dummy foot',0,.07,0,.66,.14,.66,wood);cylinder('practice post',0,.51,0,.9,.13,wood);
-          cylinder('bound straw torso',0,.57,0,.4,.33,this.material('training straw','#b99a62'));
-          part('practice crossbar',0,.67,0,.7,.12,.13,wood);cylinder('dummy head',0,.89,0,.19,.24,this.material('training straw','#b99a62'));
-          for(const y of [.43,.65,.93])cylinder('practice bindings',0,y,0,.04,y===.93?.25:.34,metal);
-          const target=MeshBuilder.CreateTorus('dummy target',{diameter:.22,thickness:.025,tessellation:12},this.scene);target.position.set(0,.56,-.18);target.rotation.x=Math.PI/2;target.material=this.material('training target','#823f31');target.parent=root;target.isPickable=false;
-        }else if(model==='weights'){
-          part('weight station deck',0,.07,0,1.75,.14,.78,wood);part('exercise bench',0,.35,.05,.75,.12,.38,this.material('training leather','#784d35'));
-          for(const x of [-.32,.32])part('exercise bench leg',x,.21,.05,.08,.3,.3,iron);
-          for(const x of [-.65,.65]){part('weight rack upright',x,.36,-.14,.09,.62,.1,wood);cylinder('weight stack',x,.2,.18,.2,.32,iron);}
-          const bar=cylinder('barbell',0,.68,-.14,1.55,.055,metal);bar.rotation.z=Math.PI/2;
-          for(const x of [-.59,.59]){const weight=cylinder('barbell plate',x,.68,-.14,.18,.38,iron);weight.rotation.z=Math.PI/2;}
-        }else{
-          const width=large?1.7:.74;
-          part('reading desk',0,.56,.07,width,.13,.68,wood);
-          for(const x of [-width/2+.09,width/2-.09])for(const z of [-.18,.31])part('reading desk leg',x,.27,z,.085,.54,.085,wood);
-          if(large){
-            part('research shelf backing',0,.78,-.29,1.7,.62,.1,wood);
-            for(const y of [.56,.84,1.09])part('research shelf board',0,y,-.24,1.72,.055,.22,wood);
-            for(const y of [.69,.98])for(let i=0;i<11;i++)part('shelved volume',-.72+i*.14,y,-.235,.1,.18+(i%2)*.02,.13,this.material(`book spine ${i%3}`,['#486982','#866143','#647558'][i%3]));
-          }else{part('lectern stand',0,.43,-.12,.18,.55,.18,wood);part('sloped reading rest',0,.65,.06,.66,.08,.53,wood).rotation.x=.13;}
-          part('book binding',0,.663,.15,.51,.045,.37,metal);
-          for(const side of [-1,1]){
-            part('open research book',side*.122,.7,.15,.235,.035,.34,linen).rotation.z=side*.1;
-            for(let i=0;i<3;i++)part('ink markings',side*.125,.725,.05+i*.075,.125,.005,.012,blue);
-          }
-          cylinder('reading candle base',width/2-.12,.67,.2,.055,.12,metal);cylinder('reading candle',width/2-.12,.77,.2,.16,.05,linen);
-          this.crystal(width/2-.12,.88,.2,.08,'#f1c37b',root);
-        }
-        continue;
-      }
-      if(model!=='chest'){this.box('prototype facility',f.x,.3,f.z,.7,.6,.7,metal,this.furnitureRoot).isPickable=false;continue;}
-      this.box('chest',f.x,.23,f.z,.68,.44,.65,wood,this.furnitureRoot).isPickable=false;
-      for(const dz of [-.32,.32])this.box('vault rim',f.x,.47,f.z+dz,.71,.075,.05,metal,this.furnitureRoot).isPickable=false;
-      this.box('chest lock',f.x,.32,f.z-.337,.12,.16,.035,metal,this.furnitureRoot).isPickable=false;
-      for(const dx of [-.23,.23])this.box('chest band',f.x+dx,.46,f.z,.05,.035,.66,metal,this.furnitureRoot).isPickable=false;
-      if(f.stored>0)for(let i=0;i<Math.min(7,Math.ceil(f.stored/20));i++)this.box('stored gold',f.x-.2+i%3*.18,.51+Math.floor(i/3)*.075,f.z-.12+Math.floor(i/3)*.12,.15,.07,.1,this.material('gold metal','#ffbf4d'),this.furnitureRoot).isPickable=false;
+      drawFurnishingModel(this,f,node);
     }
     this.furnitureRoot=furnitureParent;
     // Static props sharing a material can draw together; animated dwarfs stay separate.

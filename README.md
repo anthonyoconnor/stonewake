@@ -16,6 +16,8 @@ Use Node.js 24 or later. Run `npm install`, then `npm run dev` and open the loca
 
 Project-wide development instructions are in [AGENTS.md](AGENTS.md).
 
+For agent-driven iteration, see [Development tools](development-tools.md): shared scenarios, a development-only browser control interface, automatic job diagnostics, and `npm run verify -- <scope>`. `npm run typecheck` checks both source and tests. `npm run verify -- all --browser --production` runs complete simulation, browser and production-isolation checks with the local development server already running.
+
 ## Play and iterate
 
 **Excavate is the default cursor action.** Click or drag across unexplored tiles or visible dirt, rock, gold or gems to plan excavation. The first tile sets the whole drag: start unmarked to add marks, or marked to remove them. Existing marks are preserved while adding, and unmarked tiles stay unchanged while removing. Miners find reachable work, clear terrain and claim the floor. Choose a room from the icon grid; its icon, name and current gold cost per square appear above the choices. The world cursor uses the same room icon; a pickaxe marks excavation, a minus clears it, and the normal pointer inspects open floor. Drag claimed squares to build; right-click or Escape cancels the current gesture and returns immediately to excavation. Click an open floor or room to inspect it. The Stone Hearth includes one empty chest holding up to 108 gold, enough to fund a 3×3 Treasure Room. Miners can deliver to it before any Treasure Room is built; expand storage with Treasure Rooms. There is a provisional 400-gold starting allowance. Room capacity comes from accessible furnishings, so narrow or tiny layouts may not function yet.
@@ -42,11 +44,11 @@ Prepared spells enter targeting when you click **Cast**. Click a visible unit or
 | Room prices, footprints, capacity and services | [Room definitions](src/content/rooms.ts) and [room checklist](room-development-checklist.md) |
 | Character capabilities and recipes | [Characters](src/content/characters.ts), [recipes](src/content/recipes.ts) |
 | Door tiers, trap balance, placement and enemy interactions | [Defense definitions](src/content/defenses.ts), [defense simulation](src/game/defenses.ts), [door passage queries](src/game/doors.ts) |
-| Work pace and shared needs | [Tuning](src/content/tuning.ts), [simulation](src/game/simulation.ts), [food production](src/game/food.ts) |
+| Work pace, shared needs and jobs | [Tuning](src/content/tuning.ts), [simulation](src/game/simulation.ts), [job selection](src/game/jobs/selection.ts), [job execution](src/game/jobs/work.ts), [food production](src/game/food.ts) |
 | Construction, furnishing and path access | [Rooms](src/game/rooms.ts), [navigation](src/game/navigation.ts) |
-| Prototype meshes, textures and animations | [Scene](src/view/scene.ts), [surfaces](src/view/surfaces.ts), [residents](src/view/residents.ts), [effects](src/view/effects.ts) |
+| Prototype meshes, textures and animations | [Scene](src/view/scene.ts), [furnishing models](src/view/furnishing-models.ts), [surfaces](src/view/surfaces.ts), [residents](src/view/residents.ts), [effects](src/view/effects.ts) |
 | Sidebar and grid input | [Sidebar](src/ui/sidebar.ts), [selection](src/ui/selection.ts) |
-| Repeatable debug examples | [Room studio data](src/content/room-lab.ts) |
+| Repeatable debug examples and automation | [Shared scenarios](src/content/scenarios.ts), [room studio data](src/content/room-lab.ts), [development workflow](development-tools.md) |
 | Defense test yard | [Defense yard](src/content/defense-lab.ts) |
 
 The simulation has no Babylon.js or DOM dependency. Focused Node tests exercise discovery, mining, resource conservation, navigation, layout access, needs, free construction and staffed crafting. Graphics remain procedural prototype assets guided by the concepts; see the [graphics pass notes](graphics-pass.md).

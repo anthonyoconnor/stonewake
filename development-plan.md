@@ -223,6 +223,16 @@ Complete when terrain/resources, core, all four implemented rooms and both imple
 
 ## Development record
 
+### Agent development tools and module boundaries — 2026-09-07
+
+Implemented the five requested development-speed improvements after confirming the earlier targeted-spell work was committed and the working tree was clean. The development-only `window.strongholdDev` interface loads named scenarios, calls actual construction/research/defense services, returns detached state, captures runtime errors and advances fixed simulation ticks while paused. Its sidebar controls provide scenario loading, pause/step/advance and resident inspection. Browser checks use a separate headless browser and leave the existing game server/tab alone.
+
+Shared factories cover the ordinary world, existing studios/yards/showcase, crowded food service, research interruption and locked-door hauling. They respect room costs and the free-construction flag, with explicit fixture stocks/needs. Opt-in bounded job histories report selection, rejected routes, cancellation, completion and waiting; inspectors include current routes/access/reservations. Shared test stepping helpers attach these diagnostics to condition timeouts. Scenarios are repeatable from the same source/session configuration; no saves or persistence were added.
+
+Split continuous movement, job selection, shared acquisition/release, validity and typed execution handlers into ordinary modules, preserving priority and gameplay behavior. Extracted furnishing geometry and spell-panel construction/updates from the central scene/sidebar. Added source-and-test typechecking, focused verification with import-based changed-file selection, test watch, scoped formatting, and repeatable browser/production checks. The complete workflow and file ownership map are in [Development tools](development-tools.md); companion instructions link to it.
+
+Verification: all 89 simulation/input/scenario checks and source/test TypeScript checks pass. Browser checks verify paused scenario URLs, exact stepping, real construction/refunds, job diagnostics and extracted spell/furnishing views with no console/runtime errors. A final browser regression also verifies the free-construction command persists when returning from a test scenario to the ordinary stronghold. Production build and isolated preview checks pass: scenario URLs are ignored, and the development API and simulation panel are absent. Reviewed showcase and debug-panel screenshots; focused/watch scope selection, local documentation links and `git diff --check` pass. The existing Babylon bundle-size advisory remains. Scenario advancement is bounded to 600 simulated seconds per call; diagnostic history retains 300 events per world and 30 reported browser errors. The existing local development server is left running.
+
 Prototype values remain provisional. Milestone commits are identifiable by their M-number in Git history.
 
 ### Targeted spells and autonomous combat — 2026-09-07

@@ -1,5 +1,7 @@
 # Gameplay interface
 
+Development builds additionally expose scenario loading, pause/step/advance controls and a resident diagnostic inspector under Debug → Simulation tools. These controls and the browser automation interface are absent from production builds. See [Development tools](development-tools.md) for usage and shared scenario definitions; detailed diagnostic text remains inside the left sidebar.
+
 Working interface design for the dwarven stronghold game. Companion documents: [Game rules](game-rules.md), [Rooms](rooms.md), [Characters](characters.md), and [Levels](levels.md).
 
 ## Agreed direction

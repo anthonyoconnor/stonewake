@@ -1,3 +1,4 @@
+import {showSpells,updateSpells} from './spells';
 import {characterDefinitions} from '../content/characters';
 import {tuning} from '../content/tuning';
 import {wallBuildDuration} from '../game/walls';
@@ -15,13 +16,12 @@ import {recipes,recipeById} from '../content/recipes';
 import {actionIcon} from './icons';
 import {reachable} from '../game/navigation';
 import {key,tileAt} from '../game/types';
-import {spellDefinitions,spellDescription} from '../content/spells';
-import {queueResearch,cancelResearch} from '../game/research';
+import {spellDefinitions} from '../content/spells';
 import {workRate} from '../game/progression';
 import {enableRecruitment} from '../game/recruitment';
 import {showDefenses,updateDefenses} from './defenses';
 import {defenseAt} from '../game/doors';
-import {dismissRally,health,maxHealth,visible} from '../game/spell-effects';
+import {health,maxHealth,visible} from '../game/spell-effects';
 import type {SpellTarget} from '../game/research';
 import {prepareTestSpells} from '../content/spell-lab';
 import {addRaider} from '../game/defenses';
@@ -33,6 +33,7 @@ export class Sidebar {
   inspectedUnit?:SpellTarget;
   onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
   onFreeBuild:(value:boolean)=>void=()=>{};onRestart:()=>void=()=>{};
+  onDevelopmentPanel:()=>void=()=>{};
   constructor(public view:GameScene,public controls:CameraControls,public selection:Selection) {
     this.root=document.createElement('aside');this.root.id='sidebar';this.root.setAttribute('aria-label','Stronghold controls');
     this.root.innerHTML=`
@@ -89,12 +90,7 @@ export class Sidebar {
       this.panel.querySelector<HTMLButtonElement>('#open-lab')!.onclick=()=>this.onLab(true);
     }else if(category==='defenses')showDefenses(this);
     else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
-    else if(category==='spells'){
-      this.panel.innerHTML=`<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Runesmiths research spells at accessible Library stations. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map(s=>`<article class="spell-card"><h3>${s.name}</h3><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
-      this.panel.querySelectorAll<HTMLButtonElement>('[data-research]').forEach(b=>b.onclick=()=>{queueResearch(this.view.world,b.dataset.research!);this.update();});
-      this.panel.querySelectorAll<HTMLButtonElement>('[data-pause-research]').forEach(b=>b.onclick=()=>{cancelResearch(this.view.world,b.dataset.pauseResearch!);this.update();});
-      this.panel.querySelectorAll<HTMLButtonElement>('[data-cast]').forEach(b=>b.onclick=()=>{this.selection.setTool(b.dataset.cast!);this.root.querySelector('#feedback')!.textContent='Choose a visible target. Right-click or Escape cancels.';this.update();});
-    }
+    else if(category==='spells')showSpells(this);
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
     if(['lab','debug'].includes(category)){
       const spells=document.createElement('button');spells.className='wide';spells.textContent='Spell test yard';spells.onclick=()=>this.onLab(true,'spells');this.panel.append(spells);
@@ -121,6 +117,7 @@ export class Sidebar {
       button('Return to stronghold',()=>this.onLab(false));
       this.panel.prepend(controls);
     }
+    if(category==='debug')this.onDevelopmentPanel();
   }
   updateSelection(){
     const id=this.selection.tool,room=roomDefinitions.find(r=>r.id===id);
@@ -180,23 +177,7 @@ export class Sidebar {
       this.panel.querySelector('#craft-orders')!.innerHTML=w.craftOrders.filter(o=>o.state!=='done').map(o=>`<p>${recipeById(o.recipe)!.name} · ${o.state==='working'?Math.round(o.progress/recipeById(o.recipe)!.seconds*100)+'%':'Queued'}</p>`).join('');
       this.panel.querySelector('#craft-outputs')!.textContent=recipes.map(r=>`${w.outputs[r.id]??0} ${r.name.toLowerCase()}s`).join(' · ');
     }
-    const researchCapacity=this.panel.querySelector('#research-capacity');if(researchCapacity){
-      const workers=w.agents.filter(a=>a.capabilities.includes('research')),routes=workers.map(a=>reachable(w,a));
-      const stations=new Set(w.furnishings.filter(f=>f.service==='research'&&routes.some(r=>r.has(key(f.access)))).map(f=>key(f.access)));
-      researchCapacity.textContent=`${workers.length} capable researcher${workers.length===1?'':'s'} · ${stations.size} reachable research positions${workers.length?'':'. Build a Library and provide spare beds and food to attract a Runesmith.'}`;
-      for(const spell of spellDefinitions){
-        const order=w.researchOrders?.find(o=>o.spell===spell.id),ready=order?.state==='ready',paused=order?.paused;
-        const duration=order?.unlocked?spell.prepareSeconds:spell.researchSeconds;
-        this.panel.querySelector(`[data-research-status="${spell.id}"]`)!.textContent=ready?'Ready to cast':order?`${paused?'Paused':order.state==='working'?'In progress':'Queued'} · ${Math.min(100,Math.floor(order.progress/duration*100))}% · ${order.unlocked?'Preparing':'Researching'}`:`Not researched · ${duration} seconds of research`;
-        const research=this.panel.querySelector<HTMLButtonElement>(`[data-research="${spell.id}"]`)!;research.disabled=!!order&&!paused;research.textContent=paused?'Resume':'Research';
-        this.panel.querySelector<HTMLButtonElement>(`[data-pause-research="${spell.id}"]`)!.disabled=!order||!!paused||ready;
-        const cast=this.panel.querySelector<HTMLButtonElement>(`[data-cast="${spell.id}"]`)!;cast.disabled=!ready||goldTotal(w)<spell.cost;cast.textContent=`Cast · ${spell.cost} gold${ready&&goldTotal(w)<spell.cost?' · Needs gold':''}`;
-      }
-      this.panel.querySelector('#active-spells')!.textContent=[w.rally?`Call to Arms · ${Math.ceil(w.rally.until-w.elapsed)} seconds · ${w.agents.filter(a=>a.rallying&&!a.rallyUnreachable).length} responding · ${w.agents.filter(a=>a.rallyUnreachable).length} unreachable`:'',w.barrier?`Barrier · ${Math.ceil(w.barrier.health)} / ${w.barrier.maxHealth} health · ${Math.ceil(w.barrier.until-w.elapsed)} seconds`:''].filter(Boolean).join(' · ');
-      let dismiss=this.panel.querySelector<HTMLButtonElement>('#dismiss-rally');
-      if(!dismiss){dismiss=document.createElement('button');dismiss.id='dismiss-rally';dismiss.className='wide';dismiss.textContent='Dismiss Call to Arms';dismiss.onclick=()=>{dismissRally(this.view.world);this.update();};this.panel.append(dismiss);}
-      dismiss.hidden=!w.rally;
-    }
+    updateSpells(this);
     const inspection=this.root.querySelector<HTMLElement>('#unit-inspection')!,target=this.inspectedUnit;
     const dwarf=target?.kind==='dwarf'?w.agents.find(a=>a.id===target.id):undefined;
     const enemy=target?.kind==='enemy'?w.enemies?.find(e=>e.id===target.id&&e.health>0):undefined;

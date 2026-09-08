@@ -10,7 +10,7 @@ Edit balance values in `src/content/tuning.ts`: each entry defines its default, 
 | Production input costs, durations and capabilities | `src/content/recipes.ts` |
 | Spell effects, research/preparation durations and casting gold | `src/content/spells.ts` |
 | Map sizes, openings and seams | `src/content/levels.ts` |
-| Debug layouts and example stock | `src/content/room-lab.ts`, showcase setup in `src/main.ts` |
+| Debug layouts and example stock | `src/content/room-lab.ts`, shared factories and showcase setup in `src/content/scenarios.ts` |
 | Procedural art shapes, texture motifs, lighting | `src/view/` (presentation, not balance) |
 
 The popup is grouped into tabs. Edit any number of tabs, then Apply once; invalid values reject the entire draft. Closing or Escape discards the draft. Reset restores source defaults in the draft, ready to apply. Export produces a JSON reference of the draft's values; it is not a game save and is not automatically imported. To retain an experiment, copy approved values into the source definitions. Page reload restores source defaults; Restart stronghold keeps this session's tuning.

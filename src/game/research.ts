@@ -4,6 +4,7 @@ import {goldTotal,spendGold} from './rooms.ts';
 import {blocked,findPath} from './navigation.ts';
 import {defenseAt} from './doors.ts';
 import {alive,health,maxHealth,effect,visible,spellLine,damageEnemy} from './spell-effects.ts';
+import {recordJob} from './diagnostics.ts';
 export const researchDuration=(order:ResearchOrder)=>{const spell=spellById(order.spell);return (order.unlocked?spell?.prepareSeconds:spell?.researchSeconds)??Infinity;};
 export function queueResearch(w:World,spell:string){
   if(!spellById(spell))return;
@@ -15,7 +16,7 @@ export function queueResearch(w:World,spell:string){
 export function cancelResearch(w:World,spell:string){
   const order=w.researchOrders?.find(o=>o.spell===spell);if(!order||order.state==='ready')return;
   order.paused=true;order.state='queued';order.worker=undefined;
-  for(const a of w.agents)if(a.job?.kind==='research'&&a.job.order===order.id){a.job=undefined;a.path=[];a.retry=0;}
+  for(const a of w.agents)if(a.job?.kind==='research'&&a.job.order===order.id){recordJob(w,a,'released','Research paused');a.job=undefined;a.path=[];a.retry=0;}
   w.revision++;
 }
 export type SpellTarget={kind:'dwarf'|'enemy';id:number}|{kind:'point';point:Point};
