@@ -10,7 +10,7 @@ This repository contains a **TypeScript + Babylon.js browser prototype**, game d
 
 The [current implementation inventory](development-plan.md#current-implementation-status) lists every planned room, structure and dwarf, its availability, and remaining integrations. **M1–M9 completion covers the prototype milestones, not the full design.** Use that inventory for what is added or missing; the catalogs below describe the intended game.
 
-M10 encounters/raids, M11 Hearth defeat/objectives, M13 recruitment/wages and M14 dissatisfaction/departure are implemented. The [remaining roadmap](development-plan.md#remaining-feature-roadmap) covers all ten enemy concepts through M17, campaign travel, the overall player interface and left control panel, terrain/environment graphics, character models/animations and integrated balance. Guarding/retreat and door repairs/upgrades are deferred outside the active roadmap. The Border Foothold has a separate Hearthstone hidden in its northern enemy camp. Discover and physically activate it to complete the area; actual travel to another area remains M18. See [Levels](levels.md#onward-hearthstone-objective).
+M10 encounters/raids, M11 Hearth defeat/objectives, M13 recruitment/wages and M14 dissatisfaction/departure are implemented. M17 implements all ten enemies, M18 the connected two-area campaign, M20 the player interface, and M21–M22 the environment and character graphics update. The [remaining roadmap](development-plan.md#remaining-feature-roadmap) is M19 integrated balance and broader campaign playtesting. Guarding/retreat and door repairs/upgrades are deferred outside the active roadmap. The Border Foothold has a separate Hearthstone hidden in its northern enemy camp. Discover and physically activate it, then choose travel to Emberwater Crossing. The second relay completes the available two-area journey. See [Levels](levels.md#onward-hearthstone-objective).
 
 ## Run locally
 
@@ -48,7 +48,7 @@ The ordinary Border Foothold now has a concealed northern camp and an eastern ra
 
 **Debug → Test harnesses → Additional test scenarios** includes `encounters` (a mineable gate, hidden camp, raiding passage and working defenses) and `economy` (all four types, spare support and a lockable treasury route). These start paused. Debug encounter controls advance timers while preserving actual warning and access rules. `node scripts/milestones-browser.mjs` checks these flows through the browser.
 
-Click the compact **Hearth** button beneath the gold/population totals for core health and the onward objective. After discovery, request activation: an available dwarf must walk beside the stone and secure it for eight uninterrupted seconds. Nearby enemies or urgent needs interrupt work; the request retries automatically. Success and defeat freeze the area, show a sidebar result and offer **Restart area**. The starting base and treasury stay fixed.
+Click the compact **Hearth** button beneath the gold/population totals for core health and the onward objective. After discovery, request activation: an available dwarf must walk beside the stone and secure it for eight uninterrupted seconds. Nearby enemies or urgent needs interrupt work; the request retries automatically. Success and defeat freeze the area, show a sidebar result and offer **Restart area**. The starting base and treasury stay fixed within each area. In campaign play, the first victory offers **Travel to Emberwater Crossing**; the final victory offers **Begin a new journey**. Travel retains researched spell knowledge and building unlocks, while residents, gold, buildings, queues and prepared spell charges reset. The first gate unlocks stonebridge plans. **Restart area** restores that area's arrival state, including its carried knowledge.
 
 Additional scenarios include `hearth` (a defended objective approach), `hearth-defeat` (the same approach without enough supplied defenses) and `morale` (all four types behind a lockable treasury/exit route). `node scripts/hearth-morale-browser.mjs` checks these flows in the browser.
 
@@ -73,6 +73,8 @@ Try **Debug → Test harnesses → Additional test scenarios → crossings** (Em
 | Repeatable debug examples and automation | [Shared scenarios](src/content/scenarios.ts), [room studio data](src/content/room-lab.ts), [development workflow](development-tools.md) |
 | Defense test yard | [Defense yard](src/content/defense-lab.ts) |
 | Camps, raid timing and source clearing | [Encounter service](src/game/encounters.ts), [level definitions](src/content/levels.ts), [encounter test tunnels](src/content/encounter-lab.ts) |
+| Campaign links and carry/reset rules | [Campaign definitions](src/content/campaign.ts), [campaign service](src/game/campaign.ts) |
+| Enemy definitions and regional encounters | [Enemy catalog](enemies.md), [definitions](src/content/enemies.ts), [regional maps](src/content/enemy-regions.ts) |
 | Core damage and onward activation | [Hearth service](src/game/hearth.ts), [Hearth test scenarios](src/content/hearth-lab.ts), [Hearth sidebar](src/ui/hearth.ts) |
 | Dissatisfaction, grouped warnings and physical departure | [Morale service](src/game/morale.ts), [Morale test scenario](src/content/morale-lab.ts), [Need warnings](src/ui/morale.ts) |
 | Miner prices, arrival eligibility and physical wages | [Recruitment](src/game/recruitment.ts), [wages](src/game/wages.ts), [economy test scenario](src/content/economy-lab.ts) |
@@ -154,7 +156,7 @@ Keep catalogs and balance details in their owning design document; link to them 
 
 Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
 
-Excavated, unclaimed ground looks like bare earth with scattered stones; miners replace it with paving when claiming it. Spare miners reinforce ordinary walls bordering claimed floor, turning raw earth/rock into visible masonry. Room wall fittings appear after reinforcement. Enemy breaching is still future work.
+Excavated, unclaimed ground looks like bare earth with scattered stones; miners replace it with paving when claiming it. Spare miners reinforce ordinary walls bordering claimed floor, turning raw earth/rock into visible masonry. Room wall fittings appear after reinforcement. Tunnel Burrowers can excavate dirt/rock; reinforcement triples their work time, while bedrock and resource columns stop them.
 
 After development checks, leave the local Vite server running so the game remains available to play.
 

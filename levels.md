@@ -19,7 +19,7 @@ The campaign reclaims separate sites within a lost dwarven kingdom. Each level i
 - A level ends in defeat if enemies destroy the Stone Hearth protecting the Hearthstone.
 - Every level has a separate onward Hearthstone that the player must find and reach to open progression to the next area. Its difficult approach supplies the primary level objective.
 
-The campaign premise, level structure and onward Hearthstone objective are established. The example maps, exact approaches and activation details below are proposals rather than a final campaign list. All ten current enemy concepts are included in planned M17; their exact abilities and balance remain to be defined. M11 implements objective/defeat using an enemy-held land route. M16 adds the Emberwater Crossing scenario with water, lava, chasms and constructed stone bridges. Campaign travel remains M18.
+The campaign premise, level structure and onward Hearthstone objective are established. The two authored areas and activation rules below describe the implemented prototype; candidate levels remain authoring proposals. All ten current enemy concepts now have implemented roles and provisional balance in [Enemies](enemies.md). M11 implements objective/defeat using an enemy-held land route. M16 adds the Emberwater Crossing scenario with water, lava, chasms and constructed stone bridges. The two-area campaign links Border Foothold to Emberwater Crossing through explicit sidebar travel.
 
 ## Onward Hearthstone objective
 
@@ -29,12 +29,29 @@ Every level contains two distinct Hearthstone roles: the starting Hearthstone an
 - It is usually positioned somewhere hard to reach: within an enemy base or hostile region, beyond a lava crossing, or behind another terrain or route obstacle. Layout, excavation, combat and construction solve the approach; the challenge must be achievable with that level's resources and available tools.
 - Discovery and access are separate. Seeing the stone across lava or through a distant opening does not complete the objective. Dwarfs must be able to physically reach its interaction area using ordinary traversal rules.
 - Activation policy for M11: after discovery, a sidebar request sends any available living resident to a cardinal-adjacent interaction square using normal movement. Eight uninterrupted seconds there awaken the stone, at no gold cost. Food/rest, carried-gold delivery, actionable wages, combat/rally and departure take priority; unfunded debt alone cannot prevent activation. A living enemy within four tiles and physical line of sight contests the site. Interrupted work resets progress; the request remains queued until the site and a resident are available again.
-- Activation completes the local objective and freezes the area with progression readiness. M18 connects that readiness to actual travel. Starting-core destruction takes precedence if both outcomes would occur in the same simulation tick. Camera movement or remote clicks never complete activation.
+- Activation completes the local objective and freezes the area with progression readiness. In campaign play, the sidebar offers travel to the next authored area; the final relay gives a journey-complete endpoint. Starting-core destruction takes precedence if both outcomes would occur in the same simulation tick. Camera movement or remote clicks never complete activation.
 - The starting Stone Hearth has 400 health and remains the defeat target throughout the level. Natural raiders attack an adjacent dwarf first, otherwise an accessible core tile within melee reach. The core stays impassable and has no repair, upgrade or relocation in M11. The onward stone is indestructible reserved floor: it cannot hold a room, wall or fixture, become another treasury/recruitment core or move the player's base.
 - Campaign travel begins a fresh foothold in the next area. Research/building unlocks carry forward under the working design; local armies and stockpiles stay behind. The implementation uses session memory without adding save infrastructure.
-- The last authored area's Hearthstone needs an explicit end-of-content or story-completion result. The ultimate campaign ending and total number of areas are not yet fixed.
+- The Emberwater Hearthstone completes the current two-area journey. There is no next-area link after it; the sidebar offers Restart area or Begin a new journey. Further campaign areas remain an authoring choice.
 
 Optional camp-clearing, relic or district tasks can shape the approach, but do not replace the shared Hearthstone objective. Exact positions and defenses vary by level.
+
+## Authored campaign and travel
+
+The ordinary game starts a two-area journey defined in `src/content/campaign.ts`:
+
+| Area | Approach | Result |
+|---|---|---|
+| Border Foothold | Establish a settlement and excavate the occupied northern halls | Activate the northern stone to recover stonebridge plans and choose travel to Emberwater |
+| Emberwater Crossing | Establish a fresh settlement, construct paid water/lava bridges and defeat the far island's Cinderling | Activate the final relay to complete the available journey |
+
+The Hearth panel provides an area briefing. Discovering its onward stone reveals the local story detail without exposing hidden positions in advance. Activation must still satisfy physical reach and security; travel only becomes available after successful activation and never occurs automatically.
+
+Travel preserves completed spell research and building knowledge in session memory. All six implemented rooms and reinforced-wall construction are known at the start; stonebridge plans unlock on arrival at Emberwater. These facilities remain useful in both settlements, and bridges retain their usual gold/work costs. Standalone debug and regional scenarios retain their existing construction catalog.
+
+Each destination is a new world: three level-1 Miners by default, normal starting gold, empty treasury, no rooms/defenses/stockpiles, fresh needs/payday and new authored enemies. Local jobs, events, crafting queues, research progress, prepared charges, active spells and resident levels stay behind. Carried research appears as unlocked, unprepared, paused preparation orders; use the Library's Resume control to prepare a local charge. Incomplete initial research does not transfer.
+
+Restart area reconstructs the current area with the knowledge available at its arrival, discarding work learned during the failed/retried attempt. Begin a new journey resets to Border Foothold with initial knowledge. Debug worlds are separate from the retained campaign; returning to the stronghold restores its exact in-memory state. There are no browser/disk saves.
 
 ## Starting area
 
@@ -57,7 +74,7 @@ Starting resources must be usable before a Treasure Room is built. The prototype
 | Natural passage | Connects regions and creates potential movement or attack routes |
 | Ancient dwarven ruins | May contain open chambers, damaged facilities, sealed routes, and discoveries |
 | Inhabited tunnels or chambers | May contain nests, camps, defenses, inhabitants, or treasure |
-| Water, lava, or chasms | Implemented impassable terrain with open sight/projectile paths; Miner-built stone bridges cross water/lava, while chasms remain unbridgeable |
+| Water, lava, or chasms | Block dwarfs and ordinary enemies while allowing sight/projectiles; bridges cross water/lava, Cinderlings cross lava directly, and chasms remain unbridgeable |
 | Map entrance or deep passage | A physical entry location for external hostile groups; does not need to be the dwarf arrival route |
 
 Miners can reinforce ordinary exposed walls around claimed territory. Bedrock needs no reinforcement. Finite resource extraction can change the shape of a passage, while permanent gem deposits and bedrock remain obstacles around which the base must be planned.
@@ -90,6 +107,13 @@ Selection overlays must distinguish designated excavation from the natural gold 
 
 The `crossings` scenario is a 28×18 authored map using normal starting Miners and allowance, accessible gold seams and a gem deposit. Map-spanning water and lava bands prevent a land bypass; the player constructs both crossings before reaching the onward stone. An optional chasm pocket stays unbridgeable. See [bridge rules](rooms.md#bridges-and-hazardous-crossings) for costs, construction, reclaim and occupancy. Discovery across the gap never activates the objective. There is no new enemy type or campaign link in this scenario.
 
+
+### Optional regional chambers
+
+The 48×48 campaign Border Foothold adds a sealed southwestern fungal cavern (Burrower, Spider and Spore Brute) and southeastern ancient hall (Restless Guard and Sentinel). The northern required camp and eastern raid passage retain their existing routes. Campaign Emberwater expands eastward to 40×18, adding sealed crystal caverns (Elemental and Stalker) and a volcanic lair (Deepmaw); the required far-bank sentry is a Cinderling. The standalone M16 crossings map remains 28×18.
+
+Briefings mention these optional branches. Inhabitants exist behind ordinary rock gates, remain hidden until exploration, give a 15-second warning and use normal combat/source rules. They lie outside the onward stone’s security radius. The water/lava channels still span the full map height, so the eastern extension does not provide a land bypass. Broader optional-encounter balance remains in M19.
+
 ## Inhabitants and regions
 
 Creature types should be associated with recognizable regions. These example pairings can recur across several maps:
@@ -102,9 +126,9 @@ Creature types should be associated with recognizable regions. These example pai
 | Crystal caverns | Elementals and territorial cave creatures | Gem deposits and magical discoveries |
 | Volcanic depths | Fire creatures and large deep predators | Hazardous crossings and valuable resource positions |
 
-Enemy behaviors should make layout matter: melee groups pressure entrances, ranged enemies challenge exposed approaches, and selected burrowers may threaten ordinary earth walls. Which species can dig, break doors, or target specific rooms remains to be defined. No creature can tunnel through bedrock.
+Enemy behaviors should make layout matter: melee groups pressure entrances, ranged enemies challenge exposed approaches, and selected burrowers may threaten ordinary earth walls. The Tunnel Burrower excavates dirt/rock, Cinderling crosses lava, and the roster defines ranged/control/armored/breaching roles. All can break shut doors and threaten the Hearth; [Enemies](enemies.md) gives exact capabilities and resistances. No creature can tunnel through bedrock.
 
-The [enemy concept gallery](concept-art/enemies/README.md) supplies the full ten-enemy roster required by [M17](development-plan.md#m17--complete-enemy-roster-and-behavior): Goblin Raider and Tunnel Burrower; Cave Spider and Spore Brute; Restless Guard and Ancient Sentinel; Crystal Elemental and Crystalback Stalker; Cinderling and Deepmaw. Only the Goblin Raider is currently implemented. All ten are planned for implementation, with distinct combat roles, initial models/animations and ordinary encounter integration. Exact abilities, scale, resistances and balance remain to be specified. M17 includes terrain interactions needed by those behaviors; M18 owns campaign placement and M21 environment graphics.
+The [enemy concept gallery](concept-art/enemies/README.md) supplies the full ten-enemy roster required by [M17](development-history.md#m17--complete-enemy-roster-and-behavior): Goblin Raider and Tunnel Burrower; Cave Spider and Spore Brute; Restless Guard and Ancient Sentinel; Crystal Elemental and Crystalback Stalker; Cinderling and Deepmaw. All ten are implemented with distinct combat roles, models/animations and ordinary encounter integration. [Enemies](enemies.md) defines abilities, scale, resistances and provisional balance. Five region scenarios provide normal starting crews/resources and hidden two-species encounters; the separate enemy-roster gallery supplies controlled test setups. Their terrain interactions, campaign travel and environment graphics are implemented and verified. The connected campaign includes the full roster through its required approaches and optional regional chambers.
 
 ## Attacks
 
@@ -114,7 +138,7 @@ Encounter definitions now support local camps/nests disturbed by discovery or a 
 
 Hostile groups navigate the actual terrain, doors and runic barriers, including floor the player has not discovered. Player sight remains separate. Bedrock and intact earth block Raiders; they can break shut doors/barriers but cannot tunnel. A sealed raid entrance retains one warned wave until its actual spawn squares and approach are usable. Claimed/occupied spawn squares cannot spawn a group, and pending waves never accumulate or relocate inside the settlement.
 
-The prototype Border Foothold has two sources: a buried camp at the north reacts to discovery with an eight-second warning; the eastern deep passage first warns at 360 seconds and gives 25 seconds before a raid. A defeated entrance wave starts a 150-second delay and then another warning. Waves never overlap from the same source. Defeating the camp clears it permanently; claiming an entrance spawn square stops its future reinforcements, while existing attackers remain. Positions, activation mode, source-clearing policy and timing live in the level definition. Timing values can be edited under Game configuration → Encounters for new strongholds.
+The base Border Foothold definition has two primary sources (its campaign version adds the optional regional chambers above): a buried camp at the north reacts to discovery with an eight-second warning; the eastern deep passage first warns at 360 seconds and gives 25 seconds before a raid. A defeated entrance wave starts a 150-second delay and then another warning. Waves never overlap from the same source. Defeating the camp clears it permanently; claiming an entrance spawn square stops its future reinforcements, while existing attackers remain. Positions, activation mode, source-clearing policy and timing live in the level definition. Timing values can be edited under Game configuration → Encounters for new strongholds.
 
 Ordinary sidebar threat reports omit undiscovered camps and use generic warnings for unknown raid sources. Source names become available after discovery; current enemy counts include only visible units. Debug explicitly exposes authored source state and can advance a pending timer while preserving discovery, warning duration and route checks. The `encounters` test scenario uses a mineable route gate, a hidden camp, a raid entrance, real doors/traps and Warriors. M11 adds physical Hearth attacks and the separate onward stone inside the northern camp. The `hearth` and `hearth-defeat` scenarios use the same mineable gate and natural attackers to exercise both local outcomes.
 

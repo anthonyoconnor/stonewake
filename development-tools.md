@@ -39,7 +39,7 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 
 | Scenario | Purpose |
 |---|---|
-| `stronghold` | Normal starting crew, discovery and specialist arrivals |
+| `stronghold` | First area of the two-area campaign, with normal crew/economy and onward travel |
 | `room-lab` | Empty claimed room studio; construct through normal commands |
 | `showcase` | Room geometry, residents, needs, crafting and research |
 | `defenses` | Existing manufactured defenses and raider yard |
@@ -56,7 +56,7 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 
 Room construction uses normal validation, furnishing and costs, including the free-room flag. Explicit test allowances, prepared charges, needs and initial stock are fixture setup. They are not gameplay rewards. Add a new named factory for a useful reproduction instead of copying its setup into a browser script and a separate test.
 
-The typed [command union](src/dev/controller.ts) supports `bridge`, `remove-bridge`, `build`, `reclaim`, `dig`, `wall`, `free-build`, `arrivals`, `spawn`, `needs`, `craft`, `research`, `pause-research`, `cast`, `place-defense`, `remove-defense`, `door`, `raider`, `buy-miner`, `advance-encounter` and `activate-hearth`. Purchases use normal support/price/arrival checks. Encounter timer advancement retains discovery, warning duration and physical route checks. Construction, research, spells and defenses call their real services. Spawn/needs commands are explicit test setup. Activation requests use actual discovery, movement and security rules. Ended areas reject mutation commands; load/restart remains available. There is no generic arbitrary-state mutation command.
+The typed [command union](src/dev/controller.ts) supports `bridge`, `remove-bridge`, `build`, `reclaim`, `dig`, `wall`, `free-build`, `arrivals`, `spawn`, `needs`, `craft`, `research`, `pause-research`, `cast`, `place-defense`, `remove-defense`, `door`, `raider`, `enemy`, `buy-miner`, `advance-encounter` and `activate-hearth`. Purchases use normal support/price/arrival checks. Encounter timer advancement retains discovery, warning duration and physical route checks. Construction, research, spells and defenses call their real services. Spawn/needs commands are explicit test setup. Activation requests use actual discovery, movement and security rules. Ended areas reject mutation commands; load/restart remains available. There is no generic arbitrary-state mutation command.
 
 ## Verify a change
 
@@ -68,11 +68,11 @@ npm run verify -- movement --browser  # Focused simulation plus browser smoke ch
 npm run verify -- all --browser --production
 ```
 
-Scopes: `changed` (default), `all`, `development`, `movement`, `rooms`, `characters`, `research`, `defenses`, `encounters`, `economy`, `hearth`, `morale`, or a test filename such as `gold-bags`. The `characters` group covers level definitions/progression, learning rooms, combat and spells, settings, and additive content. Changed-file selection follows local imports from each test. Unknown dependencies, changes outside that graph, or a clean working tree conservatively run the full suite. Documentation-only changes still typecheck. The printed file list makes selection reviewable.
+Scopes: `changed` (default), `all`, `development`, `movement`, `rooms`, `characters`, `research`, `defenses`, `encounters`, `economy`, `hearth`, `morale`, `enemies`, `campaign`, or a test filename such as `gold-bags`. The `characters` group covers level definitions/progression, learning rooms, combat and spells, settings, and additive content. Changed-file selection follows local imports from each test. Unknown dependencies, changes outside that graph, or a clean working tree conservatively run the full suite. Documentation-only changes still typecheck. The printed file list makes selection reviewable.
 
 Add `--list` to inspect the selected tests without running them.
 
-`--browser` uses the running development server, defaulting to port 5173; set `GAME_URL` to use another. `--production` builds and launches a temporary preview on port 4179 to check that the interface/panel and scenario loading are absent, then closes only that preview. It does not stop the development server. Avoid `--watch` with these one-shot browser flags.
+`--browser` uses the running development server, defaulting to port 5173; set `GAME_URL` to use another. `--production` builds and launches a temporary preview on port 4179 to check that the development API, simulation panel and URL scenario overrides are absent, then closes only that preview. It does not stop the development server. Avoid `--watch` with these one-shot browser flags.
 
 Browser checks use a separate headless browser and never attach to an existing player tab. Windows defaults to installed Edge. Set `BROWSER_CHANNEL=chrome` to use Chrome. Other platforms use Playwright Chromium; install it once with `npx playwright install chromium` if needed. Screenshots go to ignored `test-results/`.
 
@@ -106,3 +106,11 @@ New job execution must satisfy the exhaustive handler table. Preserve the explic
 
 
 `node scripts/hearth-morale-browser.mjs` verifies hidden objective discovery, contested physical activation, local success, natural core defeat, frozen actions and same-area restart, plus transient needs, late wage recovery, grouped/dismissed warnings, blocked departures and population/resource accounting. Pass `m11` or `m14` for one section. Screenshots go to ignored `test-results/`.
+
+## Enemy, campaign and presentation checks
+
+- `enemy-roster` is the supplied five-gallery enemy test yard; `region-upper`, `region-fungal`, `region-ancient`, `region-crystal` and `region-volcanic` are separate normal-rules settlements with hidden regional enemy pairs and onward objectives. They use normal starting crew/gold and no supplied defenders or defenses.
+- `character-models` shows the four dwarfs on clear floor for comparing silhouettes and equipment. Use `showcase` for actual work/needs and `spells` for combat.
+- `npm run verify -- enemies` selects enemy/encounter/combat regression checks; `npm run verify -- campaign` selects campaign, objective and crossing checks.
+- `node scripts/enemies-browser.mjs`, `node scripts/campaign-browser.mjs`, `node scripts/interface-browser.mjs`, `node scripts/environment-browser.mjs --profile` and `node scripts/character-visuals-browser.mjs` cover the new systems. Run browser workloads one at a time and hold source edits during a run to avoid HMR resets. Environment profiling takes settled frame samples after warm-up.
+- The development `enemy` command accepts `type`, `spawn` and `target` and calls actual enemy placement; the harness also has a named species selector. Campaign travel/restart checks use the ordinary sidebar actions. All screenshots/reports stay in ignored `test-results/`.

@@ -119,7 +119,7 @@ The Stone Hearth is a fixed structure, and doors and traps retain their individu
 | Room or structure | Purpose | Dwarfs attracted | Output or continuing service |
 |---|---|---|---|
 | Stone Hearth | Protects the awakened Hearthstone; anchors the base and receives new dwarfs | Arrival point for eligible specialists and purchased miners | Dwarf arrival access and the fixed structure enemies must destroy to win |
-| Onward Hearthstone | A separate, hidden map-authored crystal in a difficult location | None | Physical activation completes the local objective (M11); actual next-area travel remains M18 |
+| Onward Hearthstone | A separate, hidden map-authored crystal in a difficult location | None | Physical activation completes the local objective; the campaign offers explicit travel or its final endpoint |
 | Treasure Room | Stores delivered gold and provides wage collection points | None directly | Gold storage capacity; does not generate money |
 | Dormitory | Provides sleeping and resting space | Supports every resident type | Bed capacity and rest |
 | Kitchen | Provides shared food support and a place to eat | None directly; supports all arrivals | Resident support from floor area; enlarge it or build several to support the population |
@@ -131,7 +131,7 @@ The Stone Hearth is a fixed structure, and doors and traps retain their individu
 
 ## Bridges and hazardous crossings
 
-Water, lava and chasms are map-authored, impassable terrain on the single layer. They allow sight and projectiles across them; camera movement never discovers terrain. There is no contact damage or swimming: units cannot enter an unbridged hazard. Chasms cannot be bridged in this prototype.
+Water, lava and chasms are map-authored, impassable terrain on the single layer. They allow sight and projectiles across them; camera movement never discovers terrain. There is no contact damage or swimming. Dwarfs and ordinary enemies cannot enter an unbridged hazard; the Cinderling explicitly crosses unbridged lava, while water and chasms still block it. Chasms cannot be bridged in this prototype.
 
 Choose **Bridge icon** in the Rooms grid and click or drag discovered water/lava. Each connected plan must reach claimed land or an existing bridge/plan connected to land. Miners build one square at a time while standing on reachable adjacent claimed land or a completed bridge. Corner contact provides no support. Bent, branching, wide and single-square bridges use the same rules; no maximum supported water/lava span is imposed. A single shore supports construction, and reaching the opposite shore opens the crossing.
 
@@ -141,7 +141,7 @@ Bridges supply no room service capacity, attract nobody, and have no interior fu
 
 Choose **Sell** to cancel plans or reclaim decks. Cancelled plans refund all paid gold; completed decks refund the normal room reclaim fraction. Free squares refund zero. The operation rejects occupied decks, loose gold, removal that cuts any living unit off from currently reachable land, and sections that would leave remaining decks/plans unsupported. Remove unsupported sections together. Removal restores the original hazard, invalidates paths, and cancels affected work on the next tick; no tile or payment is recreated by a stale job. Bridges have no damage, collapse or maintenance system in M16.
 
-The **crossings / Emberwater Crossing** scenario starts with ordinary crew, allowance and resources. It requires a water crossing followed by lava to reach the onward Hearthstone; an optional chasm pocket demonstrates the unbridgeable rule. Load it through Debug → Additional test scenarios. Border Foothold remains the default level; campaign links belong to M18.
+The **crossings / Emberwater Crossing** scenario starts with ordinary crew, allowance and resources. It requires a water crossing followed by lava to reach the onward Hearthstone; an optional chasm pocket demonstrates the unbridgeable rule. Load it through Debug → Additional test scenarios. Border Foothold starts the connected campaign; its first gate unlocks bridge construction and travel to the expanded campaign version of Emberwater. The standalone crossings scenario remains 28×18.
 
 ## Stone Hearth and Hearthstone
 
@@ -157,7 +157,7 @@ The Hearthstone is the natural magical crystal. The Stone Hearth is the protecti
 
 Core health and whether the damaged structure can be repaired remain open.
 
-Every level also contains a separate onward Hearthstone, usually in an enemy-held area or beyond a difficult terrain obstacle such as lava. It is an authored objective, not a player-built room or an upgrade to the starting core. The player must discover and reach it to open the route to the next area. It does not provide another recruitment point or treasury. [Levels](levels.md#onward-hearthstone-objective) defines implemented discovery, access and activation, with actual next-area travel pending M18. The starting core has 400 health and no repairs; the onward stone is indestructible and reserves its tile from construction.
+Every level also contains a separate onward Hearthstone, usually in an enemy-held area or beyond a difficult terrain obstacle such as lava. It is an authored objective, not a player-built room or an upgrade to the starting core. The player must discover and reach it to open the route to the next area. It does not provide another recruitment point or treasury. [Levels](levels.md#onward-hearthstone-objective) defines implemented discovery, access and activation, with next-area travel and the final campaign endpoint defined in [campaign rules](levels.md#authored-campaign-and-travel). The starting core has 400 health and no repairs; the onward stone is indestructible and reserves its tile from construction.
 
 ## Treasure Room
 
@@ -227,7 +227,7 @@ Doors occupy one clear, claimed square between two opposite walls, with walkable
 
 Spikes trigger when an enemy crosses the pressure plate, including fast crossings. A lethal hit defeats it; a survivor cannot move or attack during the pin. Bolts fire automatically along the selected compass direction, hit one enemy, and do not pierce. Walls, the Hearth and physically shut doors block shots; cosmetic furniture does not. Both traps ignore dwarfs, cause no friendly fire, and **automatically reset after their cooldown**. They need no ammunition, replacement supplies or Engineer rearming. Cooldown starts when triggered; unused traps remain ready.
 
-Defenses are available in the normal stronghold against authored Goblin Raider encounters and raids. **Debug → Test harnesses → Defense test yard** retains manual tests; the additional `encounters` scenario tests warnings, excavation, source clearing and real combat/traps. Natural Raiders can physically attack and destroy the starting Hearth (M11). Stonefall and additional slowing traps are design-only possibilities.
+Defenses are available in normal strongholds against all ten authored enemy types and raid sources. **Debug → Test harnesses → Defense test yard** retains manual tests; the additional `encounters` scenario tests warnings, excavation, source clearing and real combat/traps. Natural enemies use their defined melee or ranged attacks against the starting Hearth. Stonefall and additional slowing traps are design-only possibilities.
 
 ## Reinforced walls
 
@@ -251,6 +251,6 @@ Room placement skips ineligible squares within a drag (terrain, hidden or unclai
 
 The Stone Hearth includes one fixed treasury chest using the shared gold-storage service. It starts empty and holds the normal construction cost of a 3×3 Treasure Room (currently 108 gold). It accepts miner deliveries and pays for construction/production through the shared balance, including when the starting allowance is exhausted. The fixed core treasury service protects its approach square. Inspect the Hearth for live stored gold/capacity. It is not a room upgrade or an extra starting grant.
 
-Current prototype reinforcement uses a single state per ordinary dirt/rock tile and takes six seconds of miner work beside reachable claimed floor. It costs no gold and follows mining, hauling and claiming work. Marking a wall for excavation cancels reinforcement; excavating a reinforced wall uses normal player mining time and removes its reinforced state. Resource seams and bedrock are not reinforced. Raw walls have no room fittings until reinforcement completes. Enemy breaching strength remains pending combat implementation.
+Current prototype reinforcement uses a single state per ordinary dirt/rock tile and takes six seconds of miner work beside reachable claimed floor. It costs no gold and follows mining, hauling and claiming work. Marking a wall for excavation cancels reinforcement; excavating a reinforced wall uses normal player mining time and removes its reinforced state. Resource seams and bedrock are not reinforced. Raw walls have no room fittings until reinforcement completes. Tunnel Burrowers take three times as long to excavate reinforced dirt/rock. Other enemies cannot excavate terrain; Sentinel and Deepmaw attacks apply their defined multipliers to doors and runic barriers. See [Enemies](enemies.md).
 
 Room tiles can now be reclaimed using the Reclaim room tiles command. Refunds use the original paid cost and `reclaimRatio` in tuning (initially 50%), so changing room prices or free-build mode cannot create a resale profit. Refunds are spendable immediately; gold displaced by reduced storage remains in the world for hauling. Capacity and reservations update with the remaining room floor. Constructed walls are reinforced rock built by miners on clear claimed floor; the initial 24-second duration is deliberately longer than digging plus reinforcement. They are not rooms and cost time only in this prototype.

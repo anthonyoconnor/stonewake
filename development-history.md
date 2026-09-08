@@ -2,7 +2,7 @@
 
 Read this file only when past context, original milestone requirements, verification evidence or earlier decisions are needed. It is not required reading for ordinary development. Start with [the active development plan](development-plan.md) and the relevant current design document.
 
-This archive preserves completed M1–M9 (including M5.1) and dated development records. Historical requirements and provisional values may have been superseded; current design documents and the user's latest decisions take precedence. Remaining limitations belong in the active plan so they do not require loading this archive.
+This archive preserves completed milestone specifications and dated development records, including M5.1. Historical requirements and provisional values may have been superseded; current design documents and the user's latest decisions take precedence. Remaining limitations belong in the active plan so they do not require loading this archive.
 
 ## Completed milestone tracker
 
@@ -540,3 +540,99 @@ Verification: TypeScript check and production build passed (existing large-bundl
 - Added editable wages to each character level row: Miners 4/5/6/7/8, Engineers 7/9/11/13/15, Warriors 8/10/12/14/16 and Runesmiths 10/12/14/16/18 gold. Sidebar wages reflect the reached level; accrued payments retain the value earned on payday.
 - Verified 42 focused economy, character-level, settings, morale and Hearth simulation checks; final economy rerun passed all 13 tests. Source/test typecheck and production build passed (build used RAYON_NUM_THREADS=2 after a local system-resource failure; existing large-bundle warning remains). M13 browser checks passed shared payment for a newly purchased Miner, physical collection, exact gold accounting and blocked/restored access.
 - Character browser playtest passed all four types through levels 1–5 with the displayed wage checked at each level, live configuration/injury behavior and real melee XP. Updated the browser checks to select roles in the current dwarf activity sidebar.
+
+
+## M17, M18 and M20–M22 — completed 2026-09-08
+
+The user authorized these five milestones together. Their implementation was coordinated across enemy, interface, environment and campaign/character work. M19 remains planned; M12 and M15 remain removed from the active roadmap.
+
+| Milestone | Outcome | Status |
+|---|---|---|
+| M17 | All ten concept enemies and distinct combat behaviors | Complete |
+| M18 | Authored campaign, Hearthstone travel and unlock progression | Complete |
+| M20 | Overall player interface and left control panel cleanup | Complete |
+| M21 | Terrain and environment graphics update | Complete |
+| M22 | Character models and animation update | Complete |
+
+### M17 — Complete enemy roster and behavior
+
+Dependencies: completed M10–M11 for encounter/core integration and M16 for enemies associated with hazardous terrain. Guarding and retreat are not required. This expanded scope is implemented and verified.
+
+Implement all ten enemies in the [current concept gallery](concept-art/enemies/README.md), retaining and extending the existing Goblin Raider:
+
+| Region | Required enemies |
+|---|---|
+| Upper workings | Goblin Raider, Tunnel Burrower |
+| Fungal caves | Cave Spider, Spore Brute |
+| Ancient halls | Restless Guard, Ancient Sentinel |
+| Crystal caverns | Crystal Elemental, Crystalback Stalker |
+| Volcanic depths | Cinderling, Deepmaw |
+
+- Define and implement a distinct combat role for every enemy, using editable stable definitions for stats, size, senses, movement, attacks, targeting and capabilities. Inclusion of all ten is decided; exact abilities, scale and balance remain design choices to document in levels.md before implementation.
+- Cover melee, ranged and tunneling/breaching threats across the roster, with meaningful differences in how enemies pressure defensive layouts. Define attack obstruction, friendly-fire policy, door breaking and reinforced-wall resistance; no creature can tunnel through bedrock.
+- Implement terrain interactions required by each enemy's defined behavior, including traversal restrictions, tunneling and any explicit hazard resistance. Exercise them in representative regional encounter scenarios. Artwork alone does not grant a creature new abilities or terrain immunity. Full regional campaign layouts belong to M18 and environment visual improvements to M21; unrelated regional terrain mechanics are not implied by this milestone.
+- Give every enemy a recognizable initial model and movement/attack/defeat animations guided by its concept. M22 improves all ten models and animations further; M17 must already make their identities and actions readable in play.
+- Integrate all ten with ordinary authored camps/nests and raid systems as appropriate to their roles, plus shared debug scenario entries. Every type must be encountered through a normal encounter source in a playable scenario, not only through debug spawning. Campaign distribution follows in M18.
+- Specify and implement each type's interactions with dwarfs, the Hearth, doors, barriers, traps and spells, including control effects and any special resistances. Keep health, warnings and details in the sidebar and preserve discovery rules.
+
+Complete when all ten enemies are implemented and exercised in playable encounter scenarios, with distinct behaviors that reward different layouts. Verify each type's movement, attacks, targeting, defeat, terrain access, trap/spell/control interactions and encounter lifecycle; cover ranged line of sight, friendly-fire policy, tunneling, reinforced-wall resistance, bedrock exclusion and mixed-enemy encounters. Record per-enemy verification and any remaining balance or visual limitations. A smaller selected subset does not complete M17.
+
+### M18 — Campaign and Hearthstone travel
+
+Dependencies: M11, M16 and M17; integrate completed recruitment, wages and morale systems into playable level populations/economies. Coordinate travel and endpoint controls with M20.
+
+- Add campaign and level definitions linking each onward Hearthstone to the next area. Author at least two complete connected levels with different approaches: an enemy-held site and a hazardous crossing. The five candidate concepts are inspiration, not a locked level count/order.
+- Let the player proceed through a ready onward Hearthstone using a clear sidebar action. Start the next area at its own established base Hearth with a fresh mining crew and local economy; leave the previous army, buildings and stockpiles behind.
+- Carry campaign research/building unlocks in session memory. Distinguish research knowledge from local work queues, prepared spell charges and resident levels; specify reset/carry rules and retain uses for unlocked rooms/types. Add no disk/browser saves or persistence infrastructure.
+- Tie briefings and discoveries to restoring routes through the lost kingdom's runic network. Each level's required objective is its onward Hearthstone; optional camps, relics or district goals support that journey.
+- Define the endpoint of the authored campaign: its final discovered Hearthstone resolves the current journey or marks the end of available areas, without a broken next-level link. The ultimate story ending remains an authoring choice.
+
+Complete when a browser playthrough reaches one onward Hearthstone, chooses to proceed, starts and completes the next authored area, and receives a valid endpoint. Verify unlock carryover, fresh residents/resources/needs, local spell-state rules, no cross-level jobs/enemies/events, defeat/restart and no automatic transition on discovery alone.
+
+### M20 — Overall player interface and left control panel
+
+Dependencies: existing gameplay/UI systems; integrate M18 campaign actions when available. Reference [Gameplay interface](gameplay-interface.md) and its supplied layout/message references.
+
+- Review the whole player interface, from finding actions and understanding resources/objectives to world selection, placement, targeting, inspection, messages, maps and restart/travel flows.
+- Tidy the left control panel with consistent grouping, spacing, icon sizes, selected/disabled states and expandable details. Remove redundant text and controls; keep frequent actions directly accessible and costs or short status visible where useful.
+- Make tooltips, keyboard focus, cancellation and feedback consistent across Rooms, Defenses, Spells and Dwarfs. Preserve the persistent left sidebar, autonomous residents and clear world view without floating text, health bars or progress bars.
+- Check usable panel sizing and scrolling at supported browser sizes, keeping essential navigation and actions reachable. Keep development controls separate from ordinary player flows.
+
+Complete when browser playtests cover building/selling, defense production/placement, research/casting, resident inspection, warnings, maps and campaign result/travel actions through a coherent interface. Verify keyboard focus, disabled-state explanations, cancellation, no input leaking into the world and no clipped or inaccessible essential controls. Update gameplay-interface.md to describe the result.
+
+### M21 — Terrain and environment graphics update
+
+Dependencies: existing world rendering and completed M16 bridges; coordinate world previews with M20. Review the approved [terrain reference](concept-art/terrain/README.md), [room/structure concepts](concept-art/rooms/README.md), [regional concepts](concept-art/levels/README.md), their prompt records and [graphics pass notes](graphics-pass.md).
+
+- Improve terrain forms, materials and transitions for earth, rock, bedrock, embedded gold, gem columns, claimed floors, water, lava and chasms using the concepts as visual references.
+- Bring room floors, walls, cosmetic furnishings, doors/traps, bridges and Hearthstones into a consistent environment style. Improve model silhouettes, material definition, lighting and restrained environmental/fixture animation.
+- Preserve one terrain layer, readable square excavation cells, clear resource/hazard distinctions and fog of war. Decorative detail must not change navigation, room capacity, sight or gameplay geometry.
+- Check the result at ordinary play zoom, close inspection and multiple rotations, including narrow/irregular rooms and hazardous crossings. Keep reusable assets/materials and practical browser performance.
+
+Complete when representative gameplay areas and the visual showcase demonstrate a coherent improvement against the references, with before/after captures. Verify terrain and placement readability, fog, irregular rooms, bridge/door/trap states, reduced-motion behavior and browser performance. Record remaining visual limitations in graphics-pass.md.
+
+### M22 — Character models and animations update
+
+Dependencies: current four dwarf roles and combat/jobs; final enemy coverage includes all ten enemies in M17. Review the [dwarf concepts](concept-art/dwarfs/README.md), [enemy concepts](concept-art/enemies/README.md), their prompt records, [Characters](characters.md) and [graphics pass notes](graphics-pass.md).
+
+- Improve all four dwarf roles and all ten enemy models: proportions, silhouettes, faces/hair, clothing, armor, tools and materials. Preserve the established female Engineer and distinct Miner, Warrior and Runesmith appearances.
+- Improve walking, turning, idle, mining/construction, hauling, crafting, training, research, eating/resting, attacks, hit reactions and defeat where those activities exist. Cover M17 ranged/breaching actions without introducing new gameplay abilities.
+- Make poses, timing and transitions follow real movement, jobs and combat events, with less sliding, clipping and abrupt switching. Use shared reusable animation/model helpers without requiring an elaborate asset pipeline.
+- Keep roles and actions readable from the overhead gameplay camera, coordinate character scale/lighting with M21, and preserve sidebar-only statistics and practical performance at normal populations.
+
+Complete when all four dwarf roles and the shipped enemy roster have improved, recognizable models and their implemented activities animate coherently in browser scenarios and normal play. Capture before/after comparisons; verify equipment alignment, movement/attack timing, state transitions, reduced-motion behavior and crowded-scene performance. Record limitations in graphics-pass.md.
+
+
+### Completion and verification — 2026-09-08
+
+- **M17:** implemented all ten stable enemy definitions and editable ability tuning. Every species has a distinct role, natural source lifecycle, movement, attacks, targeting, defeat, trap/spell/control interactions and concept-guided model. Focused checks cover ranged obstruction and no friendly fire, armor, webs/spores, charge/cleave, structure damage, physical digging, reinforcement resistance, bedrock/resource exclusion and Cinderling lava traversal. A regression verifies species-aware Hearth approaches when an isolated floor approach competes with a reachable lava route. Five ordinary regional maps use three Miners, 400 starting gold, recruitment and concealed physical camps; the separate gallery supplies test defenders. The connected campaign also contains all ten species through required and optional encounters.
+- **M18:** authored two connected areas with briefings, discoveries, bridge knowledge unlocked at the first gate, explicit travel and a valid final endpoint. Completed research knowledge carries in memory; local spell preparation/queues, crew/levels/needs/wages, economy, buildings, jobs, enemies and events reset. Retry restores entry knowledge. Optional fungal/ancient branches in Border Foothold and crystal/volcanic branches in Emberwater stay hidden behind excavatable gates. Tests verify their concealment, ordinary excavation, warned sources and continuous water/lava channels.
+- **M20:** consistent compact icon actions, focusable unavailable explanations, cancellation and world-input isolation; grouped warnings/history and a real Hearth-attack alert; inspection in the scrolling panel and bounded result controls. Browser checks covered actual build/sell, production/placement, research/cast, resident/enemy inspection, warnings/history, maps/fog, keyboard focus and 1440/1024/800 desktop sizing. Real defeat, post-outcome inspection/restart and both campaign victory controls were verified at 800×600.
+- **M21:** improved terrain relief/materials, connected gold veins/quartz, room floors and all six room furnishings, Hearths, doors/traps, bridges and hazards. Browser checks covered paid/free irregular layouts, retained earth/bedrock, reinforcement, precise fog picking, bridge plans/decks, doors/damage, trap trigger/reset and live reduced motion. Inspected ordinary/close/rotated before/after captures. Final review corrected merged chest alignment, bevel winding, lava emission masking and bridge substrate/paver z-fighting.
+- **M22:** improved all four dwarf silhouettes, clothing/armor/equipment, facial/hair detail and shared materials, plus all ten enemy rigs. Dwarf walking follows displacement; turns/job poses ease; attacks, recoil and defeat follow actual events. Browser captures verify front/back equipment, mining, reinforcement, claiming, wall construction, crafting, training, research, meals/rest, a normal-economy moving gold load, paused poses, real enemy-caused resident defeat/disposal and reduced motion. Enemy checks cover all ten models, anatomy, actual tunneling strokes, combat and reduced motion. Four dwarf before/after comparisons are retained; the nine new enemy models were compared with their concept sheets, and no historical Raider screenshot was captured.
+
+The complete campaign browser route used ordinary starting crews/resources, room costs, recruitment, mining, research and bridge work, without free construction, supplied stocks, spawned defenders or shortened timings. Border Foothold completed at **374.35 simulation seconds**, with five residents and Call to Arms/Dwarf Haste researched. Travel produced three fresh Miners and paused, unprepared knowledge. Emberwater completed at **308.4 seconds**, with six residents and four completed bridge squares. Discovery alone did not finish either area; physical activation, explicit travel, the final endpoint and second-area retry all passed with no browser errors. This verifies one normal route; M19 still owns broader economy/combat balance, alternate approaches and recovery testing.
+
+Validation: **180** simulation checks and source/test typecheck passed through the final all-scope verification. The development browser smoke check, production build and production isolation check passed. Milestone browser scripts are in scripts/interface-browser.mjs, enemies-browser.mjs, environment-browser.mjs, campaign-browser.mjs and character-visuals-browser.mjs. The hauling-only follow-up and focused environment capture continuations preserve earlier passed evidence. git diff --check passed; generated captures, reports and builds remain ignored.
+
+Paused rendering samples after warm-up at 1440×1000 on Intel Iris Plus/ANGLE D3D11 measured **45.5 FPS** in the ordinary stronghold and **24.0 FPS** in the full six-room/six-resident showcase. A ten-enemy plus six-dwarf gallery measured roughly **20–30 FPS** across headless runs. These are machine-specific samples, not universal targets. The showcase is heavier on integrated graphics; broader balance/performance work remains in M19. Repeating procedural textures, simple rigs, limited facial/hand motion and imperfect bed/seat contact remain documented prototype-art limits. No saves, accounts, multiplayer or release infrastructure were added.
