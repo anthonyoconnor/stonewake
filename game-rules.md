@@ -39,13 +39,13 @@ Spells are accessed through the left sidebar. Available player-cast spells use a
 The grid defines excavation and construction. Dwarfs and enemies move continuously through the actual open space in halls and rooms, with positions and travel directions independent of tile centers.
 
 - Movement can follow any clear direction, including diagonal routes across open rooms, without snapping from square to square.
-- Walls, closed doors, and solid furnishings constrain routes according to their physical shape. Characters must not pass through obstacles or squeeze diagonally between touching blocked corners.
+- Real terrain, the Hearth and doors constrain routes according to their gameplay state. Characters must not pass through these obstacles or squeeze diagonally between touching blocked corners. Room furnishings are cosmetic and never block movement or sight.
 - The space needed by a character determines where it can fit. There is no rule limiting a floor tile to one character.
 - Proposed crowd behavior: characters steer around one another, pass where there is room, and yield or queue at narrow openings. Wider passages should support better traffic flow.
-- Routes respond to excavation, door changes, and automatic furnishing changes. Room boundaries alone do not obstruct movement.
+- Routes respond to excavation and door changes. Room boundaries and automatic furnishing changes do not obstruct movement.
 - A call to arms draws responders into accessible space around the rally location; it does not arrange them on individual grid squares or give the player direct movement control.
 
-Character sizes, avoidance distances, and crowd behavior need tuning alongside corridor widths and furnishing clearance. The movement model applies to both dwarfs and enemies.
+Character sizes, avoidance distances, and crowd behavior need tuning alongside corridor widths. The movement model applies to both dwarfs and enemies.
 
 ### Visual style and camera
 
@@ -122,12 +122,12 @@ Work scheduling must allow genuinely spare miners to reinforce walls. Renewable 
 - Gem deposits, represented visually as columns occupying square terrain cells, provide continuing, slower gold income under the current resource model.
 - Both provide the same spendable gold currency.
 - Miners extract and transport gold to Treasure Rooms or the Stone Hearth treasury chest.
-- Treasure Room capacity comes from the accessible storage positions that fit its size and shape.
+- Treasure Room capacity comes from floor tile count times its tunable storage per tile. Furnishing count and room shape do not change it; miners still need a reachable delivery route.
 - Undelivered gold does not become spendable until stored.
 - Mined gold or gem yields remain on the ground at the extraction site if no reachable storage is available. Miners collect them once reachable storage has free capacity; full or unreachable storage must not cause resources to disappear. Both sources still produce the same gold currency.
 - Building, recruitment, wages, and applicable production costs draw from stored reserves.
 
-Exact extraction rates, carrying capacity, storage density, and spending costs remain open. Startup must provide usable funds before normal hauling is established; the form of starting storage is still to be chosen.
+Exact extraction rates, carrying capacity, storage density, and spending costs remain balance choices. Startup provides a provisional gold allowance and the Stone Hearth treasury chest so usable storage exists before a Treasure Room is built.
 
 ## 8. Miner purchases
 
@@ -160,12 +160,12 @@ Other dwarf types are attracted by suitable facilities and a settlement able to 
 Together with directly purchased Miners, these specialists form the four dwarf types in the current gameplay scope. Additional types and rooms can be introduced later through the shared definition systems described below.
 
 - A qualifying room makes a specialist eligible to arrive.
-- Accommodation, food provision, and usable specialist capacity must support additional residents. These depend on accessible furnishings that fit the rooms, not solely their painted tile counts.
+- Accommodation, food support and specialist capacity must support additional residents. These come from reachable room-floor area and each room's tunable capacity per tile.
 - Dwarfs arrive beside the Hearthstone through its runic connection and walk into the base.
 - No dedicated corridor to the surface is required on every map.
 - Required rooms must remain usable after arrival; attraction is not a one-time checklist.
 
-The current prototype admits at most one eligible specialist every 45 seconds, rotating among eligible types. Accessible working positions, spare beds and stored food bound arrivals; the room studio disables automatic arrivals. Values remain tunable. [Characters](characters.md) records the four core dwarf types and current limitations.
+The current prototype admits at most one eligible specialist every 45 seconds, rotating among eligible types. Reachable specialist capacity and spare accommodation/food-support slots bound arrivals; no stored-food or production-rate check is needed. The room studio disables automatic arrivals by default. Values remain tunable. [Characters](characters.md) records the four core dwarf types and current limitations.
 
 ## 10. Needs, payday, and departure
 
@@ -173,25 +173,25 @@ All resident dwarfs, including miners, require pay, bedding, food, and the facil
 
 On payday, dwarfs physically visit an accessible Treasure Room to collect their wage. Insufficient gold and an inaccessible treasury are different problems and must be reported separately. The payday model needs enough time for ordinary travel and queues before treating a payment as persistently missed.
 
-The proposed baseline is one claimed Dormitory bed and standard meals for every resident. Beds appear only where their footprints and access space fit, and each physical bed counts once. All dwarf types, including Warriors, use Dormitories. Relative wage tiers appear in the character roster; exact amounts and need intervals remain to be balanced.
+Every resident uses one Dormitory accommodation slot, provisionally one slot per floor square. All dwarf types, including Warriors, use this shared room. Visible beds are decorative and never determine availability. Relative wage tiers appear in the character roster; exact amounts and need intervals remain to be balanced.
 
-All dwarfs get food from the Kitchen, which combines food growing, preparation, brewing, and eating. The player must provide one sufficiently large Kitchen or several accessible Kitchens to support the population. Actual production, stored food, and eating throughput depend on usable furnishings and access. Room capacity must support existing residents before qualifying more arrivals. Brewing is part of this shared room, with no separate compulsory ale need established.
+All dwarfs get food from the Kitchen, provisionally one supported resident per floor square. One large Kitchen or several reachable Kitchens must support the population, serving existing residents before qualifying more arrivals. Dwarfs still travel there and spend time eating. Ingredients, meal/ale inventories and growing/cooking/brewing production chains are absent; mushrooms, stoves, tables and casks are visual details only.
 
 Repeated or prolonged unmet needs increase dissatisfaction. Clear alerts explain the cause, giving the player time to respond. Dwarfs whose needs remain unmet eventually leave through the Hearthstone. Departing miners reduce the current miner count and therefore the next recruitment price.
 
 ## 11. Production, research, and room usefulness
 
-Rooms can occupy any size or shape of excavated, usable grid squares. The player designates their footprint, and their floors, wall treatments, and furnishings adapt automatically as the room changes. A one-tile designation is allowed, although it may not yet have space to perform its function.
+Rooms can occupy any size or shape of excavated, usable grid squares. The player designates their footprint, and their floors, wall treatments, and furnishings adapt automatically as the room changes. Every tile contributes its configured capacity, including single-tile rooms and narrow or irregular layouts.
 
-Floor patterns and decorations on existing wall faces identify the room independently of furniture. Larger usable areas allow additional beds, workstations, storage, or larger arrangements. For example, a Library adds shelf rows only when their shelves and aisles fit, a Dormitory adds accessible beds, and a Training Room adds practice stations with enough activity space. Furniture keeps its physical scale rather than stretching to match a room.
+Floor patterns and decorations on existing wall faces identify the room independently of furniture. Larger areas can show additional or larger decorative arrangements. Furniture keeps its visual scale rather than stretching to match a room; missing beds, shelves, tables or practice equipment never disable its function.
 
-Capacity follows usable furnishings and working space. Automatic arrangements must preserve entrances and circulation, account for irregular shapes and obstacles, and keep valid existing furniture where practical during expansion. A narrow section can remain a walkway while a wider part of the same room supports furniture. Adjacent rooms do not automatically generate separating walls, and decorative wall treatments do not replace miner reinforcement.
+Capacity is connected room-floor area multiplied by `capacityPerTile`, rounded down per component if fractional values are used. Dwarfs reserve reachable service slots independently of decorative arrangements. Furniture has no collision, sight or access effect. Prefer visually clear entrances and circulation, and keep suitable existing furniture where practical during expansion. Adjacent rooms do not automatically generate separating walls, and decorative wall treatments do not replace miner reinforcement.
 
-The player should see the actual capacity in the sidebar when selecting or expanding a room. Explain space or access problems there or through dismissible messages; no numbers or progress bars appear over the room. The fixed Stone Hearth keeps its established footprint and has no upgrades; the adaptable-room rule applies to the settlement rooms around it. [Rooms](rooms.md) contains the furnishing and visual identity plan for each type.
+The player should see floor area, capacity per tile, total capacity and occupancy in the sidebar when selecting or expanding a room. Explain insufficient service capacity or real route problems there or through dismissible messages; never require a furnishing footprint to fit. No numbers or progress bars appear over the room. The fixed Stone Hearth keeps its established footprint and has no upgrades. [Rooms](rooms.md) contains the capacity defaults and visual identity plan.
 
 Engineers automatically manufacture doors and traps in the Workshop. Runesmiths automatically research spells in the Library. Each is a single combined specialist role. Separate equipment manufacture, enchanting, and shrine services are outside this simplified design.
 
-Every dwarf can autonomously use the Training Room to increase its stats. The room attracts Warriors but its training positions are shared. Training takes the dwarf's time and usable room capacity. The [prototype rules](rooms.md#training-room-and-library-prototype-rules) define provisional levels, work bonuses and scheduling; combat integration remains open. It provides no sleeping capacity.
+Every dwarf can autonomously use the Training Room to increase its stats. Floor area limits concurrent trainees, and each visit ends after gaining one level. The dwarf releases its slot and returns to ordinary activities, with a personal cooldown before training again. The room attracts Warriors but is shared by all types and provides no sleeping capacity. The [prototype rules](rooms.md#training-room-and-library-prototype-rules) define provisional duration, cooldown, levels and work bonuses; combat integration remains open.
 
 Every room must remain useful across strongholds. New populations need food, beds, and training; new layouts need manufactured defenses. The Library prototype prepares spells again after casting so it retains work after initial research. Campaign research progression remains open.
 
@@ -225,7 +225,7 @@ Defense, targeted spells and autonomous Warrior combat are verified using debug-
 | Leave ordinary walls intact | Opportunities for miners to reinforce and secure established districts |
 | Recruit another miner | Faster development, a higher next miner price, and additional upkeep |
 | Build more specialist capacity | Eligibility for more specialists, with increased support requirements |
-| Widen a room or add an irregular wing | Furnishings adapt to the new usable space; capacity grows when additional accessible objects fit |
+| Add room floor in any shape | Each new square contributes the same configured capacity; furnishings adapt visually |
 
 These are intended design effects to verify during playtesting, not claims about a built simulation.
 
@@ -235,7 +235,7 @@ Development focuses on the [character](characters.md) and [room](rooms.md) catal
 
 - Define each dwarf type as data with a stable identifier, presentation assets, base stats and training progression, needs, recruitment conditions, and job or combat capabilities. Keep appearance separate from behavior; making the Engineer female does not require a different resident system.
 - Reuse common systems for autonomous movement, needs, payday, departure, training, and job assignment. Determine job eligibility from capabilities and room services rather than hard-coded checks for dwarf names. Shared food, accommodation, and training should support future resident types through the same rules.
-- Define each room type as data with a stable identifier, floor and wall treatments, furnishing variants and footprints, access clearances, capacities, services, and outputs. Reuse grid construction, automatic furnishing, pathfinding updates, and capacity feedback for new rooms.
+- Define each room type as data with a stable identifier, service, capacity per tile, outputs, floor and wall treatments, and separate cosmetic furnishing variants. Reuse grid construction, room service slots, automatic visual furnishing and capacity feedback for new rooms.
 - Express attraction as configurable conditions referring to room services, usable capacity, and settlement support. Allow multiple dwarf types to use one room and a future dwarf to require several facilities; do not enforce a permanent one-room-to-one-dwarf pairing.
 - Let new definitions select reusable behaviors, with a clear place to add a new job or room service when necessary. Adding content that uses existing behaviors should not require changes throughout the simulation.
 - Have recruitment and construction menus, level definitions, and saved state refer to the registered type identifiers. Display names and concept-art filenames should not determine gameplay identity, and menus should not assume a fixed roster size.
@@ -244,12 +244,12 @@ Build these boundaries while implementing the core types. Additional types, excl
 
 ## 15. Outstanding design decisions
 
-- Wage values, meal rates, and capacities.
-- Furnishing footprints, access clearance, compact and large variants, and automatic arrangement rules for irregular rooms.
+- Wage values, eating/rest intervals, and room capacities per tile.
+- Cosmetic furnishing footprints, compact and large variants, and visual arrangement rules for irregular rooms; these never change service capacity or routes.
 - Miner price curve, starting crew, starting storage, and resource quantities.
 - Recovery if every miner is lost and the player cannot afford a replacement; no extra defeat rule or free replacement has been agreed.
 - Spell casting, research order, and Library use after available research is complete.
-- Training stat gains, costs, limits, and autonomous scheduling for all dwarf types.
+- Balance of training duration, personal cooldown, level cap and stat gains for all dwarf types; one level per visit is established.
 - Rally response rules and guard scheduling.
 - Bedrock readability, sight, resource visibility, and claiming details.
 - Reinforcement strength, core repairs, doors, traps, and bridges.
@@ -258,4 +258,4 @@ Build these boundaries while implementing the core types. Additional types, excl
 
 Finite gold seams are mined into the miner's bag in small batches (currently 15 gold per half-second, with a 45-gold bag). The pillar stays solid and designated until its remaining gold reaches zero. A full bag is delivered to reachable treasury storage, then the miner returns to the unfinished seam; an exhausted or cancelled seam sends any partial bag for delivery. With no reachable storage space, extraction leaves gold at the seam. If storage fills during travel, miners try another chest or return undelivered gold to the extraction site. Gold never becomes spendable while carried or on the ground. Renewable gem extraction retains its existing yield-and-collection behavior.
 
-Current prototype controls include miner-built walls and reclaiming room tiles. Wall construction is deliberately slower than digging plus reinforcement; its default is 24 seconds. Reclaim refunds 50% of original paid cost, with no refund for free construction, and preserves stored resources. Dwarfs prefer soft separation but may overlap briefly when necessary to keep moving; terrain and furnishings remain solid. Shared balance values and the in-game editor are documented in [Configuration](configuration.md); additive room/dwarf implementation is documented in the [content playbook](content-playbook.md).
+Current prototype controls include miner-built walls and reclaiming room tiles. Wall construction is deliberately slower than digging plus reinforcement; its default is 24 seconds. Reclaim refunds 50% of original paid cost, with no refund for free construction, and preserves displaced gold. Dwarfs prefer soft separation but may overlap briefly when necessary to keep moving; real terrain and gameplay obstacles remain solid while room furnishings are cosmetic. Shared balance values and the in-game editor are documented in [Configuration](configuration.md); additive room/dwarf implementation is documented in the [content playbook](content-playbook.md).

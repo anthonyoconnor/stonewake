@@ -5,6 +5,7 @@ import {designate} from '../game/simulation.ts';
 import {buildRoom,roomQuote,reclaimRoom,reclaimQuote} from '../game/rooms.ts';
 import {planWalls,wallEligible,wallBuildDuration} from '../game/walls.ts';
 import {actionCursor} from './icons.ts';
+import {roomById} from '../content/rooms.ts';
 import {defenseById,defenseDirections} from '../content/defenses.ts';
 import {placeDefense,defenseQuote} from '../game/defenses.ts';
 import {spellById} from '../content/spells.ts';
@@ -49,7 +50,7 @@ export class Selection {
   }
   updateCursor(){const tile=this.hover&&tileAt(this.view.world,this.hover.x,this.hover.z);const action=this.tool==='dig'?(this.dragAdds!==undefined?(this.dragAdds?'dig':'erase'):tile?.designated?'erase':tile?.known&&tile.terrain==='floor'?'inspect':'dig'):this.tool;this.view.canvas.style.cursor=spellById(this.tool)?'crosshair':actionCursor(action);}
   setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=tool;this.draw();this.onChange('');}
-  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.core?`Stone Hearth · Treasury ${this.view.world.furnishings.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.furnishings.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);this.onInspect(p);}
+  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.core?`Stone Hearth · Treasury ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);this.onInspect(p);}
   rectangle(a:Point,b:Point){const result:Point[]=[];for(let z=Math.min(a.z,b.z);z<=Math.max(a.z,b.z);z++)for(let x=Math.min(a.x,b.x);x<=Math.max(a.x,b.x);x++)result.push({x,z});return result;}
   draw(feedback=true){
     this.updateCursor();this.preview.dispose();this.preview=new TransformNode('preview',this.view.scene);if(!this.hover||this.tool==='inspect')return;
@@ -78,7 +79,7 @@ export class Selection {
       const adding=valid&&(!!quote||this.tool==='wall'&&(this.dragAdds??!t.wallPlanned)||this.tool==='dig'&&(this.dragAdds??!t.designated));
       const m=this.view.box('selection',p.x,t.known&&t.terrain==='floor'?.025:1.515,p.z,.95,.02,.95,this.view.material(adding?'preview yes':'preview no',adding?'#8ce3bb':'#e08172',false,.4),this.preview);m.material!.alpha=.42;m.isPickable=false;
     }
-    if(quote&&feedback)this.onChange(`${quote.tiles.length} buildable squares · ${quote.cost} gold · ${quote.reason}`);
+    if(quote&&feedback){const def=roomById(this.tool);this.onChange(`${quote.tiles.length} buildable squares · ${quote.cost} gold · +${quote.addedCapacity} ${def?.service==='storage'?'gold storage':'dwarf capacity'} · ${quote.reason}`);}
     if(reclaim&&feedback)this.onChange(`${reclaim.tiles.length} room squares · ${reclaim.refund} gold refund`);
     if(this.tool==='wall'&&feedback)this.onChange(`Build walls on clear claimed floor · ${wallBuildDuration()} seconds each · Start on a plan to cancel it.`);
   }

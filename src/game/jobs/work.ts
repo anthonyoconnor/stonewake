@@ -1,7 +1,6 @@
 import { type World, type Resident, type Job, tileAt } from '../types.ts';
 import { reveal } from '../world.ts';
 import { tuning } from '../../content/tuning.ts';
-import { foodFacilities } from '../food.ts';
 import { recipeById } from '../../content/recipes.ts';
 import { spendGold } from '../rooms.ts';
 import { wallBuildDuration } from '../walls.ts';
@@ -123,9 +122,6 @@ const handlers = {
     order.worker = undefined;
     w.outputs[recipe.id] = (w.outputs[recipe.id] ?? 0) + 1;
     a.crafted++;
-    const f = w.furnishings.find((f) => f.id === j.furnishing)!;
-    f.output = recipe.id;
-    f.outputCount = (f.outputCount ?? 0) + 1;
     w.revision++;
 
     return true;
@@ -160,10 +156,6 @@ const handlers = {
     if (j.progress < tuning.eatSeconds) return false;
     a.hunger = 1;
     a.meals++;
-    a.meal = false;
-    const table = w.furnishings.find((f) => f.id === j.furnishing)!;
-    const ale = foodFacilities(w, table).find((f) => f.service === 'brewing' && f.stored > 0);
-    if (ale) ale.stored--;
     w.revision++;
 
     return true;
@@ -198,7 +190,7 @@ const handlers = {
     return true;
   },
   deliver: (w, a, j, t, dt, work) => {
-    const f = w.furnishings.find((f) => f.id === j.furnishing)!;
+    const f = w.roomServices.find((f) => f.id === j.furnishing)!;
     const amount = Math.min(a.carrying, f.capacity - f.stored);
     f.stored += amount;
     a.carrying -= amount;

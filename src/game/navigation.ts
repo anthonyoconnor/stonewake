@@ -4,7 +4,7 @@ import {doorBlocks,passageFrom,type Passage,type Walker} from './doors.ts';
 import {barrierAt} from './spell-effects.ts';
 export function blocked(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}):boolean {
   const t=tileAt(w,p.x,p.z);
-  return !t||!t.known||t.terrain!=='floor'||t.core||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p))||w.furnishings.some(f=>f.cells.some(c=>c.x===p.x&&c.z===p.z));
+  return !t||!t.known||t.terrain!=='floor'||t.core||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p));
 }
 export function canStand(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}) {
   const r=tuning.radius;

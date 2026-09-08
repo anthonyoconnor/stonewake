@@ -9,7 +9,7 @@ The campaign reclaims separate sites within a lost dwarven kingdom. Each level i
 - Every map uses a square grid for terrain, excavation, rooms, and fixtures.
 - Each map has a single excavation layer and a common walkable floor height. Intact terrain has one consistent height above that floor; there are no intermediate terrain shelves or stacked playable levels.
 - Dwarfs and enemies move continuously through open halls, rooms, and passages. Their positions and travel directions are independent of the construction grid, while walls and obstacles constrain their routes.
-- Player rooms can follow any excavated footprint, including narrow passages, bends, and spaces around bedrock. Their furnishings adapt to usable space rather than requiring standard rectangular plots.
+- Player rooms can follow any excavated footprint, including narrow passages, bends, and spaces around bedrock. Every floor square contributes the configured capacity, independent of shape or cosmetic furnishings; no standard rectangular plots are required.
 - Maps are presented in stylized 3D through an overhead camera with player-controlled rotation and zoom; layouts and room contents must remain readable from different viewing directions.
 - A small starting mining crew establishes a base around a Hearthstone.
 - The rest of the population is recruited fresh for that stronghold.
@@ -26,7 +26,7 @@ Each level includes a small accessible cavern containing a dormant Hearthstone. 
 
 The surrounding area can be solid ground even if an ancient settlement exists farther into the map. Ruins may lie beyond collapsed tunnels, sealed districts, or natural rock formations. Players excavate a new foothold and discover the old settlement gradually.
 
-Starting resources must be usable before a Treasure Room is built. The exact implementation is open: a small prebuilt Treasure Room or limited starting storage associated with the Hearth are candidates. Levels also need a viable route to establish Dormitory beds and Kitchen food before unmet needs become severe.
+Starting resources must be usable before a Treasure Room is built. The prototype includes limited treasury storage at the Hearth and a starting allowance. Levels need a viable route to establish enough reachable Dormitory and Kitchen floor area before unmet needs become severe. Furniture footprints and food-production chains impose no additional startup requirements.
 
 ## Terrain and hidden spaces
 
@@ -50,7 +50,7 @@ Terrain occupancy follows the same square grid as excavation. Bedrock seams can 
 
 Those steps occur only in the horizontal outline. Every intact earth, gold-bearing terrain, and bedrock cell reaches the same terrain top height, and each excavated cell reaches the single floor plane. Retained earth cells are full-height remnants, not shallow blocks. Surface texture and resource models do not create additional walkable levels.
 
-An excavated room can contain squares of ordinary earth that have not been mined. These may be isolated cells or connected groups and can be excavated later. They provide layout variation without requiring isolated bedrock formations. Occupied terrain cells contribute no room floor, furniture capacity, or traversable space.
+An excavated room can contain squares of ordinary earth that have not been mined. These may be isolated cells or connected groups and can be excavated later. They provide layout variation without requiring isolated bedrock formations. Occupied terrain cells contribute no room floor, service capacity, or traversable space.
 
 ## Resource appearance and excavation scale
 
@@ -124,7 +124,7 @@ Every playable level needs:
 - At least one meaningful defensive planning problem around the core or its approaches.
 - An explicit victory condition beyond merely keeping the Hearth intact.
 - Continued uses for every available room and dwarf type, including shared training and useful spell research, with more than one viable approach to major obstacles where practical.
-- Usable furnishing arrangements in the map's confined and irregular spaces, with readable room floors and walls from different camera directions.
+- Reachable room floor in confined and irregular spaces, with predictable capacity and readable floors, walls and cosmetic furnishings from different camera directions.
 
 ## Decisions still open
 

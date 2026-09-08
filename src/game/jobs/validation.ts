@@ -23,29 +23,29 @@ export function validJob(w: World, a: Resident) {
   if (j.kind === 'drop') return a.carrying > 0 && canStand(w, j.work);
   if (j.kind === 'idle') return canStand(w, j.work);
   if (j.kind === 'sleep')
-    return w.furnishings.some((f) => f.id === j.furnishing && f.assigned === a.id) && canStand(w, j.work);
+    return w.roomServices.some((f) => f.id === j.furnishing && f.assigned === a.id) && canStand(w, j.work);
   if (j.kind === 'eat')
-    return a.meal && w.furnishings.some((f) => f.id === j.furnishing) && canStand(w, j.work);
+    return w.roomServices.some((f) => f.id === j.furnishing && f.assigned === a.id) && canStand(w, j.work);
   if (j.kind === 'craft')
     return (
-      w.furnishings.some((f) => f.id === j.furnishing) &&
+      w.roomServices.some((f) => f.id === j.furnishing) &&
       w.craftOrders.some((o) => o.id === j.order && o.state === 'working' && o.worker === a.id) &&
       canStand(w, j.work)
     );
   if (j.kind === 'train')
     return (
       canTrain(w, a) &&
-      w.furnishings.some((f) => f.id === j.furnishing && f.service === 'training') &&
+      w.roomServices.some((f) => f.id === j.furnishing && f.service === 'training') &&
       canStand(w, j.work)
     );
   if (j.kind === 'research')
     return (
       a.capabilities.includes('research') &&
-      w.furnishings.some((f) => f.id === j.furnishing && f.service === 'research') &&
+      w.roomServices.some((f) => f.id === j.furnishing && f.service === 'research') &&
       !!w.researchOrders?.some(
         (o) => o.id === j.order && o.state === 'working' && o.worker === a.id && !o.paused,
       ) &&
       canStand(w, j.work)
     );
-  return w.furnishings.some((f) => f.id === j.furnishing && f.stored < f.capacity);
+  return w.roomServices.some((f) => f.id === j.furnishing && f.stored < f.capacity);
 }

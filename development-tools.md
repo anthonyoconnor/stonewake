@@ -33,6 +33,8 @@ Debug → Simulation tools exposes scenario loading, pause/resume, stepping, a 1
 
 Factories live in [scenarios.ts](src/content/scenarios.ts) and are used by the controller in both Node and the browser. The ordinary visual-showcase button also shares its resident, stock and job setup.
 
+Room fixtures use tile-based service capacity. Kitchens need no initial food stock, and cosmetic furnishings never determine whether a test room works.
+
 | Scenario | Purpose |
 |---|---|
 | `stronghold` | Normal starting crew, discovery and specialist arrivals |
@@ -64,6 +66,8 @@ Add `--list` to inspect the selected tests without running them.
 `--browser` uses the running development server, defaulting to port 5173; set `GAME_URL` to use another. `--production` builds and launches a temporary preview on port 4179 to check that the interface/panel and scenario loading are absent, then closes only that preview. It does not stop the development server. Avoid `--watch` with these one-shot browser flags.
 
 Browser checks use a separate headless browser and never attach to an existing player tab. Windows defaults to installed Edge. Set `BROWSER_CHANNEL=chrome` to use Chrome. Other platforms use Playwright Chromium; install it once with `npx playwright install chromium` if needed. Screenshots go to ignored `test-results/`.
+
+`node scripts/rooms-browser.mjs` runs the focused room browser playtest against the same running server and browser settings. It constructs unfurnished single-tile Kitchen, Dormitory and Training Rooms through normal commands, verifies sidebar capacity, autonomous needs, one-level training visits and released capacity during cooldown, then exercises the furnished showcase. It uses the same ignored screenshot directory.
 
 Other commands: `npm run typecheck`, `npm run test:watch -- research` and `npm run format -- path/to/changed-file.ts`. Watch runs an initial typecheck and watches the selected tests/dependencies; rerun typecheck after edits and restart the watcher when changing scope. Apply formatting to touched modules rather than making unrelated changes across the repository.
 

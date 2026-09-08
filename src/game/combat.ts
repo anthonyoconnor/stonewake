@@ -32,7 +32,7 @@ export function tickFighter(w:World,a:Resident,dt:number,release:JobRelease,move
     if(!routeToRally){a.path=[];a.rallyUnreachable=true;a.activity='Rally unreachable';return true;}
     if(distance(rally)<=rally.radius+.06&&!a.path.length){a.activity='Holding rally';a.rallyUnreachable=false;return true;}
     if(!a.path.length||w.routesChanged){
-      const spots=w.tiles.filter(t=>Math.hypot(t.x-rally.x,t.z-rally.z)<=Math.max(0,rally.radius-.1)&&canStand(w,t)&&!w.furnishings.some(f=>f.access.x===t.x&&f.access.z===t.z)&&!w.agents.some(o=>o!==a&&alive(o)&&Math.hypot(o.x-t.x,o.z-t.z)<.65)).sort((p,q)=>distance(p)-distance(q));
+      const spots=w.tiles.filter(t=>Math.hypot(t.x-rally.x,t.z-rally.z)<=Math.max(0,rally.radius-.1)&&canStand(w,t)&&!w.agents.some(o=>o!==a&&alive(o)&&(Math.hypot(o.x-t.x,o.z-t.z)<.65||o.job&&o.job.work.x===t.x&&o.job.work.z===t.z))).sort((p,q)=>distance(p)-distance(q));
       for(const spot of spots){const path=findPath(w,a,spot);if(path){a.path=path;break;}}
     }
     a.rallyUnreachable=!a.path.length;

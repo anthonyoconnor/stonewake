@@ -1,4 +1,4 @@
-import { type World, type Resident, type Point, key } from './types.ts';
+import { type World, type Resident, type Point } from './types.ts';
 import { findPath } from './navigation.ts';
 
 export interface JobEvent {
@@ -49,15 +49,13 @@ export function inspectResident(world: World, id: number) {
   return {
     ...structuredClone(resident),
     destinationReachable: resident.job ? !!findPath(world, resident, resident.job.work) : null,
-    facilities: world.furnishings.map((f) => {
+    services: world.roomServices.map((f) => {
       const reservedBy = world.agents
-        .filter(
-          (a) => a.id !== id && (a.job?.furnishing === f.id || (a.job && key(a.job.work) === key(f.access))),
-        )
+        .filter((a) => a.id !== id && a.job?.furnishing === f.id)
         .map((a) => a.id);
       const reasons: string[] = [];
       if (!findPath(world, resident, f.access)) reasons.push('No route to access square');
-      if (reservedBy.length) reasons.push('Facility or work square reserved');
+      if (reservedBy.length) reasons.push('Room capacity slot reserved');
       if (f.assigned && f.assigned !== id) reasons.push('Assigned to another resident');
       if (resident.avoidFacility === f.id && (resident.avoidUntil ?? 0) > world.elapsed)
         reasons.push('Retry delay after movement stall');

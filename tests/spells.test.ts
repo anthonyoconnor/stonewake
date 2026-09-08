@@ -36,7 +36,7 @@ test('individual Haste speeds actual mining, movement and preparation without af
   const w2=arena();w2.agents=[];buildRoom(w2,'library',Array.from({length:25},(_,i)=>({x:7+i%5,z:5+Math.floor(i/5)})));addResidents(w2,'runesmith');
   const r=w2.agents[0];r.energy=r.hunger=1;
   cast(w2,'dwarf-haste',{kind:'dwarf',id:r.id});const order=w2.researchOrders![0];run(w2,19);assert.equal(order.state,'ready');
-  run(w2,2);assert.equal(hasteRate(w2,r),1);w2.allowance=0;for(const f of w2.furnishings)f.stored=0;
+  run(w2,2);assert.equal(hasteRate(w2,r),1);w2.allowance=0;for(const f of w2.roomServices)f.stored=0;
   assert.match(castSpell(w2,'dwarf-haste',{kind:'dwarf',id:r.id}),/Not enough/);assert.equal(order.state,'ready');
 });
 test('Slow reduces strong enemy travel and attack rate; Reckoning boosts only dwarf damage',()=>{

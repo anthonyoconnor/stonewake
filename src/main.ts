@@ -9,7 +9,7 @@ import { addMiners, tick } from './game/simulation';
 import { ResidentView } from './view/residents';
 import { Selection } from './ui/selection';
 import { createRoomLab, labLayout, showcaseRooms } from './content/room-lab';
-import { buildRoom } from './game/rooms';
+import { buildRoom, furnish } from './game/rooms';
 import { enableRecruitment } from './game/recruitment';
 import { createDefenseLab } from './content/defense-lab';
 import { DefenseView } from './view/defenses';
@@ -89,6 +89,7 @@ sidebar.onLab = async (open, shape, type) => {
   defenses.reset();
   magic.reset();
   sidebar.inspectedUnit = undefined;
+  furnish(next);
   view.setWorld(next);
   controls.center(open ? (shape === 'defenses' ? 18 : 12) : world.hearth.x, open ? 12 : world.hearth.z);
   view.camera.radius = open ? 26 : tuning.homeZoom;
@@ -137,6 +138,7 @@ if (import.meta.env.DEV)
         residents.reset();
         defenses.reset();
         magic.reset();
+        furnish(next);
         view.setWorld(next);
         controls.center(
           id === 'stronghold' ? next.hearth.x : id === 'defenses' || id === 'locked-door-hauling' ? 18 : 12,

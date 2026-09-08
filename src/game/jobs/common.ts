@@ -35,7 +35,7 @@ export function take(
 export function storage(w: World, a: Resident) {
   return nearest(
     a,
-    w.furnishings.filter((f) => f.service === 'storage' && f.stored < f.capacity),
+    w.roomServices.filter((f) => f.service === 'storage' && f.stored < f.capacity),
   );
 }
 export function availableStorage(w: World, a: Resident) {
@@ -44,13 +44,11 @@ export function availableStorage(w: World, a: Resident) {
 export function availableStations(w: World, a: Resident, service: string) {
   return nearest(
     a,
-    w.furnishings.filter(
+    w.roomServices.filter(
       (f) =>
         f.service === service &&
         !(a.avoidFacility === f.id && (a.avoidUntil ?? 0) > w.elapsed) &&
-        !w.agents.some(
-          (o) => o !== a && o.job && (o.job.furnishing === f.id || key(o.job.work) === key(f.access)),
-        ),
+        !w.agents.some((o) => o !== a && o.job?.furnishing === f.id),
     ),
   );
 }

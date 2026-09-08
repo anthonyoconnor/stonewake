@@ -10,12 +10,12 @@ Last checked: **2026-09-07** against the room and character definitions and the 
 
 | Room or structure | Current status | Remaining integration |
 |---|---|---|
-| Treasure Room | Implemented: construction, automatic chests, gold storage and hauling | Wage collection |
-| Dormitory | Implemented: automatic beds and autonomous rest | — |
-| Kitchen | Implemented: growing, cooking, brewing and autonomous meals | — |
-| Workshop | Implemented: Engineer attraction, staffed production of all three door tiers and both traps, shared finished stock for placement | Door repairs; upkeep for future fixture types |
-| Training Room | Implemented: automatic practice stations, shared capped work-speed training and Warrior attraction | Combat progression/balance |
-| Library | Implemented: automatic research stations, targeted spell research/preparation/casting and Runesmith attraction; catalog in [Spells](spells.md) | Campaign research progression and broader balance |
+| Treasure Room | Implemented: floor-area gold capacity and hauling; decorative chests | Wage collection |
+| Dormitory | Implemented: floor-area accommodation and autonomous rest; decorative beds | — |
+| Kitchen | Implemented: floor-area population support and autonomous meals; food props are decorative, with no ingredient or food inventories | — |
+| Workshop | Implemented: floor-area concurrent Engineer capacity, attraction, staffed production of all three door tiers and both traps, shared finished stock for placement | Door repairs; upkeep for future fixture types |
+| Training Room | Implemented: floor-area concurrent trainee capacity, one level per visit followed by a personal cooldown, shared capped work-speed training and Warrior attraction | Combat progression/balance |
+| Library | Implemented: floor-area concurrent researcher capacity, targeted spell research/preparation/casting and Runesmith attraction; catalog in [Spells](spells.md) | Campaign research progression and broader balance |
 | Guard Post | Not implemented; disabled catalog placeholder | Guard positions and defensive behavior |
 | Stone Hearth | Implemented: fixed core, arrival location and starter treasury chest | Enemy attacks, core destruction and defeat |
 | Bridge | Not implemented | Crossing rules, construction and navigation across gaps |
@@ -34,6 +34,8 @@ Last checked: **2026-09-07** against the room and character definitions and the 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
 Other broad systems still pending include natural enemy encounters/raids, Hearth damage/defeat, guard duty, retreat, dissatisfaction/departure and campaign progression. Debug raiders exercise defense, combat and spell interactions. Detailed behavior and unresolved choices remain in the design documents; completed checks remain in the development record below.
+
+**Current room model:** the user's subsequent room simplification supersedes furnishing-derived capacity in older development entries. Every connected room supplies `floor(squareCount * capacityPerTile)` capacity. Furniture is cosmetic and does not block movement, sight, projectiles or service access. Kitchen and Dormitory area supports residents; Workshop, Library and Training Room area limits concurrent workers. Kitchen food inventories and production chains have been removed. See [Rooms](rooms.md) for the provisional rates and training visit/cooldown rules.
 
 ### Keeping status current
 
@@ -390,3 +392,17 @@ Added a defense sidebar with stock, prices, work time, directional placement, do
 Verification: the full 74-test suite passed. Final focused defense/configuration checks passed all 16 tests, including an added free-room yard regression; the repository now contains 75 tests. Checks cover all recipe costs/outputs, invalid placement and overlap, route cancellation/resumption, locked-door occupants, sight, increasing breach resistance, alternate routes, fast pressure-plate crossings, lethal/nonlethal spikes, friendly exclusion, bolt facing/range/occlusion and automatic resets. Final TypeScript/Vite build passed with the existing Babylon bundle-size advisory; local Markdown links and `git diff --check` passed.
 
 Browser review verified all three door controls, dwarf hauling through a Closed door (20 gold returned), trap-assisted raider defeat, an unassisted raider breaking a locked timber door and reaching its target, invalid overlap feedback, a new spike placement, and a new bolt placed facing west after two R rotations. Review widened the test approach and steepened its camera so traps remain visible beside full-height walls, and moved selected-door controls above the build catalog. Normal defense production/placement and dwarf routing are usable; enemies remain manually spawned in the debug yard. Natural encounters/raids, dwarf combat, Hearth attacks/defeat, repairs and upgrades in place remain pending. Updated the canonical inventory, README, room/rule/interface/character designs, content playbook and graphics notes together. The local Vite server remains available for play.
+
+### Room capacity simplification — 2026-09-07
+
+Implemented the user's replacement room model: each connected room supplies floor area multiplied by its editable capacity per square, with fractional results rounded down per component. Kitchen and Dormitory support one resident per square by default; Training Room, Workshop and Library support one concurrent user per square; Treasure Room stores 50 gold per square. These are provisional balance values. Furnishings are separate cosmetic data and cannot change capacity, navigation, sight, bolt shots or spell-placement access. Single-square, narrow and irregular rooms work without furniture. The core treasury remains a separate 108-gold starter service.
+
+Removed growing, cooking, brewing, ingredients, prepared-meal and ale stocks from gameplay and configuration. Residents retain autonomous eating/rest visits and individual support assignments, so a small Kitchen cannot feed an unlimited population through successive meals. Arrivals use spare reachable floor-based accommodation, food and role capacity. Workshop outputs and spell research/preparation keep their existing gold, time and capability rules.
+
+Training grants one level per completed visit, releases the capacity slot and starts the dwarf's personal cooldown. Existing 12-second practice, 45-second cooldown, five-level cap and +8% work-speed values remain provisional. Interrupted progress survives, and cooldown trainees resume duties or leave the training floor. A final review caught and fixed an Engineer waiting for an unfunded craft order bypassing the exit behavior; its focused regression now passes. Combat progression remains outside this room change.
+
+Room construction previews show exact added capacity, including fractional-capacity joins and expansions. Inspection shows room area, capacity, assignments/occupancy and unreachable capacity. Configuration edits synchronize room services; stored gold displaced by reduced capacity or reclaim remains loose for hauling. Decorative changes preserve service reservations and stored gold. Normal, debug and retained in-memory worlds share the same rules. Updated the canonical designs, README, room checklist, configuration guide and additive-content playbook; older development entries are historical.
+
+Verification: all 97 simulation/input tests pass, source-and-test TypeScript checks pass, and the final TypeScript/Vite build passes with the existing Babylon bundle-size advisory. The room checklist matrix covers all six implemented rooms and eight shapes, paid/free placement and expansion, inaccessible/restored routes, retained terrain, reclaim/refunds, capacity tuning, multiple users and gold conservation. Focused checks cover furniture-free food/rest/work/research/training, continuous population support, one-level cooldown and departure, multiple configured slots sharing a tile, and decoration-independent combat/path behavior.
+
+Browser verification: `npm run verify:browser` and `node scripts/rooms-browser.mjs` pass. A real dwarf used unfurnished one-square Kitchen, Dormitory and Training Rooms, ate/rested, gained one level, waited out cooldown and gained a second. Live Kitchen capacity changed from one to two with no furniture; sidebar previews/inspection and the six-room showcase were checked in multiple camera angles with no console errors. Screenshots are in ignored `test-results/rooms-*.png`. Occasional purely visual prop/resident overlap remains; stationary activities use a small presentation-only offset within their actual tile. Local documentation links and `git diff --check` pass. The Vite server remains running at http://127.0.0.1:5173/.

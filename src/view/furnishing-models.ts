@@ -2,7 +2,9 @@ import { MeshBuilder, TransformNode, type StandardMaterial } from '@babylonjs/co
 import type { GameScene } from './scene';
 import type { Furnishing } from '../game/types';
 
-export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: TransformNode) {
+export interface FurnishingDisplay { storedGold?:number; output?:string; outputCount?:number; eating?:boolean }
+
+export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: TransformNode, display:FurnishingDisplay={}) {
   const model = f.model ?? f.kind;
   const wide = f.cells.some((p) => p.x !== f.x),
     deep = f.cells.some((p) => p.z !== f.z);
@@ -81,7 +83,7 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
     if (model === 'mushrooms') {
       part('growing tray', 0, 0.15, 0, 0.82, 0.3, 0.82, wood);
       part('soil', 0, 0.31, 0, 0.72, 0.03, 0.72, view.material('soil', '#3c3127'));
-      for (let i = 0; i < Math.min(6, f.stored); i++) {
+      for (let i = 0; i < 6; i++) {
         const x = -0.22 + (i % 3) * 0.22,
           z = -0.16 + Math.floor(i / 3) * 0.32;
         cylinder('mushroom stalk', x, 0.41, z, 0.18, 0.045, view.material('stalk', '#e5d3ad'));
@@ -96,7 +98,7 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       part('cooking hearth', 0, 0.25, 0, 0.75, 0.5, 0.75, view.material('stove stone', '#4a504c', true));
       part('coals', 0, 0.2, -0.38, 0.4, 0.17, 0.025, view.material('fire', '#ed9b47', false, 0.6));
       cylinder('cooking pot', 0, 0.63, 0, 0.24, 0.46, view.material('pot', '#383c3f'));
-      if (f.stored) cylinder('prepared food', 0, 0.77, 0, 0.02, 0.38, view.material('stew', '#c8a059'));
+      cylinder('prepared food', 0, 0.77, 0, 0.02, 0.38, view.material('stew', '#c8a059'));
     } else if (model === 'barrel') {
       cylinder('brew barrel', 0, 0.37, 0, 0.72, 0.6, wood);
       for (const y of [0.13, 0.59]) {
@@ -115,7 +117,7 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       part('tabletop', 0, 0.52, 0, 0.8, 0.12, 0.76, wood);
       for (const x of [-0.3, 0.3])
         for (const z of [-0.27, 0.27]) part('table leg', x, 0.26, z, 0.07, 0.5, 0.07, wood);
-      if (view.world.agents.some((a) => a.job?.kind === 'eat' && a.job.furnishing === f.id))
+      if (display.eating)
         cylinder('meal plate', 0, 0.6, 0, 0.025, 0.25, view.material('plate', '#d4c5a0'));
     }
     return;
@@ -170,7 +172,7 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
           gear.isPickable = false;
         }
     }
-    if (f.outputCount) {
+    if (display.outputCount) {
       part(
         'finished assembly',
         0,
@@ -179,9 +181,9 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
         0.42,
         0.09,
         0.34,
-        f.output === 'timber-door' || f.output === 'reinforced-door' ? wood : iron,
+        display.output === 'timber-door' || display.output === 'reinforced-door' ? wood : iron,
       );
-      if (f.output === 'bolt-trap') {
+      if (display.output === 'bolt-trap') {
         const spring = MeshBuilder.CreateTorus(
           'trap spring',
           { diameter: 0.2, thickness: 0.035, tessellation: 8 },
@@ -192,7 +194,7 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
         spring.parent = root;
         spring.isPickable = false;
         part('bolt mechanism', 0, 0.86, 0.13, 0.035, 0.035, 0.34, iron);
-      } else if (f.output === 'spike-trap')
+      } else if (display.output === 'spike-trap')
         for (const x of [-0.13, 0, 0.13]) {
           const spike = MeshBuilder.CreateCylinder(
             'finished trap spike',
@@ -327,8 +329,8 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
   view.box('chest lock', f.x, 0.32, f.z - 0.337, 0.12, 0.16, 0.035, metal, parent).isPickable = false;
   for (const dx of [-0.23, 0.23])
     view.box('chest band', f.x + dx, 0.46, f.z, 0.05, 0.035, 0.66, metal, parent).isPickable = false;
-  if (f.stored > 0)
-    for (let i = 0; i < Math.min(7, Math.ceil(f.stored / 20)); i++)
+  if ((display.storedGold ?? 0) > 0)
+    for (let i = 0; i < Math.min(7, Math.ceil(display.storedGold! / 20)); i++)
       view.box(
         'stored gold',
         f.x - 0.2 + (i % 3) * 0.18,

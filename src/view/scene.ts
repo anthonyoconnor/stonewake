@@ -1,7 +1,8 @@
-import {drawFurnishingModel} from './furnishing-models';
+import {drawFurnishingModel,type FurnishingDisplay} from './furnishing-models';
 import {tuning} from '../content/tuning';
 import { Engine, Scene, ArcRotateCamera, Vector3, Color3, Color4, HemisphericLight, DirectionalLight, PointLight, MeshBuilder, StandardMaterial, DynamicTexture, TransformNode, GlowLayer, Mesh } from '@babylonjs/core';
-import { type World, type Tile,neighbors } from '../game/types';
+import { type World, type Tile,neighbors,key } from '../game/types';
+import {roomTiles} from '../game/rooms';
 import {roomById,roomLook} from '../content/rooms';
 import {surfaceTexture} from './surfaces';
 import {SceneEffects} from './effects';
@@ -128,13 +129,27 @@ export class GameScene {
     for(const [id,old] of this.furnitureNodes)if(!ids.has(id)){old.node.dispose();this.furnitureNodes.delete(id);}
     for(const f of this.world.furnishings){
       const model=f.model??f.kind;
-      const eating=f.service==='dining'&&this.world.agents.some(a=>a.job?.kind==='eat'&&a.job.furnishing===f.id);
-      const signature=[model,f.rotation,f.stored,f.output,f.outputCount,eating].join(':');
+      const display:FurnishingDisplay={};
+      if(model==='chest'){
+        if(f.id==='hearth-treasury')display.storedGold=this.world.roomServices.find(s=>s.id===f.id)?.stored??0;
+        else{
+          const cells=new Set(roomTiles(this.world,f).map(key));
+          const gold=this.world.roomServices.filter(s=>s.service==='storage'&&cells.has(key(s))).reduce((sum,s)=>sum+s.stored,0);
+          const chests=this.world.furnishings.filter(other=>(other.model??other.kind)==='chest'&&cells.has(key(other)));
+          display.storedGold=gold/Math.max(1,chests.length);
+        }
+      }
+      if(model==='table')display.eating=this.world.agents.some(a=>a.job?.kind==='eat'&&!a.path.length&&Math.hypot(a.x-f.x,a.z-f.z)<1.6);
+      if(['bench','anvil','assembly'].includes(model)){
+        const output=Object.entries(this.world.outputs).find(([,count])=>count>0);
+        if(output){display.output=output[0];display.outputCount=output[1];}
+      }
+      const signature=[model,f.rotation,display.storedGold,display.output,display.outputCount,display.eating].join(':');
       const old=this.furnitureNodes.get(f.id);if(old?.signature===signature)continue;old?.node.dispose();
       const node=new TransformNode(`furnishing ${f.id}`,this.scene);node.parent=furnitureParent;
       this.furnitureNodes.set(f.id,{signature,node});this.furnitureRoot=node;
       if(f.id==='hearth-treasury')node.position.y=.3;
-      drawFurnishingModel(this,f,node);
+      drawFurnishingModel(this,f,node,display);
     }
     this.furnitureRoot=furnitureParent;
     // Static props sharing a material can draw together; animated dwarfs stay separate.

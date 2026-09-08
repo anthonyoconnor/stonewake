@@ -4,7 +4,7 @@ import {roomById} from '../content/rooms.ts';
 import {doorAt,doorIsOpen} from './doors.ts';
 import {barrierAt} from './spell-effects.ts';
 export function createWorld(level: LevelDefinition): World {
-  const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],elapsed:0,allowance:tuning.startingGold,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{},researchOrders:[]};
+  const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],roomServices:[],elapsed:0,allowance:tuning.startingGold,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{},researchOrders:[]};
   for(let z=0;z<w.height;z++) for(let x=0;x<w.width;x++) {
     const border=x===0||z===0||x===w.width-1||z===w.height-1;
     w.tiles.push({x,z,terrain:border?'bedrock':'dirt',known:false,claimed:false,designated:false,core:false,gold:0,loose:0});
@@ -21,12 +21,14 @@ export function createWorld(level: LevelDefinition): World {
 }
 // The chest occupies already-blocked core space; its approach stays on walkable floor.
 export function addHearthTreasury(w:World){
-  if(w.furnishings.some(f=>f.id==='hearth-treasury'))return;
+  if(w.roomServices.some(f=>f.id==='hearth-treasury'))return;
   const {x,z}=w.hearth;
   const side=[{x:0,z:-1},{x:1,z:0},{x:0,z:1},{x:-1,z:0}].find(d=>tileAt(w,x+d.x*2,z+d.z*2)?.terrain==='floor');
   if(!side)return;
   const access={x:x+side.x*2,z:z+side.z*2};
-  w.furnishings.push({id:'hearth-treasury',room:'hearth',kind:'chest',service:'storage',x:x+side.x,z:z+side.z,rotation:0,cells:[],access,capacity:tuning.hearthRoomTiles*roomById('treasure')!.cost,stored:0});
+  const position={x:x+side.x,z:z+side.z};
+  w.roomServices.push({id:'hearth-treasury',room:'hearth',service:'storage',...position,access,capacity:tuning.hearthRoomTiles*roomById('treasure')!.cost,stored:0});
+  w.furnishings.push({id:'hearth-treasury',room:'hearth',kind:'chest',...position,rotation:0,cells:[],access});
 }
 // Sight is independent of camera and stops at the first solid cell.
 export function reveal(w:World, origin:Point, radius=tuning.sightRadius) {

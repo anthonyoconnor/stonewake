@@ -69,7 +69,7 @@ try {
         const w = api.state();
         return (
           w.allowance +
-          w.furnishings.filter((f) => f.service === 'storage').reduce((sum, f) => sum + f.stored, 0)
+          w.roomServices.filter((f) => f.service === 'storage').reduce((sum, f) => sum + f.stored, 0)
         );
       };
       const before = balance();

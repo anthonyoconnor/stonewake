@@ -106,12 +106,17 @@ export class ResidentView {
       m.book?.setEnabled(!working||j?.kind==='idle'||j?.kind==='research');
       if(m.book&&m.book.isEnabled()){m.arm.rotation.x=-.78;m.leftArm.rotation.x=-.78;m.book.rotation.z=walking?Math.sin(phase)*.025:0;}
       if(working&&j){
+        // Keep room activities readable beside cosmetic props, within the real service tile.
+        if(['sleep','eat','craft','train','research'].includes(j.kind)){
+          const decoration=v.world.furnishings.find(f=>f.cells.some(p=>p.x===Math.round(a.x)&&p.z===Math.round(a.z)));
+          if(decoration){m.root.position.x+=Math.sign(decoration.access.x-a.x)*.25;m.root.position.z+=Math.sign(decoration.access.z-a.z)*.25;}
+        }
         if(j.target.x!==j.work.x||j.target.z!==j.work.z)m.root.rotation.y=Math.atan2(j.target.x-j.work.x,j.target.z-j.work.z);
         if(j.kind==='mine'||j.kind==='craft'||j.kind==='reinforce'||j.kind==='buildWall'){
           const swing=Math.sin(j.progress*Math.PI*4);m.arm.rotation.x=-.75+swing*.95;m.leftArm.rotation.x=-.15;m.root.rotation.x=.06+Math.max(0,swing)*.1;
         }else if(j.kind==='claim'){m.root.position.y=-.09;m.root.rotation.x=.35;m.arm.rotation.x=-.9;m.leftArm.rotation.x=-.6;}
         else if(j.kind==='train'){
-          const station=v.world.furnishings.find(f=>f.id===j.furnishing),lift=(station?.model??station?.kind)==='weights',cycle=Math.sin(j.progress*4);
+          const lift=a.id%2===0,cycle=Math.sin(j.progress*4);
           for(const weight of m.trainingWeights)weight.setEnabled(lift);
           m.arm.rotation.x=lift?-.9-cycle*.65:-.8+cycle*.7;m.leftArm.rotation.x=lift?m.arm.rotation.x:-.8-cycle*.7;
           m.arm.rotation.z=lift?.28:.08;m.leftArm.rotation.z=lift?-.28:-.08;m.root.position.y=lift?-.025*(1+cycle):0;m.root.rotation.x=lift?.06:.1;
@@ -119,10 +124,10 @@ export class ResidentView {
         else if(j.kind==='research'){m.arm.rotation.x=-.88-Math.sin(j.progress*2)*.12;m.leftArm.rotation.x=-.75;m.root.rotation.x=.08;m.root.rotation.z=Math.sin(j.progress*1.2)*.02;}
         else if(j.kind==='eat'){m.arm.rotation.x=-.9-Math.sin(j.progress*4)*.35;m.leftArm.rotation.x=-.7;}
         else if(j.kind==='sleep'){
-          const bed=v.world.furnishings.find(f=>f.id===j.furnishing);
-          if(bed){m.root.position.set(bed.x+(bed.rotation?.75:0),.5,bed.z+(bed.rotation?0:.75));m.root.rotation.set(-Math.PI/2,bed.rotation?Math.PI/2:0,0);m.arm.rotation.x=.1;m.leftArm.rotation.x=.1;}
+          m.root.position.y=.22;m.root.rotation.set(-Math.PI/2,a.facing,0);m.arm.rotation.x=.1;m.leftArm.rotation.x=.1;
         }
       }
+      m.shadow.position.x=m.root.position.x;m.shadow.position.z=m.root.position.z;
       if(a.activity==='Fighting'){m.arm.rotation.x=-.8+Math.sin(time*9)*.8;m.leftArm.rotation.x=-.7;} m.load.setEnabled(a.carrying>0);m.load.rotation.z=walking?Math.sin(phase)*.1:0;
     }
   }

@@ -2,7 +2,7 @@ import { type World, type Point, tileAt, key } from './types.ts';
 import { canStand, findPath, reachable } from './navigation.ts';
 import { reveal } from './world.ts';
 import { tuning } from '../content/tuning.ts';
-import { produceFood } from './food.ts';
+import { assignRoomSupport } from './food.ts';
 import { characterById } from '../content/characters.ts';
 import { recruitSpecialist } from './recruitment.ts';
 import { tickDefenses } from './defenses.ts';
@@ -51,7 +51,6 @@ export function addResidents(w: World, type: string, count = 1, origin?: Point) 
       rested: 0,
       hunger: 1,
       meals: 0,
-      meal: false,
       crafted: 0,
       trainingLevel: 0,
       trainingProgress: 0,
@@ -62,6 +61,7 @@ export function addResidents(w: World, type: string, count = 1, origin?: Point) 
   }
   const added = Math.min(count, positions.length);
   if (added) w.nextResidentId = firstId + added - 1;
+  if (added) assignRoomSupport(w);
   return added;
 }
 export function designate(w: World, points: Point[], value: boolean | 'toggle' = true) {
@@ -78,13 +78,14 @@ export function tick(w: World, dt: number) {
   for (const a of w.agents)
     if (!alive(a)) {
       releaseJob(w, a, 'Resident defeated');
-      for (const f of w.furnishings) if (f.assigned === a.id) f.assigned = undefined;
+      for (const f of w.roomServices) if (f.assigned === a.id) f.assigned = undefined;
       const t = tileAt(w, Math.round(a.x), Math.round(a.z));
       if (t) t.loose += a.carrying;
       a.carrying = 0;
       w.revision++;
     }
   w.agents = w.agents.filter(alive);
+  const supportChanged = w.routesChanged || Math.floor(w.elapsed - dt) !== Math.floor(w.elapsed);
   if (w.routesChanged) {
     for (const a of w.agents) {
       a.retry = 0;
@@ -96,7 +97,7 @@ export function tick(w: World, dt: number) {
     }
     w.routesChanged = false;
   }
-  if (Math.floor(w.elapsed - dt) !== Math.floor(w.elapsed)) produceFood(w, 1);
+  if (supportChanged) assignRoomSupport(w);
   for (const a of w.agents) {
     if (a.job?.kind !== 'sleep') a.energy = Math.max(0, a.energy - dt / tuning.restInterval);
     if (a.job?.kind !== 'eat') a.hunger = Math.max(0, a.hunger - dt / tuning.hungerInterval);

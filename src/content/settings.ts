@@ -11,7 +11,8 @@ export const settings:Setting[]=[
  ...Object.entries(tuningSpec).map(([key,s])=>({...s,id:`tuning.${key}`,defaultValue:s.value,get:()=>tuning[key as TuningKey],set:(v:number)=>{tuning[key as TuningKey]=v;}})),
  ...roomDefinitions.flatMap(r=>[
   field(`room.${r.id}.cost`,`${r.name} · gold/square`,'Rooms',r,'cost',0,10000,1,'New construction only; existing payments are retained.'),
-  ...r.furnishings.flatMap(f=>[...(['storage','growing','cooking','brewing'].includes(f.service)?['capacity']:[]),'width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · ${k}`,'Rooms',f,k,1,k==='capacity'?10000:8,1,'New furnishings only; reload a room layout to compare.')))
+  field(`room.${r.id}.capacityPerTile`,`${r.name} · ${r.service==='storage'?'gold':'dwarfs'} supported/square`,'Rooms',r,'capacityPerTile',.1,1000,.1,'Applies to room floor area; furniture never changes capacity.'),
+  ...r.furnishings.flatMap(f=>['width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · visual ${k}`,'Room appearance',f,k,1,8,1,'Cosmetic only; reload a room layout to compare.')))
  ]),
  ...characterDefinitions.map(c=>field("dwarf."+c.id+".speedMultiplier",c.name+' · walking speed multiplier','Dwarfs',c,'speedMultiplier',.1,5,.1,'Applies live.')),
  ...recipes.flatMap(r=>[

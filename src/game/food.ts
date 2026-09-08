@@ -1,28 +1,39 @@
-import {tuning} from '../content/tuning.ts';
-import {type World,type Furnishing,key} from './types.ts';
-import {roomStats,roomTiles} from './rooms.ts';
-export function foodFacilities(w:World,table:Furnishing){
-  return roomStats(w,table).usable;
-}
-// Simple on-site production: no dedicated Cook or extra hauling chain.
-export function produceFood(w:World,seconds:number){
-  const visited=new Set<string>();
-  for(const t of w.tiles){
-    if(!t.room||visited.has(key(t)))continue;
-    for(const p of roomTiles(w,t))visited.add(key(p));
-    const facilities=roomStats(w,t).usable;
-    const growers=facilities.filter(f=>f.service==='growing');
-    for(const f of facilities){
-      if(!['growing','cooking','brewing'].includes(f.service))continue;
-      const recovered=Math.min(w.salvaged?.[f.service]??0,f.capacity-f.stored);
-      if(recovered>0){f.stored+=recovered;w.salvaged![f.service]-=recovered;w.revision++;}
-      const duration=f.service==='growing'?tuning.growingSeconds:f.service==='cooking'?tuning.cookingSeconds:tuning.brewingSeconds;
-      f.progress=Math.min(duration,(f.progress??0)+seconds);
-      if(f.progress<duration||f.stored>=f.capacity)continue;
-      if(f.service==='cooking'){
-        const raw=growers.find(g=>g.stored>0);if(!raw)continue;raw.stored--;
-      }
-      f.stored++;f.progress=0;w.revision++;
+import { type World, type Resident, key } from './types.ts';
+import { reachable } from './navigation.ts';
+
+// Food and accommodation support residents continuously, rather than letting
+// one square support an unlimited population through successive visits.
+export function assignRoomSupport(w: World) {
+  const routes = new Map<number, Set<string>>();
+  const components: Set<string>[] = [];
+  for (const a of w.agents) {
+    const position = key({ x: Math.round(a.x), z: Math.round(a.z) });
+    let component = components.find((cells) => cells.has(position));
+    if (!component) {
+      component = reachable(w, a);
+      components.push(component);
+    }
+    routes.set(a.id, component);
+  }
+  for (const service of ['rest', 'dining']) {
+    const slots = w.roomServices.filter((f) => f.service === service);
+    const assigned = new Set<number>();
+    for (const slot of slots) {
+      if (slot.assigned === undefined) continue;
+      if (!routes.get(slot.assigned)?.has(key(slot.access)) || assigned.has(slot.assigned))
+        slot.assigned = undefined;
+      else assigned.add(slot.assigned);
+    }
+    for (const a of w.agents) {
+      if (assigned.has(a.id)) continue;
+      const slot = slots
+        .filter((f) => f.assigned === undefined && routes.get(a.id)?.has(key(f.access)))
+        .sort((f, g) => Math.hypot(a.x - f.x, a.z - f.z) - Math.hypot(a.x - g.x, a.z - g.z))[0];
+      if (slot) slot.assigned = a.id;
     }
   }
+}
+
+export function foodSupport(w: World, resident: Resident) {
+  return w.roomServices.find((f) => f.service === 'dining' && f.assigned === resident.id);
 }

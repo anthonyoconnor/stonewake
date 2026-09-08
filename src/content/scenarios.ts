@@ -22,9 +22,8 @@ export function populateShowcase(world: World) {
     resident.energy = 0.2;
     resident.hunger = 0.2;
   }
-  for (const f of world.furnishings) {
+  for (const f of world.roomServices) {
     if (f.service === 'storage') f.stored = Math.min(f.capacity, 80);
-    else if (f.service === 'cooking') f.stored = Math.min(f.capacity, 4);
   }
   queueCraft(world, 'reinforced-door');
   queueCraft(world, 'bolt-trap');
@@ -66,7 +65,6 @@ export const scenarioFactories = {
     buildRoom(w, 'dormitory', rect(3, 14, 7, 4));
     addMiners(w, 6);
     for (const a of w.agents) a.hunger = 0.1;
-    for (const f of w.furnishings) if (f.service === 'cooking') f.stored = f.capacity;
     return w;
   },
   'research-interruption': (free) => {

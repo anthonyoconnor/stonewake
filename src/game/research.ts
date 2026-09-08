@@ -42,7 +42,7 @@ export function spellTargetError(w:World,id:string,target?:SpellTarget):string {
     if(s.effect==='barrier'){
       if(w.barrier&&w.barrier.until>w.elapsed)return 'A Runic Barrier is already active.';
       const t=tileAt(w,p.x,p.z)!;
-      if(!t.claimed||blocked(w,p)||t.wallPlanned||defenseAt(w,p)||w.furnishings.some(f=>key(f.access)===key(p)))return 'Choose clear claimed floor without a fixture or reserved access.';
+      if(!t.claimed||blocked(w,p)||t.wallPlanned||defenseAt(w,p)||w.roomServices.some(f=>f.id==='hearth-treasury'&&key(f.access)===key(p))||w.agents.some(a=>a.job&&key(a.job.work)===key(p)))return 'Choose clear claimed floor without a fixture or reserved access.';
       if([...w.agents.filter(alive),...(w.enemies??[]).filter(e=>e.health>0)].some(a=>Math.abs(a.x-p.x)<.75&&Math.abs(a.z-p.z)<.75))return 'Wait for the barrier tile to clear.';
     }
     if(s.effect==='rally'){

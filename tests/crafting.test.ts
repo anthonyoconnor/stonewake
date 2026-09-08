@@ -18,6 +18,11 @@ test('unfunded and unstaffed workshops wait without creating outputs',()=>{
 test('interrupted crafting retains paid inputs and can resume at another station',()=>{
  const w=createRoomLab();w.freeRoomBuilding=true;buildRoom(w,'workshop',labLayout(w,'Large hall'));addResidents(w,'engineer');w.allowance=40;queueCraft(w,'reinforced-door');
  for(let i=0;i<500&&!w.craftOrders[0].paid;i++)tick(w,.05);
- assert(w.craftOrders[0].paid);const id=w.agents[0].job!.furnishing;w.furnishings=w.furnishings.filter(f=>f.id!==id);
+ assert(w.craftOrders[0].paid);const id=w.agents[0].job!.furnishing;w.roomServices=w.roomServices.filter(f=>f.id!==id);
  run(w,40);assert.equal(w.outputs['reinforced-door'],1);assert.equal(goldTotal(w),0);
+});
+test('one unfurnished Workshop square manufactures a finished item',()=>{
+ const w=createRoomLab();buildRoom(w,'workshop',[{x:8,z:8}]);w.furnishings=[];addResidents(w,'engineer');
+ const before=goldTotal(w);queueCraft(w,'timber-door');run(w,30);
+ assert.equal(w.outputs['timber-door'],1);assert.equal(goldTotal(w),before-20);
 });

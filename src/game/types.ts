@@ -22,9 +22,8 @@ export interface LevelDefinition {
 }
 export interface World {
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
-  agents: Resident[]; furnishings: Furnishing[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
+  agents: Resident[]; furnishings: Furnishing[]; roomServices: RoomService[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
   craftOrders:CraftOrder[];outputs:Record<string,number>;
-  salvaged?:Record<string,number>;
   researchOrders?:ResearchOrder[];
   barrier?:Point&{health:number;maxHealth:number;until:number};
   rally?:Point&{until:number;radius:number};
@@ -48,7 +47,11 @@ export interface Enemy extends Point {
 }
 export interface SpellEffect {id:string;kind:'haste'|'slow'|'shield'|'mend'|'reckoning';until:number;strength:number;remaining?:number;rate?:number;pauseSeconds?:number;startedAt:number}
 export interface Furnishing extends Point {
-  id:string; room:string; kind:string; model?:string; service:string; rotation:number; cells:Point[]; access:Point; capacity:number; stored:number; assigned?:number; progress?:number;output?:string;outputCount?:number;
+  id:string; room:string; kind:string; model?:string; rotation:number; cells:Point[]; access:Point;
+}
+// Gameplay capacity belongs to room floor, independently of decorative furnishings.
+export interface RoomService extends Point {
+  id:string; room:string; service:string; access:Point; capacity:number; stored:number; assigned?:number;
 }
 export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
 export interface ResearchOrder {id:number;spell:string;state:'queued'|'working'|'ready';progress:number;unlocked:boolean;paused?:boolean;worker?:number}
@@ -57,7 +60,7 @@ export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;
   cargoOrigin?:Point; resumeMine?:Point;
-  energy:number;rested:number;hunger:number;meals:number;meal:boolean;
+  energy:number;rested:number;hunger:number;meals:number;
   avoidFacility?:string;avoidUntil?:number;
   crafted:number;
   trainingLevel?:number;trainingProgress?:number;nextTrainingAt?:number;

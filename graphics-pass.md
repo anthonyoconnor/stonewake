@@ -10,7 +10,7 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 | [Stone Hearth](concept-art/rooms/stone-hearth-v2.png) | Faceted cool crystal, stone dais, brass circles, runes and restrained light pulse |
 | [Treasure Room](concept-art/rooms/treasure-room-v3.png) | Fitted vault paving, coin motifs and bands, brass-bound chests; visible gold follows actual stored amounts |
 | [Dormitory](concept-art/rooms/dormitory-v3.png) | Warm patterned stone, timber beds, pillows, folded woven blankets and individual resting poses |
-| [Kitchen](concept-art/rooms/kitchen-v3.png) | Mushroom motifs, red/cream growing beds, cooking hearths, tables and banded casks; stock controls visible mushrooms and prepared food |
+| [Kitchen](concept-art/rooms/kitchen-v3.png) | Mushroom motifs, red/cream growing beds, cooking hearths, tables and banded casks as cosmetic details; there are no ingredient, meal or ale inventories |
 | [Workshop](concept-art/rooms/workshop-v3.png) | Dark paving and brass gear motifs, tool boards, benches, anvils, assembly parts, reinforced door panels and trap mechanisms |
 | [Training Room](concept-art/rooms/training-room-v3.png) | Warm practice-lane paving, diamond emblems, reinforced-wall banners and targets, bound-straw dummies and larger weight benches |
 | [Library](concept-art/rooms/library-v3.png) | Blue book/rune inlays, reinforced-wall shelves, compact candlelit lecterns and larger reading desks with bookshelves |
@@ -21,17 +21,19 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 
 ## Activity and iteration
 
-`src/view/residents.ts` derives poses from actual jobs and paths: alternating steps and body bob, facing the work target, mining/tool swings, a low claiming pose, a swaying full satchel, hand-to-mouth eating, and lying on the assigned bed with quiet breathing. Engineering uses the same shared movement and need animations.
+`src/view/residents.ts` derives poses from actual jobs and paths: alternating steps and body bob, facing the work target, mining/tool swings, a low claiming pose, a swaying full satchel, hand-to-mouth eating, and resting with quiet breathing. Engineering uses the same shared movement and need animations. Room service positions exist independently of visible furniture; a missing bed, table or practice object must not suppress activity.
 
-`src/view/effects.ts` provides a bounded, reused pool for excavation dust, craft sparks and cooking steam. Effects follow actual work or food stock. The Hearthstone and lanterns use subtle light changes. Reduced-motion preference disables particles and light modulation. Effects have no collision, capacity, discovery or economic role and contain no world text.
+`src/view/effects.ts` provides a bounded, reused pool for excavation dust, craft sparks and other room effects. Work effects follow actual activity; Kitchen steam and food props are cosmetic ambiance rather than production feedback. The Hearthstone and lanterns use subtle light changes. Reduced-motion preference disables particles and light modulation. Effects have no collision, capacity, discovery or economic role and contain no world text.
 
-`src/view/surfaces.ts` provides the room palette and generated paving, brass motifs, rough stone and timber textures. Scene geometry includes contact shadows, wall-foot shading, lanterns and fittings on existing walls. Furnishings retain the gameplay footprints used by navigation; decoration does not add walls or capacity.
+`src/view/surfaces.ts` provides the room palette and generated paving, brass motifs, rough stone and timber textures. Scene geometry includes contact shadows, wall-foot shading, lanterns and fittings on existing walls. Room furnishings are entirely cosmetic: their footprint, presence and arrangement never alter service capacity, navigation, sight or projectile paths. Real terrain, doors and the Hearth retain their gameplay roles.
 
-Use **Debug → Load visual showcase** for a repeatable scene containing example rooms, test residents, actual stock, loose gold, excavation marks, production orders and queued spell research. The [configuration guide](configuration.md) identifies the source of the showcase contents. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
+Use **Debug → Load visual showcase** for a repeatable scene containing example rooms, test residents, stored and loose gold, excavation marks, production orders and queued spell research. The [configuration guide](configuration.md) identifies the source of the showcase contents. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
 
 The result is a stylized procedural prototype, not a reproduction of the concept sheets' illustration detail. Sculpted meshes, authored texture sets, skeletal animation, audio, advanced shadows and cinematic effects remain optional future art work. They are not prerequisites for rapid gameplay iteration.
 
 ## Verification
+
+The verification and dated extension notes below record the original graphics pass. The current room design supersedes references there to physical furnishing stations, bed assignments and food stock: gameplay capacity now follows floor area, and props are cosmetic. Current checks belong in the [development record](development-plan.md).
 
 Reviewed normal terrain/core and the four-room showcase at several rotations and zoom levels. The showcase exercised mining, claiming, delivery, rest and meals for all four residents, and completed both Workshop recipes. Sleeping characters align with assigned beds; food, stored gold and crafted props follow their actual state. The final browser console had no errors. All 20 simulation checks, the final TypeScript/browser build and local documentation-link checks passed.
 

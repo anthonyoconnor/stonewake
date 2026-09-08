@@ -8,9 +8,9 @@ function fixture(){
  const w=createWorld({id:'bags',name:'Bags',width:14,height:14,hearth:{x:4,z:4},openings:[[2,2,11,11]],seams:[{terrain:'gold',cells:[{x:10,z:7}]}]});
  for(const t of w.tiles){t.known=true;if(t.terrain==='floor')t.claimed=true;else if(t.terrain==='dirt')t.terrain='bedrock';}
  addMiners(w,1);const a=w.agents[0];a.x=9;a.z=7;
- const ore=tileAt(w,10,7)!;designate(w,[ore]);return {w,a,ore,chest:w.furnishings[0]};
+ const ore=tileAt(w,10,7)!;designate(w,[ore]);return {w,a,ore,chest:w.roomServices[0]};
 }
-function total(w:World){return w.tiles.reduce((n,t)=>n+t.gold+t.loose,0)+w.agents.reduce((n,a)=>n+a.carrying,0)+w.furnishings.reduce((n,f)=>n+f.stored,0);}
+function total(w:World){return w.tiles.reduce((n,t)=>n+t.gold+t.loose,0)+w.agents.reduce((n,a)=>n+a.carrying,0)+w.roomServices.reduce((n,f)=>n+f.stored,0);}
 function until(w:World,condition:()=>boolean,seconds=80){for(let i=0;i<seconds*20&&!condition();i++){tick(w,.05);assert.equal(total(w),90);}assert(condition());}
 test('gold goes straight into the bag and a half-mined pillar survives the first delivery',()=>{
  const {w,a,ore,chest}=fixture();until(w,()=>a.carrying===15);assert.equal(ore.gold,75);assert.equal(ore.loose,0);assert.equal(chest.stored,0);
@@ -20,7 +20,7 @@ test('gold goes straight into the bag and a half-mined pillar survives the first
 });
 test('missing or full storage leaves all extracted gold at its seam',()=>{
  for(const full of [false,true]){
-  const {w,a,ore,chest}=fixture();if(full)chest.capacity=0;else w.furnishings=[];
+  const {w,a,ore,chest}=fixture();if(full)chest.capacity=0;else w.roomServices=[];
   until(w,()=>ore.terrain==='floor');assert.equal(ore.loose,90);assert.equal(a.carrying,0);assert(w.tiles.every(t=>t===ore||t.loose===0));
  }
 });

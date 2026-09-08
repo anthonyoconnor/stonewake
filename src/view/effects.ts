@@ -30,7 +30,7 @@ export class SceneEffects {
         else if(j.kind==='train')this.emit(a.x,.05,a.z,'dust',1);
         else this.emit(j.target.x+dx*.56,j.kind==='mine'?.76:j.kind==='craft'?.68:.08,j.target.z+dz*.56,j.kind==='craft'?'spark':'dust',j.kind==='claim'?2:4);
       }
-      if(time-this.lastSteam>.8){this.lastSteam=time;for(const f of w.furnishings)if((f.model??f.kind)==='stove'&&f.stored>0)this.emit(f.x,.8,f.z,'steam',1);}
+      if(time-this.lastSteam>.8){this.lastSteam=time;for(const f of w.furnishings)if((f.model??f.kind)==='stove')this.emit(f.x,.8,f.z,'steam',1);}
     }
     for(const p of this.particles)if(p.life>0){
       p.life-=dt;if(p.life<=0){p.mesh.setEnabled(false);continue;}

@@ -52,7 +52,7 @@ export function moveResident(w: World, a: Resident, dt: number) {
   const norm = Math.hypot(vx, vz) || 1;
   let next = { x: a.x + (vx / norm) * step, z: a.z + (vz / norm) * step };
   // Avoid residents when space allows, but never let avoidance stop forward progress.
-  // Terrain and furniture remain solid even while residents briefly overlap.
+  // Terrain and shut barriers remain solid even while residents briefly overlap.
   if (!clearLine(w, a, next) || Math.hypot(target.x - next.x, target.z - next.z) > d - step * 0.25)
     next = { x: a.x + (dx / d) * step, z: a.z + (dz / d) * step };
   if (!clearLine(w, a, next)) {

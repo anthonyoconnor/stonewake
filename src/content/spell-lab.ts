@@ -16,6 +16,5 @@ export function createSpellLab(freeRoomBuilding=false){
   buildRoom(w,'library',rect(3,3,6,4));buildRoom(w,'dormitory',rect(3,16,6,4));buildRoom(w,'kitchen',rect(3,7,6,4));
   addResidents(w,'warrior',2);addResidents(w,'runesmith');addResidents(w,'miner');
   w.agents.filter(a=>a.type==='warrior').forEach((a,i)=>Object.assign(a,{x:12,z:12+i*2}));
-  for(const f of w.furnishings)if(f.service==='cooking')f.stored=8;
   w.spellTest={spawn:{x:18,z:12},target:{x:12,z:12}};prepareTestSpells(w);return w;
 }

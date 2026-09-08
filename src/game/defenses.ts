@@ -8,7 +8,7 @@ export function defenseQuote(w:World,type:string,p:Point){
   const def=defenseById(type),t=tileAt(w,p.x,p.z);
   const invalid=(reason:string)=>({valid:false,reason,rotation:0});
   if(!def)return invalid('Unknown defense.');
-  if(!t?.known||t.terrain!=='floor'||!t.claimed||t.core||t.room||t.wallPlanned||t.loose||defenseAt(w,p)||blocked(w,p)||w.furnishings.some(f=>key(f.access)===key(p)))return invalid('Choose clear, claimed floor outside a room.');
+  if(!t?.known||t.terrain!=='floor'||!t.claimed||t.core||t.room||t.wallPlanned||t.loose||defenseAt(w,p)||blocked(w,p)||w.roomServices.some(f=>f.id==='hearth-treasury'&&key(f.access)===key(p)))return invalid('Choose clear, claimed floor outside a room.');
   let rotation=0;
   if(def.kind==='door'){
     const wall=(x:number,z:number)=>{const t=tileAt(w,x,z);return !!t?.known&&t.terrain!=='floor';};
@@ -26,8 +26,6 @@ export function placeDefense(w:World,type:string,p:Point,rotation=0){
   const def=defenseById(type)!;
   const d:Defense={id:w.nextDefenseId=(w.nextDefenseId??0)+1,type,x:p.x,z:p.z,rotation:def.kind==='door'?quote.rotation:((rotation%4)+4)%4,mode:'closed',health:def.health??0,maxHealth:def.health??0,openUntil:0,readyAt:0,triggeredAt:-100};
   (w.defenses??=[]).push(d);w.outputs[type]--;
-  // Station props are a presentation of stock, not a second inventory.
-  const f=w.furnishings.find(f=>f.output===type&&(f.outputCount??0)>0);if(f)f.outputCount!--;
   w.revision++;return `${def.name} placed.`;
 }
 export function setDoorMode(w:World,id:number,mode:DoorMode){

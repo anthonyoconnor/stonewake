@@ -109,7 +109,7 @@ test('research interruption retains progress and reports why its reservation was
   assert(inspectResident(w, a.id)!.history.length > 0);
 });
 
-test('condition timeout includes actor routes, facilities, reservations and recent reasons', () => {
+test('condition timeout includes actor routes, services, reservations and recent reasons', () => {
   const w = createScenario('locked-door-hauling');
   assert.throws(
     () => advanceUntil(w, () => false, 0.1, 'Deliberate diagnostic check'),
@@ -119,7 +119,7 @@ test('condition timeout includes actor routes, facilities, reservations and rece
         'Deliberate diagnostic check',
         'residents',
         'path',
-        'facilities',
+        'services',
         'reservedBy',
         'recentEvents',
       ])

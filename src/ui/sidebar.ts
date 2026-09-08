@@ -8,7 +8,7 @@ import type { GameScene } from '../view/scene';
 import type { CameraControls } from '../view/controls';
 import type {Selection} from './selection';
 import {roomDefinitions} from '../content/rooms';
-import {goldTotal,roomStats} from '../game/rooms';
+import {goldTotal,roomStats,furnish} from '../game/rooms';
 import {labShapes} from '../content/room-lab';
 import {addMiners,addResidents} from '../game/simulation';
 import {queueCraft,attractionStatus} from '../game/crafting';
@@ -59,7 +59,7 @@ export class Sidebar {
     });
     this.root.querySelector<HTMLButtonElement>('#help')!.onclick=()=>this.show('help');
     this.minimap.onclick=e=>{const r=this.minimap.getBoundingClientRect();controls.center((e.clientX-r.left)/r.width*view.world.width,(e.clientY-r.top)/r.height*view.world.height);};
-    this.tuningDialog.onApply=()=>{selection.draw();this.show(this.category);};
+    this.tuningDialog.onApply=()=>{furnish(this.view.world);this.view.world.routesChanged=true;this.view.world.revision++;selection.draw();this.show(this.category);};
     this.show('rooms');view.engine.resize();
   }
   show(category:string){
@@ -123,9 +123,9 @@ export class Sidebar {
     const id=this.selection.tool,room=roomDefinitions.find(r=>r.id===id);
     this.root.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>{const selected=b.dataset.room===id;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
     const header=this.panel.querySelector<HTMLElement>('#selected-action');if(!header)return;
-    const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+price+':'+tuning.reclaimRatio+':'+wallBuildDuration();
+    const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+price+':'+room?.capacityPerTile+':'+tuning.reclaimRatio+':'+wallBuildDuration();
     if(header.dataset.selection===signature)return;header.dataset.selection=signature;
-    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='reclaim'?'Reclaim room tiles':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='reclaim'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% of paid cost back</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span>`}</div>`;
+    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='reclaim'?'Reclaim room tiles':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='reclaim'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% of paid cost back</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span><span class="room-price">${room!.capacityPerTile} ${room!.service==='storage'?'gold storage':'dwarf capacity'} / square</span>`}</div>`;
   }
   drawMap(){
     const c=this.minimap.getContext('2d')!,w=this.view.world,sx=this.minimap.width/w.width,sz=this.minimap.height/w.height;
@@ -148,32 +148,36 @@ export class Sidebar {
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
     this.root.querySelector('#gold-total')!.textContent=String(goldTotal(w));this.root.querySelector('#dwarf-total')!.textContent=String(w.agents.length);
-    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>Training ${a.trainingLevel??0} / ${tuning.trainingLevels} · Work +${Math.round((workRate(w,a)-1)*100)}%<br>${(a.trainingLevel??0)>=tuning.trainingLevels?'Training complete':`Next level ${Math.min(100,Math.floor((a.trainingProgress??0)/tuning.trainingSeconds*100))}%`}</small></div>`).join('');
+    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>Training ${a.trainingLevel??0} / ${tuning.trainingLevels} · Work +${Math.round((workRate(w,a)-1)*100)}%<br>${(a.trainingLevel??0)>=tuning.trainingLevels?'Training complete':(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds`:`Next level ${Math.min(100,Math.floor((a.trainingProgress??0)/tuning.trainingSeconds*100))}% · One level per visit`}</small></div>`).join('');
     const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`Specialists arrive through the Hearth when rooms and settlement have spare capacity. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);
-      if(p){const stats=roomStats(w,p);summary.textContent=`${stats.tiles} squares · ${stats.usable.length} usable facilities${stats.usable.some(f=>f.service==='rest')?` · ${stats.usable.filter(f=>f.assigned).length} assigned beds · ${stats.usable.filter(f=>!f.assigned).length} free beds`:` · ${stats.usable.reduce((s,f)=>s+f.capacity,0)} capacity`}${stats.tiles&&!stats.usable.length?' · Needs space or access.':''}`;}
-      else summary.textContent='';
-      if(p){const s=roomStats(w,p);if(s.facilities.some(f=>['growing','cooking','dining','brewing'].includes(f.service))){
-        const count=(service:string)=>s.usable.filter(f=>f.service===service),food=count('cooking').reduce((sum,f)=>sum+f.stored,0);
-        summary.textContent=`${s.tiles} squares · ${food} meals · ${count('dining').length} eating positions · ${count('brewing').reduce((sum,f)=>sum+f.stored,0)} ale. `;
-        if(!count('growing').length||!count('cooking').length)summary.textContent+='Needs growing and cooking facilities.';else if(!count('dining').length)summary.textContent+='Needs room for a table.';else if(!food)summary.textContent+='Food is growing and cooking.';
-      }}
-      if(p&&tileAt(w,p.x,p.z)?.core){const chest=w.furnishings.find(f=>f.id==='hearth-treasury');summary.textContent=chest?`Hearth treasury · ${chest.stored} / ${chest.capacity} gold`:'';}
-      if(p){const s=roomStats(w,p),room=roomDefinitions.find(r=>r.id===tileAt(w,p.x,p.z)?.room);
-        for(const service of ['training','research'])if(room?.furnishings.some(f=>f.service===service)){
-          const stations=new Set(s.usable.filter(f=>f.service===service).map(f=>key(f.access))),occupied=new Set(w.agents.filter(a=>a.job&&stations.has(key(a.job.work))).map(a=>key(a.job!.work))).size;
-          summary.textContent=`${s.tiles} squares · ${stations.size} usable ${service} positions · ${occupied} occupied · ${stations.size-occupied} available. `;
-          summary.textContent+=!stations.size?`Needs space and access for a ${service} station.`:service==='training'?'All dwarf types train here.':'Choose research in the Spells panel.';
+      summary.textContent='';
+      if(p&&tileAt(w,p.x,p.z)?.core){const chest=w.roomServices.find(f=>f.id==='hearth-treasury');summary.textContent=chest?`Hearth treasury · ${chest.stored} / ${chest.capacity} gold`:'';}
+      else if(p){
+        const s=roomStats(w,p),room=roomDefinitions.find(r=>r.id===tileAt(w,p.x,p.z)?.room);
+        if(room){
+          const usable=s.usable.reduce((sum,f)=>sum+f.capacity,0),ids=new Set(s.usable.map(f=>f.id));
+          const occupied=w.agents.filter(a=>a.job?.furnishing&&ids.has(a.job.furnishing)).length;
+          const assigned=s.usable.filter(f=>f.assigned!==undefined).length;
+          const label=room.service==='storage'?'gold storage':room.service==='rest'?'accommodation':room.service==='dining'?'food support':`${room.service} capacity`;
+          summary.textContent=`${s.tiles} square${s.tiles===1?'':'s'} · ${s.capacity} ${label}. `;
+          if(room.service==='storage')summary.textContent+=`${s.services.reduce((sum,f)=>sum+f.stored,0)} gold stored. `;
+          else if(room.service==='rest')summary.textContent+=`${assigned} assigned · ${Math.max(0,usable-assigned)} available. `;
+          else if(room.service==='dining')summary.textContent+=`Supports ${usable} dwarf${usable===1?'':'s'} · ${assigned} assigned · ${occupied} eating. `;
+          else summary.textContent+=`${occupied} occupied · ${Math.max(0,usable-occupied)} available. `;
+          if(usable<s.capacity)summary.textContent+=`${s.capacity-usable} capacity unreachable. `;
+          if(room.service==='training')summary.textContent+=`All dwarf types gain one level per visit, then wait ${tuning.trainingInterval} seconds before training again. `;
+          if(room.service==='research')summary.textContent+='Choose research in the Spells panel. ';
+          summary.textContent+='Furniture is decorative.';
         }
       }
     }
     const attraction=this.panel.querySelector('#debug-attraction');if(attraction)attraction.textContent=attractionStatus(w,this.panel.querySelector<HTMLSelectElement>('#debug-dwarf-type')!.value);
-    if(summary&&w.salvaged&&Object.values(w.salvaged).some(v=>v>0))summary.textContent+=` Retained supplies: ${Object.entries(w.salvaged).filter(([,n])=>n>0).map(([service,n])=>`${n} ${service}`).join(', ')}.`;
     const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
     const craftStatus=this.panel.querySelector('#craft-status');if(craftStatus){
       const start=w.agents[0]??w.tiles.find(t=>t.claimed&&!t.core&&t.terrain==='floor'),access=start?reachable(w,start):new Set<string>();
-      craftStatus.textContent=`${w.furnishings.filter(f=>f.service==='craft'&&access.has(key(f.access))).length} usable craft positions · ${w.agents.filter(a=>recipes.some(r=>a.capabilities.includes(r.capability))).length} capable workers. Engineers need a working Workshop, spare beds and food to arrive.`;
+      craftStatus.textContent=`${w.roomServices.filter(f=>f.service==='craft'&&access.has(key(f.access))).reduce((sum,f)=>sum+f.capacity,0)} dwarf crafting capacity · ${w.agents.filter(a=>recipes.some(r=>a.capabilities.includes(r.capability))).length} capable workers. Engineers need a reachable Workshop, spare accommodation and food support to arrive.`;
       this.panel.querySelector('#craft-orders')!.innerHTML=w.craftOrders.filter(o=>o.state!=='done').map(o=>`<p>${recipeById(o.recipe)!.name} · ${o.state==='working'?Math.round(o.progress/recipeById(o.recipe)!.seconds*100)+'%':'Queued'}</p>`).join('');
       this.panel.querySelector('#craft-outputs')!.textContent=recipes.map(r=>`${w.outputs[r.id]??0} ${r.name.toLowerCase()}s`).join(' · ');
     }

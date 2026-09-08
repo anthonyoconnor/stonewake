@@ -49,7 +49,7 @@ Selecting an icon activates room designation. A compact display above the four-c
 
 The player can designate single cells, paint connected shapes, or drag across an area. Rectangular dragging is a convenience, not a minimum room shape. Repeated selections allow bends, narrow wings, and layouts around bedrock or retained earth cells.
 
-Room floors and available wall treatments identify the room as soon as it is designated. Furnishings appear automatically only where their footprints and access fit. The interface does not introduce manual bed, shelf, or workstation placement.
+Room floors and available wall treatments identify the room as soon as it is designated. Furnishings appear automatically as decoration, with no capacity or access requirements. The interface does not introduce manual bed, shelf, or workstation placement. Show floor area, capacity per tile and resulting service capacity so every added square has a predictable benefit.
 
 ### Defenses
 
@@ -81,13 +81,13 @@ Selecting a dwarf in the world opens its information in the sidebar. A locate ac
 
 ### Training, research and arrival controls
 
-Training Room and Library are selectable room icons using the same construction controls as the other rooms. Selecting either room reports accessible positions, occupied positions and available capacity in the left sidebar. A room with no usable station explains that it needs space and access.
+Training Room and Library use the same construction controls as the other rooms. Selecting either reports floor area, total capacity, occupied slots and reachable capacity in the left sidebar. Explain a real blocked route or a full room; missing furniture never causes an unavailable-service message.
 
-The Dwarfs panel shows each resident's type, activity, food/rest state, training level, progress toward the next level and current work-speed bonus. Specialists show their actual arrival requirements and missing support. There are no individual training or movement orders.
+The Dwarfs panel shows each resident's type, activity, food/rest state, training level, progress toward the next level, personal training cooldown and current work-speed bonus. Each training visit ends after one gained level and releases its room slot during cooldown. Specialists show their actual arrival requirements and missing support. There are no individual training or movement orders.
 
-The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume, Pause, and Cast controls. Initial research is selected by the player; Runesmiths choose accessible stations autonomously. A cast is available only when prepared and affordable. Targeting follows the selected spell's definition. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active effect time stays in the sidebar. See [Spells](spells.md) for effects, costs, targeting and implementation status.
+The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume, Pause, and Cast controls. Initial research is selected by the player; Runesmiths choose reachable Library slots autonomously. A cast is available only when prepared and affordable. Targeting follows the selected spell's definition. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active effect time stays in the sidebar. See [Spells](spells.md) for effects, costs, targeting and implementation status.
 
-**Debug → Load visual showcase** builds example rooms through normal gameplay construction and adds test residents, actual food/gold stocks, craft orders and research orders. The [configuration guide](configuration.md) identifies the source of the showcase contents. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
+**Debug → Load visual showcase** builds example rooms through normal gameplay construction and adds test residents, gold, craft orders and research orders. Kitchens provide room support without initial food stock. The [configuration guide](configuration.md) identifies the source of the showcase contents. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
 
 The studio starts with automatic arrivals disabled. **Test automatic specialist arrivals** enables normal room/support checks in that test world. The Dwarfs panel reports time until the next check and the specific missing capacity for each type.
 
@@ -128,8 +128,8 @@ The world may show excavation markings, room footprints, a restrained selection 
 | Information | What the world shows | Where details appear |
 |---|---|---|
 | Room identity | Distinctive floors, wall treatments, and recognizable furnishings | Selected room panel |
-| Room size and usable capacity | The actual beds, stations, aisles, and storage that fit | Sidebar capacity and expansion preview |
-| Food provision | Visible mushroom growth, food, serving places, and residents eating or queuing | Kitchen information and shortage messages |
+| Room size and usable capacity | The room's floor area, cosmetic furnishings and resident activity | Sidebar area, capacity per tile, total capacity, occupancy and expansion preview |
+| Food provision | Kitchen decoration and residents eating or waiting for access | Kitchen resident support and capacity/access messages; no food inventory |
 | Gold storage | Gold piles reflecting stored wealth and miners carrying deliveries | Sidebar gold total and Treasure Room details |
 | Excavation or reinforcement | Miners working, debris, changing surfaces, and the resulting terrain state | Selected work information when needed |
 | Research, crafting, and training | Dwarfs using their facilities and the physical work activity | Relevant sidebar category or selected room details |
@@ -137,7 +137,7 @@ The world may show excavation markings, room footprints, a restrained selection 
 | Persistent unmet needs | Relevant behavior such as searching or leaving work, without exaggerated repeated effects | Dwarf information and a message identifying the cause |
 | Threat to the Stone Hearth | Attacks and damage effects on the core | Priority warning and minimap emphasis |
 
-These visual cues must reflect the simulation. Decorative full food tables must not imply supplies when none exist, and a painted room must not appear functional when no workstation fits. Do not require the player to infer a specific problem from animation alone: the sidebar and messages provide the explanation.
+Activity and stored-gold visuals must reflect the simulation. Food tables, beds and equipment are decoration; their presence or absence makes no promise about inventory or service capacity. A room without furniture still functions. Do not require the player to infer a specific problem from animation alone: the sidebar and messages explain capacity and route access.
 
 ## Messages and the question-mark button
 
@@ -161,10 +161,10 @@ Example message wording below illustrates placement and clarity; it does not def
 
 | Event | Example message | Optional action |
 |---|---|---|
-| A room has no usable research position | Library needs space for a research station. | Locate room |
-| Food stock cannot meet demand | Food supplies are running low. | Open Kitchen information |
+| Library capacity is occupied | More Library room capacity is needed. | Locate room |
+| Kitchen support cannot meet population | More Kitchen capacity is needed. | Open Kitchen information |
 | Residents cannot reach available food | Dwarfs cannot reach a Kitchen. | Locate the affected area |
-| Too few usable beds | More accessible beds are needed. | Open Dormitory information |
+| Too little reachable accommodation | More Dormitory capacity is needed. | Open Dormitory information |
 | Insufficient stored gold for wages | There is not enough stored gold for payday. | Open treasure information |
 | Treasury is inaccessible | Dwarfs cannot reach a Treasure Room to collect pay. | Locate the affected area |
 | A spell becomes available | A new spell is ready. | Open spells |
@@ -206,10 +206,10 @@ These Dungeon Keeper screenshots are layout references. Their floating room stat
 
 Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
 
-The Stone Hearth includes one fixed treasury chest using the shared gold-storage service. It starts empty and holds the normal construction cost of a 3×3 Treasure Room (currently 108 gold). It accepts miner deliveries and pays for construction/production through the shared balance, including when the starting allowance is exhausted. Its access square is preserved by automatic furnishings. Inspect the Hearth for live stored gold/capacity. It is not a room upgrade or an extra starting grant.
+The Stone Hearth includes one fixed treasury chest using the shared gold-storage service. It starts empty and holds the normal construction cost of a 3×3 Treasure Room (currently 108 gold). It accepts miner deliveries and pays for construction/production through the shared balance, including when the starting allowance is exhausted. The fixed core treasury service protects its approach square. Inspect the Hearth for live stored gold/capacity. It is not a room upgrade or an extra starting grant.
 
 ## Wall construction and room reclaim commands
 
 **Build walls** plans reinforced rock on clear claimed floor. Miners construct it from an adjacent square; plans stay walkable until complete. The initial build time is 24 seconds, always longer than normal excavation plus reinforcement. Start a drag on a wall plan to cancel plans; start on unplanned floor to add plans. Core, rooms, resource piles and facility approaches are protected. Right-click returns to excavation. The current cost is time only. Planned sites with no approach wait; closing a passage can cut off access.
 
-**Reclaim room tiles** returns eligible room squares to claimed ground and immediately refunds the configured fraction of their original payment (default 50%, rounded down per tile). Free-built squares refund nothing. Furniture adapts; removed chest contents remain on the ground for hauling, and retained food supplies refill replacement facilities. Reclaiming does not sell the Hearth. Prices and refunds appear in the sidebar.
+**Reclaim room tiles** returns eligible room squares to claimed ground and immediately refunds the configured fraction of their original payment (default 50%, rounded down per tile). Free-built squares refund nothing. Capacity follows the remaining floor and decoration adapts; gold displaced by reduced storage remains on the ground for hauling. Training/research progress and completed crafted items remain intact. Reclaiming does not sell the Hearth. Prices and refunds appear in the sidebar.

@@ -7,7 +7,7 @@ import { goldTotal } from '../game/rooms';
 import { dismissRally } from '../game/spell-effects';
 
 export function showSpells(sidebar: Sidebar) {
-  sidebar.panel.innerHTML = `<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Runesmiths research spells at accessible Library stations. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map((s) => `<article class="spell-card"><h3>${s.name}</h3><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
+  sidebar.panel.innerHTML = `<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Library floor area determines how many Runesmiths can research at once. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map((s) => `<article class="spell-card"><h3>${s.name}</h3><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
   sidebar.panel.querySelectorAll<HTMLButtonElement>('[data-research]').forEach(
     (b) =>
       (b.onclick = () => {
@@ -36,14 +36,13 @@ export function updateSpells(sidebar: Sidebar) {
   const w = sidebar.view.world;
   const researchCapacity = sidebar.panel.querySelector('#research-capacity');
   if (researchCapacity) {
-    const workers = w.agents.filter((a) => a.capabilities.includes('research')),
-      routes = workers.map((a) => reachable(w, a));
-    const stations = new Set(
-      w.furnishings
-        .filter((f) => f.service === 'research' && routes.some((r) => r.has(key(f.access))))
-        .map((f) => key(f.access)),
-    );
-    researchCapacity.textContent = `${workers.length} capable researcher${workers.length === 1 ? '' : 's'} · ${stations.size} reachable research positions${workers.length ? '' : '. Build a Library and provide spare beds and food to attract a Runesmith.'}`;
+    const workers = w.agents.filter((a) => a.capabilities.includes('research'));
+    const start = w.agents[0] ?? w.tiles.find((t) => t.claimed && !t.core && t.terrain === 'floor');
+    const routes = (workers.length ? workers : start ? [start] : []).map((a) => reachable(w, a));
+    const capacity = w.roomServices
+      .filter((f) => f.service === 'research' && routes.some((r) => r.has(key(f.access))))
+      .reduce((sum, f) => sum + f.capacity, 0);
+    researchCapacity.textContent = `${workers.length} capable researcher${workers.length === 1 ? '' : 's'} · Capacity for ${capacity} researcher${capacity === 1 ? '' : 's'}${workers.length ? '' : '. Build a Library and provide spare accommodation and food support to attract a Runesmith.'}`;
     for (const spell of spellDefinitions) {
       const order = w.researchOrders?.find((o) => o.spell === spell.id),
         ready = order?.state === 'ready',

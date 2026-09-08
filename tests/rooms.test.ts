@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createRoomLab,labLayout,labShapes} from '../src/content/room-lab.ts';
-import {buildRoom,furnish,roomStats} from '../src/game/rooms.ts';
+import {buildRoom,furnish,roomStats,syncRoomServices,reclaimRoom} from '../src/game/rooms.ts';
 import {reachable} from '../src/game/navigation.ts';
 import {tileAt,key} from '../src/game/types.ts';
 import {goldTotal,roomQuote} from '../src/game/rooms.ts';
@@ -11,9 +11,11 @@ test('every implemented room passes layout and cost checks',()=>{
  for(const room of roomDefinitions.filter(r=>r.implemented))for(const shape of labShapes){
    const w=createRoomLab();w.freeRoomBuilding=true;w.allowance=0;const before=reachable(w,{x:2,z:2});
    buildRoom(w,room.id,labLayout(w,shape));const after=reachable(w,{x:2,z:2});
-   assert.equal(after.size,before.size-w.furnishings.reduce((s,f)=>s+f.cells.length,0),`${room.id}: ${shape}`);
-   for(const f of w.furnishings)assert(after.has(key(f.access)));assert.equal(goldTotal(w),0);
-   if(shape==='Single tile')assert.equal(w.furnishings.filter(f=>f.room!=='hearth').length,0);else assert(w.furnishings.filter(f=>f.room!=='hearth').length>0,`${room.id}: ${shape}`);
+   assert.deepEqual(after,before,`${room.id}: ${shape} decorations leave all paths open`);
+   const tiles=w.tiles.filter(t=>t.room===room.id).length;
+   assert.equal(w.roomServices.filter(s=>s.room===room.id).reduce((sum,s)=>sum+s.capacity,0),tiles*room.capacityPerTile,`${room.id}: ${shape}`);
+   for(const s of w.roomServices)assert(after.has(key(s.access)));assert.equal(goldTotal(w),0);
+   if(shape==='Single tile')assert.equal(w.roomServices.filter(s=>s.room===room.id).length,1);
    w.freeRoomBuilding=false;assert.equal(roomQuote(w,room.id,[{x:20,z:20}]).valid,false);
  }
 });
@@ -22,8 +24,8 @@ test('miners claim distinct beds, rest, and resume normal activity',()=>{
  for(const a of w.agents)a.energy=.1;
  for(let i=0;i<1200;i++)tick(w,.05);
  assert(w.agents.every(a=>a.rested>=1));assert(w.agents.every(a=>a.job?.kind!=='sleep'));
- const assignments=w.furnishings.filter(f=>f.assigned).map(f=>f.assigned);assert.equal(new Set(assignments).size,3);assert.equal(assignments.length,3);
- const beds=w.furnishings.filter(f=>f.assigned);buildRoom(w,'dormitory',[{x:15,z:14},{x:15,z:15}]);for(const bed of beds)assert(w.furnishings.includes(bed));
+ const assignments=w.roomServices.filter(f=>f.service==='rest'&&f.assigned).map(f=>f.assigned);assert.equal(new Set(assignments).size,3);assert.equal(assignments.length,3);
+ const beds=w.roomServices.filter(f=>f.service==='rest'&&f.assigned);buildRoom(w,'dormitory',[{x:15,z:14},{x:15,z:15}]);for(const bed of beds)assert(w.roomServices.includes(bed));
 });
 test('free build waives creation and expansion costs but preserves placement rules',()=>{
  const w=createRoomLab();w.allowance=0;
@@ -36,15 +38,16 @@ test('free build waives creation and expansion costs but preserves placement rul
 });
 test('Treasure Room layout matrix preserves circulation and real capacity',()=>{
  for(const shape of labShapes){const w=createRoomLab();const start={x:2,z:2},before=reachable(w,start);buildRoom(w,'treasure',labLayout(w,shape));
-   const after=reachable(w,start);assert.equal(after.size,before.size-w.furnishings.reduce((s,f)=>s+f.cells.length,0),shape);
-   for(const f of w.furnishings)assert(after.has(key(f.access)),shape);
-   if(shape==='Single tile')assert.equal(w.furnishings.filter(f=>f.room!=='hearth').length,0);else assert(w.furnishings.filter(f=>f.room!=='hearth').length>0,shape);
+   const after=reachable(w,start);assert.deepEqual(after,before,shape);
+   for(const s of w.roomServices)assert(after.has(key(s.access)),shape);
+   assert.equal(w.roomServices.filter(s=>s.room==='treasure').reduce((sum,s)=>sum+s.capacity,0),w.tiles.filter(t=>t.room==='treasure').length*50,shape);
  }
 });
 test('expansion preserves objects and stored contents; displaced gold survives',()=>{
- const w=createRoomLab();buildRoom(w,'treasure',labLayout(w,'Compact'));const chest=w.furnishings.find(f=>f.room==='treasure')!;chest.stored=75;
- buildRoom(w,'treasure',labLayout(w,'Large hall'));assert(w.furnishings.includes(chest));assert.equal(chest.stored,75);
- tileAt(w,chest.x,chest.z)!.room=undefined;furnish(w);assert.equal(w.tiles.reduce((s,t)=>s+t.loose,0),75);
+ const w=createRoomLab();buildRoom(w,'treasure',labLayout(w,'Compact'));const storage=w.roomServices.find(f=>f.room==='treasure')!;storage.stored=45;
+ const total=goldTotal(w);w.furnishings=[];furnish(w);assert.equal(goldTotal(w),total,'Changing decorations cannot displace gold');
+ buildRoom(w,'treasure',labLayout(w,'Large hall'));assert(w.roomServices.includes(storage));assert.equal(storage.stored,45);
+ tileAt(w,storage.x,storage.z)!.room=undefined;furnish(w);assert.equal(w.tiles.reduce((s,t)=>s+t.loose,0),45);
 });
 test('separate and corner-touching room patches stay separate',()=>{
  const w=createRoomLab();buildRoom(w,'treasure',[{x:8,z:8},{x:9,z:9}]);assert.equal(roomStats(w,{x:8,z:8}).tiles,1);assert.equal(w.furnishings.filter(f=>f.room!=='hearth').length,0);
@@ -68,4 +71,44 @@ test('all rooms skip invalid cells and charge only eligible new floor',()=>{
   const expansion={x:10,z:5};const cost=roomQuote(w,room.id,[points[10],expansion,points[0]]).cost;
   buildRoom(w,room.id,[points[10],expansion,points[0]]);assert.equal(tileAt(w,10,5)!.room,room.id);assert.equal(goldTotal(w),total-cost);
  }
+});
+
+test('fractional capacity follows connected floor area and previews expansion and joining',()=>{
+ const room=roomDefinitions.find(r=>r.id==='training')!,original=room.capacityPerTile;
+ try{
+  room.capacityPerTile=.5;
+  const w=createRoomLab();
+  buildRoom(w,'training',[{x:6,z:6},{x:8,z:6}]);
+  assert.equal(roomStats(w,{x:6,z:6}).capacity,0);
+  assert.equal(roomStats(w,{x:8,z:6}).capacity,0);
+  const join=roomQuote(w,'training',[{x:7,z:6}]);assert.equal(join.addedCapacity,1);
+  buildRoom(w,'training',join.tiles);assert.equal(roomStats(w,{x:6,z:6}).capacity,1);
+  assert.equal(roomQuote(w,'training',[{x:9,z:6}]).addedCapacity,1);
+  buildRoom(w,'training',[{x:9,z:6}]);assert.equal(roomStats(w,{x:6,z:6}).capacity,2);
+  reclaimRoom(w,[{x:7,z:6}]);assert.equal(w.roomServices.filter(s=>s.service==='training').length,1);
+  room.capacityPerTile=2;syncRoomServices(w);
+  assert.equal(w.roomServices.filter(s=>s.service==='training').length,6);
+ }finally{room.capacityPerTile=original;}
+});
+
+test('capacity tuning preserves gold and spills only overflow; decoration changes never do',()=>{
+ const room=roomDefinitions.find(r=>r.id==='treasure')!,original=room.capacityPerTile;
+ try{
+  const w=createRoomLab();buildRoom(w,'treasure',[{x:8,z:8}]);
+  w.roomServices.find(s=>s.room==='treasure')!.stored=45;
+  w.furnishings=[];syncRoomServices(w);
+  assert.equal(w.tiles.reduce((sum,t)=>sum+t.loose,0),0);
+  room.capacityPerTile=20;syncRoomServices(w);
+  assert.equal(w.roomServices.find(s=>s.room==='treasure')!.stored,20);
+  assert.equal(tileAt(w,8,8)!.loose,25);
+  reclaimRoom(w,[{x:8,z:8}]);assert.equal(tileAt(w,8,8)!.loose,45);
+ }finally{room.capacityPerTile=original;}
+});
+
+test('unreachable rooms retain their area capacity but offer no service through walls',()=>{
+ const w=createRoomLab(),p={x:8,z:8};buildRoom(w,'training',[p]);
+ assert.equal(roomStats(w,p).usable.length,1);
+ for(const [x,z] of [[7,8],[9,8],[8,7],[8,9]])tileAt(w,x,z)!.terrain='rock';
+ assert.equal(roomStats(w,p).capacity,1);assert.equal(roomStats(w,p).usable.length,0);
+ tileAt(w,7,8)!.terrain='floor';assert.equal(roomStats(w,p).usable.length,1);
 });

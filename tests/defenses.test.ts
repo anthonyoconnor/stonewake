@@ -13,6 +13,7 @@ import {planWalls} from '../src/game/walls.ts';
 import {queueCraft} from '../src/game/crafting.ts';
 import {createRoomLab,labLayout} from '../src/content/room-lab.ts';
 import {createDefenseLab} from '../src/content/defense-lab.ts';
+import {spellTargetError} from '../src/game/research.ts';
 const run=(w:World,seconds:number)=>{for(let i=0;i<Math.ceil(seconds*20);i++)tick(w,.05);};
 function hall(){
   const w=createWorld({id:'defense-test',name:'Defense test',width:18,height:12,hearth:{x:3,z:3},openings:[[1,1,5,8],[1,8,16,8]],seams:[]});
@@ -89,12 +90,12 @@ test('spikes catch a fast crossing and a lethal hit does not leave a living pinn
   const speed=raiderDefinition.speed;try{raiderDefinition.speed=30;w.elapsed+=.25;tickDefenses(w,.25);}finally{raiderDefinition.speed=speed;}
   assert.equal(e.health,0);assert.equal(e.activity,'Defeated');assert(Math.abs(e.x-10)<.5);assert.equal(e.pinnedUntil,0);const p=e.x;run(w,3);assert.equal(e.x,p);
 });
-test('bolts select the first enemy in their direction and respect range, walls, furniture and shut doors',()=>{
+test('bolts select the first enemy and respect range, walls and shut doors while ignoring decoration',()=>{
   const w=hall();placeDefense(w,'bolt-trap',{x:6,z:8});const bolt=defenseAt(w,{x:6,z:8})!,d=door(w);
   const far=addRaider(w,{x:12,z:8},{x:12,z:8})!;assert(!boltTarget(w,bolt));setDoorMode(w,d.id,'open');assert.equal(boltTarget(w,bolt),far);
   const near=addRaider(w,{x:8,z:8},{x:8,z:8})!;assert.equal(boltTarget(w,bolt),near);bolt.rotation=2;assert(!boltTarget(w,bolt));bolt.rotation=0;
   tileAt(w,7,8)!.terrain='rock';assert(!boltTarget(w,bolt));tileAt(w,7,8)!.terrain='floor';
-  w.furnishings.push({id:'obstacle',kind:'bench',room:'workshop',service:'craft',x:7,z:8,cells:[{x:7,z:8}],access:{x:7,z:7},rotation:0,capacity:1,stored:0});assert(!boltTarget(w,bolt));w.furnishings=w.furnishings.filter(f=>f.id!=='obstacle');
+  w.furnishings.push({id:'decoration',kind:'bench',room:'workshop',x:7,z:8,cells:[{x:7,z:8}],access:{x:7,z:7},rotation:0});assert.equal(boltTarget(w,bolt),near);assert(!blocked(w,{x:7,z:8}));w.furnishings=w.furnishings.filter(f=>f.id!=='decoration');
   near.health=0;far.x=14;assert(!boltTarget(w,bolt));far.x=12;far.z=7;assert(!boltTarget(w,bolt));
 });
 test('bolts reload automatically and shoot past friendly dwarfs without hurting or triggering on them',()=>{
@@ -102,8 +103,18 @@ test('bolts reload automatically and shoot past friendly dwarfs without hurting 
   run(w,1);assert.equal(d.readyAt,0);const e=addRaider(w,{x:12,z:8},{x:12,z:8})!;tick(w,.05);assert.equal(e.health,90);const fired=d.triggeredAt;run(w,2.8);assert.equal(e.health,90);assert.equal(d.triggeredAt,fired);run(w,.3);assert.equal(e.health,60);assert.equal(w.agents.length,1);
 });
 test('the debug yard uses production, real placement and raiders; combined traps defeat an attacker',()=>{
-  const w=createDefenseLab();assert.equal(w.defenses?.length,3);assert.equal(w.outputs['timber-door'],1);assert(w.furnishings.some(f=>f.service==='craft'));const e=addRaider(w,w.defenseTest!.spawn,w.defenseTest!.target)!;run(w,22);assert.equal(e.health,0);assert.equal(w.defenses!.find(d=>d.type==='timber-door')!.health,100);assert.equal(w.outputs['reinforced-door'],3);
+  const w=createDefenseLab();assert.equal(w.defenses?.length,3);assert.equal(w.outputs['timber-door'],1);assert(w.roomServices.some(f=>f.service==='craft'));const e=addRaider(w,w.defenseTest!.spawn,w.defenseTest!.target)!;run(w,22);assert.equal(e.health,0);assert.equal(w.defenses!.find(d=>d.type==='timber-door')!.health,100);assert.equal(w.outputs['reinforced-door'],3);
 });
 test('the defense yard respects free room construction while production still charges gold',()=>{
   const w=createDefenseLab(true);assert.equal(w.allowance,50000);assert(w.tiles.filter(t=>t.room).every(t=>t.roomPaid===0));run(w,22);assert.equal(w.allowance,49960);assert.equal(w.outputs['reinforced-door'],3);
+});
+
+test('room decoration cannot prevent a barrier cast, but an active service reservation can',()=>{
+ const w=hall(),p={x:7,z:8};addResidents(w,'miner');Object.assign(w.agents[0],{x:6,z:8,capabilities:[]});
+ buildRoom(w,'training',[p]);
+ w.furnishings.push({id:'cosmetic',room:'training',kind:'dummy',x:p.x,z:p.z,rotation:0,cells:[p],access:p});
+ const target={kind:'point' as const,point:p};
+ assert.equal(spellTargetError(w,'runic-barrier',target),'');
+ w.agents[0].job={kind:'train',target:p,work:p,progress:0,furnishing:w.roomServices.find(s=>s.service==='training')!.id};
+ assert.match(spellTargetError(w,'runic-barrier',target),/reserved access/);
 });
