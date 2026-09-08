@@ -37,7 +37,7 @@ export function damageBarrier(w:World,amount:number){
   if(!w.barrier)return;w.barrier.health=Math.max(0,w.barrier.health-amount);
   if(!w.barrier.health){w.barrier=undefined;w.routesChanged=true;}w.revision++;
 }
-export function dismissRally(w:World){w.rally=undefined;for(const a of w.agents)if(a.rallying){a.path=[];a.rallying=false;a.rallyUnreachable=false;a.retry=0;}w.revision++;}
+export function dismissRally(w:World){if(w.outcome)return;w.rally=undefined;for(const a of w.agents)if(a.rallying){a.path=[];a.rallying=false;a.rallyUnreachable=false;a.retry=0;}w.revision++;}
 export function tickSpellEffects(w:World,dt:number){
   if(w.barrier&&w.barrier.until<=w.elapsed){w.barrier=undefined;w.routesChanged=true;w.revision++;}
   if(w.rally&&w.rally.until<=w.elapsed)dismissRally(w);

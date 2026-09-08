@@ -7,6 +7,7 @@ import {alive,health,maxHealth,effect,visible,spellLine,damageEnemy} from './spe
 import {recordJob} from './diagnostics.ts';
 export const researchDuration=(order:ResearchOrder)=>{const spell=spellById(order.spell);return (order.unlocked?spell?.prepareSeconds:spell?.researchSeconds)??Infinity;};
 export function queueResearch(w:World,spell:string){
+  if(w.outcome)return;
   if(!spellById(spell))return;
   w.researchOrders??=[];const existing=w.researchOrders.find(o=>o.spell===spell);
   if(existing){existing.paused=false;w.revision++;return;}
@@ -14,6 +15,7 @@ export function queueResearch(w:World,spell:string){
 }
 // Pausing keeps earned progress and immediately returns the researcher to other work.
 export function cancelResearch(w:World,spell:string){
+  if(w.outcome)return;
   const order=w.researchOrders?.find(o=>o.spell===spell);if(!order||order.state==='ready')return;
   order.paused=true;order.state='queued';order.worker=undefined;
   for(const a of w.agents)if(a.job?.kind==='research'&&a.job.order===order.id){recordJob(w,a,'released','Research paused');a.job=undefined;a.path=[];a.retry=0;}
@@ -28,6 +30,7 @@ export function targetAt(w:World,id:string,p:Point):SpellTarget|undefined {
   return unit?{kind:spell.target,id:unit.id}:undefined;
 }
 export function spellTargetError(w:World,id:string,target?:SpellTarget):string {
+  if(w.outcome)return 'This area has ended. Restart to cast spells.';
   const s=spellById(id);if(!s)return 'Unknown spell.';
   if(!target||target.kind!==s.target)return `Choose a visible ${s.target==='point'?'floor point':s.target}.`;
   const a=target.kind==='dwarf'?w.agents.find(a=>a.id===target.id&&alive(a)):undefined;

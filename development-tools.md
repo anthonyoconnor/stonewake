@@ -49,10 +49,13 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `locked-door-hauling` | Loose gold across a locked door; verify failure then resume by changing door mode |
 | `encounters` | Hidden camp beyond a mineable gate, warned entrance waves, real traps/Warriors, source clearing and repeat rules |
 | `economy` | One resident of each type, spare support, first payday at 10 seconds and treasury access controlled by one door |
+| `hearth` | Defended mineable approach to a hidden onward stone; physical activation and local success |
+| `hearth-defeat` | Same gate/encounters with fewer supplied defenses; natural core destruction |
+| `morale` | All four supported types behind a lockable treasury/exit route; reclaim support, recover or test departures |
 
 Room construction uses normal validation, furnishing and costs, including the free-room flag. Explicit test allowances, prepared charges, needs and initial stock are fixture setup. They are not gameplay rewards. Add a new named factory for a useful reproduction instead of copying its setup into a browser script and a separate test.
 
-The typed [command union](src/dev/controller.ts) supports `build`, `reclaim`, `dig`, `wall`, `free-build`, `arrivals`, `spawn`, `needs`, `craft`, `research`, `pause-research`, `cast`, `place-defense`, `remove-defense`, `door`, `raider`, `buy-miner` and `advance-encounter`. Purchases use normal support/price/arrival checks. Encounter timer advancement retains discovery, warning duration and physical route checks. Construction, research, spells and defenses call their real services. Spawn/needs commands are explicit test setup. There is no generic arbitrary-state mutation command.
+The typed [command union](src/dev/controller.ts) supports `build`, `reclaim`, `dig`, `wall`, `free-build`, `arrivals`, `spawn`, `needs`, `craft`, `research`, `pause-research`, `cast`, `place-defense`, `remove-defense`, `door`, `raider`, `buy-miner`, `advance-encounter` and `activate-hearth`. Purchases use normal support/price/arrival checks. Encounter timer advancement retains discovery, warning duration and physical route checks. Construction, research, spells and defenses call their real services. Spawn/needs commands are explicit test setup. Activation requests use actual discovery, movement and security rules. Ended areas reject mutation commands; load/restart remains available. There is no generic arbitrary-state mutation command.
 
 ## Verify a change
 
@@ -64,7 +67,7 @@ npm run verify -- movement --browser  # Focused simulation plus browser smoke ch
 npm run verify -- all --browser --production
 ```
 
-Scopes: `changed` (default), `all`, `development`, `movement`, `rooms`, `characters`, `research`, `defenses`, `encounters`, `economy`, or a test filename such as `gold-bags`. The `characters` group covers level definitions/progression, learning rooms, combat and spells, settings, and additive content. Changed-file selection follows local imports from each test. Unknown dependencies, changes outside that graph, or a clean working tree conservatively run the full suite. Documentation-only changes still typecheck. The printed file list makes selection reviewable.
+Scopes: `changed` (default), `all`, `development`, `movement`, `rooms`, `characters`, `research`, `defenses`, `encounters`, `economy`, `hearth`, `morale`, or a test filename such as `gold-bags`. The `characters` group covers level definitions/progression, learning rooms, combat and spells, settings, and additive content. Changed-file selection follows local imports from each test. Unknown dependencies, changes outside that graph, or a clean working tree conservatively run the full suite. Documentation-only changes still typecheck. The printed file list makes selection reviewable.
 
 Add `--list` to inspect the selected tests without running them.
 
@@ -99,3 +102,6 @@ Tracing is opt-in via `enableDiagnostics(world)`, controller setup or stepping h
 New job execution must satisfy the exhaustive handler table. Preserve the explicit scheduler priority when adding selection rules, and cover validation, cancellation and earned progress. Scene mesh lifecycle remains in `scene.ts`; drawing geometry does not mutate simulation state. These are ordinary modules, not a plugin or entity framework.
 
 `node scripts/milestones-browser.mjs` verifies actual sidebar purchases, physical wages, blocked/restored treasury access, hidden camps, raid warnings and combat/source repeat behavior. Pass `m10` or `m13` to run one section. Screenshots remain in ignored `test-results/`.
+
+
+`node scripts/hearth-morale-browser.mjs` verifies hidden objective discovery, contested physical activation, local success, natural core defeat, frozen actions and same-area restart, plus transient needs, late wage recovery, grouped/dismissed warnings, blocked departures and population/resource accounting. Pass `m11` or `m14` for one section. Screenshots go to ignored `test-results/`.

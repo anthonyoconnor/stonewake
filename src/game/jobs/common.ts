@@ -1,6 +1,7 @@
 import { type World, type Resident, type Job, type Point, key } from '../types.ts';
 import { findPath } from '../navigation.ts';
 import { recordJob } from '../diagnostics.ts';
+import { cancelHearthWork } from '../hearth.ts';
 export function reserved(w: World, kind: Job['kind'], p: Point) {
   return w.agents.some((a) => a.job?.kind === kind && key(a.job.target) === key(p));
 }
@@ -53,6 +54,7 @@ export function availableStations(w: World, a: Resident, service: string) {
   );
 }
 export function releaseJob(w: World, a: Resident, reason = 'Interrupted by combat or rally') {
+  if (a.job?.kind === 'activate') cancelHearthWork(w,a);
   if (a.job) recordJob(w, a, 'released', reason);
   if (a.job?.kind === 'craft') {
     const order = w.craftOrders.find((o) => o.id === a.job!.order);

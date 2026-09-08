@@ -3,12 +3,14 @@ import {defenseById,defenseDirections,raiderDefinition} from '../content/defense
 import {defenseAt,doorAt,isDoor,doorIsOpen,doorOccupied,passageFrom} from './doors.ts';
 import {blocked,findPath,clearLine} from './navigation.ts';
 import {alive,slowRate,damageEnemy,damageResident,damageBarrier,spellLine} from './spell-effects.ts';
+import {tryAttackHearth} from './hearth.ts';
 
 export function defenseQuote(w:World,type:string,p:Point){
   const def=defenseById(type),t=tileAt(w,p.x,p.z);
   const invalid=(reason:string)=>({valid:false,reason,rotation:0});
+  if(w.outcome)return invalid('This level has ended. Restart to play again.');
   if(!def)return invalid('Unknown defense.');
-  if(!t?.known||t.terrain!=='floor'||!t.claimed||t.core||t.room||t.wallPlanned||t.loose||defenseAt(w,p)||blocked(w,p)||w.roomServices.some(f=>f.id==='hearth-treasury'&&key(f.access)===key(p)))return invalid('Choose clear, claimed floor outside a room.');
+  if(!t?.known||t.terrain!=='floor'||!t.claimed||t.core||t.onward||t.room||t.wallPlanned||t.loose||defenseAt(w,p)||blocked(w,p)||w.roomServices.some(f=>f.id==='hearth-treasury'&&key(f.access)===key(p)))return invalid('Choose clear, claimed floor outside a room.');
   let rotation=0;
   if(def.kind==='door'){
     const wall=(x:number,z:number)=>{const t=tileAt(w,x,z);return !!t?.known&&t.terrain!=='floor';};
@@ -29,12 +31,14 @@ export function placeDefense(w:World,type:string,p:Point,rotation=0){
   w.revision++;return `${def.name} placed.`;
 }
 export function setDoorMode(w:World,id:number,mode:DoorMode){
+  if(w.outcome)return 'This level has ended. Restart to play again.';
   const d=w.defenses?.find(d=>d.id===id&&isDoor(d));if(!d)return 'Select a door.';
   d.mode=mode;if(mode!=='closed')d.openUntil=0;
   w.routesChanged=true;w.revision++;
   return `${defenseById(d.type)!.name}: ${mode}.${mode==='locked'&&doorOccupied(w,d)?' Waiting for occupants to step clear.':''}`;
 }
 export function removeDefense(w:World,id:number){
+  if(w.outcome)return 'This level has ended. Restart to play again.';
   const d=w.defenses?.find(d=>d.id===id);if(!d)return 'Select a defense.';
   w.defenses=w.defenses!.filter(o=>o!==d);w.routesChanged=true;w.revision++;
   return 'Defense dismantled · no refund.';
@@ -45,6 +49,7 @@ export function damageDoor(w:World,d:Defense,damage:number){
   w.revision++;
 }
 export function addRaider(w:World,spawn:Point,target:Point){
+  if(w.outcome)return;
   if(blocked(w,spawn,undefined,{walker:'enemy'}))return;
   const e:Enemy={id:w.nextEnemyId=(w.nextEnemyId??0)+1,...spawn,target:{...target},health:raiderDefinition.health,facing:0,pinnedUntil:0,nextAttackAt:0,activity:'Approaching',hitAt:-100};
   (w.enemies??=[]).push(e);return e;
@@ -70,8 +75,10 @@ export function boltTarget(w:World,d:Defense){
   return w.enemies?.filter(e=>e.health>0).map(e=>({e,along:(e.x-d.x)*direction.x+(e.z-d.z)*direction.z,across:Math.abs((e.x-d.x)*direction.z-(e.z-d.z)*direction.x)})).filter(t=>t.along>.05&&t.along<=distance&&t.across<=.35).sort((a,b)=>a.along-b.along||a.e.id-b.e.id)[0]?.e;
 }
 export function tickDefenses(w:World,dt:number){
+  if(w.outcome)return;
   for(const d of w.defenses??[])if(defenseById(d.type)?.kind==='bolt'&&d.readyAt<=w.elapsed){const target=boltTarget(w,d);if(target)trigger(w,d,target);}
   for(const e of w.enemies??[]){
+    if(w.outcome)break;
     if(e.health<=0)continue;
     spikeAtEnemy(w,e);if(e.health<=0)continue;
     if(e.dormant){e.activity='Guarding camp';continue;}
@@ -81,6 +88,7 @@ export function tickDefenses(w:World,dt:number){
       e.activity='Attacking dwarf';e.facing=Math.atan2(victim.x-e.x,victim.z-e.z);
       if(e.nextAttackAt<=w.elapsed){damageResident(w,victim,raiderDefinition.damage);e.nextAttackAt=w.elapsed+raiderDefinition.attackSeconds/slowRate(w,e);}continue;
     }
+    if(tryAttackHearth(w,e))continue;
     let remaining=raiderDefinition.speed*slowRate(w,e)*dt;
     const destination=victim?{x:Math.round(victim.x),z:Math.round(victim.z)}:e.target;
     const path=findPath(w,e,destination,'enemy')??findPath(w,e,destination,'breach');

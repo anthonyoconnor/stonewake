@@ -27,6 +27,8 @@ import {prepareTestSpells} from '../content/spell-lab';
 import {addRaider} from '../game/defenses';
 import {mountEconomy,updateEconomy,residentPayText} from './economy';
 import {mountEncounterAlerts,mountEncounterPanel,updateEncounters} from './encounters';
+import {mountHearth,showHearth,updateHearth} from './hearth';
+import {mountMoraleAlerts,mountMoralePanel,updateMorale,residentMoraleText} from './morale';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
@@ -34,7 +36,7 @@ export class Sidebar {
   lab=false;labType='treasure';labShape='Compact';
   inspectedUnit?:SpellTarget;
   onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
-  onFreeBuild:(value:boolean)=>void=()=>{};onRestart:()=>void=()=>{};
+  onFreeBuild:(value:boolean)=>void=()=>{};onRestart:()=>void=()=>{};onRestartArea:()=>void=()=>{};
   onCharacterHealthChanged:(levels:Set<string>)=>void=()=>{};
   onDevelopmentPanel:()=>void=()=>{};
   isPaused:()=>boolean=()=>false;
@@ -53,12 +55,17 @@ export class Sidebar {
       <div class="camera-tools"><button data-camera="home" aria-label="Return to Hearthstone">⌂</button><button data-camera="in" aria-label="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out">−</button></div>
       <footer><button id="help" aria-label="Help">?</button><span>THE HEARTH IS ALIGHT</span><span class="live-dot"></span></footer>`;
     document.querySelector('#app')!.prepend(this.root);
+    this.root.addEventListener('click',e=>{
+      if(!this.view.world.outcome||!(e.target instanceof Element))return;
+      if(e.target.closest('[data-tool],[data-room],[data-recipe],[data-research],[data-pause-research],[data-cast],#dismiss-rally,#add-test-dwarf,#advance-encounter,#free-rooms,#lab-arrivals,#open-tuning')){e.preventDefault();e.stopImmediatePropagation();this.root.querySelector('#feedback')!.textContent='This area has ended. Restart to continue.';}
+    },true);
     this.panel=this.root.querySelector('#panel')!;this.minimap=this.root.querySelector('#minimap')!;
-    mountEncounterAlerts(this);
+    mountEncounterAlerts(this);mountMoraleAlerts(this);mountHearth(this);
+    const messages=document.createElement('section');messages.id='sidebar-messages';this.root.querySelector('footer')!.before(messages);messages.append(this.root.querySelector('#encounter-alerts')!,this.root.querySelector('#morale-alerts')!);
     this.root.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b=>b.onclick=()=>this.show(b.dataset.category!));
     this.root.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>selection.setTool(b.dataset.tool!));
     selection.onChange=message=>{this.root.querySelector('#feedback')!.textContent=message;this.root.querySelectorAll<HTMLElement>('[data-tool],[data-room]').forEach(b=>b.classList.toggle('active',(b.dataset.tool??b.dataset.room)===selection.tool));this.updateSelection();};
-    selection.onInspect=p=>{if(defenseAt(this.view.world,p)){if(this.category!=='defenses')this.show('defenses');else updateDefenses(this);}};
+    selection.onInspect=p=>{if(tileAt(this.view.world,p.x,p.z)?.core||tileAt(this.view.world,p.x,p.z)?.onward){this.show('hearth');return;}if(defenseAt(this.view.world,p)){if(this.category!=='defenses')this.show('defenses');else updateDefenses(this);}};
     selection.onUnitInspect=target=>{this.inspectedUnit=target;this.update();};
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera]').forEach(b=>b.onclick=()=>{
       switch(b.dataset.camera){case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
@@ -95,8 +102,8 @@ export class Sidebar {
       this.panel.querySelector<HTMLSelectElement>('#lab-shape')!.onchange=e=>this.labShape=(e.target as HTMLSelectElement).value;
       this.panel.querySelector<HTMLButtonElement>('#load-layout')!.onclick=()=>this.onLab(true,this.labShape,this.labType);
       this.panel.querySelector<HTMLButtonElement>('#reset-layout')!.onclick=()=>this.onLab(true,'empty',this.labType);
-      const test=document.createElement('button');test.className='wide';test.textContent='Make all dwarfs tired';test.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.energy=.1;a.retry=0;}this.update();};this.panel.append(test);
-      const hungry=document.createElement('button');hungry.className='wide';hungry.textContent='Make all dwarfs hungry';hungry.onclick=()=>{if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.hunger=.1;a.retry=0;}this.update();};this.panel.append(hungry);
+      const test=document.createElement('button');test.className='wide';test.textContent='Make all dwarfs tired';test.onclick=()=>{if(this.view.world.outcome)return;if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.energy=.1;a.retry=0;}this.update();};this.panel.append(test);
+      const hungry=document.createElement('button');hungry.className='wide';hungry.textContent='Make all dwarfs hungry';hungry.onclick=()=>{if(this.view.world.outcome)return;if(!this.view.world.agents.length)addMiners(this.view.world);for(const a of this.view.world.agents){a.hunger=.1;a.retry=0;}this.update();};this.panel.append(hungry);
       const needsHelp=document.createElement('p');needsHelp.className='muted';needsHelp.textContent='Sets every dwarf to 10% energy or food. Adds Miners if empty. Build a reachable Dormitory or Kitchen, then resume simulation.';this.panel.append(needsHelp);
       const arrivals=document.createElement('label');arrivals.className='toggle';arrivals.innerHTML=`<input id="lab-arrivals" type="checkbox" ${this.view.world.recruitment?.enabled?'checked':''}> Test automatic specialist arrivals`;arrivals.title='Use normal room, bed and food requirements in this test world.';this.panel.append(arrivals);
       arrivals.querySelector<HTMLInputElement>('input')!.onchange=e=>enableRecruitment(this.view.world,(e.target as HTMLInputElement).checked);
@@ -107,8 +114,9 @@ export class Sidebar {
     }else if(category==='defenses')showDefenses(this);
     else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
     else if(category==='spells')showSpells(this);
+    else if(category==='hearth')showHearth(this);
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
-    if(category==='dwarfs')mountEconomy(this);
+    if(category==='dwarfs'){mountEconomy(this);mountMoralePanel(this);}
     if(category==='defenses')mountEncounterPanel(this);
     if(category==='debug'&&this.view.world.encounters?.length)mountEncounterPanel(this,true);
     if(category==='harnesses'){
@@ -174,7 +182,7 @@ export class Sidebar {
     const state=this.panel.querySelector('#simulation-state');if(state)state.textContent=this.isPaused()?'Paused · setup actions work; resume to observe behavior.':'Running';
     updateDefenses(this);
     updateEconomy(this);
-    updateEncounters(this);
+    updateEncounters(this);updateHearth(this);updateMorale(this);
     this.updateSelection();this.drawMap();const w=this.view.world;
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
@@ -182,7 +190,7 @@ export class Sidebar {
     const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>{
       const stats=characterStats(a),next=nextCharacterLevel(a),progress=a.experience??0;
       const training=next?`Next: level ${next.level}<br>Experience ${Math.min(progress,next.trainingSeconds).toFixed(1)} / ${next.trainingSeconds} XP<br>Training 1 XP/s · Combat ${tuning.combatExperienceRate}× rate on hits<br>${(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds (combat still earns XP)`:`${a.job?.kind==='train'?'Training now':'Ready to train'} · One level per visit`}`:'Maximum level reached';
-      return `<div class="resident-row" data-resident="${a.id}"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}<br><span class="resident-pay">${residentPayText(w,a)}</span></small></div>`;
+      return `<div class="resident-row" data-resident="${a.id}"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}<br><span class="resident-pay">${residentPayText(w,a)}</span><br><span class="resident-morale">${residentMoraleText(w,a)}</span></small></div>`;
     }).join('');
     const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`Specialists arrive through the Hearth when rooms and settlement have spare capacity. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){

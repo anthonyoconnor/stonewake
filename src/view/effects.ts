@@ -19,8 +19,12 @@ export class SceneEffects {
   update(){
     const w=this.view.world,time=w.elapsed,dt=Math.min(.1,Math.max(0,time-this.lastTime));this.lastTime=time;
     const pulse=this.reduced?1:1+Math.sin(time*1.8)*.07;
-    const light=this.view.scene.getLightByName('hearth light') as PointLight;light.intensity=1.35*pulse;
-    const rune=this.view.materials.get('rune');if(rune)rune.emissiveColor=Color3.FromHexString('#86ebf5').scale(.65*pulse);
+    const integrity=w.hearthState?w.hearthState.health/w.hearthState.maxHealth:1;
+    const light=this.view.scene.getLightByName('hearth light') as PointLight;light.intensity=1.35*pulse*integrity;
+    const rune=this.view.materials.get('rune');if(rune)rune.emissiveColor=Color3.FromHexString('#86ebf5').scale(.65*pulse*integrity);
+    for(const color of ['#7fdef0','#579bd0','#86e5d7']){
+      const crystal=this.view.materials.get(color);if(crystal){crystal.emissiveColor=Color3.FromHexString(color).scale(.45*integrity);crystal.diffuseColor=Color3.FromHexString(color).scale(.25+.75*integrity);}
+    }
     const flame=this.view.materials.get('lantern flame');if(flame)flame.emissiveColor=Color3.FromHexString('#ffc779').scale(this.reduced?.85:.8+Math.sin(time*8)*.05+Math.sin(time*13)*.025);
     if(!this.reduced){
       for(const a of w.agents){const j=a.job;if(!j||a.path.length||!['mine','craft','claim','train','research'].includes(j.kind)){this.beats.delete(a.id);continue;}

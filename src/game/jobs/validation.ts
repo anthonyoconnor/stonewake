@@ -3,6 +3,7 @@ import { canStand } from '../navigation.ts';
 import { wallEligible } from '../walls.ts';
 import { canTrain } from '../progression.ts';
 import { validPayJob } from '../wages.ts';
+import { validHearthJob } from '../hearth.ts';
 export function validJob(w: World, a: Resident) {
   const j = a.job!,
     t = tileAt(w, j.target.x, j.target.z);
@@ -24,6 +25,7 @@ export function validJob(w: World, a: Resident) {
   if (j.kind === 'drop') return a.carrying > 0 && canStand(w, j.work);
   if (j.kind === 'idle') return canStand(w, j.work);
   if (j.kind === 'pay') return validPayJob(w, a);
+  if (j.kind === 'activate') return validHearthJob(w,a);
   if (j.kind === 'sleep')
     return w.roomServices.some((f) => f.id === j.furnishing && f.assigned === a.id) && canStand(w, j.work);
   if (j.kind === 'eat')

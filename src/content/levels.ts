@@ -2,6 +2,7 @@ import type { LevelDefinition, Point } from '../game/types';
 const row = (x: number, z: number, count: number): Point[] => Array.from({length: count}, (_,i) => ({x:x+i,z}));
 export const prototypeLevel: LevelDefinition = {
   id: 'border-foothold', name: 'Border Foothold', width: 48, height: 48, hearth: {x:23,z:24},
+  onwardHearth: {id:'northern-runic-gate',name:'Northern runic Hearthstone',x:24,z:10},
   openings: [[18,19,29,29],[13,23,17,25],[9,19,13,27],[30,25,35,27],[35,22,40,30],[40,26,47,26],[20,9,27,13],[23,14,24,17]],
   seams: [
     {terrain:'bedrock',cells:[...row(13,17,10),...row(12,18,6),...row(30,18,8),...row(30,19,8),...row(16,30,17),...row(16,31,17)]},

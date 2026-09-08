@@ -10,6 +10,7 @@ import { enableRecruitment, purchaseMiner } from '../game/recruitment.ts';
 import { diagnosticSnapshot, enableDiagnostics, inspectResident } from '../game/diagnostics.ts';
 import { advance } from './stepping.ts';
 import { advanceEncounter } from '../game/encounters.ts';
+import { requestHearthActivation } from '../game/hearth.ts';
 
 export type DevCommand =
   | { kind: 'build'; room: string; points: Point[] }
@@ -18,6 +19,7 @@ export type DevCommand =
   | { kind: 'free-build' | 'arrivals'; enabled: boolean }
   | { kind: 'spawn'; type: string; count?: number }
   | { kind: 'buy-miner' }
+  | { kind: 'activate-hearth' }
   | { kind: 'advance-encounter'; id?:string }
   | { kind: 'needs'; id: number; hunger?: number; energy?: number }
   | { kind: 'craft'; recipe: string }
@@ -85,6 +87,7 @@ export class DevelopmentController {
   }
   command(command: DevCommand) {
     const w = this.getWorld();
+    if(w.outcome)return 'This area has ended. Load or restart a world to continue.';
     // Keep mistakes from script callers out of the grid-indexed gameplay services.
     const points = 'points' in command ? command.points : 'point' in command ? [command.point] : [];
     if (points.some((p) => !Number.isInteger(p.x) || !Number.isInteger(p.z)))
@@ -113,6 +116,8 @@ export class DevelopmentController {
       }
       case 'buy-miner':
         return purchaseMiner(w, (type, origin) => addResidents(w, type, 1, origin) > 0).message;
+      case 'activate-hearth':
+        return requestHearthActivation(w);
       case 'advance-encounter':
         return advanceEncounter(w,command.id);
       case 'needs': {

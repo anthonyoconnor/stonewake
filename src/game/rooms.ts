@@ -6,16 +6,18 @@ import {tuning} from '../content/tuning.ts';
 import {defenseAt} from './doors.ts';
 export const goldTotal=(w:World)=>w.allowance+w.roomServices.filter(f=>f.service==='storage').reduce((sum,f)=>sum+f.stored,0);
 export function spendGold(w:World,amount:number) {
+  if(w.outcome)return false;
   if(goldTotal(w)<amount)return false;
   w.spent+=amount;const grant=Math.min(amount,w.allowance);w.allowance-=grant;amount-=grant;
   for(const f of w.roomServices.filter(f=>f.service==='storage')){const take=Math.min(amount,f.stored);f.stored-=take;amount-=take;}
   return true;
 }
 export function roomQuote(w:World,type:string,points:Point[]) {
+  if(w.outcome)return {valid:false,cost:0,addedCapacity:0,tiles:[],reason:'This area has ended. Restart to build.'};
   const def=roomById(type);const unique=[...new Map(points.map(p=>[key(p),p])).values()];
   const tiles=unique.map(p=>tileAt(w,p.x,p.z));
   if(!def?.implemented)return {valid:false,cost:0,addedCapacity:0,tiles:[],reason:'This room is not available.'};
-  const fresh=tiles.filter(t=>t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room&&!t.wallPlanned&&!defenseAt(w,t)&&!barrierAt(w,t)) as NonNullable<typeof tiles[number]>[];
+  const fresh=tiles.filter(t=>t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.onward&&!t.room&&!t.wallPlanned&&!defenseAt(w,t)&&!barrierAt(w,t)) as NonNullable<typeof tiles[number]>[];
   if(!fresh.length)return {valid:false,cost:0,addedCapacity:0,tiles:[],reason:tiles.some(t=>t?.known&&t.room===type)?'This floor already belongs to the room.':'Select clear, claimed floor.'};
   const cost=w.freeRoomBuilding?0:fresh.length*def.cost;
   const existing=w.tiles.filter(t=>t.room===type&&t.terrain==='floor'&&!t.core);
@@ -41,11 +43,13 @@ export function buildRoom(w:World,type:string,points:Point[]) {
   furnish(w);w.revision++;return `${roomById(type)!.name} built.`;
 }
 export function reclaimQuote(w:World,points:Point[]){
+  if(w.outcome)return {tiles:[] as World['tiles'],refund:0};
   const tiles=[...new Map(points.map(p=>[key(p),tileAt(w,p.x,p.z)])).values()].filter(t=>t?.known&&t.room&&!t.core&&t.terrain==='floor') as World['tiles'];
   const refund=tiles.reduce((sum,t)=>sum+Math.floor((t.roomPaid??0)*tuning.reclaimRatio),0);
   return {tiles,refund};
 }
 export function reclaimRoom(w:World,points:Point[]){
+  if(w.outcome)return 'This area has ended. Restart to reclaim rooms.';
   const {tiles,refund}=reclaimQuote(w,points);if(!tiles.length)return 'Select room tiles to reclaim.';
   for(const t of tiles){t.room=undefined;t.roomPaid=undefined;t.claimed=true;}
   furnish(w);

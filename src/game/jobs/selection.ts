@@ -10,6 +10,7 @@ import { canTrain } from '../progression.ts';
 import { spellById } from '../../content/spells.ts';
 import { doorAt } from '../doors.ts';
 import { choosePayJob, wageStatus } from '../wages.ts';
+import { chooseHearthJob } from '../hearth.ts';
 import { nearest, take, storage, availableStorage, availableStations, reserved } from './common.ts';
 export function chooseJob(w: World, a: Resident) {
   if (a.carrying) {
@@ -38,6 +39,7 @@ export function chooseJob(w: World, a: Resident) {
     if (slot && take(w, a, 'eat', slot, slot.access, slot.id)) return;
   }
   if (choosePayJob(w, a)) return;
+  if (chooseHearthJob(w, a)) return;
   if (canTrain(w, a))
     for (const f of availableStations(w, a, 'training')) if (take(w, a, 'train', f, f.access, f.id)) return;
   if (a.capabilities.includes('research'))

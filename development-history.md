@@ -443,3 +443,43 @@ Verification: all 124 simulation/input tests pass; source-and-test typecheck and
 Browser: existing smoke baseline passed; scripts/milestones-browser.mjs m10 and m13 pass with no console/runtime/API errors. Actual UI purchases, exact 29-gold initial payroll, blocked/restored access, fog-safe warnings, excavation activation, camp defeat, subsequent raid and reset were verified. Seven screenshots were visually inspected in ignored test-results/m10-*.png and m13-*.png. An initial encounter browser run was invalidated by source reload during integration; the settled-source rerun passed. The local Vite server remains running. Existing Babylon bundle-size advisory remains. No core damage, retreat, dissatisfaction, save infrastructure or campaign travel was added.
 
 Final integration: production isolation passed (scenario URLs and the development API/panel remain absent from production). All 252 local Markdown links/anchors resolve, and git diff --check passes. Completed milestone specifications were moved out of the active plan; current limitations and the next parallel-work dependencies remain there.
+
+
+## M11 and M14 — completed 2026-09-07
+
+The user authorized M11 and M14 using parallel agents. Their accepted milestone scope is archived below; current behavior, limits and remaining dependencies stay in development-plan.md and the owning design documents.
+
+| Milestone | Outcome | Status |
+|---|---|---|
+| M11 | Starting Hearth defense/defeat and onward Hearthstone objective | Complete |
+| M14 | Dissatisfaction, need alerts and departure | Complete |
+
+### M11 — Hearth defense, defeat and the onward objective
+
+Dependencies: M10. Use an enemy-held land route first; hazardous approaches follow in M16 and actual next-area travel in M18.
+
+- Give the starting Stone Hearth tunable health and enemy targeting/damage. Its destruction ends the level in defeat, with clear sidebar feedback and restart. Resolve core repair policy explicitly; do not add upgrades or relocation.
+- Add a distinct map-defined onward Hearthstone, initially hidden under normal discovery. Track discovery, physical access and readiness to proceed independently of the starting core.
+- Define and implement a minimal activation rule consistent with autonomous movement. The working proposal is a living dwarf reaching an accessible interaction position and securing the immediate site; exact occupation, time and threat conditions must be recorded before implementation. No remote activation merely from camera movement or sight across a gap.
+- Present the objective and its current obstruction in the sidebar. Reaching/activating the onward stone completes the local objective and exposes progression readiness; M18 connects that state to another area.
+
+Complete when one playable scenario supports both outcomes: enemies can destroy the starting core, or the player can find and reach the onward Hearthstone through its defended approach. Verify no premature completion through fog, walls, remote clicks or blocked approaches, and no completion after defeat. Restart clears terminal/objective state. Reaching the onward stone does not relocate the base or silently change recruitment/treasury behavior.
+
+### M14 — Dissatisfaction, alerts and departure
+
+Dependencies: M13 and existing food, rest, attraction and sidebar messages.
+
+- Track sustained unmet food, accommodation, pay and role-facility requirements with tunable grace, escalation and recovery. Brief queues or interruptions must not cause immediate departure.
+- Explain the actual cause with grouped, dismissible sidebar warnings; resolving a shortage clears the active warning and permits recovery.
+- Persistently dissatisfied dwarfs autonomously leave through the starting Hearth. Release jobs and service reservations, preserve carried resources, update population/attraction and Miner prices, and define behavior if departure access is blocked.
+
+Complete when temporary shortages recover without departures, prolonged shortages produce timely warnings and eventual departures, and fixing the cause changes the outcome. Verify all four types, blocked exits, room reclaim, wages restored before departure and resource/capacity accounting afterward.
+
+### Completion and verification — 2026-09-07
+
+- M11: separate authored onward stone in the normal northern camp; hidden planning and discovery preserve fog privacy. Sidebar requests schedule any eligible living, nondeparting resident to an adjacent square for eight uninterrupted seconds; needs, funded actionable wages, combat, blocked access and nearby threats can interrupt and retry. Natural Raiders physically damage the 400-health starting core; destruction wins a simultaneous activation. Both outcomes freeze ordinary gameplay and provide restart without moving the base or changing its treasury. Core lighting dims with damage; attackers animate their strikes. No core repairs or campaign travel were added.
+- M14: all four resident types track sustained missing food, accommodation, pay and required role capacity, with 120 seconds of grace, another 180 seconds before leaving and two seconds of grievance recovery per supported second. Grouped warnings can be dismissed/reopened. Residents physically leave through the starting Hearth, wait on blocked routes, preserve carried resources and release work/population capacity. Restored causes cancel departure, including when a previous departure frees support during the same tick.
+- Shared integration: world/types, scheduling, terminal service guards, sidebar/configuration, rendering and registered hearth/hearth-defeat/morale scenarios coordinated by the parent agent. No new room types, persistence or production infrastructure.
+- Verification: final `npm run verify -- all --production` passed all **143 simulation tests**, source/test typecheck, production build and production isolation. Hearth checks plus the existing world tests cover hidden plans, physical access, interruptions, wage/departure priority, enemy reach/cadence and simultaneous outcomes; Morale checks cover recovery, all types, grouped warnings, blocked exits, resources/work, role capacity and same-tick support relief. The final browser departure route exposed a narrow corner missed by sampled line checks; exact swept traversal and movement/departure regressions now keep planned routes consistent with physical collision.
+- Browser: `node scripts/hearth-morale-browser.mjs` passed hidden discovery, queued contested activation, an actual activation visit and victory, natural core defeat, frozen actions and same-area restart; temporary support recovery, late wages restored before exit, grouped dismiss/reopen/escalation, blocked exits and all-four physical departures with correct Miner prices/resources. Ordinary browser smoke also passed. Screenshots inspected at 1440×900 and 1440×768; objective, warnings and terminal/restart controls remain in the sidebar, with no floating world text/bars.
+- Reviewed changes and `git diff --check`; companion rules, rooms, characters, levels, interface, README and development tooling updated. Generated builds, dependencies and ignored browser screenshots are not committed. Known timing/balance and crowded payroll path-query limits remain in the active plan for later integration.

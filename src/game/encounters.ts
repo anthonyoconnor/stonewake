@@ -36,7 +36,7 @@ const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.z - b.z);
 const sourceEnemies = (w: World, source: EncounterState) =>
   (w.enemies ?? []).filter((e) => source.enemyIds.includes(e.id) && e.health > 0);
 
-/** The core remains impassable. M11 will replace waiting on its perimeter with core attacks. */
+/** The core stays impassable; attackers approach a side within melee reach of its stonework. */
 export function encounterTarget(
   w: World,
   from: Point,
@@ -46,6 +46,7 @@ export function encounterTarget(
     .filter(
       (t) =>
         Math.max(Math.abs(t.x - w.hearth.x), Math.abs(t.z - w.hearth.z)) === 2 &&
+        (Math.abs(t.x - w.hearth.x) <= 1 || Math.abs(t.z - w.hearth.z) <= 1) &&
         !blocked(w, t, undefined, { walker: 'breach' }),
     )
     .sort((a, b) => distance(a, from) - distance(b, from));
@@ -131,6 +132,7 @@ function warn(w: World, source: EncounterState) {
 }
 
 export function tickEncounters(w: World) {
+  if (w.outcome) return;
   for (const source of w.encounters ?? []) {
     const def = source.definition;
     if (!source.discovered && def.positions.some((p) => tileAt(w, p.x, p.z)?.known)) {

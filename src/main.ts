@@ -15,6 +15,7 @@ import { enableRecruitment } from './game/recruitment';
 import { createDefenseLab } from './content/defense-lab';
 import { DefenseView } from './view/defenses';
 import { SpellView } from './view/spells';
+import { HearthView } from './view/hearth';
 import { createSpellLab } from './content/spell-lab';
 import { populateShowcase } from './content/scenarios';
 import type { DevelopmentController } from './dev/controller';
@@ -40,6 +41,7 @@ selection.setTool('dig');
 const residents = new ResidentView(view);
 const defenses = new DefenseView(view);
 const magic = new SpellView(view);
+const hearth = new HearthView(view);
 let development: DevelopmentController | undefined;
 let localPaused = false;
 let retainedPaused = false;
@@ -54,6 +56,7 @@ const refresh = () => {
   residents.update();
   defenses.update();
   magic.update();
+  hearth.update();
   view.render();
   sidebar.update();
 };
@@ -103,6 +106,7 @@ sidebar.onLab = async (open, shape, type) => {
   residents.reset();
   defenses.reset();
   magic.reset();
+  hearth.reset();
   sidebar.inspectedUnit = undefined;
   furnish(next);
   view.setWorld(next);
@@ -127,6 +131,7 @@ sidebar.onLab = async (open, shape, type) => {
   loadingStudio = false;
 };
 sidebar.onFreeBuild = (value) => {
+  if(view.world.outcome)return;
   world.freeRoomBuilding = value;
   view.world.freeRoomBuilding = value;
 };
@@ -137,6 +142,10 @@ sidebar.onRestart = () => {
   addMiners(world);
   enableRecruitment(world);
   sidebar.onLab(false);
+};
+sidebar.onRestartArea = () => {
+  if (development && development.scenario !== 'custom' && development.scenario !== 'stronghold') { development.load(development.scenario); refresh(); }
+  else { sidebar.onRestart(); sidebar.onPause(false); }
 };
 let uiTime = 0;
 if (import.meta.env.DEV)
@@ -155,6 +164,7 @@ if (import.meta.env.DEV)
         residents.reset();
         defenses.reset();
         magic.reset();
+        hearth.reset();
         furnish(next);
         view.setWorld(next);
         controls.center(
@@ -193,6 +203,7 @@ view.engine.runRenderLoop(() => {
   residents.update();
   defenses.update();
   magic.update();
+  hearth.update();
   view.render();
   uiTime += dt;
   if (uiTime > 0.15) {

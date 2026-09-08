@@ -27,7 +27,8 @@ export class Selection {
     canvas.addEventListener('pointerup',e=>{
       if(e.button!==0)return;const end=pick(e);
       if(this.start&&end){const points=this.rectangle(this.start,end);
-        if(spellById(this.tool)){
+        if(view.world.outcome){if(tileAt(view.world,end.x,end.z)?.known)this.inspect(end);}
+        else if(spellById(this.tool)){
           const target=targetAt(view.world,this.tool,end),message=castSpell(view.world,this.tool,target);
           if(message.includes(' cast.')){this.setTool('dig');if(target&&target.kind!=='point')this.onUnitInspect(target);}
           this.onChange(message);
@@ -49,11 +50,11 @@ export class Selection {
     canvas.addEventListener('contextmenu',cancel);window.addEventListener('keydown',e=>{if(e.key==='Escape')cancel();if(e.key.toLowerCase()==='r'&&defenseById(this.tool)?.kind==='bolt'&&!(e.target instanceof HTMLElement&&e.target.closest('input,select,textarea,dialog'))){this.rotation=(this.rotation+1)%4;this.draw();}});
   }
   updateCursor(){const tile=this.hover&&tileAt(this.view.world,this.hover.x,this.hover.z);const action=this.tool==='dig'?(this.dragAdds!==undefined?(this.dragAdds?'dig':'erase'):tile?.designated?'erase':tile?.known&&tile.terrain==='floor'?'inspect':'dig'):this.tool;this.view.canvas.style.cursor=spellById(this.tool)?'crosshair':actionCursor(action);}
-  setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=tool;this.draw();this.onChange('');}
-  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.core?`Stone Hearth · Treasury ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);this.onInspect(p);}
+  setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=this.view.world.outcome?'inspect':tool;this.draw();this.onChange('');}
+  inspect(p:Point){this.selected=p;const t=tileAt(this.view.world,p.x,p.z)!;this.onChange(t.onward?'Onward Hearthstone · Awaken the ancient network':t.core?`Stone Hearth · Treasury ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.stored??0} / ${this.view.world.roomServices.find(f=>f.id==='hearth-treasury')?.capacity??0} gold`:`${t.room??t.terrain} · ${t.claimed?'Claimed':'Unclaimed'}${t.loose?` · ${t.loose} gold awaiting collection`:''}`);this.onInspect(p);}
   rectangle(a:Point,b:Point){const result:Point[]=[];for(let z=Math.min(a.z,b.z);z<=Math.max(a.z,b.z);z++)for(let x=Math.min(a.x,b.x);x<=Math.max(a.x,b.x);x++)result.push({x,z});return result;}
   draw(feedback=true){
-    this.updateCursor();this.preview.dispose();this.preview=new TransformNode('preview',this.view.scene);if(!this.hover||this.tool==='inspect')return;
+    this.updateCursor();this.preview.dispose();this.preview=new TransformNode('preview',this.view.scene);if(this.view.world.outcome||!this.hover||this.tool==='inspect')return;
     const spell=spellById(this.tool);
     if(spell){
       const target=targetAt(this.view.world,spell.id,this.hover),error=spellTargetError(this.view.world,spell.id,target),p=this.hover;

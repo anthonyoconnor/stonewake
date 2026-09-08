@@ -17,6 +17,8 @@ const groups = {
   characters: ['character-levels', 'progression-research', 'learning-rooms', 'spells', 'settings', 'content-extension'],
   defenses: ['defenses', 'spells', 'movement', 'development'],
   encounters: ['encounters', 'defenses', 'spells', 'development'],
+  hearth: ['hearth', 'encounters', 'defenses', 'economy', 'development'],
+  morale: ['morale', 'economy', 'food', 'recruitment', 'gold-bags'],
   economy: ['economy', 'recruitment', 'gold-bags', 'reclaim', 'development'],
 };
 const args = process.argv.slice(2),

@@ -117,7 +117,7 @@ The Stone Hearth is a fixed structure, and doors and traps retain their individu
 | Room or structure | Purpose | Dwarfs attracted | Output or continuing service |
 |---|---|---|---|
 | Stone Hearth | Protects the awakened Hearthstone; anchors the base and receives new dwarfs | Arrival point for eligible specialists and purchased miners | Dwarf arrival access and the fixed structure enemies must destroy to win |
-| Onward Hearthstone | A separate, hidden map-authored crystal in a difficult location | None | Finding and reaching it opens progression to the next area; planned in M11/M18 |
+| Onward Hearthstone | A separate, hidden map-authored crystal in a difficult location | None | Physical activation completes the local objective (M11); actual next-area travel remains M18 |
 | Treasure Room | Stores delivered gold and provides wage collection points | None directly | Gold storage capacity; does not generate money |
 | Dormitory | Provides sleeping and resting space | Supports every resident type | Bed capacity and rest |
 | Kitchen | Provides shared food support and a place to eat | None directly; supports all arrivals | Resident support from floor area; enlarge it or build several to support the population |
@@ -141,7 +141,7 @@ The Hearthstone is the natural magical crystal. The Stone Hearth is the protecti
 
 Core health and whether the damaged structure can be repaired remain open.
 
-Every level also contains a separate onward Hearthstone, usually in an enemy-held area or beyond a difficult terrain obstacle such as lava. It is an authored objective, not a player-built room or an upgrade to the starting core. The player must discover and reach it to open the route to the next area. It does not provide another recruitment point or treasury. [Levels](levels.md#onward-hearthstone-objective) defines this agreed purpose and the provisional activation details; implementation is pending.
+Every level also contains a separate onward Hearthstone, usually in an enemy-held area or beyond a difficult terrain obstacle such as lava. It is an authored objective, not a player-built room or an upgrade to the starting core. The player must discover and reach it to open the route to the next area. It does not provide another recruitment point or treasury. [Levels](levels.md#onward-hearthstone-objective) defines implemented discovery, access and activation, with actual next-area travel pending M18. The starting core has 400 health and no repairs; the onward stone is indestructible and reserves its tile from construction.
 
 ## Treasure Room
 
@@ -211,7 +211,7 @@ Doors occupy one clear, claimed square between two opposite walls, with walkable
 
 Spikes trigger when an enemy crosses the pressure plate, including fast crossings. A lethal hit defeats it; a survivor cannot move or attack during the pin. Bolts fire automatically along the selected compass direction, hit one enemy, and do not pierce. Walls, the Hearth and physically shut doors block shots; cosmetic furniture does not. Both traps ignore dwarfs, cause no friendly fire, and **automatically reset after their cooldown**. They need no ammunition, replacement supplies or Engineer rearming. Cooldown starts when triggered; unused traps remain ready.
 
-Defenses are available in the normal stronghold against authored Goblin Raider encounters and raids. **Debug → Test harnesses → Defense test yard** retains manual tests; the additional `encounters` scenario tests warnings, excavation, source clearing and real combat/traps. Hearth damage/defeat remains pending in M11. Stonefall and additional slowing traps are design-only possibilities.
+Defenses are available in the normal stronghold against authored Goblin Raider encounters and raids. **Debug → Test harnesses → Defense test yard** retains manual tests; the additional `encounters` scenario tests warnings, excavation, source clearing and real combat/traps. Natural Raiders can physically attack and destroy the starting Hearth (M11). Stonefall and additional slowing traps are design-only possibilities.
 
 ## Reinforced walls
 

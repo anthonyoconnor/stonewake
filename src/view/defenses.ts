@@ -74,7 +74,7 @@ export class DefenseView {
       const dead=e.health<=0,pinned=e.pinnedUntil>w.elapsed,walking=e.activity==='Approaching',phase=w.elapsed*10*slowRate(w,e)+e.id;
       m.root.setEnabled(visible(w,e)&&(!dead||w.elapsed-e.diedAt!<3));m.root.position.set(e.x,pinned?.12:dead?.15:0,e.z);m.root.rotation.set(0,e.facing,dead?Math.PI/2:0);
       m.legs.forEach((leg,i)=>leg.rotation.x=walking?Math.sin(phase+i*Math.PI)*.35:pinned?-.3:0);
-      m.arm.rotation.x=['Breaking down door','Breaking runic barrier','Attacking dwarf'].includes(e.activity)?-1+Math.sin(w.elapsed*8)*.7:pinned?-1.7:walking?Math.sin(phase)*.2:0;
+      m.arm.rotation.x=['Breaking down door','Breaking runic barrier','Attacking dwarf','Attacking Stone Hearth'].includes(e.activity)?-1+Math.sin(w.elapsed*8)*.7:pinned?-1.7:walking?Math.sin(phase)*.2:0;
     }
   }
 }

@@ -5,7 +5,7 @@ import {barrierAt} from './spell-effects.ts';
 export function blocked(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}):boolean {
   const t=tileAt(w,p.x,p.z);
   const enemy=passage.walker==='enemy'||passage.walker==='breach';
-  return !t||(!t.known&&!enemy)||t.terrain!=='floor'||t.core||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p));
+  return !t||(!t.known&&!enemy)||t.terrain!=='floor'||t.core||!!t.onward||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p));
 }
 export function canStand(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}) {
   const r=tuning.radius;
@@ -13,9 +13,23 @@ export function canStand(w:World,p:Point,extra:Set<string>=new Set(),passage:Pas
   return true;
 }
 export function clearLine(w:World,a:Point,b:Point,passage=passageFrom(w,a)) {
-  const steps=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)/.15);
-  for(let i=1;i<=steps;i++)if(!canStand(w,{x:a.x+(b.x-a.x)*i/steps,z:a.z+(b.z-a.z)*i/steps},undefined,passage))return false;
-  return true;
+  const dx=b.x-a.x,dz=b.z-a.z,r=tuning.radius;
+  if(!dx&&!dz)return canStand(w,a,undefined,passage);
+  // Sweep the same square body used by canStand. Fixed-distance samples can
+  // miss a short corner intersection, giving paths that a smaller step cannot follow.
+  const left=Math.floor(Math.min(a.x,b.x)-r+.5),right=Math.floor(Math.max(a.x,b.x)+r+.5);
+  const top=Math.floor(Math.min(a.z,b.z)-r+.5),bottom=Math.floor(Math.max(a.z,b.z)+r+.5);
+  for(let z=top;z<=bottom;z++)for(let x=left;x<=right;x++){
+    if(!blocked(w,{x,z},undefined,passage))continue;
+    let enter=0,leave=1;
+    for(const [origin,direction,min,max] of [[a.x,dx,x-.5-r,x+.5+r],[a.z,dz,z-.5-r,z+.5+r]]){
+      if(!direction){if(origin<=min||origin>=max){enter=1;leave=0;break;}continue;}
+      const first=(min-origin)/direction,last=(max-origin)/direction;
+      enter=Math.max(enter,Math.min(first,last));leave=Math.min(leave,Math.max(first,last));
+    }
+    if(enter<leave-1e-10)return false;
+  }
+  return canStand(w,b,undefined,passage);
 }
 export function findPath(w:World,start:Point,end:Point,walker:Walker='dwarf'):Point[]|undefined {
   const passage=passageFrom(w,start,walker),solid=(p:Point)=>blocked(w,p,undefined,passage),line=(a:Point,b:Point)=>clearLine(w,a,b,passage);

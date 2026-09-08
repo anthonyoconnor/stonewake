@@ -16,8 +16,11 @@ import { moveResident } from './movement.ts';
 import { recordJob } from './diagnostics.ts';
 import { tickEncounters } from './encounters.ts';
 import { initializePay, tickPayday, shouldSeekPay } from './wages.ts';
+import { tickHearth, finishHearth, shouldSeekHearth } from './hearth.ts';
+import { initializeMorale, tickMorale, tickDeparture } from './morale.ts';
 export const addMiners = (w: World, count = tuning.startingMiners) => addResidents(w, 'miner', count);
 export function addResidents(w: World, type: string, count = 1, origin?: Point) {
+  if (w.outcome) return 0;
   const def = characterById(type);
   if (!def) return 0;
   const routes = origin ? reachable(w, origin) : undefined;
@@ -62,15 +65,16 @@ export function addResidents(w: World, type: string, count = 1, origin?: Point) 
     });
   }
   const added = Math.min(count, positions.length);
-  for (const a of w.agents) initializePay(w,a);
+  for (const a of w.agents) { initializePay(w,a); initializeMorale(w,a); }
   if (added) w.nextResidentId = firstId + added - 1;
   if (added) assignRoomSupport(w);
   return added;
 }
 export function designate(w: World, points: Point[], value: boolean | 'toggle' = true) {
+  if (w.outcome) return;
   for (const p of points) {
     const t = tileAt(w, p.x, p.z);
-    if (t && (!t.known || ['dirt', 'rock', 'gold', 'gem'].includes(t.terrain)))
+    if (t && (!t.known || (!t.core && !t.onward && ['dirt', 'rock', 'gold', 'gem'].includes(t.terrain))))
       t.designated = value === 'toggle' ? !t.designated : value;
   }
   w.revision++;
@@ -103,11 +107,15 @@ export function tick(w: World, dt: number) {
     w.routesChanged = false;
   }
   if (supportChanged) assignRoomSupport(w);
-  for (const a of w.agents) {
+  tickMorale(w,dt);
+  tickHearth(w);
+  for (const a of [...w.agents]) {
     if (a.job?.kind !== 'sleep') a.energy = Math.max(0, a.energy - dt / tuning.restInterval);
     if (a.job?.kind !== 'eat') a.hunger = Math.max(0, a.hunger - dt / tuning.hungerInterval);
+    if (tickDeparture(w,a,dt)) continue;
     if (tickFighter(w, a, dt, releaseJob, moveResident)) continue;
     if (shouldSeekPay(w,a)) releaseJob(w,a,'Collecting due wages');
+    if (shouldSeekHearth(w,a)) releaseJob(w,a,'Answering the onward Hearthstone');
     if (a.job && !validJob(w, a)) releaseJob(w, a, 'Target, facility, order or access is no longer valid');
     if (
       (a.job?.kind === 'train' || a.job?.kind === 'research') &&
@@ -130,6 +138,8 @@ export function tick(w: World, dt: number) {
   }
   tickEncounters(w);
   tickDefenses(w, dt);
+  finishHearth(w);
+  if (w.outcome) return;
   if (Math.floor((w.elapsed - dt) * 2) !== Math.floor(w.elapsed * 2))
     for (const a of w.agents) reveal(w, a, tuning.sightRadius);
   recruitSpecialist(w, (type, origin) => addResidents(w, type, 1, origin) > 0);

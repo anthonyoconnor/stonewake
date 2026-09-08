@@ -7,6 +7,7 @@ export function wallEligible(w:World,t:Tile|undefined):t is Tile {
 }
 export const wallBuildDuration=()=>Math.max(tuning.wallBuildSeconds,Math.max(tuning.mineSeconds,tuning.rockSeconds)+tuning.reinforceSeconds+1);
 export function planWalls(w:World,points:Point[],add=true){
+ if(w.outcome)return 'This area has ended. Restart to build walls.';
  let count=0;
  for(const p of new Map(points.map(p=>[key(p),p])).values()){
   const t=tileAt(w,p.x,p.z);if(!t?.known)continue;

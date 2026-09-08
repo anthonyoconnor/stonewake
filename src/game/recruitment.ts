@@ -32,6 +32,7 @@ export function recruitmentStatus(w:World,type:string){
 }
 export const attractionStatus=(w:World,type:string)=>recruitmentStatus(w,type).message;
 export function enableRecruitment(w:World,enabled=true){
+  if(w.outcome)return;
   w.recruitment={enabled,nextAt:w.elapsed+tuning.recruitmentSeconds,cursor:w.recruitment?.cursor??0};
 }
 export function recruitSpecialist(w:World,spawn:(type:string,origin:Point)=>boolean){

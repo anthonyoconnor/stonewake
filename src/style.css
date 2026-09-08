@@ -24,3 +24,10 @@ button{font:inherit;color:inherit;background:none;border:1px solid #34414b;curso
 .threat-reports{margin:0 18px 8px;padding:8px;border:1px solid #b9794b;color:#edc392;font-size:11px;flex-shrink:0}.threat-reports[hidden]{display:none}.threat-reports summary{cursor:pointer}.threat-reports>div{max-height:100px;overflow:auto}.threat-reports p{font-size:10px;line-height:1.5;margin:7px 0}.resident-pay{color:#dac092}
 
 .spell-choice{position:relative}.spell-state{position:absolute;right:4px;bottom:2px;font-size:12px;color:#b8b6a9;text-shadow:0 1px 3px #000}.spell-ready .spell-state{color:#a7e3b5}.room-choice:focus-visible{outline:2px solid #edd28a;outline-offset:2px}
+.hearth-link{margin:7px 18px 0;padding:7px 5px;font-size:10px;line-height:1.5;color:#b5e5df;flex-shrink:0}
+.level-outcome{margin:0 18px 8px;padding:10px;border:1px solid #79bcb5;background:#12292b;flex-shrink:0;font-size:12px}
+.level-outcome[hidden]{display:none}.level-outcome[data-outcome=defeat]{border-color:#c58d75;background:#322422}.level-outcome p{font-size:10px;line-height:1.5;margin:7px 0 0}
+.resident-morale{color:#a8d1bf}#morale-alerts button{font-size:10px;padding:3px 7px}#morale-alerts [data-morale-cause]{padding-bottom:6px;border-bottom:1px solid #ffffff14}
+@media(max-height:800px){.threat-reports>div{max-height:72px}.hearth-link{margin-top:5px;padding:4px}.level-outcome{padding:7px}.level-outcome .wide{margin-top:6px;padding:6px}}
+
+#sidebar-messages{max-height:20vh;min-height:0;overflow:auto;flex-shrink:1}.panel{min-height:0}
