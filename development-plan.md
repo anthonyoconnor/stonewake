@@ -72,7 +72,7 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 
 | Milestone | Outcome | Status |
 |---|---|---|
-| M17 | Broader enemy roster and distinct combat behaviors | Planned |
+| M17 | All ten concept enemies and distinct combat behaviors | Planned |
 | M18 | Authored campaign, Hearthstone travel and unlock progression | Planned |
 | M20 | Overall player interface and left control panel cleanup | Planned |
 | M21 | Terrain and environment graphics update | Planned |
@@ -91,19 +91,32 @@ For every implementation milestone, update the inventory and owning design docum
 
 ### Work and integration order
 
-M17 supplies the enemy roster for M18. M20 interface work and M21 environment visuals can start against the current game; M22 can start with existing dwarfs and Raiders, then cover the roster selected by M17. M18 travel and endpoint controls must integrate with M20. M19 is the final normal-rules campaign balance and playtest pass after M17–M18 and M20–M22, regardless of its lower number.
+M17 supplies the enemy roster for M18. M20 interface work and M21 environment visuals can start against the current game; M22 can start with existing dwarfs and Raiders, then cover all ten enemies in M17. M18 travel and endpoint controls must integrate with M20. M19 is the final normal-rules campaign balance and playtest pass after M17–M18 and M20–M22, regardless of its lower number.
 
 These dependencies describe feasible work, not authorization to launch implementation agents. Coordinate shared scene, selection, sidebar and scenario entry points if parallel work is later authorized. Keep gameplay state independent of presentation. Visual work must inspect the current concept galleries and source prompts before implementation; incidental concept details do not introduce new mechanics or restore deferred features.
 
-### M17 — Broader enemy roster and behavior
+### M17 — Complete enemy roster and behavior
 
-Dependencies: completed M10–M11 for encounter/core integration and M16 for enemies associated with hazardous terrain. Guarding and retreat are not required.
+Dependencies: completed M10–M11 for encounter/core integration and M16 for enemies associated with hazardous terrain. Guarding and retreat are not required. This expanded milestone remains planned.
 
-- Select an initial regional roster from the current enemy designs, recording which concepts are included. Use editable stable definitions for stats, size, senses, attacks and capabilities.
-- Add at least one ranged threat and one tunneling/breaching threat alongside the existing melee Raider. Define target priorities, attack obstruction and reinforced-wall resistance; no creature can tunnel through bedrock.
-- Give each included type recognizable procedural geometry/animation guided by its concept, normal encounter/raid integration and a shared debug scenario entry. Specify spell/control interactions and any special resistances explicitly.
+Implement all ten enemies in the [current concept gallery](concept-art/enemies/README.md), retaining and extending the existing Goblin Raider:
 
-Complete when normal scenarios include distinct melee, ranged and tunneling threats that demand different layout responses. Verify line of sight, friendly-fire policy, door/wall interactions, bedrock exclusion, traps/spells, existing dwarf combat and Hearth targeting. Record the shipped roster; unselected concept creatures remain proposals rather than implied completed content.
+| Region | Required enemies |
+|---|---|
+| Upper workings | Goblin Raider, Tunnel Burrower |
+| Fungal caves | Cave Spider, Spore Brute |
+| Ancient halls | Restless Guard, Ancient Sentinel |
+| Crystal caverns | Crystal Elemental, Crystalback Stalker |
+| Volcanic depths | Cinderling, Deepmaw |
+
+- Define and implement a distinct combat role for every enemy, using editable stable definitions for stats, size, senses, movement, attacks, targeting and capabilities. Inclusion of all ten is decided; exact abilities, scale and balance remain design choices to document in levels.md before implementation.
+- Cover melee, ranged and tunneling/breaching threats across the roster, with meaningful differences in how enemies pressure defensive layouts. Define attack obstruction, friendly-fire policy, door breaking and reinforced-wall resistance; no creature can tunnel through bedrock.
+- Implement terrain interactions required by each enemy's defined behavior, including traversal restrictions, tunneling and any explicit hazard resistance. Exercise them in representative regional encounter scenarios. Artwork alone does not grant a creature new abilities or terrain immunity. Full regional campaign layouts belong to M18 and environment visual improvements to M21; unrelated regional terrain mechanics are not implied by this milestone.
+- Give every enemy a recognizable initial model and movement/attack/defeat animations guided by its concept. M22 improves all ten models and animations further; M17 must already make their identities and actions readable in play.
+- Integrate all ten with ordinary authored camps/nests and raid systems as appropriate to their roles, plus shared debug scenario entries. Every type must be encountered through a normal encounter source in a playable scenario, not only through debug spawning. Campaign distribution follows in M18.
+- Specify and implement each type's interactions with dwarfs, the Hearth, doors, barriers, traps and spells, including control effects and any special resistances. Keep health, warnings and details in the sidebar and preserve discovery rules.
+
+Complete when all ten enemies are implemented and exercised in playable encounter scenarios, with distinct behaviors that reward different layouts. Verify each type's movement, attacks, targeting, defeat, terrain access, trap/spell/control interactions and encounter lifecycle; cover ranged line of sight, friendly-fire policy, tunneling, reinforced-wall resistance, bedrock exclusion and mixed-enemy encounters. Record per-enemy verification and any remaining balance or visual limitations. A smaller selected subset does not complete M17.
 
 ### M18 — Campaign and Hearthstone travel
 
@@ -141,9 +154,9 @@ Complete when representative gameplay areas and the visual showcase demonstrate 
 
 ### M22 — Character models and animations update
 
-Dependencies: current four dwarf roles and combat/jobs; final enemy coverage follows M17's selected roster. Review the [dwarf concepts](concept-art/dwarfs/README.md), [enemy concepts](concept-art/enemies/README.md), their prompt records, [Characters](characters.md) and [graphics pass notes](graphics-pass.md).
+Dependencies: current four dwarf roles and combat/jobs; final enemy coverage includes all ten enemies in M17. Review the [dwarf concepts](concept-art/dwarfs/README.md), [enemy concepts](concept-art/enemies/README.md), their prompt records, [Characters](characters.md) and [graphics pass notes](graphics-pass.md).
 
-- Improve dwarf and included enemy models: proportions, silhouettes, faces/hair, clothing, armor, tools and materials. Preserve the established female Engineer and distinct Miner, Warrior and Runesmith appearances.
+- Improve all four dwarf roles and all ten enemy models: proportions, silhouettes, faces/hair, clothing, armor, tools and materials. Preserve the established female Engineer and distinct Miner, Warrior and Runesmith appearances.
 - Improve walking, turning, idle, mining/construction, hauling, crafting, training, research, eating/resting, attacks, hit reactions and defeat where those activities exist. Cover M17 ranged/breaching actions without introducing new gameplay abilities.
 - Make poses, timing and transitions follow real movement, jobs and combat events, with less sliding, clipping and abrupt switching. Use shared reusable animation/model helpers without requiring an elaborate asset pipeline.
 - Keep roles and actions readable from the overhead gameplay camera, coordinate character scale/lighting with M21, and preserve sidebar-only statistics and practical performance at normal populations.

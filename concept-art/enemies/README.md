@@ -2,7 +2,7 @@
 
 Ten first-pass enemy concepts covering the five underground regions in [Levels](../../levels.md). Created with the built-in image generation tool, using the dwarf sheets' stylized 3D art direction and front, rear, and overhead presentation.
 
-These are proposed visual identities, not a finalized enemy roster, combat specification, or set of rigged models. The sheets do not share a common world scale, and their views are illustrative rather than exact modeling turnarounds. Creature sizes, abilities, and encounter frequency remain design decisions.
+All ten enemies shown here are required by planned [M17](../../development-plan.md#m17--complete-enemy-roster-and-behavior). Only the Goblin Raider is currently implemented. These sheets are visual references, not combat specifications or rigged models. The sheets do not share a common world scale, and their views are illustrative rather than exact modeling turnarounds. Creature sizes, abilities, and encounter frequency remain design decisions.
 
 [Return to all concept art](../README.md).
 

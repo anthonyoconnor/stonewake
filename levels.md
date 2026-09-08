@@ -19,7 +19,7 @@ The campaign reclaims separate sites within a lost dwarven kingdom. Each level i
 - A level ends in defeat if enemies destroy the Stone Hearth protecting the Hearthstone.
 - Every level has a separate onward Hearthstone that the player must find and reach to open progression to the next area. Its difficult approach supplies the primary level objective.
 
-The campaign premise, level structure and onward Hearthstone objective are established. The example maps, enemy roster, exact approaches and activation details below are proposals rather than a final campaign list. M11 implements objective/defeat using an enemy-held land route. M16 adds the Emberwater Crossing scenario with water, lava, chasms and constructed stone bridges. Campaign travel remains M18.
+The campaign premise, level structure and onward Hearthstone objective are established. The example maps, exact approaches and activation details below are proposals rather than a final campaign list. All ten current enemy concepts are included in planned M17; their exact abilities and balance remain to be defined. M11 implements objective/defeat using an enemy-held land route. M16 adds the Emberwater Crossing scenario with water, lava, chasms and constructed stone bridges. Campaign travel remains M18.
 
 ## Onward Hearthstone objective
 
@@ -104,7 +104,7 @@ Creature types should be associated with recognizable regions. These example pai
 
 Enemy behaviors should make layout matter: melee groups pressure entrances, ranged enemies challenge exposed approaches, and selected burrowers may threaten ordinary earth walls. Which species can dig, break doors, or target specific rooms remains to be defined. No creature can tunnel through bedrock.
 
-The [enemy concept gallery](concept-art/enemies/README.md) explores two visual candidates for each region, with front, rear, and overhead studies. These concepts give the inhabitants possible appearances and names; their abilities, scale, and inclusion in the final roster remain provisional.
+The [enemy concept gallery](concept-art/enemies/README.md) supplies the full ten-enemy roster required by [M17](development-plan.md#m17--complete-enemy-roster-and-behavior): Goblin Raider and Tunnel Burrower; Cave Spider and Spore Brute; Restless Guard and Ancient Sentinel; Crystal Elemental and Crystalback Stalker; Cinderling and Deepmaw. Only the Goblin Raider is currently implemented. All ten are planned for implementation, with distinct combat roles, initial models/animations and ordinary encounter integration. Exact abilities, scale, resistances and balance remain to be specified. M17 includes terrain interactions needed by those behaviors; M18 owns campaign placement and M21 environment graphics.
 
 ## Attacks
 
@@ -156,5 +156,5 @@ Every playable level needs:
 - Onward Hearthstone activation conditions, interaction timing/cost, damage policy and exact approaches; finding and reaching one in every level is agreed.
 - Initial miner counts, usable starting storage, and starting gold.
 - Resource placement visibility, environmental hazards, and bridge behavior.
-- Enemy roster, nest activation rules, raid timing, and warning systems.
+- Per-enemy abilities, scale, resistances and balance for the agreed ten-enemy roster; regional nest activation rules, raid timing and warning tuning.
 - Whether reclaimed rooms can be used immediately or need repair.
