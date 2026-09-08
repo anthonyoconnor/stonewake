@@ -40,10 +40,10 @@ try {
     // Purchases are ordinary sidebar actions and account for the starting crew.
     await panel('Workforce');
     before = await state();
-    assert((await minerControl('textContent')).includes('25'));
+    assert((await minerControl('textContent')).includes('125'));
     assert(await minerControl('isEnabled'), 'Stonehands need no settlement support');
     await minerControl('click');
-    assert.equal(balance(await state()), balance(before)-25);
+    assert.equal(balance(await state()), balance(before)-125);
     assert.equal((await state()).agents.length,before.agents.length+1);
 
     await load('economy');
@@ -55,16 +55,16 @@ try {
       before.agents.every((a) => a.x > 7),
       'Wage fixture starts all four types beyond the treasury passage',
     );
-    assert((await minerControl('textContent')).includes('25'));
+    assert((await minerControl('textContent')).includes('50'));
     assert(await minerControl('isEnabled'));
     await page.locator('.population-details').evaluate(e => { e.open = true; });
     await minerControl('click');
     after = await state();
     assert.equal(after.agents.length, before.agents.length + 1);
-    assert.equal(balance(after), balance(before) - 25, 'Purchase spends its displayed price exactly once');
+    assert.equal(balance(after), balance(before) - 50, 'Purchase spends its displayed price exactly once');
     assert(
-      (await minerControl('textContent')).includes('25'),
-      'Stonehand price stays fixed',
+      (await minerControl('textContent')).includes('75'),
+      'Stonehand price rises with living Stonehands',
     );
     const purchased = after.agents.find((a) => !originals.includes(a.id));
     assert.equal(purchased.type, 'stonehand');
@@ -142,7 +142,7 @@ try {
     assert.equal(after.elapsed, 0);
     assert(after.agents.every((a) => a.pay.collections === 0 && a.pay.due.length === 0));
     assert(
-      (await minerControl('textContent')).includes('25'),
+      (await minerControl('textContent')).includes('50'),
       'Fresh scenario restores the living-population price',
     );
     console.log(

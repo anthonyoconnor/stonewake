@@ -15,6 +15,7 @@ import {damageResident} from '../src/game/spell-effects.ts';
 import {tickFighter} from '../src/game/combat.ts';
 import {tileAt,key} from '../src/game/types.ts';
 import {tuning} from '../src/content/tuning.ts';
+import {applySettings,settingValues} from '../src/content/settings.ts';
 
 test('normal starting crew are Stonehands; Miner definition is still spawnable',()=>{
   const w=startCampaign();
@@ -24,13 +25,13 @@ test('normal starting crew are Stonehands; Miner definition is still spawnable',
   assert(w.agents.at(-1)!.capabilities.includes('defend'));
 });
 
-test('Hearth creates Stonehands for a fixed price without support or research; failures spend nothing',()=>{
+test('Hearth creation charges an increasing population price without support or research; failures spend nothing',()=>{
   const w=createRoomLab();
   for(let i=0;i<3;i++){
     assert(stonehandPurchaseStatus(w).eligible);
     const before=goldTotal(w);
     assert.match(castSpell(w,'summon-stonehand'),/assembled/);
-    assert.equal(goldTotal(w),before-tuning.stonehandCost);
+    assert.equal(goldTotal(w),before-(tuning.minerMinimumCost+tuning.minerCostStep*i));
   }
   assert(w.agents.every(a=>a.type==='stonehand'));
   const before=goldTotal(w);
@@ -44,6 +45,34 @@ test('Hearth creates Stonehands for a fixed price without support or research; f
   const poor=createRoomLab();poor.allowance=0;
   assert.equal(stonehandPurchaseStatus(poor).eligible,false);
   assert.equal(poor.agents.length,0);
+});
+
+test('Stonehand price counts the starting crew and living constructs only; both original settings apply live',()=>{
+  const original=settingValues(),w=startCampaign();
+  assert.equal(stonehandPurchaseStatus(w).price,125);
+  addResidents(w,'miner');addResidents(w,'engineer');
+  assert.equal(stonehandPurchaseStatus(w).price,125,'Other unit types do not increase creation cost');
+  w.allowance=2000;
+  const before=goldTotal(w);
+  assert.match(castSpell(w,'summon-stonehand'),/125 gold/);
+  assert.equal(goldTotal(w),before-125);
+  assert.equal(stonehandPurchaseStatus(w).price,150);
+  damageResident(w,w.agents[0],30);
+  assert.equal(stonehandPurchaseStatus(w).price,125,'Death reduces price even before cleanup');
+  try {
+    assert.equal(applySettings({...original,'tuning.minerMinimumCost':80,'tuning.minerCostStep':40}),'');
+    assert.equal(stonehandPurchaseStatus(w).price,200);
+    w.allowance=199;
+    const count=w.agents.length,spent=w.spent;
+    assert.doesNotMatch(castSpell(w,'summon-stonehand'),/assembled/);
+    assert.equal(w.agents.length,count);assert.equal(w.spent,spent);
+    w.allowance=200;
+    assert.match(castSpell(w,'summon-stonehand'),/200 gold/);
+    assert.equal(goldTotal(w),0);
+    assert.equal(stonehandPurchaseStatus(w).price,240);
+  } finally {assert.equal(applySettings(original),'');}
+  w.agents=[];
+  assert.equal(stonehandPurchaseStatus(w).price,50,'No remaining Stonehands returns to the base price');
 });
 
 test('constructs never occupy living support, collect pay, train or leave from unmet needs',()=>{

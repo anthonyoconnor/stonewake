@@ -32,7 +32,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 | Workforce type | Current status | Remaining integration |
 |---|---|---|
 | Cave Hound | Implemented: Dormitory-only automatic arrival; den food/rest, no wages/training; 100 health/10-damage bite; autonomous bounded scouting and home watch, Call to Arms, dedicated quadruped model | Combat values provisional |
-| Stonehand | Implemented: starting crew, fixed 25-gold Hearth creation, shared terrain pool and stable 20-second productive assignments; no needs, support slots, pay, training, morale or combat; 30 health, cargo drops on destruction; accepted v2 mechanical model | Balance values provisional |
+| Stonehand | Implemented: starting crew, population-priced Hearth creation (50 + 25 per living Stonehand), shared terrain pool and stable 20-second productive assignments; no needs, support slots, pay, training, morale or combat; 30 health, cargo drops on destruction; accepted v2 mechanical model | Balance values provisional |
 | Miner | Retained definition, model and debug fixtures; fixed level 1, legacy work and self-defense | Possible basic fighter repurposing deferred |
 | Engineer | Implemented: normal Workshop-based arrivals, crafting, shared food/rest/wages/departure, levels 1–5 and adjacent self-defense; also in Debug | Repairs deferred |
 | Warrior | Implemented: normal arrivals, shared needs/wages/departure, levels 1–5, autonomous melee combat and Call to Arms response | Broader combat balance; guard posts and retreat deferred |
@@ -44,7 +44,7 @@ The remaining active milestone is M19: integrated balance and broader full-level
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight worker seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 
-**Workforce overview:** role/activity icon counts open filtered resident lists with expandable stats and camera location. Wages, wellbeing and attraction details are expandable below the grid. Create Stonehand in Spells costs a fixed 25 gold and checks funds/arrival space; Stonehands need no food or bed support. Spell icons activate directly and are disabled while unusable; research remains accessible through the Library research selector.
+**Workforce overview:** role/activity icon counts open filtered resident lists with expandable stats and camera location. Wages, wellbeing and attraction details are expandable below the grid. Create Stonehand in Spells costs 50 gold + 25 per living Stonehand and checks funds/arrival space; Stonehands need no food or bed support. Spell icons activate directly and are disabled while unusable; research remains accessible through the Library research selector.
 
 **Input controls:** defense icons require a built Workshop and finished stock, then activate placement directly. Bridge and Wall use icons in the fixed bottom row of Rooms, with Sell in its lower-right corner. The excavation toolbar is removed. Sell handles rooms, bridges/plans and defenses with existing refund/safe-removal rules. Left-sidebar in-game controls use text sparingly; tooltips and expandable details carry explanations.
 

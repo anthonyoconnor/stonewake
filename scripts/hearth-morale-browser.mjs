@@ -326,8 +326,8 @@ try {
     assert.equal(w.departures?.length ?? 0, 0, 'A blocked exit never removes a dwarf remotely');
     assert.equal(await foodAlert.count(), 1, 'Escalation to departure reopens a dismissed warning');
     assert(
-      (await minerControl('textContent')).includes('25'),
-      'Stonehand price stays fixed while a dwarf is departing',
+      (await minerControl('textContent')).includes('50'),
+      'Stonehand price excludes dwarfs while a dwarf is departing',
     );
     assert.equal((await page.locator('#dwarf-total').textContent()).trim(), '4');
     const beforeExitGold = accountedGold(w);
@@ -355,8 +355,8 @@ try {
       'Departures release support assignments',
     );
     assert(
-      (await minerControl('textContent')).includes('25'),
-      'Stonehand price stays fixed after dwarf departure',
+      (await minerControl('textContent')).includes('50'),
+      'Stonehand price excludes dwarfs after dwarf departure',
     );
     assert.equal((await page.locator('#dwarf-total').textContent()).trim(), '0');
     await screenshot('m14-dwarfs-departed', page.locator('#morale-summary'));

@@ -96,7 +96,7 @@ The Workforce tab opens with a compact icon matrix: Cave Hound, Stonehand, retai
 
 Activity groups use current simulation state, including travel toward the current job. Working includes hauling, construction, training and Hearthstone activation; Needs includes eating, sleeping, collecting pay and departure; Combat includes pursuit and rally response. Idle includes waiting for available work. These are activity counts, not unmet-need warnings; wellbeing warnings remain available separately.
 
-Create Stonehand in Spells assembles a worker at the Hearth for a fixed 25 gold, with no Library research or food/bed support requirement. Its tooltip explains missing gold or arrival access. The original Miner has no ordinary recruitment icon. Specialist attraction requirements remain in expandable population details.
+Create Stonehand in Spells assembles a worker at the Hearth for 50 gold + 25 per living Stonehand, with no Library research or food/bed support requirement. Its tooltip explains missing gold or arrival access. The original Miner has no ordinary recruitment icon. Specialist attraction requirements remain in expandable population details.
 
 Selecting a dwarf in the world opens its information in the sidebar. A locate action from the population panel can center the camera on that dwarf. Inspection is informational: it does not enable individual movement orders, possession, manual job assignment, or selecting an army to command.
 

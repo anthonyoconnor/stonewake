@@ -161,10 +161,11 @@ export function recruitSpecialist(w: World, spawn: (type: string, origin: Point)
 }
 export const livingMiners = (w: World) => w.agents.filter((a) => a.type === 'miner' && alive(a)).length;
 export function stonehandPurchaseStatus(w: World) {
+  const stonehands = w.agents.filter((a) => a.type === 'stonehand' && alive(a)).length;
   const result = {
     ...recruitmentStatus(w, 'stonehand'),
-    price: tuning.stonehandCost,
-    stonehands: w.agents.filter((a) => a.type === 'stonehand' && alive(a)).length,
+    price: tuning.minerMinimumCost + tuning.minerCostStep * stonehands,
+    stonehands,
   };
   if (!result.eligible) return result;
   const routes = reachable(w, hearthArrival(w)!);

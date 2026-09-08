@@ -4,7 +4,7 @@
 
 The catalog below is implemented in the browser prototype. Its numerical values remain provisional starting points for playtesting.
 
-Create Stonehand is an innate Hearth action available from the start for a fixed 25 gold. It needs no Library, research, preparation, food or bed capacity. Each cast assembles one Stonehand with an open Hearth route, a free claimed arrival square and enough shared gold. Failed casts spend nothing. Legacy Summon Miner remains callable only by development fixtures.
+Create Stonehand is an innate Hearth action available from the start for 50 gold + 25 per living Stonehand. It needs no Library, research, preparation, food or bed capacity. Each cast assembles one Stonehand with an open Hearth route, a free claimed arrival square and enough shared gold. Failed casts spend nothing. Legacy Summon Miner remains callable only by development fixtures.
 
 Hearth Prospect and global Hearth Haste have been removed. The catalog uses targeted casting, individual effects and the shared Library research/preparation service. Offensive spells work against authored encounters/raids and debug-spawned enemies.
 
@@ -16,7 +16,7 @@ Research and preparation times are seconds of active work by one Runesmith at no
 
 | Spell / stable ID | Role and target | Initial research | Repeat preparation | Cast cost | Effect and duration |
 |---|---|---:|---:|---:|---|
-| **Create Stonehand** / `summon-stonehand` | Mechanical worker; automatic Hearth arrival | None | None | 25 gold | Assembles one fragile Stonehand; no support slots required. |
+| **Create Stonehand** / `summon-stonehand` | Mechanical worker; automatic Hearth arrival | None | None | 50 + 25 × living Stonehands gold | Assembles one fragile Stonehand; no support slots required. |
 | **Haste** / `dwarf-haste` | Support; one living friendly dwarf | 45 s | 20 s | 25 gold | +50% movement, work and attack speed for 20 s. Does not speed up hunger, fatigue or other needs. |
 | **Slow** / `enemy-slow` | Defensive control; one living enemy, including strong enemies | 60 s | 25 s | 30 gold | -40% movement and attack speed for 15 s. Does not reduce damage per hit. |
 | **Stoneguard** / `stoneguard` | Defense; one living friendly dwarf | 60 s | 30 s | 35 gold | A stone shield absorbs damage equal to 40% of the dwarf's maximum health. Ends when depleted or after 20 s. |
