@@ -394,3 +394,52 @@ Verification: completed milestone specifications and prior development records w
 Defenses and Spells now share the Rooms four-column icon grid, selected-item header and active/focus styling. Distinct door-tier and spell artwork identifies each choice. Defense stock, manufacture costs, placement details and bolt facing remain available; Spells shows one selected spell’s research and casting controls, with compact state markers and expandable Library details.
 
 Verified: 32 focused defense, spell and progression/research simulation checks; TypeScript/production build; browser checks for all eight spell choices, research/pause/resume, unavailable and prepared casting, defense selection/facing and a 1024×720 layout. Reviewed both rendered menus and found no browser runtime errors. Existing Babylon bundle-size advisory remains.
+
+### Debug menu separation — 2026-09-07
+
+Debug now separates current-world actions and shared session settings from Test harnesses. All harnesses and replacement layouts start paused, expose one Pause/Resume control, and offer Return to stronghold across panels. Returning preserves gameplay state and the prior pause state. Restart is only offered in the ordinary game. Tired/hungry setup labels describe their 10% effect and room requirements; test spawning explains bypassed arrivals and failed placement. Workshop production remains in gameplay panels.
+
+Verified: 35 focused development/simulation checks, source-and-test typecheck, production build, and the dedicated browser menu/transition playtest. Production isolation also passes. Existing Babylon bundle-size advisory remains. Test worlds are still disposable and shared tuning intentionally affects both worlds.
+
+## M10 and M13 — parallel implementation — 2026-09-07
+
+| Milestone | Outcome | Status |
+|---|---|---|
+| M10 | Natural enemy encounters, camps/nests and raids | Complete |
+| M13 | Paid Miner recruitment and wages | Complete |
+
+### M10 — Natural enemy encounters and raids
+
+Dependencies: existing discovery, navigation, combat and defenses.
+
+- Place resident hostile groups and camps/nests in editable level definitions. Discovering or opening routes can activate threats according to explicit scenario rules.
+- Add raids through authored physical entrances, with tunable timing, warning conditions and source-clearing behavior. Use the existing Raider first; M17 expands the roster.
+- Route enemies through the real terrain, doors and barriers. Handle sealed routes without spawning enemies inside protected rooms or bypassing bedrock. Keep undiscovered enemies concealed; warnings must not reveal hidden positions.
+- Supply a resettable scenario using normal encounter/raid systems, with debug controls to inspect and advance their state.
+
+Complete when normal play can discover a hostile group and experience a warned external raid without manual enemy spawning; opening/closing routes changes their approach, defenses and dwarfs can defeat them, and a cleared source obeys its authored repeat/stop rule. Verify blocked entrances, hidden enemies, trap interactions and repeat triggers. Hearth attacks follow in M11.
+
+
+### M13 — Paid Miner recruitment and wages
+
+Dependencies: existing economy, recruitment and needs. Can start alongside M10; M11 supplies defeat gating for final integration.
+
+- Add a sidebar Miner purchase with the displayed price based on the current living Miner count, including starting Miners. Charge stored gold exactly once and spawn through the starting Hearth's normal arrival route.
+- Use editable minimum/price-step values initially; deaths and M14 departures lower the next price. Finalize any accommodation/food purchase eligibility and show the reason when purchase is unavailable.
+- Add positive per-type wages, payday timing and autonomous physical collection at reachable Treasure Rooms. Specify withdrawal across rooms and whether the starter treasury supports wages. Allow ordinary travel/queues before treating pay as overdue.
+- Distinguish insufficient funds from inaccessible storage, preserving shared-gold accounting and ordinary job/need scheduling.
+
+Complete when purchases display and deduct the correct price, failed purchases spend nothing, population changes update the price, and every dwarf type collects one wage per due payment. Verify concurrent spending, depleted/inaccessible/reclaimed treasuries, restored access, interrupted collection and a fresh level's price reset. Persistent dissatisfaction follows in M14.
+
+
+### Implementation and verification
+
+Implemented with independent encounter and economy agents, shared root integration, and a dedicated browser verification agent. Encounter sources use stable level definitions, concealed resident camps, physical entrances, discovery/route/time activation, generic unknown-source warnings, one pending/active wave per source, defeat/claim clearing and bounded route retries. Enemies share actual terrain/door/barrier navigation without revealing player terrain. Normal Border Foothold has a north camp (8-second discovery warning) and an east entrance (first warning at 360s, 25-second warning, repeat 150s after defeat).
+
+M13 adds sidebar purchases at 50 + 25 per living Miner, requiring reachable spare food/accommodation and a clear Hearth arrival route. All types receive personal paydays 120s after arrival at 4/7/8/10 gold, collecting each installment in a 1-second treasury visit. Funds are taken only at completion from allowance and actor-reachable storage; the starter treasury participates. Due amounts survive tuning, interruptions, door changes and reclaim; 45s permits travel before an overdue warning. Combat, carried resources and urgent needs take priority. A terminal-state hook gates purchases, arrivals and ticking; natural core defeat that sets it remains M11. Dissatisfaction/departure remains M14.
+
+Verification: all 124 simulation/input tests pass; source-and-test typecheck and production build pass. Six encounter checks cover hidden default sources, actual mining/claiming, door/barrier/bedrock and occupied-spawn behavior, warnings, combat/traps, clearing and repeats. Ten economy checks cover prices, failed/ended purchases, all-type physical collection, queues, accessible reserve accounting, concurrent spending, interrupted/reclaimed/blocked treasuries, due-amount snapshots, needs and real combat interruption. An existing mining conservation check now includes paid wages.
+
+Browser: existing smoke baseline passed; scripts/milestones-browser.mjs m10 and m13 pass with no console/runtime/API errors. Actual UI purchases, exact 29-gold initial payroll, blocked/restored access, fog-safe warnings, excavation activation, camp defeat, subsequent raid and reset were verified. Seven screenshots were visually inspected in ignored test-results/m10-*.png and m13-*.png. An initial encounter browser run was invalidated by source reload during integration; the settled-source rerun passed. The local Vite server remains running. Existing Babylon bundle-size advisory remains. No core damage, retreat, dissatisfaction, save infrastructure or campaign travel was added.
+
+Final integration: production isolation passed (scenario URLs and the development API/panel remain absent from production). All 252 local Markdown links/anchors resolve, and git diff --check passes. Completed milestone specifications were moved out of the active plan; current limitations and the next parallel-work dependencies remain there.

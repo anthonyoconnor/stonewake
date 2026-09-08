@@ -1,6 +1,6 @@
 # Browser game development plan
 
-Status: **M10–M19 planned; M1–M9 complete, including M5.1.** TypeScript and Babylon.js are confirmed. M10–M19 remain planning scope, not an instruction to begin implementation.
+Status: **M1–M10 and M13 complete, including M5.1. M11–M12 and M14–M19 remain planned.** TypeScript and Babylon.js are confirmed. The user authorized M10 and M13 in parallel; other unfinished milestones remain planning scope.
 
 Completed milestones and verification records are in [development-history.md](development-history.md). **Read that archive only if past context is required; it is not part of routine startup reading.** This file contains the current baseline, unfinished work and dependencies.
 
@@ -12,31 +12,31 @@ Last checked: **2026-09-07** against the room and character definitions and the 
 
 | Room or structure | Current status | Remaining integration |
 |---|---|---|
-| Treasure Room | Implemented: floor-area gold capacity and hauling; decorative chests | Wage collection |
+| Treasure Room | Implemented: floor-area gold capacity, hauling and physical wage collection; decorative chests | — |
 | Dormitory | Implemented: floor-area accommodation and autonomous rest; decorative beds | — |
 | Kitchen | Implemented: floor-area population support and autonomous meals; food props are decorative, with no ingredient or food inventories | — |
 | Workshop | Implemented: floor-area concurrent Engineer capacity, attraction, staffed production of all three door tiers and both traps, shared finished stock for placement | Door repairs; upkeep for future fixture types |
 | Training Room | Implemented: floor-area concurrent trainee capacity, per-character levels 1–5 with defined practice requirements and health/combat/work values, one level per visit followed by a personal cooldown, and Warrior attraction | Broader balance |
 | Library | Implemented: floor-area concurrent researcher capacity, targeted spell research/preparation/casting and Runesmith attraction; catalog in [Spells](spells.md) | Campaign research progression and broader balance |
 | Guard Post | Not implemented; disabled catalog placeholder | Guard positions and defensive behavior |
-| Stone Hearth | Implemented: fixed core, arrival location and starter treasury chest | Enemy attacks, core destruction and defeat |
+| Stone Hearth | Implemented: fixed core, paid Miner/specialist arrivals and starter treasury with wage collection | Enemy attacks, core destruction and defeat (M11) |
 | Onward Hearthstone | Planned: a separate, initially hidden Hearthstone to find and reach in every level | Objective discovery/access, activation rules and passage to the next area (M11/M18) |
 | Bridge | Not implemented | Crossing rules, construction and navigation across gaps |
-| Timber / Reinforced / Steel doors | Implemented in normal play: manufacture, placement, increasing health, Open/Closed/Locked access, dwarf passage, sight blocking and breakage | Repairs and upgrades in place; natural enemy encounters |
-| Spike trap | Implemented in normal play: manufacture, placement, enemy damage, brief pinning and automatic cooldown reset | Natural enemy encounters |
-| Bolt trap | Implemented in normal play: manufacture, placement, directional first-target shots, line of sight and automatic cooldown reset | Natural enemy encounters |
-| Goblin Raider | Debug-only: continuous movement, alternate routes, door/barrier breaking, trap and spell damage, attacking dwarfs, pinning and defeat | Normal spawning/raids and Hearth attacks |
+| Timber / Reinforced / Steel doors | Implemented in normal play: manufacture, placement, increasing health, Open/Closed/Locked access, dwarf passage, sight blocking and breakage | Repairs and upgrades in place |
+| Spike trap | Implemented in normal play: manufacture, placement, enemy damage, brief pinning and automatic cooldown reset | — |
+| Bolt trap | Implemented in normal play: manufacture, placement, directional first-target shots, line of sight and automatic cooldown reset | — |
+| Goblin Raider | Implemented: authored hidden camps and warned raids in normal play; continuous movement, door/barrier breaking and combat/trap/spell interactions; debug tests retained | Hearth attacks (M11), broader types (M17) |
 
 | Dwarf type | Current status | Remaining integration |
 |---|---|---|
-| Miner | Implemented: starting crew, mining, hauling, claiming, reinforcement and wall construction; shared food/rest, levels 1–5 and adjacent self-defense | Normal paid recruitment; wages; retreat |
-| Engineer | Implemented: normal Workshop-based arrivals, crafting, shared food/rest, levels 1–5 and adjacent self-defense; also in Debug | Wages; proposed repairs |
-| Warrior | Implemented: normal arrivals, shared needs, levels 1–5, autonomous melee combat and Call to Arms response | Wages; guard posts, retreat and broader combat balance |
-| Runesmith | Implemented: normal Library-based arrivals, appearance, research/preparation, shared food/rest, levels 1–5 and adjacent self-defense; also in Debug | Wages; additional personal combat abilities and campaign progression |
+| Miner | Implemented: starting crew and paid purchases, mining, hauling, claiming, reinforcement and wall construction; shared food/rest/wages, levels 1–5 and adjacent self-defense | Retreat |
+| Engineer | Implemented: normal Workshop-based arrivals, crafting, shared food/rest/wages, levels 1–5 and adjacent self-defense; also in Debug | Proposed repairs |
+| Warrior | Implemented: normal arrivals, shared needs/wages, levels 1–5, autonomous melee combat and Call to Arms response | Guard posts, retreat and broader combat balance |
+| Runesmith | Implemented: normal Library-based arrivals, appearance, research/preparation, shared food/rest/wages, levels 1–5 and adjacent self-defense; also in Debug | Additional personal combat abilities and campaign progression |
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-Other broad systems still pending include natural enemy encounters/raids, Hearth damage/defeat, guard duty, retreat, dissatisfaction/departure and campaign progression. Debug raiders exercise defense, combat and spell interactions. Detailed behavior and unresolved choices remain in the design documents; completed checks are preserved in the optional development history.
+Other broad systems still pending include Hearth damage/defeat, guard duty, retreat, dissatisfaction/departure and campaign progression. Authored and debug raiders exercise defense, combat and spell interactions. M13 purchases, arrivals and payroll honor a tested terminal-state hook; M11 still needs to set it through actual core defeat. Current provisional encounter and wage values are owned by levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain in the design documents; completed checks are preserved in the optional development history.
 
 **Current room model:** the user's subsequent room simplification supersedes furnishing-derived capacity in older development entries. Every connected room supplies `floor(squareCount * capacityPerTile)` capacity. Furniture is cosmetic and does not block movement, sight, projectiles or service access. Kitchen and Dormitory area supports residents; Workshop, Library and Training Room area limits concurrent workers. Kitchen food inventories and production chains have been removed. See [Rooms](rooms.md) for the provisional rates and training visit/cooldown rules.
 
@@ -62,10 +62,8 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 
 | Milestone | Outcome | Status |
 |---|---|---|
-| M10 | Natural enemy encounters, camps/nests and raids | Planned |
 | M11 | Starting Hearth defense/defeat and onward Hearthstone objective | Planned |
 | M12 | Guard Posts, guard duty and emergency retreat | Planned |
-| M13 | Paid Miner recruitment and wages | Planned |
 | M14 | Dissatisfaction, need alerts and departure | Planned |
 | M15 | Door repairs and upgrades in place | Planned |
 | M16 | Bridges, water, lava and chasm crossings | Planned |
@@ -75,7 +73,7 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 
 ## Remaining-feature roadmap — M10–M19
 
-These milestones cover the outstanding features identified in the current inventory. The numbered order is the default development sequence; dependencies below identify the required foundations. Existing combat, spells, specialist arrivals and room services are extended rather than rebuilt. Ranger remains deferred; removed roles/rooms and saves, multiplayer, accounts and production infrastructure are outside this roadmap.
+The remaining milestones below cover outstanding features identified in the current inventory. Completed M10 and M13 specifications and checks are archived. The numbered order is the default development sequence; dependencies below identify the required foundations. Existing combat, spells, specialist arrivals and room services are extended rather than rebuilt. Ranger remains deferred; removed roles/rooms and saves, multiplayer, accounts and production infrastructure are outside this roadmap.
 
 **Agreed level objective:** every level contains another Hearthstone, distinct from the starting base core. The player must discover it and overcome a difficult approach, usually an enemy base or hostile region, lava, or another terrain obstacle. This Hearthstone opens progression to the next area through the ancient runic network. Merely surviving or clearing an arbitrary enemy count is not the primary objective. Discovery must respect fog; seeing a crystal across an impassable gap must not count as reaching it. Detailed activation conditions are provisional and owned by [Levels](levels.md#onward-hearthstone-objective).
 
@@ -87,13 +85,13 @@ Several milestones can be developed together. A milestone may start its independ
 
 | Work group | Can run in parallel | What must wait |
 |---|---|---|
-| Initial foundations | **M10 encounters/raids**, **M13 recruitment/wages**, **M16 terrain/bridges** | M13's defeat gating and M16's onward-objective completion scenario integrate after M11. Hazard navigation must be coordinated with M10 enemy routes. |
-| First integrations | **M11 core defeat/onward objective** after M10; **M14 dissatisfaction/departure** after M13; continuing M16 crossings | M11's first objective uses a land route so it does not wait on M16. M14 uses the wage and population APIs established in M13. |
+| Available foundations | **M11 core defeat/onward objective**, **M14 dissatisfaction/departure**, **M16 terrain/bridges** build on completed encounters and economy | M16's onward-objective scenario waits for M11. M11 drives the existing recruitment/payroll terminal-state hook. |
+| First integrations | M11 and M14 can proceed while M16 develops crossings | M11's first objective uses a land route so it does not wait on M16. M14 consumes existing wage/population APIs. |
 | Combat and defense extensions | **M12 guarding/retreat**, **M15 repairs/upgrades**, and **M17 enemy types** after M10/M11 foundations | M17 can build attacks/definitions while M12 develops behavior; final tests wait for retreat integration and M16 terrain rules where relevant. M15 safe repair selection shares threat queries with M12. |
 | Campaign production | **M18 level layouts, briefings and unlock definitions** alongside M12/M15/M17 once M11 objective and M16 terrain formats are stable | Complete transitions/playthroughs wait for all required gameplay milestones. Enemy placements/balance stay provisional until M17. |
 | Final verification | **M19 complete-campaign balancing** after M10–M18 | Focused tests and local tuning happen throughout; the final normal-rules campaign pass requires the assembled game. |
 
-Recommended first split: one workstream for M10, one for M13, and one for M16. Avoid assigning whole milestones to simultaneous editors without agreeing on shared interfaces: world/simulation state, navigation, jobs, sidebar/configuration and scenario registration are touched by several systems. Keep feature logic in separate modules; assign one integration owner for shared entry points and canonical documentation. Coordinate these contracts first:
+M10 and M13 were completed in parallel. The next independent split is M11, M14 and M16 when authorized. Avoid assigning whole milestones to simultaneous editors without agreeing on shared interfaces: world/simulation state, navigation, jobs, sidebar/configuration and scenario registration are touched by several systems. Keep feature logic in separate modules; assign one integration owner for shared entry points and canonical documentation. Coordinate these contracts first:
 
 - Encounter sources and enemy targeting consume shared traversal/threat queries; bridge work changes terrain traversal without inventing separate enemy path rules.
 - Core defeat/objective state exposes whether ordinary actions and onward travel are allowed; recruitment, construction and campaign travel consume that state.
@@ -102,17 +100,6 @@ Recommended first split: one workstream for M10, one for M13, and one for M16. A
 - Level definitions distinguish starting and onward Hearthstones and campaign links; M18 owns progression/reset rules rather than embedding them in terrain or encounter modules.
 
 Integrate and verify each group before declaring dependent milestones complete. Art/concept review and candidate map sketches can proceed early; final map validation and balancing wait for actual traversal and enemy behavior.
-
-### M10 — Natural enemy encounters and raids
-
-Dependencies: existing discovery, navigation, combat and defenses.
-
-- Place resident hostile groups and camps/nests in editable level definitions. Discovering or opening routes can activate threats according to explicit scenario rules.
-- Add raids through authored physical entrances, with tunable timing, warning conditions and source-clearing behavior. Use the existing Raider first; M17 expands the roster.
-- Route enemies through the real terrain, doors and barriers. Handle sealed routes without spawning enemies inside protected rooms or bypassing bedrock. Keep undiscovered enemies concealed; warnings must not reveal hidden positions.
-- Supply a resettable scenario using normal encounter/raid systems, with debug controls to inspect and advance their state.
-
-Complete when normal play can discover a hostile group and experience a warned external raid without manual enemy spawning; opening/closing routes changes their approach, defenses and dwarfs can defeat them, and a cleared source obeys its authored repeat/stop rule. Verify blocked entrances, hidden enemies, trap interactions and repeat triggers. Hearth attacks follow in M11.
 
 ### M11 — Hearth defense, defeat and the onward objective
 
@@ -134,17 +121,6 @@ Dependencies: M10–M11 and existing Call to Arms/combat services.
 - Add emergency retreat with tunable danger/injury thresholds, safe destination selection and recovery/resumption rules. Cover workers as well as Warriors, and handle a blocked retreat without teleporting or repeatedly choosing an impossible route.
 
 Complete when Warriors autonomously staff and defend a post, respond to and return from a rally, and take care of needs; endangered dwarfs retreat and later resume appropriate activity. Verify reclaim, disconnected capacity, narrow/irregular posts, multiple guards, lost safe routes and absence of rapid retreat/re-engagement loops.
-
-### M13 — Paid Miner recruitment and wages
-
-Dependencies: existing economy, recruitment and needs. Can start alongside M10; M11 supplies defeat gating for final integration.
-
-- Add a sidebar Miner purchase with the displayed price based on the current living Miner count, including starting Miners. Charge stored gold exactly once and spawn through the starting Hearth's normal arrival route.
-- Use editable minimum/price-step values initially; deaths and M14 departures lower the next price. Finalize any accommodation/food purchase eligibility and show the reason when purchase is unavailable.
-- Add positive per-type wages, payday timing and autonomous physical collection at reachable Treasure Rooms. Specify withdrawal across rooms and whether the starter treasury supports wages. Allow ordinary travel/queues before treating pay as overdue.
-- Distinguish insufficient funds from inaccessible storage, preserving shared-gold accounting and ordinary job/need scheduling.
-
-Complete when purchases display and deduct the correct price, failed purchases spend nothing, population changes update the price, and every dwarf type collects one wage per due payment. Verify concurrent spending, depleted/inaccessible/reclaimed treasuries, restored access, interrupted collection and a fresh level's price reset. Persistent dissatisfaction follows in M14.
 
 ### M14 — Dissatisfaction, alerts and departure
 
@@ -168,7 +144,7 @@ Complete when a damaged door can be repaired and upgraded in normal play, with c
 
 ### M16 — Bridges and hazardous terrain
 
-Dependencies: existing construction/navigation services for terrain and bridge development. Can start alongside M10/M13; M11 objective/access state is needed for the final Hearthstone crossing scenario.
+Dependencies: existing construction/navigation services for terrain and bridge development. Uses completed M10/M13 foundations; M11 objective/access state is needed for the final Hearthstone crossing scenario.
 
 - Add map-defined water, lava and chasms on the single terrain layer, with clear occupancy and traversal rules. Start with impassable hazards requiring a valid crossing; any damage behavior must be explicit in definitions.
 - Implement Bridge construction, pricing, worker/access requirements and reclaim/removal policy. Define which hazard types a bridge can span, shore connection/support constraints and allowed rooms/fixtures on bridge tiles; do not assume every gap is bridgeable.
@@ -208,9 +184,3 @@ Dependencies: M10–M18.
 - Check multiple layouts/approaches, escalating threats, recovery from losses and the Library's continuing usefulness. Correct gameplay blockers and visual/sidebar readability problems found during those runs.
 
 Complete when the authored campaign can be played from fresh start through its endpoint using normal rules, defeat is demonstrable, and focused regressions plus browser playtests cover the discovered issues. Record tested routes, timings, provisional values and remaining content/visual limitations. This is a prototype balance pass, not production release machinery or a requirement for final art assets.
-
-### Debug menu separation — 2026-09-07
-
-Debug now separates current-world actions and shared session settings from Test harnesses. All harnesses and replacement layouts start paused, expose one Pause/Resume control, and offer Return to stronghold across panels. Returning preserves gameplay state and the prior pause state. Restart is only offered in the ordinary game. Tired/hungry setup labels describe their 10% effect and room requirements; test spawning explains bypassed arrivals and failed placement. Workshop production remains in gameplay panels.
-
-Verified: 35 focused development/simulation checks, source-and-test typecheck, production build, and the dedicated browser menu/transition playtest. Production isolation also passes. Existing Babylon bundle-size advisory remains. Test worlds are still disposable and shared tuning intentionally affects both worlds.

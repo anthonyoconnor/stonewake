@@ -9,6 +9,7 @@ import { researchDuration } from '../research.ts';
 import { spellById } from '../../content/spells.ts';
 import { hasteRate } from '../spell-effects.ts';
 import { availableStorage, releaseJob } from './common.ts';
+import { collectWage } from '../wages.ts';
 
 // true completes the job; false retains it (or a handler has released it).
 type JobHandler = (
@@ -20,6 +21,7 @@ type JobHandler = (
   work: number,
 ) => boolean;
 const handlers = {
+  pay: (w, a) => collectWage(w, a),
   mine: (w, a, j, t, dt, work) => {
     a.activity =
       t.terrain === 'gem' ? 'Extracting gems' : t.terrain === 'gold' ? 'Mining gold' : 'Excavating';

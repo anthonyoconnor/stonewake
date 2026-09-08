@@ -2,6 +2,7 @@ import { type World, type Resident, tileAt } from '../types.ts';
 import { canStand } from '../navigation.ts';
 import { wallEligible } from '../walls.ts';
 import { canTrain } from '../progression.ts';
+import { validPayJob } from '../wages.ts';
 export function validJob(w: World, a: Resident) {
   const j = a.job!,
     t = tileAt(w, j.target.x, j.target.z);
@@ -22,6 +23,7 @@ export function validJob(w: World, a: Resident) {
   if (j.kind === 'collect') return t.loose > 0;
   if (j.kind === 'drop') return a.carrying > 0 && canStand(w, j.work);
   if (j.kind === 'idle') return canStand(w, j.work);
+  if (j.kind === 'pay') return validPayJob(w, a);
   if (j.kind === 'sleep')
     return w.roomServices.some((f) => f.id === j.furnishing && f.assigned === a.id) && canStand(w, j.work);
   if (j.kind === 'eat')

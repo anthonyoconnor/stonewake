@@ -14,6 +14,8 @@ import { validJob } from './jobs/validation.ts';
 import { performJob } from './jobs/work.ts';
 import { moveResident } from './movement.ts';
 import { recordJob } from './diagnostics.ts';
+import { tickEncounters } from './encounters.ts';
+import { initializePay, tickPayday, shouldSeekPay } from './wages.ts';
 export const addMiners = (w: World, count = tuning.startingMiners) => addResidents(w, 'miner', count);
 export function addResidents(w: World, type: string, count = 1, origin?: Point) {
   const def = characterById(type);
@@ -60,6 +62,7 @@ export function addResidents(w: World, type: string, count = 1, origin?: Point) 
     });
   }
   const added = Math.min(count, positions.length);
+  for (const a of w.agents) initializePay(w,a);
   if (added) w.nextResidentId = firstId + added - 1;
   if (added) assignRoomSupport(w);
   return added;
@@ -73,6 +76,7 @@ export function designate(w: World, points: Point[], value: boolean | 'toggle' =
   w.revision++;
 }
 export function tick(w: World, dt: number) {
+  if(w.outcome)return;
   w.elapsed += dt;
   tickSpellEffects(w, dt);
   for (const a of w.agents)
@@ -85,6 +89,7 @@ export function tick(w: World, dt: number) {
       w.revision++;
     }
   w.agents = w.agents.filter(alive);
+  tickPayday(w);
   const supportChanged = w.routesChanged || Math.floor(w.elapsed - dt) !== Math.floor(w.elapsed);
   if (w.routesChanged) {
     for (const a of w.agents) {
@@ -102,6 +107,7 @@ export function tick(w: World, dt: number) {
     if (a.job?.kind !== 'sleep') a.energy = Math.max(0, a.energy - dt / tuning.restInterval);
     if (a.job?.kind !== 'eat') a.hunger = Math.max(0, a.hunger - dt / tuning.hungerInterval);
     if (tickFighter(w, a, dt, releaseJob, moveResident)) continue;
+    if (shouldSeekPay(w,a)) releaseJob(w,a,'Collecting due wages');
     if (a.job && !validJob(w, a)) releaseJob(w, a, 'Target, facility, order or access is no longer valid');
     if (
       (a.job?.kind === 'train' || a.job?.kind === 'research') &&
@@ -122,6 +128,7 @@ export function tick(w: World, dt: number) {
     a.job = undefined;
     a.path = [];
   }
+  tickEncounters(w);
   tickDefenses(w, dt);
   if (Math.floor((w.elapsed - dt) * 2) !== Math.floor(w.elapsed * 2))
     for (const a of w.agents) reveal(w, a, tuning.sightRadius);

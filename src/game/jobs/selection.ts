@@ -9,6 +9,7 @@ import { wallEligible } from '../walls.ts';
 import { canTrain } from '../progression.ts';
 import { spellById } from '../../content/spells.ts';
 import { doorAt } from '../doors.ts';
+import { choosePayJob, wageStatus } from '../wages.ts';
 import { nearest, take, storage, availableStorage, availableStations, reserved } from './common.ts';
 export function chooseJob(w: World, a: Resident) {
   if (a.carrying) {
@@ -36,6 +37,7 @@ export function chooseJob(w: World, a: Resident) {
     const slot = foodSupport(w, a);
     if (slot && take(w, a, 'eat', slot, slot.access, slot.id)) return;
   }
+  if (choosePayJob(w, a)) return;
   if (canTrain(w, a))
     for (const f of availableStations(w, a, 'training')) if (take(w, a, 'train', f, f.access, f.id)) return;
   if (a.capabilities.includes('research'))
@@ -183,16 +185,18 @@ export function chooseJob(w: World, a: Resident) {
         continue;
       if (take(w, a, 'idle', p, p)) return;
     }
-  a.activity = waitingForGold
-    ? 'Waiting for production gold'
-    : a.hunger < tuning.hungerThreshold
-      ? 'Needs spare reachable Kitchen capacity'
-      : a.energy < tuning.restThreshold
-        ? 'Needs spare reachable Dormitory capacity'
-        : a.capabilities.includes('research')
-          ? 'Waiting for Library research'
-          : a.capabilities.includes('mine')
-            ? 'Awaiting a designation'
-            : 'Awaiting work or training';
+  a.activity = a.pay?.due.length
+    ? wageStatus(w, a).message
+    : waitingForGold
+      ? 'Waiting for production gold'
+      : a.hunger < tuning.hungerThreshold
+        ? 'Needs spare reachable Kitchen capacity'
+        : a.energy < tuning.restThreshold
+          ? 'Needs spare reachable Dormitory capacity'
+          : a.capabilities.includes('research')
+            ? 'Waiting for Library research'
+            : a.capabilities.includes('mine')
+              ? 'Awaiting a designation'
+              : 'Awaiting work or training';
   a.retry = waitingForGold ? 1 : tuning.retrySeconds;
 }

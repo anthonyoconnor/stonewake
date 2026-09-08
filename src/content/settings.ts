@@ -4,6 +4,7 @@ import {roomDefinitions} from './rooms.ts';
 import {recipes} from './recipes.ts';
 import {spellDefinitions} from './spells.ts';
 import {defenseDefinitions} from './defenses.ts';
+import {prototypeLevel} from './levels.ts';
 export interface Setting {id:string;label:string;group:string;min:number;max:number;step:number;note:string;defaultValue:number;get:()=>number;set:(v:number)=>void}
 const field=(id:string,label:string,group:string,object:Record<string,any>,key:string,min:number,max:number,step:number,note:string):Setting=>({id,label,group,min,max,step,note,defaultValue:object[key],get:()=>object[key],set:v=>{object[key]=v;}});
 // The registries drive the editor: new rooms, recipes and spells appear without UI changes.
@@ -15,6 +16,8 @@ export const settings:Setting[]=[
   ...r.furnishings.flatMap(f=>['width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · visual ${k}`,'Room appearance',f,k,1,8,1,'Cosmetic only; reload a room layout to compare.')))
  ]),
  ...characterDefinitions.map(c=>field("dwarf."+c.id+".speedMultiplier",c.name+' · walking speed multiplier','Dwarfs',c,'speedMultiplier',.1,5,.1,'Applies live.')),
+ ...characterDefinitions.map(c=>field(`dwarf.${c.id}.wage`,c.name+' · wage per payday','Dwarfs',c,'wage',1,1000,1,'Future paydays only; already owed wages keep their original amount.')),
+ ...(prototypeLevel.encounters??[]).flatMap(source=>['delay','warningSeconds','repeatSeconds'].filter(key=>typeof source[key as keyof typeof source]==='number').map(key=>field(`encounter.${source.id}.${key}`,`${source.name} · ${key==='delay'?'activation delay':key==='warningSeconds'?'warning duration':'repeat delay'} seconds`,'Encounters',source,key,key==='repeatSeconds'?1:0,3600,1,'New strongholds only. Active source timers and test scenarios retain their authored values.'))),
  ...characterDefinitions.flatMap(c=>c.levels.flatMap(level=>[
   field(`dwarf.${c.id}.level.${level.level}.health`,`${c.name} · level ${level.level} · maximum health`,`${c.name} levels`,level,'health',1,10000,1,'Applies to existing residents; missing health is preserved.'),
   field(`dwarf.${c.id}.level.${level.level}.damage`,`${c.name} · level ${level.level} · attack damage`,`${c.name} levels`,level,'damage',0,1000,.1,'Applies live to combat.'),

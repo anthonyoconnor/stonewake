@@ -1,3 +1,4 @@
+import type { EncounterDefinition, EncounterState } from './encounters.ts';
 export type Terrain = 'floor' | 'dirt' | 'rock' | 'bedrock' | 'gold' | 'gem';
 export interface Point { x: number; z: number }
 export interface Tile extends Point {
@@ -19,6 +20,7 @@ export interface LevelDefinition {
   id: string; name: string; width: number; height: number; hearth: Point;
   openings: [number, number, number, number][];
   seams: { terrain: Terrain; cells: Point[] }[];
+  encounters?: EncounterDefinition[];
 }
 export interface World {
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
@@ -29,6 +31,8 @@ export interface World {
   rally?:Point&{until:number;radius:number};
   spellBursts?:Array<Point&{id:string;at:number;radius:number}>;
   recruitment?:{enabled:boolean;nextAt:number;cursor:number};
+  encounters?:EncounterState[];
+  outcome?:'defeat'|'victory';
   defenses?:Defense[]; enemies?:Enemy[]; nextDefenseId?:number; nextEnemyId?:number;
   defenseTest?:{spawn:Point;target:Point};
   spellTest?:{spawn:Point;target:Point;paused?:boolean};
@@ -44,6 +48,7 @@ export interface Enemy extends Point {
   id:number; health:number; target:Point; facing:number; pinnedUntil:number;
   nextAttackAt:number; activity:string; hitAt:number; diedAt?:number;
   effects?:SpellEffect[];
+  sourceId?:string; dormant?:boolean;
 }
 export interface SpellEffect {id:string;kind:'haste'|'slow'|'shield'|'mend'|'reckoning';until:number;strength:number;remaining?:number;rate?:number;pauseSeconds?:number;startedAt:number}
 export interface Furnishing extends Point {
@@ -55,7 +60,7 @@ export interface RoomService extends Point {
 }
 export interface CraftOrder {id:number;recipe:string;state:'queued'|'working'|'done';progress:number;paid:boolean;worker?:number}
 export interface ResearchOrder {id:number;spell:string;state:'queued'|'working'|'ready';progress:number;unlocked:boolean;paused?:boolean;worker?:number}
-export interface Job { kind:'mine'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'|'train'|'research'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
+export interface Job { kind:'mine'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'idle'|'sleep'|'eat'|'craft'|'train'|'research'|'pay'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
 export interface Resident extends Point {
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;
@@ -66,6 +71,7 @@ export interface Resident extends Point {
   level?:number;experience?:number;nextTrainingAt?:number;
   health?:number;maxHealth?:number;hitAt?:number;nextAttackAt?:number;effects?:SpellEffect[];
   combatTarget?:number;rallying?:boolean;rallyUnreachable?:boolean;recovering?:boolean;
+  pay?:{nextAt:number;due:Array<{at:number;amount:number}>;paid:number;collections:number};
 }
 export const key = (p: Point) => `${p.x},${p.z}`;
 export const tileAt = (w: World, x: number, z: number): Tile | undefined =>

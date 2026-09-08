@@ -32,7 +32,7 @@ Example room entry (copy into the exported definitions array, choose approved na
 
 | Existing service | Shared behavior / dependencies |
 |---|---|
-| `storage` | Gold hauling, spending, capacity, displaced contents; no worker required. |
+| `storage` | Gold hauling, spending, capacity, displaced contents and physical wage collection; no worker required. |
 | `rest` | Resident accommodation slots and autonomous resting visits; one supported resident per slot. |
 | `dining` | Resident food-support slots and autonomous eating visits; no food stocks, ingredients or production chain. |
 | `craft` | Concurrent workers; queued recipe capability controls eligibility, time and gold inputs. |
@@ -84,4 +84,4 @@ Use the actual Workshop queue and `placeDefense` service, including in debug exa
 
 Room services, furnishing models, summaries and the debug dwarf catalog are driven by definitions. Look data is alongside the room definition. New rooms using existing services and models need only content/art additions, not simulation refactors.
 
-There is no general public mod loader or editor. Room service capacity comes from floor area and the tunable per-tile value; cosmetic objects have no gameplay role. New content still needs balance, real-access and layout checks. Door/trap placement and autonomous Warrior combat are implemented against debug raiders; natural encounters/raids, Hearth damage, guard duty, repairs, paid Miner recruitment, wages, departure and campaign progression remain pending. Check the current inventory for verification status of additions.
+There is no general public mod loader or editor. Room service capacity comes from floor area and the tunable per-tile value; cosmetic objects have no gameplay role. New content still needs balance, real-access and layout checks. Door/trap placement and autonomous combat face authored encounters/raids and debug raiders. Paid Miner recruitment and physical wages are implemented. Hearth damage, guard duty, repairs, departure and campaign progression remain pending. Check the current inventory for verification status of additions.

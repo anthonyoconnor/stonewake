@@ -6,10 +6,10 @@ Edit balance values in `src/content/tuning.ts`: each entry defines its default, 
 |---|---|
 | Shared balance and camera | `src/content/tuning.ts` |
 | Room prices, service and capacity per tile; separate look/icon and cosmetic furnishing models/footprints | `src/content/rooms.ts` |
-| Dwarf names, appearance, walking speed, capabilities, attraction and explicit per-level statistics/training times | `src/content/characters.ts` |
+| Dwarf names, appearance, walking speed, capabilities, attraction, wage and explicit per-level statistics/training times | `src/content/characters.ts` |
 | Production input costs, durations and capabilities | `src/content/recipes.ts` |
 | Spell effects, research/preparation durations and casting gold | `src/content/spells.ts` |
-| Map sizes, openings and seams | `src/content/levels.ts` |
+| Map sizes, openings, seams and authored encounter sources | `src/content/levels.ts` |
 | Debug layouts and example stock | `src/content/room-lab.ts`, shared factories and showcase setup in `src/content/scenarios.ts` |
 | Procedural art shapes, texture motifs, lighting | `src/view/` (presentation, not balance) |
 
@@ -22,3 +22,7 @@ Wall construction must remain slower than excavation plus reinforcement. Camera 
 Each character type has a **levels** group containing maximum health, attack damage, attack interval, work multiplier and training time to enter each level. The level table is the source of these values; there is no global training duration, uniform percentage per upgrade or independent level-cap setting. Every shipped type has levels 1–5. [Character levels](characters.md#character-levels-and-training) contains the current balance tables and advancement rules. Health edits preserve missing health, damage/work edits apply live and attack intervals apply when scheduling the next attack. Earned XP is retained when its target requirement changes. Training seconds also define the shared XP requirement at 1 XP per second.
 
 The **Training & research** group tunes the shared personal training cooldown, combat experience rate and research pacing. Combat defaults to 2 times the training rate, awarded on successful hits using the base attack interval; combat ignores the training cooldown. Training ends after one gained level; cooldown starts then and holds no room slot. The work multiplier affects productive work and research, while training accumulates active practice time with any temporary Haste effect. Spell strength, duration and other effect values are in the **Spells** group and apply to future casts. Specialist arrival cadence is under **Economy & world**. Spell research/preparation times and casting prices come from the spell registry and appear in the same group. Training/research progress is retained during tuning and room changes. Normal arrivals require explicit world enablement and are off by default in room layouts; **Test automatic specialist arrivals** enables the same rules there. These systems live in `src/game/progression.ts`, `research.ts` and `recruitment.ts`; shared job modules handle scheduling.
+
+**Economy & world** also includes Miner minimum price (50), price per living Miner (25), personal payday interval (120 seconds), physical collection duration (1 second) and overdue grace (45 seconds). **Dwarfs** supplies positive per-type wages (4/7/8/10 gold). Already owed payments keep their amounts; the next scheduled date is retained when the interval changes. Future schedules use the new interval. Wage collection uses reachable reserves and is not waived by free room construction.
+
+**Encounters** exposes activation delay, warning duration and repeat delay for Border Foothold's authored sources. These fields affect new strongholds only; active worlds and test fixtures retain their copied definitions/timers. Edit source positions, camp/nest/entrance kind, discovery/route/time activation and defeat/claim clearing policy in the level definitions. Resident camps use the existing Raider statistics. The `encounters` fixture has shorter explicitly authored timers for testing, rather than mutating session settings.

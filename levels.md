@@ -105,9 +105,13 @@ The [enemy concept gallery](concept-art/enemies/README.md) explores two visual c
 
 Dwarfs arrive through the Hearthstone's runic connection. Enemies approach through the physical underground map.
 
-Proposed attack sources are local camps or nests disturbed by expansion, and organized raids entering through established map passages. Opening a route can expose the base to inhabitants that were previously separated by solid ground.
+Encounter definitions now support local camps/nests disturbed by discovery or a newly opened route, plus timed raids entering through authored map passages. Local inhabitants exist in their chambers before discovery; they do not appear inside built rooms. Opening a route can expose the base to inhabitants previously separated by solid ground.
 
-Hostile groups must have a route to the base or a clearly defined way to create one. Attack rules should respect bedrock, doors, walls, and discovered terrain. Enemies should not simply appear inside protected rooms. Raid timings, warnings, and whether a source can be permanently cleared depend on the scenario and remain to be authored.
+Hostile groups navigate the actual terrain, doors and runic barriers, including floor the player has not discovered. Player sight remains separate. Bedrock and intact earth block Raiders; they can break shut doors/barriers but cannot tunnel. A sealed raid entrance retains one warned wave until its actual spawn squares and approach are usable. Claimed/occupied spawn squares cannot spawn a group, and pending waves never accumulate or relocate inside the settlement.
+
+The prototype Border Foothold has two sources: a buried camp at the north reacts to discovery with an eight-second warning; the eastern deep passage first warns at 360 seconds and gives 25 seconds before a raid. A defeated entrance wave starts a 150-second delay and then another warning. Waves never overlap from the same source. Defeating the camp clears it permanently; claiming an entrance spawn square stops its future reinforcements, while existing attackers remain. Positions, activation mode, source-clearing policy and timing live in the level definition. Timing values can be edited under Game configuration → Encounters for new strongholds.
+
+Ordinary sidebar threat reports omit undiscovered camps and use generic warnings for unknown raid sources. Source names become available after discovery; current enemy counts include only visible units. Debug explicitly exposes authored source state and can advance a pending timer while preserving discovery, warning duration and route checks. The `encounters` test scenario uses a mineable route gate, a hidden camp, a raid entrance, real doors/traps and Warriors. Hearth damage/defeat and the onward Hearthstone are still planned in M11.
 
 ## Candidate levels
 

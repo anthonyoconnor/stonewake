@@ -59,6 +59,7 @@ test('empty Hearth treasury recovers from zero gold and funds a furnished Treasu
  assert.equal(buildRoom(w,'treasure',layout),'Treasure Room built.');assert.equal(chest.stored,0);assert.equal(goldTotal(w),0);
  assert.equal(w.roomServices.filter(f=>f.id==='hearth-treasury').length,1);
  assert(w.roomServices.some(f=>f.room==='treasure'&&findPath(w,w.agents[0],f.access)));
- run(w,70);assert.equal(goldTotal(w),72);assert.equal(w.spent,108);
+ run(w,70);const paidWages=w.agents.reduce((sum,a)=>sum+(a.pay?.paid??0),0);
+ assert.equal(goldTotal(w)+paidWages,72);assert.equal(w.spent,108+paidWages);
  assert(w.roomServices.includes(chest));assert(chest.stored<=chest.capacity);
 });

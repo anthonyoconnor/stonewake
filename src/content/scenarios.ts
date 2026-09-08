@@ -3,6 +3,8 @@ import { createWorld } from '../game/world.ts';
 import { createRoomLab, showcaseRooms } from './room-lab.ts';
 import { createDefenseLab } from './defense-lab.ts';
 import { createSpellLab } from './spell-lab.ts';
+import { createEncounterLab } from './encounter-lab.ts';
+import { createEconomyLab } from './economy-lab.ts';
 import { buildRoom } from '../game/rooms.ts';
 import { addMiners, addResidents, designate } from '../game/simulation.ts';
 import { queueCraft } from '../game/crafting.ts';
@@ -58,6 +60,8 @@ export const scenarioFactories = {
   },
   defenses: createDefenseLab,
   spells: createSpellLab,
+  encounters: createEncounterLab,
+  economy: createEconomyLab,
   'crowded-kitchen': (free) => {
     const w = createRoomLab();
     w.freeRoomBuilding = free;

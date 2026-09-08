@@ -25,6 +25,8 @@ import {health,maxHealth,visible} from '../game/spell-effects';
 import type {SpellTarget} from '../game/research';
 import {prepareTestSpells} from '../content/spell-lab';
 import {addRaider} from '../game/defenses';
+import {mountEconomy,updateEconomy,residentPayText} from './economy';
+import {mountEncounterAlerts,mountEncounterPanel,updateEncounters} from './encounters';
 const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
@@ -52,6 +54,7 @@ export class Sidebar {
       <footer><button id="help" aria-label="Help">?</button><span>THE HEARTH IS ALIGHT</span><span class="live-dot"></span></footer>`;
     document.querySelector('#app')!.prepend(this.root);
     this.panel=this.root.querySelector('#panel')!;this.minimap=this.root.querySelector('#minimap')!;
+    mountEncounterAlerts(this);
     this.root.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b=>b.onclick=()=>this.show(b.dataset.category!));
     this.root.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>selection.setTool(b.dataset.tool!));
     selection.onChange=message=>{this.root.querySelector('#feedback')!.textContent=message;this.root.querySelectorAll<HTMLElement>('[data-tool],[data-room]').forEach(b=>b.classList.toggle('active',(b.dataset.tool??b.dataset.room)===selection.tool));this.updateSelection();};
@@ -105,6 +108,9 @@ export class Sidebar {
     else if(category==='dwarfs')this.panel.innerHTML='<p class="eyebrow">YOUR RESIDENTS</p><div id="arrival-status" class="muted"></div><div id="residents-list"></div>';
     else if(category==='spells')showSpells(this);
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
+    if(category==='dwarfs')mountEconomy(this);
+    if(category==='defenses')mountEncounterPanel(this);
+    if(category==='debug'&&this.view.world.encounters?.length)mountEncounterPanel(this,true);
     if(category==='harnesses'){
       const spells=document.createElement('button');spells.className='wide';spells.textContent='Spell test yard';spells.onclick=()=>this.onLab(true,'spells');this.panel.append(spells);
       const yard=document.createElement('button');yard.className='wide';yard.textContent='Defense test yard';yard.onclick=()=>this.onLab(true,'defenses');this.panel.append(yard);
@@ -167,6 +173,8 @@ export class Sidebar {
     const pause=this.panel.querySelector<HTMLButtonElement>('#toggle-simulation');if(pause)pause.textContent=this.isPaused()?'Resume simulation':'Pause simulation';
     const state=this.panel.querySelector('#simulation-state');if(state)state.textContent=this.isPaused()?'Paused · setup actions work; resume to observe behavior.':'Running';
     updateDefenses(this);
+    updateEconomy(this);
+    updateEncounters(this);
     this.updateSelection();this.drawMap();const w=this.view.world;
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
@@ -174,7 +182,7 @@ export class Sidebar {
     const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>{
       const stats=characterStats(a),next=nextCharacterLevel(a),progress=a.experience??0;
       const training=next?`Next: level ${next.level}<br>Experience ${Math.min(progress,next.trainingSeconds).toFixed(1)} / ${next.trainingSeconds} XP<br>Training 1 XP/s · Combat ${tuning.combatExperienceRate}× rate on hits<br>${(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds (combat still earns XP)`:`${a.job?.kind==='train'?'Training now':'Ready to train'} · One level per visit`}`:'Maximum level reached';
-      return `<div class="resident-row" data-resident="${a.id}"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}</small></div>`;
+      return `<div class="resident-row" data-resident="${a.id}"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}<br><span class="resident-pay">${residentPayText(w,a)}</span></small></div>`;
     }).join('');
     const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`Specialists arrive through the Hearth when rooms and settlement have spare capacity. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){

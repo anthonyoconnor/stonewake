@@ -10,7 +10,7 @@ This repository contains a **TypeScript + Babylon.js browser prototype**, game d
 
 The [current implementation inventory](development-plan.md#current-implementation-status) lists every planned room, structure and dwarf, its availability, and remaining integrations. **M1–M9 completion covers the prototype milestones, not the full design.** Use that inventory for what is added or missing; the catalogs below describe the intended game.
 
-[Planned M10–M19](development-plan.md#remaining-feature-roadmap--m10m19) cover natural enemies/raids, Hearth defeat and objectives, guarding/retreat, Miner purchases/wages, dissatisfaction/departure, door maintenance, bridges/hazards, more enemies, campaign travel and integrated balance. Every level will contain a separate Hearthstone to discover and reach in a difficult location, such as an enemy base or beyond lava, opening the route to the next area. This objective and campaign progression are planned, not yet playable; see [Levels](levels.md#onward-hearthstone-objective).
+M10 encounters/raids and M13 recruitment/wages are complete. The [remaining roadmap](development-plan.md#remaining-feature-roadmap--m10m19) covers Hearth defeat/objectives, guarding/retreat, dissatisfaction/departure, door maintenance, bridges/hazards, more enemies, campaign travel and integrated balance. Every level will contain a separate Hearthstone to discover and reach in a difficult location, such as an enemy base or beyond lava, opening the route to the next area. This objective and campaign progression are planned, not yet playable; see [Levels](levels.md#onward-hearthstone-objective).
 
 ## Run locally
 
@@ -42,6 +42,12 @@ Defenses and Spells share the Rooms menu’s icon grid and selected-item styling
 
 Prepared spells enter targeting when you click **Cast**. Click a visible unit or floor point; right-click or Escape cancels. **Debug → Test harnesses → Spell test yard** offers ready charges, test enemies and pause/reset controls for trying effects and autonomous Warrior combat. Health and effect timers stay in the sidebar.
 
+**Dwarfs → Recruit a Miner** displays the next price, provisionally 50 gold plus 25 per living Miner. Purchases need spare reachable Kitchen and Dormitory support and a clear arrival route. Every resident receives wages every 120 seconds from arrival: Miner 4, Engineer 7, Warrior 8 and Runesmith 10 gold. Dwarfs visit a Treasure Room or the starter treasury to collect pay; funds are deducted after a one-second visit. The panel distinguishes missing gold from blocked treasury access and marks payments overdue after a 45-second grace. Dissatisfaction/departure is still planned.
+
+The ordinary Border Foothold now has a concealed northern camp and an eastern raid entrance. The camp reacts to discovery; the entrance first warns after 360 seconds, then sends a Raider after a 25-second warning if its physical route is open. Defeating the camp clears it. Entrance waves wait until the previous wave is defeated, then repeat after 150 seconds plus a fresh warning; claiming the entrance stops future reinforcements. Threat reports stay in the sidebar and do not reveal hidden source locations. Enemies fight dwarfs, break doors and encounter traps; Hearth damage/defeat remains planned in M11.
+
+**Debug → Test harnesses → Additional test scenarios** includes `encounters` (a mineable gate, hidden camp, raiding passage and working defenses) and `economy` (all four types, spare support and a lockable treasury route). Both start paused. Debug encounter controls advance timers while preserving actual warning and access rules. `node scripts/milestones-browser.mjs` checks these flows through the browser.
+
 ## Code map
 
 | Change | Starting point |
@@ -56,13 +62,15 @@ Prepared spells enter targeting when you click **Cast**. Click a visible unit or
 | Sidebar and grid input | [Sidebar](src/ui/sidebar.ts), [selection](src/ui/selection.ts) |
 | Repeatable debug examples and automation | [Shared scenarios](src/content/scenarios.ts), [room studio data](src/content/room-lab.ts), [development workflow](development-tools.md) |
 | Defense test yard | [Defense yard](src/content/defense-lab.ts) |
+| Camps, raid timing and source clearing | [Encounter service](src/game/encounters.ts), [level definitions](src/content/levels.ts), [encounter test tunnels](src/content/encounter-lab.ts) |
+| Miner prices, arrival eligibility and physical wages | [Recruitment](src/game/recruitment.ts), [wages](src/game/wages.ts), [economy test scenario](src/content/economy-lab.ts) |
 
 The simulation has no Babylon.js or DOM dependency. Focused Node tests exercise discovery, mining, resource conservation, navigation, layout access, needs, free construction and staffed crafting. Graphics remain procedural prototype assets guided by the concepts; see the [graphics pass notes](graphics-pass.md).
 
 ## Start here for a new session
 
 1. Read [Game rules](game-rules.md) for the core loop, agreed constraints, and open mechanics.
-   Read the [Development plan](development-plan.md) for current implementation status, unfinished M10–M19, dependencies and iteration guidelines before implementation work. Completed milestones and dated verification are in [Development history](development-history.md); **read it only if past context is required, not during routine startup.** Follow the [room development checklist](room-development-checklist.md) when adding rooms.
+   Read the [Development plan](development-plan.md) for current implementation status, unfinished milestones, dependencies and iteration guidelines before implementation work. Completed milestones and dated verification are in [Development history](development-history.md); **read it only if past context is required, not during routine startup.** Follow the [room development checklist](room-development-checklist.md) when adding rooms.
 2. Read the relevant detailed documents below before changing a system. Each distinguishes agreed direction from proposals and unresolved balance.
 3. For visual work, inspect the [approved terrain reference](concept-art/terrain/resource-terrain-v2.png), then the relevant current gallery and its prompt records.
 4. Check the working tree and recent Git history before editing. Keep related design documents, gallery links, and prompt records consistent when making changes.

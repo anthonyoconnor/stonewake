@@ -4,7 +4,8 @@ import {doorBlocks,passageFrom,type Passage,type Walker} from './doors.ts';
 import {barrierAt} from './spell-effects.ts';
 export function blocked(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}):boolean {
   const t=tileAt(w,p.x,p.z);
-  return !t||!t.known||t.terrain!=='floor'||t.core||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p));
+  const enemy=passage.walker==='enemy'||passage.walker==='breach';
+  return !t||(!t.known&&!enemy)||t.terrain!=='floor'||t.core||extra.has(key(p))||doorBlocks(w,p,passage)||(passage.walker!=='breach'&&!!barrierAt(w,p));
 }
 export function canStand(w:World,p:Point,extra:Set<string>=new Set(),passage:Passage={}) {
   const r=tuning.radius;
@@ -44,8 +45,8 @@ export function findPath(w:World,start:Point,end:Point,walker:Walker='dwarf'):Po
   while(index<raw.length){let far=index;while(far+1<raw.length&&line(from,raw[far+1]))far++;result.push(raw[far]);from=raw[far];index=far+1;}
   return result;
 }
-export function reachable(w:World,start:Point,extra:Set<string>=new Set()) {
-  const passage=passageFrom(w,start);
+export function reachable(w:World,start:Point,extra:Set<string>=new Set(),walker:Walker='dwarf') {
+  const passage=passageFrom(w,start,walker);
   const seen=new Set<string>(),queue=[{x:Math.round(start.x),z:Math.round(start.z)}];
   if(blocked(w,queue[0],extra,passage))return seen;
   seen.add(key(queue[0]));

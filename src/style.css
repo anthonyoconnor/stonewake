@@ -21,5 +21,6 @@ button{font:inherit;color:inherit;background:none;border:1px solid #34414b;curso
 .development-panel { border-bottom: 1px solid #52616a; padding-bottom: 12px; margin-bottom: 12px; }
 .development-panel select { max-width: 100%; width: 100%; margin-bottom: 8px; }
 .diagnostic-output { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 360px; overflow: auto; font-size: 10px; }
+.threat-reports{margin:0 18px 8px;padding:8px;border:1px solid #b9794b;color:#edc392;font-size:11px;flex-shrink:0}.threat-reports[hidden]{display:none}.threat-reports summary{cursor:pointer}.threat-reports>div{max-height:100px;overflow:auto}.threat-reports p{font-size:10px;line-height:1.5;margin:7px 0}.resident-pay{color:#dac092}
 
 .spell-choice{position:relative}.spell-state{position:absolute;right:4px;bottom:2px;font-size:12px;color:#b8b6a9;text-shadow:0 1px 3px #000}.spell-ready .spell-state{color:#a7e3b5}.room-choice:focus-visible{outline:2px solid #edd28a;outline-offset:2px}

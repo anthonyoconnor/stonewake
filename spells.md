@@ -4,7 +4,7 @@
 
 The catalog below is implemented in the browser prototype. Its numerical values remain provisional starting points for playtesting.
 
-Hearth Prospect and global Hearth Haste have been removed. The catalog uses targeted casting, individual effects and the shared Library research/preparation service. Offensive spells work against the current debug-spawned enemies; natural encounters and raids remain pending.
+Hearth Prospect and global Hearth Haste have been removed. The catalog uses targeted casting, individual effects and the shared Library research/preparation service. Offensive spells work against authored encounters/raids and debug-spawned enemies.
 
 Related rules: [Library research](rooms.md#training-room-and-library-prototype-rules), [spell interface](gameplay-interface.md#spells), and [implementation inventory](development-plan.md#current-implementation-status).
 
@@ -58,4 +58,4 @@ Definitions and tunable effect values live in [spell definitions](src/content/sp
 
 **Debug → Spell test yard** constructs working Library, food and rest facilities with test residents and prepared charges. It offers pause/resume, preparation, enemy spawning, wounding, reset and return controls. Debug preparation is an explicit shortcut; normal research and repeat preparation still use actual Runesmith work. The yard is separate from the stronghold in memory.
 
-Simulation checks cover exact charges, invalid targets, individual speed, research reuse, Slow and attack cadence, damage-source-specific Reckoning, shields, interrupted healing, blast obstruction, barrier occupancy/construction/path updates, rally responder eligibility, reservations, blocked routes, critical needs, new arrivals, dismissal and expiry. Browser checks cover targeted casts, health/cost feedback, visual effects and live combat. Broader enemy types, natural raids, guard duty, retreat and campaign progression remain pending; no new mana, persistence or direct troop orders are introduced.
+Simulation checks cover exact charges, invalid targets, individual speed, research reuse, Slow and attack cadence, damage-source-specific Reckoning, shields, interrupted healing, blast obstruction, barrier occupancy/construction/path updates, rally responder eligibility, reservations, blocked routes, critical needs, new arrivals, dismissal and expiry. Browser checks cover targeted casts, health/cost feedback, visual effects and live combat. Broader enemy types, guard duty, retreat and campaign progression remain pending; no new mana, persistence or direct troop orders are introduced.

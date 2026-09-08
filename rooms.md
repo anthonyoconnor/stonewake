@@ -149,9 +149,9 @@ Miners extract gold from finite gold deposits and renewable gem deposits, then c
 
 If neither a Treasure Room nor the Stone Hearth treasury has reachable free capacity, mined gold or gem yields remain on the ground where they were extracted. Miners collect and deliver them once reachable storage with free capacity exists. Full or unreachable storage also leaves resources waiting; undelivered resources do not disappear or become spendable.
 
-Each Treasure Room square provisionally stores 50 gold. Chests and gold piles should reflect actual stored wealth, but their count and placement never affect capacity or delivery access. Undelivered gold is not yet part of the spendable treasury. Construction and recruitment use stored funds; physical wage collection remains a proposed later integration.
+Each Treasure Room square provisionally stores 50 gold. Chests and gold piles should reflect actual stored wealth, but their count and placement never affect capacity or delivery access. Undelivered gold is not yet part of the spendable treasury. Construction and recruitment use stored funds; dwarfs now physically visit reachable treasury service slots to collect wages.
 
-Storage and route problems need clear feedback: no free capacity, no reachable room, or insufficient stored gold. Treasure Rooms near mines reduce hauling distance; rooms near residents make wage collection more convenient. Exact withdrawal behavior across multiple rooms remains to be specified.
+Storage and route problems need clear feedback: no free capacity, no reachable room, or insufficient stored gold. Treasure Rooms near mines reduce hauling distance; rooms near residents make wage collection more convenient. Wages draw from the shared allowance and storage reachable from the collecting dwarf; disconnected storage cannot pay them remotely. Each collection reserves an available service slot and rechecks funding at completion.
 
 ## Accommodation and food
 
@@ -211,7 +211,7 @@ Doors occupy one clear, claimed square between two opposite walls, with walkable
 
 Spikes trigger when an enemy crosses the pressure plate, including fast crossings. A lethal hit defeats it; a survivor cannot move or attack during the pin. Bolts fire automatically along the selected compass direction, hit one enemy, and do not pierce. Walls, the Hearth and physically shut doors block shots; cosmetic furniture does not. Both traps ignore dwarfs, cause no friendly fire, and **automatically reset after their cooldown**. They need no ammunition, replacement supplies or Engineer rearming. Cooldown starts when triggered; unused traps remain ready.
 
-Defenses are available in the normal stronghold. Enemy movement, trap damage, pinning and door breaking can currently be exercised with manually spawned Goblin Raiders in **Debug → Defense test yard**. This uses real construction, production, placement and movement services with supplied test stock. Dwarf fighting is implemented against debug enemies; natural encounters, raids and Hearth damage/defeat remain pending. Stonefall and additional slowing traps are design-only possibilities.
+Defenses are available in the normal stronghold against authored Goblin Raider encounters and raids. **Debug → Test harnesses → Defense test yard** retains manual tests; the additional `encounters` scenario tests warnings, excavation, source clearing and real combat/traps. Hearth damage/defeat remains pending in M11. Stonefall and additional slowing traps are design-only possibilities.
 
 ## Reinforced walls
 

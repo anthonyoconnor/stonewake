@@ -16,6 +16,8 @@ const groups = {
   research: ['progression-research', 'learning-rooms', 'spells', 'development'],
   characters: ['character-levels', 'progression-research', 'learning-rooms', 'spells', 'settings', 'content-extension'],
   defenses: ['defenses', 'spells', 'movement', 'development'],
+  encounters: ['encounters', 'defenses', 'spells', 'development'],
+  economy: ['economy', 'recruitment', 'gold-bags', 'reclaim', 'development'],
 };
 const args = process.argv.slice(2),
   watch = args.includes('--watch');

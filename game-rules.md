@@ -8,7 +8,7 @@ Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Levels](le
 
 This document records the agreed direction and the current working rules. Proposals and unresolved mechanics are identified explicitly. Numerical balance values are not final. The companion documents expand the inventories without committing to an implementation or a final campaign roster.
 
-The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records completed M1–M9, including M5.1, planned M10–M19, and guidelines for rapid iteration and extensible content. The room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Authorization and progress are tracked in the development plan.
+The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records completed M1–M10 and M13, including M5.1, the unfinished milestones, and guidelines for rapid iteration and extensible content. The room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Authorization and progress are tracked in the development plan.
 
 ## 1. Player role and core loop
 
@@ -147,7 +147,7 @@ A possible simple formula for testing is:
 
 `next_cost = minimum_cost + (cost_step * current_miner_count)`
 
-This linear formula is a proposal. Neither the curve nor its numerical values is finalized. Purchased miners still need wages, food, and beds.
+The prototype uses this linear formula with a 50-gold minimum and 25 gold per living Miner, including the starting crew. A purchase needs spare reachable Dormitory and Kitchen support, a clear claimed arrival square connected to the Hearth, and enough shared gold. Failed purchases spend nothing. Death or departure lowers the next price; lifetime purchases do not count. These values are editable and provisional. Purchased miners have the same wages, food and rest needs as other residents.
 
 ## 9. Attraction and arrival
 
@@ -173,7 +173,9 @@ The current prototype admits at most one eligible specialist every 45 seconds, r
 
 All resident dwarfs, including miners, require pay, bedding, food, and the facilities appropriate to their role.
 
-On payday, dwarfs physically visit an accessible Treasure Room to collect their wage. Insufficient gold and an inaccessible treasury are different problems and must be reported separately. The payday model needs enough time for ordinary travel and queues before treating a payment as persistently missed.
+Each resident has a personal payday every 120 seconds from arrival, with wages of 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths. Each due payment keeps its original amount if wages change later. Dwarfs physically visit an accessible Treasure Room or the starter Hearth treasury and spend one second collecting each payment; only then is gold deducted. The shared allowance and storage reachable from that dwarf fund the payment, so disconnected reserves cannot pay them remotely. Insufficient total gold and inaccessible treasury/gold are reported separately. Ordinary travel and queues have a 45-second grace before an overdue warning; dissatisfaction and departure remain M14 work.
+
+Immediate combat, carried-resource delivery and food/rest take priority over wages; due, funded wages precede training and ordinary work. Interrupted visits retain the debt, release their collection space and spend no gold. Reclaiming or blocking a treasury cancels access safely. Collection rechecks funds after travel so construction, spells and other collectors cannot double-spend them. Times and amounts are tunable prototype values.
 
 Every resident uses one Dormitory accommodation slot, provisionally one slot per floor square. All dwarf types, including Warriors, use this shared room. Visible beds are decorative and never determine availability. Relative wage tiers appear in the character roster; exact amounts and need intervals remain to be balanced.
 
@@ -205,14 +207,14 @@ The [Library rules](rooms.md#training-room-and-library-prototype-rules) describe
 - Warriors pursue nearby enemies and fight autonomously, with Call to Arms providing area-level direction. Miners, Engineers and Runesmiths have weaker adjacent self-defense and never pursue or answer the rally merely because they can attack.
 - Creature types vary by underground region.
 - Enemies physically approach through the map and attempt to destroy the core.
-- Local inhabitants and organized raids are proposed sources of attacks.
+- Authored local camps/nests and organized raids supply attacks through real underground routes.
 - Enemy movement and tunneling must respect terrain rules. Bedrock always blocks excavation.
 
 Opening an unknown area can expose a new front. A shortcut that helps workers can also bypass defenses. Defenders still need food, rest, and pay, so support-room placement affects readiness.
 
 The current [door and trap rules](rooms.md#doors-and-traps) implement three increasing door tiers, Open/Closed/Locked access, a spike trap with damage and temporary pinning, and a directional bolt trap. Both traps reset automatically after cooldown and ignore friendly dwarfs. Shut doors block sight and delay enemies until broken; locked doors also block dwarf routes. Workshop manufacturing supplies player-placed fixtures.
 
-Defense, targeted spells, autonomous Warrior combat and worker self-defense use debug-spawned Goblin Raiders. Per-character level definitions supply health, damage and attack timing; temporary spell effects apply on top. The [spell rules](spells.md) define those effects and the area rally. Natural encounters, raids, Hearth attacks, guard duty and retreat remain pending. Enemy tunneling, broader targeting priorities, repairs under attack and raid triggers remain open.
+Defense, targeted spells, autonomous Warrior combat and worker self-defense now face normal Goblin Raider encounters as well as debug enemies. Border Foothold contains a concealed camp and an eastern raid entrance. [Levels](levels.md#attacks) owns activation, warning, repeat and source-clearing rules. Enemies navigate actual terrain independently of player discovery; this does not reveal their locations. They can break doors/barriers and attack dwarfs but currently wait at the Hearth perimeter: core damage/defeat remains M11 work. Guard duty, retreat, tunneling, broader enemy types and repairs remain pending.
 
 ## 13. Layout consequences to preserve
 

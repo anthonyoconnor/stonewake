@@ -74,6 +74,7 @@ export function tickDefenses(w:World,dt:number){
   for(const e of w.enemies??[]){
     if(e.health<=0)continue;
     spikeAtEnemy(w,e);if(e.health<=0)continue;
+    if(e.dormant){e.activity='Guarding camp';continue;}
     if(e.pinnedUntil>w.elapsed){if(e.activity!=='Pinned by spikes')e.activity='Stunned';continue;}
     const victim=w.agents.filter(a=>alive(a)&&Math.hypot(a.x-e.x,a.z-e.z)<=6&&spellLine(w,e,a)).sort((a,b)=>Math.hypot(a.x-e.x,a.z-e.z)-Math.hypot(b.x-e.x,b.z-e.z))[0];
     if(victim&&Math.hypot(victim.x-e.x,victim.z-e.z)<=1.05){
@@ -100,6 +101,6 @@ export function tickDefenses(w:World,dt:number){
       e.x=next.x;e.z=next.z;remaining-=step;spikeAtEnemy(w,e);
       if(!e.health||e.pinnedUntil>w.elapsed)break;
     }
-    if(e.health>0&&Math.hypot(e.x-e.target.x,e.z-e.target.z)<.05)e.activity='Reached test target';
+    if(e.health>0&&Math.hypot(e.x-e.target.x,e.z-e.target.z)<.05)e.activity=e.sourceId?'Holding Hearth approach':'Reached test target';
   }
 }

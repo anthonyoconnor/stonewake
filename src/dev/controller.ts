@@ -6,9 +6,10 @@ import { planWalls } from '../game/walls.ts';
 import { queueCraft } from '../game/crafting.ts';
 import { queueResearch, cancelResearch, castSpell, type SpellTarget } from '../game/research.ts';
 import { placeDefense, removeDefense, setDoorMode, addRaider } from '../game/defenses.ts';
-import { enableRecruitment } from '../game/recruitment.ts';
+import { enableRecruitment, purchaseMiner } from '../game/recruitment.ts';
 import { diagnosticSnapshot, enableDiagnostics, inspectResident } from '../game/diagnostics.ts';
 import { advance } from './stepping.ts';
+import { advanceEncounter } from '../game/encounters.ts';
 
 export type DevCommand =
   | { kind: 'build'; room: string; points: Point[] }
@@ -16,6 +17,8 @@ export type DevCommand =
   | { kind: 'dig' | 'wall'; points: Point[]; enabled?: boolean }
   | { kind: 'free-build' | 'arrivals'; enabled: boolean }
   | { kind: 'spawn'; type: string; count?: number }
+  | { kind: 'buy-miner' }
+  | { kind: 'advance-encounter'; id?:string }
   | { kind: 'needs'; id: number; hunger?: number; energy?: number }
   | { kind: 'craft'; recipe: string }
   | { kind: 'research' | 'pause-research'; spell: string }
@@ -108,6 +111,10 @@ export class DevelopmentController {
           throw new Error('Spawn 1–50 test residents per command.');
         return `${addResidents(w, command.type, count)} test residents added.`;
       }
+      case 'buy-miner':
+        return purchaseMiner(w, (type, origin) => addResidents(w, type, 1, origin) > 0).message;
+      case 'advance-encounter':
+        return advanceEncounter(w,command.id);
       case 'needs': {
         const a = w.agents.find((a) => a.id === command.id);
         if (!a) throw new Error('Unknown resident.');
