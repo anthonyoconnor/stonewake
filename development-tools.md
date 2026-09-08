@@ -125,4 +125,4 @@ Stonehand verification: `node --test tests/stonehands.test.ts`, `node scripts/mi
 
 ## Cave Hound checks
 
-The `cave-hounds` scenario uses a normally priced four-place Dormitory, automatic arrivals and a partly unexplored bent tunnel. Run `node --test tests/cave-hounds.test.ts` for quotas, specialist composition, den needs, scouting and combat. Run `node scripts/hounds-browser.mjs` for real arrival, Dormitory expansion, population limits, scouting/home watch, sidebar and quadruped rendering checks. Both animal concept sheets are saved; only Cave Hounds are implemented.
+The `cave-hounds` scenario uses a normally priced four-place Dormitory, automatic arrivals and a partly unexplored bent tunnel. Run `node --test tests/recruitment.test.ts tests/cave-hounds.test.ts` for arrival cooldowns, progression and staffing, full-capacity episodes, den needs, scouting and combat. Run `node scripts/hounds-browser.mjs` for regular arrivals, Dormitory expansion, warning dismissal/build action/clearing/reopening, scouting/home watch, sidebar and quadruped rendering checks. Both animal concept sheets are saved; only Cave Hounds are implemented.

@@ -88,7 +88,7 @@ Runesmiths research spells in the Library. The current [training, research and a
 
 ### Workforce
 
-Cave Hound details show bite strength, health and den food/rest, with no wage or training requirements. Expand population details to see the shared animal quota and each role’s arrival eligibility. After the first companion, specialist arrivals favor the configured Warrior/support mix.
+Cave Hound details show bite strength, health and den food/rest, with no wage or training requirements. Expand population details to see the preferred next arrival, its countdown, each type's cooldown and support eligibility. Early hounds arrive regularly; later supported defenders and queued specialist work guide the next arrival.
 
 Stonehand details show health, cargo and current work, with a short note that they need no food, beds, wages or training. Dwarf details retain their living needs and progression.
 
@@ -178,6 +178,7 @@ Proposed message behavior:
 - Messages are non-modal and do not steal the camera. Jump to a location only when the player chooses the locate action.
 - Critical events such as an attack on the Hearthstone can open the priority card. Dismissing its text leaves a compact warning icon while the condition remains active, without repeatedly reopening the same card.
 - Dismissing a message acknowledges it; it does not mark its underlying problem as solved. Resolve its active warning when the simulation reports that the condition has cleared.
+- Filling accessible accommodation opens **Dormitory is full**, explaining that expansion is needed for further arrivals, including newly unlocked units. **Build Dormitory** opens Rooms and selects its construction tool. The card is dismissible and its icon remains available during that full episode. Freeing space clears it; filling again opens a fresh message. Reports also appear in message history.
 - Brief ordinary queues should not produce alerts. Notify for meaningful, persistent problems using the thresholds eventually defined by the needs and production systems.
 
 Example message wording below illustrates placement and clarity; it does not define new thresholds or mechanics:

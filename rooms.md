@@ -14,7 +14,7 @@ The grid, adaptable room shapes, distinctive floors and walls, fixed Hearthstone
 
 ## Dormitory companion support
 
-A Cave Hound uses one assigned Dormitory place as a den for both eating and resting, without Kitchen capacity or wages. One accessible place can attract the first companion; eight allow a second, with a shared maximum of two animals. Additional places remain available for dwarfs. These limits use real accessible floor-area service capacity and ignore decorative beds. Reclaiming or blocking den access releases reservations and triggers ordinary support grace. No kennel room or food inventory is added.
+A Cave Hound uses one assigned Dormitory place as a den for eating and resting, without Kitchen capacity or wages. Each spare place can support another arrival; hounds have no fixed animal cap. Later recruitment follows supported defender types and specialist work demand. A full Dormitory opens an expansion message with a build action, clearing when space becomes available. Capacity uses accessible floor-area services and ignores decorative beds. Reclaiming or blocking den access releases reservations and triggers ordinary support grace. No kennel room or food inventory is added. See [recruitment balance](characters.md#cave-hounds-and-population-balance).
 
 ## Training Room and Library prototype rules
 

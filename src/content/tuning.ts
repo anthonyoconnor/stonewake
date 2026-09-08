@@ -1,8 +1,8 @@
 // Balance values live here; labels/ranges also generate the in-game tuning editor.
 const value=(value:number,label:string,group:string,min:number,max:number,step=.1,note='Applies live.')=>({value,label,group,min,max,step,note});
 export const tuningSpec={
- animalPopulationCap:value(2,'Animal companion limit','Economy & world',1,10,1,'Shared by all companion species; excess existing animals are not removed.'),
- bedsPerAnimal:value(4,'Dormitory places per companion','Economy & world',2,20,1,'The first companion needs one place; a second needs eight at the default ratio. Remaining places support dwarfs.'),
+ arrivalSpacingSeconds:value(10,'Minimum gap between arrivals · seconds','Economy & world',1,120,1,'Each type also has its own cooldown. Waiting for a preferred recruit preserves its place.'),
+ ordersPerSpecialist:value(3,'Queued jobs per support specialist','Economy & world',1,20,1,'Keep one specialist for each supported role; larger unfinished queues attract additional staff, bounded by room capacity.'),
  scoutRange:value(18,'Hound scouting distance from Hearth','Exploration',3,40,1,'Explores reachable visible routes only; never digs or crosses unbridged hazards.'),
  scoutSightBonus:value(2,'Hound extra sight distance','Exploration',0,8,1),
  scoutOutingSeconds:value(20,'Hound scouting outing · seconds','Exploration',5,120,1,'Returns to the Hearth between outings.'),
@@ -23,7 +23,6 @@ export const tuningSpec={
  wallBuildSeconds:value(24,'Build wall · seconds','Mining & work',1,600,1,'Must exceed rock/dirt excavation plus reinforcement.'),
  trainingInterval:value(45,'Cooldown after gaining a training level · seconds','Training & research',1,600,1),
  combatExperienceRate:value(2,'Combat experience · training rate multiplier','Training & research',0,10,.1,'Successful melee hits grant this many XP per base attack-interval second. Training grants 1 XP per second; Haste speeds both.'),
- recruitmentSeconds:value(45,'Specialist arrival interval · seconds','Economy & world',1,600,1,'One eligible arrival per interval; requires spare service, bed and food capacity.'),
  minerMinimumCost:value(50,'Miner base recruitment cost · gold','Economy & world',0,10000,1,'Next price adds the cost step for each living Miner, including the starting crew.'),
  minerCostStep:value(25,'Recruitment cost per living Miner · gold','Economy & world',1,10000,1),
  paydaySeconds:value(120,'Shared payday interval · seconds','Economy & world',1,3600,1,'Used when scheduling the next payday; existing due amounts and dates are retained.'),

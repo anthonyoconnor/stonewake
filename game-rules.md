@@ -141,9 +141,9 @@ Stonehands are the normal terrain workers: three start each area, and Create Sto
 
 ## 9. Attraction and arrival
 
-Cave Hounds are the early defense and exploration companion. A spare reachable Dormitory place is their only room requirement: that den supplies both food and rest, with physical visits and no Kitchen place, wages, training or XP. They arrive automatically through the Hearth on the normal 45-second arrival cadence. The first animal can arrive with one bed; the default shared limit is one animal per four accessible Dormitory places (minimum one), capped at two animals. A second therefore needs eight places. This quota is shared across all future animal species, not granted separately to each species. Shrinking capacity blocks new arrivals without deleting existing animals; lost den support uses the normal grace/departure rules.
+Cave Hounds arrive regularly through the Hearth while spare reachable Dormitory places exist. A den supplies their food and rest without a Kitchen, wages, training or XP. There is no animal cap: early settlements can house several hounds. As more types become supportable, soft defense shares favour Warriors and support staffing follows useful queued work. See [current cooldowns, staffing and selection rules](characters.md#cave-hounds-and-population-balance).
 
-Early-companion priority is granted only once per area; deaths and arrival toggles do not reset it. After the first companion, eligible dwarf specialists take priority over additional animals. Specialist selection favors the least-filled population relative to editable role weights: Warrior 2, Engineer 1, Runesmith 1. Existing role-room, spare bed and Kitchen requirements still apply. This aims for two Warriors per support specialist when enough capacity exists, rather than filling rooms with whichever cheap type qualifies first. Stonehands occupy no living support and the old Miner stays in debug for later reuse. Tunnel Badgers remain saved concept art only.
+Each type has an independent arrival cooldown, and the preferred type retains priority while waiting. Full accommodation blocks newly unlocked arrivals too and triggers a **Dormitory is full** sidebar message with a build action. Freeing space clears the warning; filling again opens a new episode. Recruitment never deletes existing units to meet a new target. Stonehands occupy no living support; the old Miner remains available in debug and Tunnel Badgers remain concept-only.
 
 Other dwarf types are attracted by suitable facilities and a settlement able to support them.
 
@@ -161,7 +161,7 @@ Together with directly purchased Miners, these specialists form the four dwarf t
 - No dedicated corridor to the surface is required on every map.
 - Required rooms must remain usable after arrival; attraction is not a one-time checklist.
 
-The current prototype admits at most one eligible specialist every 45 seconds, rotating among eligible types. Reachable specialist capacity and spare accommodation/food-support slots bound arrivals; no stored-food or production-rate check is needed. The room studio disables automatic arrivals by default. Values remain tunable. [Characters](characters.md) records the four core dwarf types and current limitations.
+The current prototype admits one unit at a time, using per-type cooldowns and a minimum gap between arrivals. Reachable specialist capacity and spare accommodation/food support bound arrivals; support specialists also follow unfinished queue demand. The room studio disables automatic arrivals by default. Values remain tunable in the [character rules](characters.md#cave-hounds-and-population-balance).
 
 ## 10. Needs, payday, and departure
 

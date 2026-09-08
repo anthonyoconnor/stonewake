@@ -16,6 +16,10 @@ export const settings:Setting[]=[
   ...r.furnishings.flatMap(f=>['width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · visual ${k}`,'Room appearance',f,k,1,8,1,'Cosmetic only; reload a room layout to compare.')))
  ]),
  ...characterDefinitions.map(c=>field("dwarf."+c.id+".speedMultiplier",c.name+' · walking speed multiplier','Dwarfs',c,'speedMultiplier',.1,5,.1,'Applies live.')),
+ ...characterDefinitions.flatMap(c=>c.recruitment?[
+  field(`dwarf.${c.id}.arrivalSeconds`,`${c.name} · arrival cooldown seconds`,'Recruitment',c.recruitment,'seconds',1,600,1,'Starts when support first qualifies and after each arrival. Existing timers keep their scheduled date.'),
+  ...(!c.recruitment.work?[field(`dwarf.${c.id}.arrivalWeight`,`${c.name} · preferred defense share`,'Recruitment',c.recruitment,'weight',1,20,1,'Soft population target among supported defender types; does not remove existing units.')]:[])
+ ]:[]),
  ...(prototypeLevel.encounters??[]).flatMap(source=>['delay','warningSeconds','repeatSeconds'].filter(key=>typeof source[key as keyof typeof source]==='number').map(key=>field(`encounter.${source.id}.${key}`,`${source.name} · ${key==='delay'?'activation delay':key==='warningSeconds'?'warning duration':'repeat delay'} seconds`,'Encounters',source,key,key==='repeatSeconds'?1:0,3600,1,'New strongholds only. Active source timers and test scenarios retain their authored values.'))),
  ...characterDefinitions.flatMap(c=>c.levels.flatMap(level=>[
   field(`dwarf.${c.id}.level.${level.level}.wage`,`${c.name} · level ${level.level} · wage per payday`,`${c.name} levels`,level,'wage',(c.construct||c.animal)?0:1,(c.construct||c.animal)?0:1000,1,'Future paydays only; already owed wages keep their original amount.'),

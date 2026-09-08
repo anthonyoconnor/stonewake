@@ -26,7 +26,7 @@ Stonehands are the normal terrain workers: three start each area, and Create Sto
 
 ## Early defense and population
 
-Build a **Dormitory** to attract a Cave Hound without a Kitchen or Training Room. Hounds eat and rest at their den, defend against nearby threats and scout open tunnels. They have no wages or training. One animal is allowed in a small settlement; eight accessible Dormitory places allow a second, with a shared two-animal maximum. After the first companion, eligible dwarf specialists get arrival priority, aiming for two Warriors per Engineer or Runesmith. The original Miner remains available for later reuse; Tunnel Badgers are saved concepts only. See [character balance](characters.md#cave-hounds-and-population-balance).
+Build a **Dormitory** to attract Cave Hounds regularly without a Kitchen or Training Room. Hounds eat and rest at their den, defend against nearby threats and scout open tunnels, with no wages or training. Early settlements can fill their spare accommodation with hounds. Supporting more advanced roles shifts later recruitment toward Warriors and useful specialist staffing. A **Dormitory is full** message prompts expansion and offers the build tool. The original Miner remains available for later reuse; Tunnel Badgers are saved concepts only. See [arrival cooldowns and character balance](characters.md#cave-hounds-and-population-balance).
 
 ## Play and iterate
 

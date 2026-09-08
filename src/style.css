@@ -21,3 +21,4 @@ button,select,input{font:inherit;color:inherit}button{background:#ffffff03;borde
 .recipe-choice{padding-bottom:13px}.recipe-choice small{position:absolute;bottom:1px;font-size:9px;color:#e5c67f}
 .panel>#unit-inspection{margin:0 0 12px;max-height:none;overflow:visible;border-bottom:1px solid var(--line);padding-bottom:10px}#sidebar:has(.level-outcome:not([hidden])) .tool-status,#sidebar:has(.level-outcome:not([hidden])) #feedback{display:none}
 @media(max-height:650px){#sidebar:has(.level-outcome:not([hidden])) .brand{display:none}}
+.message-dock button:has(.action-icon){display:grid;place-items:center;padding:2px}.message-dock .action-icon{width:22px;height:22px;filter:none}

@@ -20,7 +20,7 @@ import {reachable} from '../game/navigation';
 import {key,tileAt} from '../game/types';
 import {spellDefinitions} from '../content/spells';
 import {characterStats,nextCharacterLevel,syncCharacterHealth} from '../game/progression';
-import {enableRecruitment} from '../game/recruitment';
+import {enableRecruitment,recruitmentSummary} from '../game/recruitment';
 import {showDefenses,updateDefenses} from './defenses';
 import {defenseAt} from '../game/doors';
 import {health,maxHealth,visible} from '../game/spell-effects';
@@ -233,7 +233,7 @@ export class Sidebar {
       }
     }}
     list?.querySelectorAll<HTMLButtonElement>('[data-locate-dwarf]').forEach(b=>b.onclick=()=>{const a=w.agents.find(a=>a.id===Number(b.dataset.locateDwarf));if(a){this.controls.center(a.x,a.z);this.inspectedUnit={kind:'dwarf',id:a.id};this.update();this.unitInspection.scrollIntoView({block:'nearest'});}});
-    const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`One early companion, then eligible specialists take priority. Warriors target twice the population of each support role. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
+    const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${recruitmentSummary(w)}</p><p>Hounds provide early defense. Supported Warriors take a larger share of later arrivals; support staff follow queued work.</p>${characterDefinitions.filter(c=>c.recruitment).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b> · ${c.recruitment!.seconds}s cooldown<br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);
       summary.textContent='';

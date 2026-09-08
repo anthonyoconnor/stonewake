@@ -8,13 +8,13 @@ export interface CharacterDefinition {
   id:string; name:string; names:string[]; color:string; speedMultiplier:number;
   construct?:boolean;
   animal?:boolean;
-  recruitmentWeight?:number;
+  recruitment?:{seconds:number;weight:number;work?:'craft'|'research'};
   capabilities:string[]; appearance:'helmet'|'braids'|'warrior'|'runesmith'|'stonehand'|'hound';
   attractionServices:string[]; levels:CharacterLevel[];
 }
 export const characterDefinitions:CharacterDefinition[]=[
   {id:'cave-hound',name:'Cave Hound',names:['Flint','Bramble','Snuff'],color:'#605b51',speedMultiplier:1.5,
-    animal:true,capabilities:['fight','scout'],appearance:'hound',attractionServices:['rest'],levels:[
+    animal:true,recruitment:{seconds:30,weight:1},capabilities:['fight','scout'],appearance:'hound',attractionServices:['rest'],levels:[
       {level:1,wage:0,trainingSeconds:0,health:100,damage:10,attackSeconds:1,workMultiplier:1}
     ]},
   {id:'stonehand',name:'Stonehand',names:['Clink','Tick','Chip'],color:'#b89158',speedMultiplier:3 / 1.8,
@@ -26,14 +26,14 @@ export const characterDefinitions:CharacterDefinition[]=[
       {level:1,wage:4,trainingSeconds:0,health:90,damage:4,attackSeconds:1.5,workMultiplier:1}
     ]},
   {id:'engineer',name:'Engineer',names:['Helga','Sigrid'],color:'#357a81',speedMultiplier:1,
-    capabilities:['craft','defend'],appearance:'braids',attractionServices:['craft'],levels:[
+    recruitment:{seconds:60,weight:1,work:'craft'},capabilities:['craft','defend'],appearance:'braids',attractionServices:['craft'],levels:[
       {level:1,wage:7,trainingSeconds:0,health:85,damage:5,attackSeconds:1.5,workMultiplier:1},
       {level:2,wage:9,trainingSeconds:25,health:100,damage:6,attackSeconds:1.5,workMultiplier:1.1},
       {level:3,wage:11,trainingSeconds:40,health:115,damage:7,attackSeconds:1.5,workMultiplier:1.2},
       {level:4,wage:13,trainingSeconds:60,health:130,damage:8,attackSeconds:1.5,workMultiplier:1.3},
       {level:5,wage:15,trainingSeconds:90,health:150,damage:10,attackSeconds:1.5,workMultiplier:1.4}
     ]},
-  {id:'warrior',name:'Warrior',names:['Dagna','Torvald','Brynja'],color:'#954d37',speedMultiplier:1,recruitmentWeight:2,
+  {id:'warrior',name:'Warrior',names:['Dagna','Torvald','Brynja'],color:'#954d37',speedMultiplier:1,recruitment:{seconds:45,weight:3},
     capabilities:['fight'],appearance:'warrior',attractionServices:['training'],levels:[
       {level:1,wage:8,trainingSeconds:0,health:140,damage:12,attackSeconds:1,workMultiplier:1},
       {level:2,wage:10,trainingSeconds:15,health:165,damage:15,attackSeconds:1,workMultiplier:1},
@@ -42,7 +42,7 @@ export const characterDefinitions:CharacterDefinition[]=[
       {level:5,wage:16,trainingSeconds:75,health:240,damage:24,attackSeconds:1,workMultiplier:1}
     ]},
   {id:'runesmith',name:'Runesmith',names:['Eirik','Yrsa','Runar'],color:'#546d9c',speedMultiplier:1,
-    capabilities:['research','defend'],appearance:'runesmith',attractionServices:['research'],levels:[
+    recruitment:{seconds:60,weight:1,work:'research'},capabilities:['research','defend'],appearance:'runesmith',attractionServices:['research'],levels:[
       {level:1,wage:10,trainingSeconds:0,health:70,damage:6,attackSeconds:1.6,workMultiplier:1},
       {level:2,wage:12,trainingSeconds:30,health:80,damage:7,attackSeconds:1.6,workMultiplier:1.1},
       {level:3,wage:14,trainingSeconds:45,health:95,damage:8,attackSeconds:1.6,workMultiplier:1.2},

@@ -8,7 +8,7 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 
 ## Current implementation status
 
-**Current recruitment balance:** animal companions share a quota of one per four reachable Dormitory places (minimum one if any exist), maximum two; second animal needs eight places. First companion precedes specialists; then eligible specialists take priority, with Warrior/Engineer/Runesmith population weights 2/1/1. Den needs use Dormitory capacity only. Tunnel Badgers remain concept-only. This targeted unit balance update does not complete the broader M19 campaign-balance pass.
+**Current recruitment balance:** regular early hounds use spare Dormitory places without an animal cap. Supported defenders follow soft population targets; Workshops/Libraries attract initial staff and more for sustained queued work. Each type has its own cooldown, with a minimum gap between arrivals and reserved priority while the preferred recruit waits. Full accommodation opens a dismissible **Dormitory is full** message with a build action; expansion or losses clear it, and filling again starts a new episode. See [current values and requirements](characters.md#cave-hounds-and-population-balance). Tunnel Badgers remain concept-only. These targeted changes do not complete M19's broader campaign-balance pass.
 
 Last checked: **2026-09-08** against the room and character definitions and the verified development record. This is the canonical content-status inventory; milestone completion above does **not** mean the full game design is implemented.
 

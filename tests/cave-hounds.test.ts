@@ -2,15 +2,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRoomLab } from '../src/content/room-lab.ts';
 import { createHoundLab } from '../src/content/hound-lab.ts';
-import { characterById, characterDefinitions, characterLevel, isAnimal } from '../src/content/characters.ts';
+import { characterLevel, isAnimal } from '../src/content/characters.ts';
 import { tuning } from '../src/content/tuning.ts';
 import { addResidents, tick } from '../src/game/simulation.ts';
 import {
   enableRecruitment,
   recruitSpecialist,
   recruitmentStatus,
-  animalLimit,
-  hearthArrival,
 } from '../src/game/recruitment.ts';
 import { buildRoom, goldTotal, reclaimRoom } from '../src/game/rooms.ts';
 import { assignRoomSupport, foodSupport } from '../src/game/food.ts';
@@ -24,9 +22,11 @@ import { rect, run } from './helpers/simulation.ts';
 
 function arrivals(w: World, count: number) {
   if (!w.recruitment) enableRecruitment(w);
-  for (let i = 0; i < count; i++) {
+  const initial=w.agents.length;
+  for (let i = 0; i < count*121 && w.agents.length-initial<count; i++) {
     w.elapsed = w.recruitment!.nextAt;
     recruitSpecialist(w, (type, p) => addResidents(w, type, 1, p) > 0);
+    if(w.recruitment!.dormitoryFull)break;
   }
 }
 
@@ -40,7 +40,7 @@ test('companion losses and arrival toggles cannot repeatedly displace eligible s
   arrivals(w,1);assert(w.agents.some(a=>isAnimal(a.type)),'A replacement can arrive after eligible specialist places are filled');
 });
 
-test('Dormitory-only arrivals work for paid/free single, strip and irregular layouts without filling spare beds', () => {
+test('Dormitory-only arrivals fill paid/free single, strip and irregular layouts with hounds', () => {
   for (const free of [false, true])
     for (const cells of [
       [{ x: 8, z: 8 }],
@@ -59,7 +59,7 @@ test('Dormitory-only arrivals work for paid/free single, strip and irregular lay
       const paid = goldTotal(w);
       assert(free ? paid === before : paid < before);
       arrivals(w, 12);
-      assert.equal(w.agents.length, animalLimit(cells.length));
+      assert.equal(w.agents.length, cells.length);
       assert(w.agents.every((a) => a.type === 'cave-hound'));
       assert.equal(goldTotal(w), paid, 'Automatic arrivals do not charge wages or purchase fees');
       assert.equal(recruitmentStatus(w, 'cave-hound').eligible, false);
@@ -70,52 +70,9 @@ test('Dormitory-only arrivals work for paid/free single, strip and irregular lay
       assert.equal(
         recruitmentStatus(w, 'cave-hound').eligible,
         false,
-        'Cosmetic furniture does not affect quota',
+        'Cosmetic furniture does not affect accommodation',
       );
     }
-});
-
-test('shared animal limit counts future species, deaths and unreachable capacity; dwarf specialists take spare beds', () => {
-  const w = createRoomLab();
-  buildRoom(w, 'dormitory', rect(8, 8, 5, 4));
-  arrivals(w, 12);
-  assert.equal(w.agents.length, 2);
-  assert.equal(characterById('tunnel-badger'), undefined);
-  characterDefinitions.push({ ...characterById('cave-hound')!, id: 'test-companion' });
-  try {
-    assert.equal(recruitmentStatus(w, 'test-companion').eligible, false);
-  } finally {
-    characterDefinitions.pop();
-  }
-  const dead = w.agents[0];
-  damageResident(w, dead, 1000);
-  tick(w, 0.05);
-  arrivals(w, 1);
-  assert.equal(w.agents.length, 2);
-  assert(!w.agents.includes(dead));
-  buildRoom(w, 'kitchen', rect(14, 14, 2, 2));
-  buildRoom(w, 'workshop', rect(14, 17, 2, 2));
-  assert(recruitmentStatus(w, 'engineer').eligible);
-  arrivals(w, 1);
-  assert.equal(w.agents.at(-1)!.type, 'engineer');
-  const p = hearthArrival(w)!;
-  tileAt(w, p.x, p.z)!.terrain = 'rock';
-  assert.match(recruitmentStatus(w, 'cave-hound').message, /arrival route/);
-});
-
-test('automatic mix prioritizes specialists after one hound, with roughly twice as many Warriors per support role', () => {
-  const w = createRoomLab();
-  buildRoom(w, 'dormitory', rect(2, 2, 5, 4));
-  buildRoom(w, 'kitchen', rect(8, 2, 5, 4));
-  buildRoom(w, 'training', rect(2, 7, 4, 4));
-  buildRoom(w, 'workshop', rect(7, 7, 4, 4));
-  buildRoom(w, 'library', rect(2, 12, 4, 4));
-  arrivals(w, 30);
-  const count = (type: string) => w.agents.filter((a) => a.type === type).length;
-  assert.equal(w.agents.length, 20);
-  assert.equal(count('cave-hound'), 1);
-  assert(count('engineer') >= 4 && count('runesmith') >= 4);
-  assert(count('warrior') >= count('engineer') * 1.7 && count('warrior') >= count('runesmith') * 1.7);
 });
 
 test('hounds eat and rest at their den, never train or collect wages, and lose support when the den is reclaimed', () => {
