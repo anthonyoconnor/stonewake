@@ -17,7 +17,7 @@ All ten creatures in the [enemy concept gallery](concept-art/enemies/README.md) 
 
 ## Shared combat and control
 
-Enemies use the same continuous movement and square terrain as dwarfs. They select living, physically visible targets within six squares, otherwise approach their authored target near the Hearth. Workers retain adjacent self-defense; Warriors retain pursuit and rally. Melee and ranged attacks share their definition's cooldown, reduced by Slow. Adjacent dwarfs take priority over the Hearth. Natural encounter members can destroy the Hearth; debug attackers keep their test targets.
+Enemies use the same continuous movement and square terrain as dwarfs. They select living, physically visible targets within six squares, otherwise approach their authored target near the Hearth. Workers retain adjacent self-defense; Warriors retain pursuit and rally. Melee and ranged attacks share their definition's cooldown, lengthened by Slow. Adjacent dwarfs take priority over the Hearth. Natural encounter members can destroy the Hearth; debug attackers keep their test targets.
 
 Ranged attacks require clear sight. Intact terrain, shut doors and runic barriers stop projectiles; water, lava and chasms permit sight. Furniture remains cosmetic. A shot applies damage when released and its short projectile animation communicates that hit; it is not a separate physics object. Projectiles, spores and cleaves never damage enemy allies. Spore pulses and cleaves also require clear sight to each dwarf they hit.
 
