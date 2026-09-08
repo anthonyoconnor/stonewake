@@ -65,7 +65,7 @@ export function addResidents(w: World, type: string, count = 1, origin?: Point) 
     });
   }
   const added = Math.min(count, positions.length);
-  for (const a of w.agents) { initializePay(w,a); initializeMorale(w,a); }
+  for (const a of w.agents) { initializePay(a); initializeMorale(w,a); }
   if (added) w.nextResidentId = firstId + added - 1;
   if (added) assignRoomSupport(w);
   return added;

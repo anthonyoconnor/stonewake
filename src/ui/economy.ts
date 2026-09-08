@@ -1,6 +1,6 @@
 import type { Sidebar } from './sidebar';
 import { payrollStatus, wageStatus } from '../game/wages';
-import { characterById } from '../content/characters';
+import { characterLevel } from '../content/characters';
 import type { Resident, World } from '../game/types';
 
 export function mountEconomy(sidebar: Sidebar) {
@@ -20,5 +20,5 @@ export function updateEconomy(sidebar: Sidebar) {
 }
 
 export function residentPayText(w: World, a: Resident) {
-  return `Wage ${characterById(a.type)?.wage ?? 0} gold · ${wageStatus(w,a).message}`;
+  return `Wage ${characterLevel(a.type, a.level).wage} gold · ${wageStatus(w,a).message}`;
 }

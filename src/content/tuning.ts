@@ -16,7 +16,7 @@ export const tuningSpec={
  recruitmentSeconds:value(45,'Specialist arrival interval · seconds','Economy & world',1,600,1,'One eligible arrival per interval; requires spare service, bed and food capacity.'),
  minerMinimumCost:value(50,'Miner base recruitment cost · gold','Economy & world',0,10000,1,'Next price adds the cost step for each living Miner, including the starting crew.'),
  minerCostStep:value(25,'Recruitment cost per living Miner · gold','Economy & world',1,10000,1),
- paydaySeconds:value(120,'Personal payday interval · seconds','Economy & world',1,3600,1,'Used when scheduling the next payday; existing due amounts and dates are retained.'),
+ paydaySeconds:value(120,'Shared payday interval · seconds','Economy & world',1,3600,1,'Used when scheduling the next payday; existing due amounts and dates are retained.'),
  wageCollectionSeconds:value(1,'Collect wages · seconds','Economy & world',.1,60,.1,'Gold is deducted only after a physical treasury visit.'),
  wageGraceSeconds:value(45,'Overdue wage warning after · seconds','Economy & world',0,600,1,'Allows ordinary travel and queues before wage dissatisfaction starts.'),
  moraleGraceSeconds:value(120,'Shortage grace · seconds','Needs & food',1,1800,1,'Continuous unmet support before a warning.'),

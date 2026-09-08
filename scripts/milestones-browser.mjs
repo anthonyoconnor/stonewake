@@ -103,15 +103,15 @@ try {
       'Every dwarf type physically enters the treasury side to collect',
     );
     assert(originals.every((id) => after.agents.find((a) => a.id === id)?.pay.collections === 1));
-    assert.equal(beforePay - balance(after), 29, 'The four distinct per-type wages are withdrawn once');
+    assert.equal(beforePay - balance(after), 33, 'All residents, including the new arrival, collect on the shared payday');
     assert.equal(
       after.agents.find((a) => a.id === purchased.id).pay.collections,
-      0,
-      'New arrivals have their own first payday',
+      1,
+      'New arrivals join the shared first payday',
     );
     await advance(5);
     after = await state();
-    assert.equal(beforePay - balance(after), 29, 'Paid wages are not deducted again on later ticks');
+    assert.equal(beforePay - balance(after), 33, 'Paid wages are not deducted again on later ticks');
     assert(originals.every((id) => after.agents.find((a) => a.id === id)?.pay.due.length === 0));
     await page.locator('[data-dwarf-role="miner"]').click();
     assert.match(await page.locator('#residents-list').textContent(), /pay|wage/i);

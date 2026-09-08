@@ -71,8 +71,10 @@ try {
       const row = characterDefinitions.find(c => c.id === a.type).levels[a.level - 1];
       const expectedHealth = a.type === 'miner' && a.level === 1 ? 120 : row.health;
       assert.equal(a.maxHealth, expectedHealth);
+      await page.locator(`[data-dwarf-role="${a.type}"]`).click();
       const text = await page.locator(`[data-resident="${a.id}"]`).textContent();
       assert(text.includes(`Level ${a.level} / 5`));
+      assert(text.includes(`Wage ${row.wage} gold`), 'Displayed wage follows the reached level');
       assert(text.includes(`Base damage ${row.damage} · Interval ${row.attackSeconds}s`));
       assert(text.includes(`Base work ${Math.round((row.workMultiplier - 1) * 100)}% bonus`));
       if (a.level > previous.get(a.id).level) {
@@ -88,16 +90,23 @@ try {
   assert([...seen.values()].every(levels => levels.size === 5), 'Observed all five levels for every type');
   await page.evaluate(() => window.strongholdDev.advance(15));
   assert((await residents()).every(a => a.level === 5 && a.job?.kind !== 'train'));
-  assert.equal(await page.getByText('Maximum level reached', { exact: false }).count(), 4);
+  for (const a of agents) {
+    await page.locator(`[data-dwarf-role="${a.type}"]`).click();
+    assert.equal(await page.getByText('Maximum level reached', { exact: false }).count(), 1);
+  }
   mkdirSync('test-results', { recursive: true });
   const warrior = agents.find(a => a.type === 'warrior');
+  await page.locator('[data-dwarf-role="warrior"]').click();
+  await page.locator(`[data-resident="${warrior.id}"]`).evaluate(element => { element.open = true; });
   await page.locator(`[data-resident="${warrior.id}"]`).evaluate(element => element.scrollIntoView({ block: 'center' }));
   await page.screenshot({ path: 'test-results/character-levels-cap.png' });
 
   await configure({ 'Warrior levels': { 'Warrior · level 5 · maximum health': 300, 'Warrior · level 5 · attack damage': 30, 'Warrior · level 5 · attack interval seconds': .8, 'Warrior · level 5 · work speed multiplier': 1.25 } });
   assert.equal((await residents()).find(a => a.id === warrior.id).maxHealth, 300);
   await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+  await page.locator('[data-dwarf-role="warrior"]').click();
   const row = page.locator(`[data-resident="${warrior.id}"]`);
+  await row.evaluate(element => { element.open = true; });
   await row.evaluate(element => element.scrollIntoView({ block: 'center' }));
   assert((await row.textContent()).includes('Base damage 30 · Interval 0.8s'));
   assert((await row.textContent()).includes('Base work 25% bonus'));
@@ -119,7 +128,9 @@ try {
   const afterFight=(await residents()).find(a=>a.id===fighter.id);
   assert(afterFight.experience>fighter.experience,'Combat continues earning XP during training cooldown');
   await page.getByRole('button',{name:'Dwarfs',exact:true}).click();
+  await page.locator('[data-dwarf-role="warrior"]').click();
   const fighterRow=page.locator(`[data-resident="${fighter.id}"]`);
+  await fighterRow.evaluate(element => { element.open = true; });
   assert((await fighterRow.textContent()).includes('Experience'));
   assert((await fighterRow.textContent()).includes('combat still earns XP'));
   await fighterRow.evaluate(element=>element.scrollIntoView({block:'center'}));

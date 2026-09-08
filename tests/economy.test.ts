@@ -13,7 +13,7 @@ import {
   recruitmentStatus,
   enableRecruitment,
 } from '../src/game/recruitment.ts';
-import { wageStatus, payrollStatus } from '../src/game/wages.ts';
+import { wageStatus, payrollStatus, tickPayday } from '../src/game/wages.ts';
 import { addRaider, setDoorMode } from '../src/game/defenses.ts';
 import { damageEnemy } from '../src/game/spell-effects.ts';
 import { releaseJob } from '../src/game/jobs/common.ts';
@@ -31,10 +31,62 @@ function crew() {
 function payday() {
   const w = createRoomLab();
   addResidents(w, 'miner', 1);
-  w.agents[0].pay!.nextAt = 0;
+  w.nextPaydayAt = 0;
   w.agents[0].capabilities = [];
   return w;
 }
+
+test('late arrivals join the shared payday without back pay or moving the schedule', () => {
+  const w = createRoomLab();
+  addResidents(w, 'miner', 1);
+  w.elapsed = 119;
+  addResidents(w, 'engineer', 1);
+  tickPayday(w);
+  assert(w.agents.every(a => a.pay!.due.length === 0));
+  assert(w.agents.every(a => wageStatus(w, a).nextAt === 120));
+  w.elapsed = 120;
+  tickPayday(w);
+  assert.deepEqual(w.agents.map(a => a.pay!.due), [[{at:120, amount:4}], [{at:120, amount:7}]]);
+  tickPayday(w);
+  w.elapsed = 121;
+  addResidents(w, 'warrior', 1);
+  assert.equal(w.agents[2].pay!.due.length, 0);
+  assert.equal(wageStatus(w, w.agents[2]).nextAt, 240);
+  w.elapsed = 240;
+  tickPayday(w);
+  assert.deepEqual(w.agents.map(a => a.pay!.due.length), [2,2,1]);
+  assert(w.agents.every(a => a.pay!.due.at(-1)!.at === 240));
+});
+
+test('every type earns increasing level wages while earlier debt keeps its value', () => {
+  const w = createRoomLab();
+  for (const def of characterDefinitions) addResidents(w, def.id, 1);
+  const expected = [[4,5,6,7,8], [7,9,11,13,15], [8,10,12,14,16], [10,12,14,16,18]];
+  for (let level = 1; level <= 5; level++) {
+    for (const a of w.agents) a.level = level;
+    w.elapsed = level * 120;
+    tickPayday(w);
+  }
+  assert.deepEqual(w.agents.map(a => a.pay!.due.map(p => p.amount)), expected);
+});
+
+test('an empty settlement keeps its clock and interval edits affect the following shared payday', () => {
+  const w = createRoomLab();
+  w.elapsed = 130;
+  tickPayday(w);
+  addResidents(w, 'miner', 1);
+  assert.equal(wageStatus(w, w.agents[0]).nextAt, 240);
+  const original = tuning.paydaySeconds;
+  try {
+    tuning.paydaySeconds = 60;
+    tickPayday(w);
+    assert.equal(w.nextPaydayAt, 240);
+    w.elapsed = 240;
+    tickPayday(w);
+    assert.equal(w.nextPaydayAt, 300);
+    assert.deepEqual(w.agents[0].pay!.due, [{at:240, amount:4}]);
+  } finally { tuning.paydaySeconds = original; }
+});
 
 test('Miner prices count the current living workforce and purchase exactly one arrival', () => {
   const w = crew(),
@@ -48,7 +100,7 @@ test('Miner prices count the current living workforce and purchase exactly one a
   assert.equal(goldTotal(w), balance - price);
   assert.equal(w.spent, spent + price);
   assert.equal(minerPrice(w), price + tuning.minerCostStep);
-  assert.equal(w.agents.at(-1)!.pay!.nextAt, w.elapsed + tuning.paydaySeconds);
+  assert.equal(w.nextPaydayAt, w.elapsed + tuning.paydaySeconds);
   w.agents[0].health = 0;
   assert.equal(minerPrice(w), price, 'A dead Miner stops affecting the price before cleanup.');
   w.agents.splice(1, 1);
@@ -90,16 +142,16 @@ test('each dwarf physically collects its positive wage once and the shared balan
     spent = w.spent;
   run(w, 10.1);
   for (const a of w.agents) {
-    assert(characterById(a.type)!.wage > 0);
+    assert(characterById(a.type)!.levels[(a.level ?? 1)-1].wage > 0);
     assert.equal(a.pay!.collections, 0, 'No wage is paid at the distant payday trigger.');
     assert.equal(a.pay!.due.length, 1);
   }
   until(w, () => w.agents.every((a) => a.pay!.collections === 1), 45, 'All types physically collect');
-  const wages = characterDefinitions.reduce((sum, d) => sum + d.wage, 0);
+  const wages = characterDefinitions.reduce((sum, d) => sum + d.levels[0].wage, 0);
   assert.equal(goldTotal(w), balance - wages);
   assert.equal(w.spent, spent + wages);
   assert.equal(payrollStatus(w).due, 0);
-  for (const a of w.agents) assert.equal(a.pay!.paid, characterById(a.type)!.wage);
+  for (const a of w.agents) assert.equal(a.pay!.paid, characterById(a.type)!.levels[(a.level ?? 1)-1].wage);
   run(w, 5);
   assert(w.agents.every((a) => a.pay!.collections === 1));
 });
@@ -107,11 +159,9 @@ test('each dwarf physically collects its positive wage once and the shared balan
 test('a single starter treasury queues collectors and combines reachable stored reserves', () => {
   const w = createRoomLab();
   for (const type of characterDefinitions.map((d) => d.id)) addResidents(w, type);
-  for (const a of w.agents) {
-    a.pay!.nextAt = 0;
-    a.capabilities = [];
-  }
-  const wages = characterDefinitions.reduce((sum, d) => sum + d.wage, 0);
+  w.nextPaydayAt = 0;
+  for (const a of w.agents) a.capabilities = [];
+  const wages = characterDefinitions.reduce((sum, d) => sum + d.levels[0].wage, 0);
   w.allowance = 0;
   w.roomServices[0].stored = wages;
   run(w, 0.1);
@@ -132,7 +182,7 @@ test('a single starter treasury queues collectors and combines reachable stored 
   const prior = split.spent;
   until(split, () => split.agents[0].pay!.collections === 1, 10, 'Payment spans reachable reserves');
   assert.equal(goldTotal(split), 0);
-  assert.equal(split.spent, prior + characterById('miner')!.wage);
+  assert.equal(split.spent, prior + characterById('miner')!.levels[0].wage);
 });
 
 test('no funds and inaccessible reserves have distinct feedback and restored door access pays the same debt', () => {
@@ -237,7 +287,7 @@ test('combat interrupts a physical wage visit without charging and the original 
 test('unpaid intervals accumulate once each and keep the wage earned before a tuning change', () => {
   const w = payday(),
     a = w.agents[0],
-    def = characterById('miner')!,
+    def = characterById('miner')!.levels[0],
     original = def.wage;
   w.allowance = 0;
   run(w, 0.1);
@@ -280,7 +330,7 @@ test('food and carried gold retain priority while a pending wage can interrupt p
 
   const working = payday(),
     worker = working.agents[0];
-  worker.pay!.nextAt = 1;
+  working.nextPaydayAt = 1;
   worker.capabilities = ['mine'];
   const seam = tileAt(working, 6, 17)!;
   seam.terrain = 'gem';

@@ -1,5 +1,5 @@
 import { type World, type Resident, type RoomService } from './types.ts';
-import { characterById } from '../content/characters.ts';
+import { characterLevel } from '../content/characters.ts';
 import { tuning } from '../content/tuning.ts';
 import { canStand, findPath, reachable } from './navigation.ts';
 import { goldTotal } from './rooms.ts';
@@ -7,21 +7,21 @@ import { alive } from './spell-effects.ts';
 import { availableStations, take } from './jobs/common.ts';
 import { key } from './types.ts';
 
-export function initializePay(w: World, a: Resident) {
-  return (a.pay ??= { nextAt: w.elapsed + tuning.paydaySeconds, due: [], paid: 0, collections: 0 });
+export function initializePay(a: Resident) {
+  return (a.pay ??= { due: [], paid: 0, collections: 0 });
 }
 
 export function tickPayday(w: World) {
   if (w.outcome) return;
-  for (const a of w.agents.filter(alive)) {
-    const pay = initializePay(w, a);
-    while (w.elapsed + 1e-8 >= pay.nextAt) {
+  while (w.elapsed + 1e-8 >= w.nextPaydayAt) {
+    for (const a of w.agents.filter(alive)) {
+      const pay = initializePay(a);
       // Earned payments keep their value when tuning changes later.
-      pay.due.push({ at: pay.nextAt, amount: characterById(a.type)!.wage });
-      pay.nextAt += tuning.paydaySeconds;
+      pay.due.push({ at: w.nextPaydayAt, amount: characterLevel(a.type, a.level).wage });
       a.retry = 0;
       w.revision++;
     }
+    w.nextPaydayAt += tuning.paydaySeconds;
   }
 }
 
@@ -48,7 +48,7 @@ function funding(w: World, a: Resident, amount: number) {
 export function wageStatus(w: World, a: Resident) {
   const pay = a.pay;
   const pending = pay?.due ?? [];
-  const nextAt = pay?.nextAt ?? w.elapsed + tuning.paydaySeconds;
+  const nextAt = w.nextPaydayAt;
   const details = {
     due: pending.reduce((sum, p) => sum + p.amount, 0),
     payments: pending.length,
@@ -91,7 +91,7 @@ export function payrollStatus(w: World) {
     overdue: statuses.filter((p) => p.overdue).length,
     noGold: statuses.filter((p) => p.state === 'no-gold').length,
     noAccess: statuses.filter((p) => p.state === 'no-access').length,
-    nextAt: statuses.length ? Math.min(...statuses.map((p) => p.nextAt)) : w.elapsed + tuning.paydaySeconds,
+    nextAt: w.nextPaydayAt,
   };
 }
 

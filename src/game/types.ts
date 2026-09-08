@@ -32,7 +32,7 @@ export interface LevelDefinition {
 }
 export interface World {
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
-  agents: Resident[]; furnishings: Furnishing[]; roomServices: RoomService[]; elapsed: number; allowance: number; spent: number; freeRoomBuilding:boolean;
+  agents: Resident[]; furnishings: Furnishing[]; roomServices: RoomService[]; elapsed: number; nextPaydayAt:number; allowance: number; spent: number; freeRoomBuilding:boolean;
   craftOrders:CraftOrder[];outputs:Record<string,number>;
   researchOrders?:ResearchOrder[];
   barrier?:Point&{health:number;maxHealth:number;until:number};
@@ -83,7 +83,7 @@ export interface Resident extends Point {
   level?:number;experience?:number;nextTrainingAt?:number;
   health?:number;maxHealth?:number;hitAt?:number;nextAttackAt?:number;effects?:SpellEffect[];
   combatTarget?:number;rallying?:boolean;rallyUnreachable?:boolean;recovering?:boolean;
-  pay?:{nextAt:number;due:Array<{at:number;amount:number}>;paid:number;collections:number};
+  pay?:{due:Array<{at:number;amount:number}>;paid:number;collections:number};
   morale?:MoraleState;
 }
 export const key = (p: Point) => `${p.x},${p.z}`;

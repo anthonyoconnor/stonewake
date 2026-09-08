@@ -16,9 +16,9 @@ export const settings:Setting[]=[
   ...r.furnishings.flatMap(f=>['width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · visual ${k}`,'Room appearance',f,k,1,8,1,'Cosmetic only; reload a room layout to compare.')))
  ]),
  ...characterDefinitions.map(c=>field("dwarf."+c.id+".speedMultiplier",c.name+' · walking speed multiplier','Dwarfs',c,'speedMultiplier',.1,5,.1,'Applies live.')),
- ...characterDefinitions.map(c=>field(`dwarf.${c.id}.wage`,c.name+' · wage per payday','Dwarfs',c,'wage',1,1000,1,'Future paydays only; already owed wages keep their original amount.')),
  ...(prototypeLevel.encounters??[]).flatMap(source=>['delay','warningSeconds','repeatSeconds'].filter(key=>typeof source[key as keyof typeof source]==='number').map(key=>field(`encounter.${source.id}.${key}`,`${source.name} · ${key==='delay'?'activation delay':key==='warningSeconds'?'warning duration':'repeat delay'} seconds`,'Encounters',source,key,key==='repeatSeconds'?1:0,3600,1,'New strongholds only. Active source timers and test scenarios retain their authored values.'))),
  ...characterDefinitions.flatMap(c=>c.levels.flatMap(level=>[
+  field(`dwarf.${c.id}.level.${level.level}.wage`,`${c.name} · level ${level.level} · wage per payday`,`${c.name} levels`,level,'wage',1,1000,1,'Future paydays only; already owed wages keep their original amount.'),
   field(`dwarf.${c.id}.level.${level.level}.health`,`${c.name} · level ${level.level} · maximum health`,`${c.name} levels`,level,'health',1,10000,1,'Applies to existing residents; missing health is preserved.'),
   field(`dwarf.${c.id}.level.${level.level}.damage`,`${c.name} · level ${level.level} · attack damage`,`${c.name} levels`,level,'damage',0,1000,.1,'Applies live to combat.'),
   field(`dwarf.${c.id}.level.${level.level}.attackSeconds`,`${c.name} · level ${level.level} · attack interval seconds`,`${c.name} levels`,level,'attackSeconds',.1,30,.1,'Used when scheduling the next attack.'),

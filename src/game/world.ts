@@ -7,7 +7,7 @@ import {barrierAt} from './spell-effects.ts';
 import {initializeEncounters} from './encounters.ts';
 import {initializeHearth} from './hearth.ts';
 export function createWorld(level: LevelDefinition): World {
-  const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],roomServices:[],elapsed:0,allowance:tuning.startingGold,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{},researchOrders:[]};
+  const w: World = {width:level.width,height:level.height,name:level.name,hearth:{...level.hearth},revision:1,tiles:[],agents:[],furnishings:[],roomServices:[],elapsed:0,nextPaydayAt:tuning.paydaySeconds,allowance:tuning.startingGold,spent:0,freeRoomBuilding:false,craftOrders:[],outputs:{},researchOrders:[]};
   for(let z=0;z<w.height;z++) for(let x=0;x<w.width;x++) {
     const border=x===0||z===0||x===w.width-1||z===w.height-1;
     w.tiles.push({x,z,terrain:border?'bedrock':'dirt',known:false,claimed:false,designated:false,core:false,gold:0,loose:0});

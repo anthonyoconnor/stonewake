@@ -27,7 +27,7 @@ export function createEconomyLab(freeRoomBuilding = false) {
   setDoorMode(w, door.id, 'locked');
   for (const type of characterDefinitions.map((c) => c.id)) addResidents(w, type, 1, { x: 10, z: 10 });
   // Explicit fixture setup brings one payday forward without changing global tuning.
-  for (const a of w.agents) a.pay!.nextAt = 10;
+  w.nextPaydayAt = 10;
   setDoorMode(w, door.id, 'closed');
   w.allowance = 1500;
   return w;

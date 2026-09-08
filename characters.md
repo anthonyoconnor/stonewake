@@ -6,7 +6,7 @@ Working design for the dwarven stronghold game. Companion documents: [Rooms](roo
 
 See the [current implementation inventory](development-plan.md#current-implementation-status) for all dwarf types, including debug-only availability and missing recruitment/work systems. The roster and rules below describe the intended design, not a list of completed features. Update the inventory whenever a dwarf or its supporting systems change.
 
-Implemented payroll uses a personal 120-second payday, with wages of 4 gold for Miners, 7 for Engineers, 8 for Warriors and 10 for Runesmiths. Dwarfs spend one second collecting each due payment at a reachable Treasure Room or Hearth treasury; 45 seconds of overdue grace allows travel/queues. Current values are editable and provisional. [Payday rules](game-rules.md#10-needs-payday-and-departure) define access, interruption and funding behavior.
+All dwarfs share one payday every 120 game seconds from the start of the area. New arrivals join the next scheduled payday and receive their full current wage, with no back pay. Level 1 wages are 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths; each additional level adds 1 gold for Miners and 2 gold for specialists. Wages are explicit editable values in each character level row. Each payment uses the level reached when payday arrives; later level or configuration changes do not alter existing debt. Dwarfs spend one second collecting each due payment at a reachable Treasure Room or Hearth treasury; 45 seconds of overdue grace allows travel/queues. Current values are editable and provisional. [Payday rules](game-rules.md#10-needs-payday-and-departure) define access, interruption and funding behavior.
 
 ## Design status
 
@@ -16,7 +16,7 @@ The recruitment, miner pricing, needs, autonomous control, merged specialist rol
 
 Current prototype: all dwarf types share autonomous movement, food, rest and Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when reachable specialist rooms and shared accommodation/food support have spare capacity. One eligible specialist can arrive every 45 seconds; eligible types take turns. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Paid Miner recruitment, physical wage collection and sustained-need dissatisfaction/departure are implemented for all four types. Guard duty and retreat remain pending. The [shared need rules](game-rules.md#10-needs-payday-and-departure) define grace, role capacity, recovery and physical departure.
 
-Every dwarf starts at character level 1 and can reach level 5 through Training Room practice and real combat. Each type has explicit level definitions for health, attack damage, attack interval, work speed and the training time needed to reach the next level. Successful melee hits also grant experience; ordinary work does not. See [Character levels and training](#character-levels-and-training) for the rules and provisional values.
+Every dwarf starts at character level 1 and can reach level 5 through Training Room practice and real combat. Each type has explicit level definitions for health, attack damage, attack interval, work speed, wages and the training time needed to reach the next level. Successful melee hits also grant experience; ordinary work does not. See [Character levels and training](#character-levels-and-training) for the rules and provisional values.
 
 Warriors pursue nearby enemies, fight autonomously and respond to Call to Arms. Miners, Engineers and Runesmiths have weaker adjacent self-defense: they can hit an enemy already within melee reach but do not pursue enemies or answer the rally. Combat uses normal authored encounters/raids as well as debug enemies. Runesmiths research spells selected in the sidebar and prepare them again after casting; [Spells](spells.md) owns spell effects and targeting.
 
@@ -53,43 +53,43 @@ Each row below gives the complete statistics at that level. **Training** is the 
 
 ### Miner levels
 
-| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
-|---|---:|---:|---:|---:|---:|
-| 1 | — | 90 | 4 | 1.5 s | 1.00× |
-| 2 | 20 s | 105 | 5 | 1.5 s | 1.10× |
-| 3 | 35 s | 120 | 6 | 1.5 s | 1.20× |
-| 4 | 55 s | 140 | 7 | 1.5 s | 1.30× |
-| 5 | 80 s | 160 | 8 | 1.5 s | 1.40× |
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed | Wage (gold) |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | — | 90 | 4 | 1.5 s | 1.00× | 4 |
+| 2 | 20 s | 105 | 5 | 1.5 s | 1.10× | 5 |
+| 3 | 35 s | 120 | 6 | 1.5 s | 1.20× | 6 |
+| 4 | 55 s | 140 | 7 | 1.5 s | 1.30× | 7 |
+| 5 | 80 s | 160 | 8 | 1.5 s | 1.40× | 8 |
 
 ### Engineer levels
 
-| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
-|---|---:|---:|---:|---:|---:|
-| 1 | — | 85 | 5 | 1.5 s | 1.00× |
-| 2 | 25 s | 100 | 6 | 1.5 s | 1.10× |
-| 3 | 40 s | 115 | 7 | 1.5 s | 1.20× |
-| 4 | 60 s | 130 | 8 | 1.5 s | 1.30× |
-| 5 | 90 s | 150 | 10 | 1.5 s | 1.40× |
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed | Wage (gold) |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | — | 85 | 5 | 1.5 s | 1.00× | 7 |
+| 2 | 25 s | 100 | 6 | 1.5 s | 1.10× | 9 |
+| 3 | 40 s | 115 | 7 | 1.5 s | 1.20× | 11 |
+| 4 | 60 s | 130 | 8 | 1.5 s | 1.30× | 13 |
+| 5 | 90 s | 150 | 10 | 1.5 s | 1.40× | 15 |
 
 ### Warrior levels
 
-| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
-|---|---:|---:|---:|---:|---:|
-| 1 | — | 140 | 12 | 1.0 s | 1.00× |
-| 2 | 15 s | 165 | 15 | 1.0 s | 1.00× |
-| 3 | 30 s | 190 | 18 | 1.0 s | 1.00× |
-| 4 | 50 s | 215 | 21 | 1.0 s | 1.00× |
-| 5 | 75 s | 240 | 24 | 1.0 s | 1.00× |
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed | Wage (gold) |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | — | 140 | 12 | 1.0 s | 1.00× | 8 |
+| 2 | 15 s | 165 | 15 | 1.0 s | 1.00× | 10 |
+| 3 | 30 s | 190 | 18 | 1.0 s | 1.00× | 12 |
+| 4 | 50 s | 215 | 21 | 1.0 s | 1.00× | 14 |
+| 5 | 75 s | 240 | 24 | 1.0 s | 1.00× | 16 |
 
 ### Runesmith levels
 
-| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
-|---|---:|---:|---:|---:|---:|
-| 1 | — | 70 | 6 | 1.6 s | 1.00× |
-| 2 | 30 s | 80 | 7 | 1.6 s | 1.10× |
-| 3 | 45 s | 95 | 8 | 1.6 s | 1.20× |
-| 4 | 65 s | 110 | 10 | 1.6 s | 1.30× |
-| 5 | 95 s | 125 | 12 | 1.6 s | 1.40× |
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed | Wage (gold) |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | — | 70 | 6 | 1.6 s | 1.00× | 10 |
+| 2 | 30 s | 80 | 7 | 1.6 s | 1.10× | 12 |
+| 3 | 45 s | 95 | 8 | 1.6 s | 1.20× | 14 |
+| 4 | 65 s | 110 | 10 | 1.6 s | 1.30× | 16 |
+| 5 | 95 s | 125 | 12 | 1.6 s | 1.40× | 18 |
 
 Level gains apply the new maximum health and preserve the amount of existing damage. For example, a Warrior at 100/140 health becomes 125/165 at level 2, still missing 40 health. Gaining a level does not fully heal a wounded dwarf or revive a dead one. The new damage and attack interval apply to combat, and the new work multiplier applies to its eligible jobs. Levels do not grant new capabilities: a stronger Miner still only defends at melee reach, while Warriors can pursue and rally.
 
