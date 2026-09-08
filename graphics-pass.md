@@ -33,7 +33,7 @@ The result is a stylized procedural prototype, not a reproduction of the concept
 
 ## Verification
 
-The verification and dated extension notes below record the original graphics pass. The current room design supersedes references there to physical furnishing stations, bed assignments and food stock: gameplay capacity now follows floor area, and props are cosmetic. Current checks belong in the [development record](development-plan.md).
+The verification and dated extension notes below record the original graphics pass. The current room design supersedes references there to physical furnishing stations, bed assignments and food stock: gameplay capacity now follows floor area, and props are cosmetic. Current checks belong in the [development history](development-history.md).
 
 Reviewed normal terrain/core and the four-room showcase at several rotations and zoom levels. The showcase exercised mining, claiming, delivery, rest and meals for all four residents, and completed both Workshop recipes. Sleeping characters align with assigned beds; food, stored gold and crafted props follow their actual state. The final browser console had no errors. All 20 simulation checks, the final TypeScript/browser build and local documentation-link checks passed.
 
@@ -47,7 +47,7 @@ Reviewed the approved terrain plus the current Training Room, Library, Warrior a
 
 All appearances use the existing shared walking, eating and sleeping rig. Actual `train` jobs drive alternating practice punches at a dummy or paired hand-weight lifts at a weight station, and hide carried work equipment. Actual `research` jobs drive a reading pose with a gentle page-pointing gesture and occasional blue motes. Shield, book and exercise props are visual equipment only. Training dust and research motes reuse the bounded particle pool and respect reduced-motion preference. No labels or progress indicators appear above characters or furnishings.
 
-These are editable prototype models; body proportions, decorative book marks, equipment and furnishings follow the approved visual direction without introducing equipment inventories, casting rules or combat behavior. Integrated verification is recorded in the [development record](development-plan.md).
+These are editable prototype models; body proportions, decorative book marks, equipment and furnishings follow the approved visual direction without introducing equipment inventories, casting rules or combat behavior. Integrated verification is recorded in the [development history](development-history.md).
 
 ## Doors, traps and test raiders — 2026-09-07
 

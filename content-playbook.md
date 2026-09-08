@@ -6,7 +6,7 @@ Use [Development tools](development-tools.md) for shared reproduction scenarios,
 
 ## Required status update
 
-For every room or dwarf addition and every related integration, update the [current implementation inventory](development-plan.md#current-implementation-status) in the same completed chunk. Record normal versus debug-only availability, implemented behavior and remaining dependencies. Update affected design wording and record verification in the development record. A definition, concept image or completed milestone alone is not evidence that the content is playable.
+For every room or dwarf addition and every related integration, update the [current implementation inventory](development-plan.md#current-implementation-status) in the same completed chunk. Record normal versus debug-only availability, implemented behavior and remaining dependencies. Update affected design wording and append completed verification to [development-history.md](development-history.md). Read past entries only when historical context is needed; keep current limitations in the active plan. A definition, concept image or completed milestone alone is not evidence that the content is playable.
 
 ## Add a room using existing services
 
