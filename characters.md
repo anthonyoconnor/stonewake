@@ -97,7 +97,7 @@ Level gains apply the new maximum health and preserve the amount of existing dam
 
 Miners are bought directly; constructing a room does not attract free additional miners.
 
-- The sidebar's dwarf panel offers a Recruit Miner action with the current gold price visible. Recruitment occurs at the Hearthstone without requiring the camera to be centered there.
+- The Spells grid offers the innate Summon Miner spell with the current gold price visible. Cast summons at the Hearthstone without research, preparation or a world target. The Dwarfs panel has no text recruitment button.
 - Payment comes from stored treasure, and the new miner appears beside the Hearthstone.
 - The next price rises as the number of living miners increases.
 - A miner dying or leaving lowers the next price again, subject to a minimum price.

@@ -18,6 +18,14 @@ try {
   });
   await page.goto(`${url}/?scenario=stronghold&paused=1`);
   await page.waitForFunction(() => window.strongholdDev?.status().scenario === 'stronghold');
+  const minerControl = async (method, status = false) => {
+    await page.getByRole('button', { name: 'Spells', exact: true }).click();
+    await page.locator('[data-spell="summon-miner"]').click();
+    const result = await page.locator(status ? '#summon-miner-status' : '[data-cast="summon-miner"]')[method]();
+    await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+    await page.locator('.population-details').evaluate(e => { e.open = true; });
+    return result;
+  };
   const state = () => page.evaluate(() => window.strongholdDev.state());
   const advance = (seconds) => page.evaluate((seconds) => window.strongholdDev.advance(seconds), seconds);
   const load = (id) => page.evaluate((id) => window.strongholdDev.load(id), id);
@@ -33,13 +41,13 @@ try {
     await panel('Dwarfs');
     before = await state();
     const startingMiners = before.agents.filter((a) => a.type === 'miner').length;
-    assert((await page.locator('#buy-miner').textContent()).includes(String(50 + 25 * startingMiners)));
+    assert((await minerControl('textContent')).includes(String(50 + 25 * startingMiners)));
     assert(
-      await page.locator('#buy-miner').isDisabled(),
+      await minerControl('isDisabled'),
       'An unsupported starting settlement explains unavailable purchases',
     );
     assert.match(
-      await page.locator('#miner-purchase-status').textContent(),
+      await minerControl('textContent', true),
       /bed|accommodation|kitchen|food/i,
     );
     await command({ kind: 'buy-miner' });
@@ -55,21 +63,21 @@ try {
       before.agents.every((a) => a.x > 7),
       'Wage fixture starts all four types beyond the treasury passage',
     );
-    assert((await page.locator('#buy-miner').textContent()).includes('75'));
-    assert(await page.locator('#buy-miner').isEnabled());
+    assert((await minerControl('textContent')).includes('75'));
+    assert(await minerControl('isEnabled'));
     await page.locator('.population-details').evaluate(e => { e.open = true; });
-    await page.locator('#buy-miner').click();
+    await minerControl('click');
     after = await state();
     assert.equal(after.agents.length, before.agents.length + 1);
     assert.equal(balance(after), balance(before) - 75, 'Purchase spends its displayed price exactly once');
     assert(
-      (await page.locator('#buy-miner').textContent()).includes('100'),
+      (await minerControl('textContent')).includes('100'),
       'Price rises with living Miners',
     );
     const purchased = after.agents.find((a) => !originals.includes(a.id));
     assert.equal(purchased.type, 'miner');
     assert(purchased.x < 7, 'Bought Miner appears through the base Hearth arrival route');
-    await page.locator('#miner-purchase-status').scrollIntoViewIfNeeded();
+    await minerControl('scrollIntoViewIfNeeded', true);
     await page.screenshot({ path: 'test-results/m13-miner-purchase.png' });
     console.log('M13: sidebar Miner purchase, exact price and failure feedback verified.');
 
@@ -108,6 +116,7 @@ try {
     await page.locator('[data-dwarf-role="miner"]').click();
     assert.match(await page.locator('#residents-list').textContent(), /pay|wage/i);
     await page.locator('.population-details').evaluate(e => { e.open = true; });
+    await page.locator('.population-details').evaluate(e => { e.open = true; });
     await page.locator('#payroll-status').scrollIntoViewIfNeeded();
     await page.screenshot({ path: 'test-results/m13-wages-collected.png' });
 
@@ -141,7 +150,7 @@ try {
     assert.equal(after.elapsed, 0);
     assert(after.agents.every((a) => a.pay.collections === 0 && a.pay.due.length === 0));
     assert(
-      (await page.locator('#buy-miner').textContent()).includes('75'),
+      (await minerControl('textContent')).includes('75'),
       'Fresh scenario restores the living-population price',
     );
     console.log(

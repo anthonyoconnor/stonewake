@@ -24,7 +24,7 @@ export function showDwarfs(s: Sidebar) {
     <table class="dwarf-activity" aria-label="Dwarfs by role and activity"><thead><tr><th scope="col"><span class="sr-only">Role</span></th>${activities.map(a => `<th scope="col" title="${a.help}">${actionIcon(a.icon)}<span class="sr-only">${a.name}</span></th>`).join('')}</tr></thead>
     <tbody>${characterDefinitions.map(c => `<tr><th scope="row"><button data-dwarf-role="${c.id}" title="${c.name}: show all" aria-label="${c.name}: show all">${actionIcon(roleIcons[c.id] ?? 'guard')}</button></th>${activities.map(a => `<td><button data-dwarf-count="${c.id}:${a.id}" aria-pressed="false">0</button></td>`).join('')}</tr>`).join('')}</tbody></table>
     <p class="activity-hint">Choose a count to inspect dwarfs.</p><p id="dwarf-filter" class="eyebrow"></p><div id="residents-list"></div>
-    <details class="population-details"><summary>Recruitment, pay & wellbeing</summary><div id="population-management"><div id="arrival-status" class="muted"></div></div></details>`;
+    <details class="population-details"><summary>Pay & wellbeing</summary><div id="population-management"><div id="arrival-status" class="muted"></div></div></details>`;
   s.panel.querySelectorAll<HTMLButtonElement>('[data-dwarf-count], [data-dwarf-role]').forEach(b => b.onclick = () => {
     const [type, activity] = (b.dataset.dwarfCount ?? b.dataset.dwarfRole!).split(':');
     filters.set(s, { type, activity });

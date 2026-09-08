@@ -19,6 +19,14 @@ try {
   });
   await page.goto(`${url}/?scenario=stronghold&paused=1`);
   await page.waitForFunction(() => window.strongholdDev?.status().scenario === 'stronghold');
+  const minerControl = async (method, status = false) => {
+    await page.getByRole('button', { name: 'Spells', exact: true }).click();
+    await page.locator('[data-spell="summon-miner"]').click();
+    const result = await page.locator(status ? '#summon-miner-status' : '[data-cast="summon-miner"]')[method]();
+    await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
+    await page.locator('.population-details').evaluate(e => { e.open = true; });
+    return result;
+  };
   const state = () => page.evaluate(() => window.strongholdDev.state());
   const advance = (seconds) => page.evaluate((seconds) => window.strongholdDev.advance(seconds), seconds);
   const load = async (id) => {
@@ -164,7 +172,7 @@ try {
     await advance(5);
     assert.equal((await state()).elapsed, defeated.elapsed, 'Defeat stops the simulation');
     await panel('Dwarfs');
-    assert(await page.locator('#buy-miner').isDisabled());
+    assert(await minerControl('isDisabled'));
     await command({ kind: 'buy-miner' });
     await command({ kind: 'activate-hearth' });
     const buildSquare = w.tiles.find(
@@ -318,7 +326,7 @@ try {
     assert.equal(w.departures?.length ?? 0, 0, 'A blocked exit never removes a dwarf remotely');
     assert.equal(await foodAlert.count(), 1, 'Escalation to departure reopens a dismissed warning');
     assert(
-      (await page.locator('#buy-miner').textContent()).includes('75'),
+      (await minerControl('textContent')).includes('75'),
       'Blocked departing Miner still counts in the next price',
     );
     assert.equal((await page.locator('#dwarf-total').textContent()).trim(), '4');
@@ -347,7 +355,7 @@ try {
       'Departures release support assignments',
     );
     assert(
-      (await page.locator('#buy-miner').textContent()).includes('50'),
+      (await minerControl('textContent')).includes('50'),
       'The next Miner price falls after actual departure',
     );
     assert.equal((await page.locator('#dwarf-total').textContent()).trim(), '0');

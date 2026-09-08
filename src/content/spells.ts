@@ -1,3 +1,5 @@
+// Innate Hearth spell: its live gold cost comes from the recruitment service.
+export const summonMinerSpell = { id: 'summon-miner', name: 'Summon Miner' } as const;
 export interface SpellDefinition {
   id:string; name:string; researchSeconds:number; prepareSeconds:number; cost:number;
   target:'dwarf'|'enemy'|'point'; effect:'haste'|'slow'|'shield'|'thunder'|'barrier'|'mend'|'reckoning'|'rally';

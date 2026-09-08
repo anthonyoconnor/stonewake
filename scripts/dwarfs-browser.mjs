@@ -39,7 +39,7 @@ try {
   await page.waitForFunction(() => [...document.querySelectorAll('[data-dwarf-count$=":needs"]')].some(b => Number(b.textContent) > 0));
   await checkCounts();
   await page.locator('.population-details > summary').click();
-  assert(await page.locator('#buy-miner').isVisible());
+  assert.equal(await page.locator('#buy-miner').count(), 0);
   assert(await page.locator('#reopen-morale').isVisible());
   await page.locator('.population-details > summary').click();
   await page.locator('[data-dwarf-role="miner"]').click();

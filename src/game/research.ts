@@ -1,5 +1,7 @@
+import { addResidents } from './simulation.ts';
+import { purchaseMiner } from './recruitment.ts';
 import {type World,type ResearchOrder,type Point,type SpellEffect,tileAt,key} from './types.ts';
-import {spellById} from '../content/spells.ts';
+import {summonMinerSpell,spellById} from '../content/spells.ts';
 import {goldTotal,spendGold} from './rooms.ts';
 import {blocked,findPath} from './navigation.ts';
 import {defenseAt} from './doors.ts';
@@ -56,6 +58,10 @@ export function spellTargetError(w:World,id:string,target?:SpellTarget):string {
   return '';
 }
 export function castSpell(w:World,id:string,target?:SpellTarget){
+  if(id===summonMinerSpell.id){
+    const result=purchaseMiner(w,(type,origin)=>addResidents(w,type,1,origin)>0);
+    return result.ok ? `Summon Miner cast. Miner arrived for ${result.price} gold.` : result.message;
+  }
   const s=spellById(id),order=w.researchOrders?.find(o=>o.spell===id);
   if(!s||order?.state!=='ready')return 'Research and prepare this spell at a Library first.';
   if(goldTotal(w)<s.cost)return 'Not enough stored gold to cast this spell.';

@@ -4,6 +4,8 @@
 
 The catalog below is implemented in the browser prototype. Its numerical values remain provisional starting points for playtesting.
 
+Summon Miner is an innate Hearth spell available from the start; it requires no Library, research, preparation or world target. Its cost is recalculated as 50 gold + 25 per living Miner. Each successful cast summons one Miner through the existing Hearth arrival service, with spare reachable Dormitory/Kitchen support, gold and a free arrival route required. Failed casts spend nothing. Deaths and departures reduce the next price.
+
 Hearth Prospect and global Hearth Haste have been removed. The catalog uses targeted casting, individual effects and the shared Library research/preparation service. Offensive spells work against authored encounters/raids and debug-spawned enemies.
 
 Related rules: [Library research](rooms.md#training-room-and-library-prototype-rules), [spell interface](gameplay-interface.md#spells), and [implementation inventory](development-plan.md#current-implementation-status).
@@ -14,6 +16,7 @@ Research and preparation times are seconds of active work by one Runesmith at no
 
 | Spell / stable ID | Role and target | Initial research | Repeat preparation | Cast cost | Effect and duration |
 |---|---|---:|---:|---:|---|
+| **Summon Miner** / `summon-miner` | Recruitment; automatic Hearth arrival | None | None | 50 + 25 × living Miners gold | Instantly summons one Miner; existing support and arrival checks apply. |
 | **Haste** / `dwarf-haste` | Support; one living friendly dwarf | 45 s | 20 s | 25 gold | +50% movement, work and attack speed for 20 s. Does not speed up hunger, fatigue or other needs. |
 | **Slow** / `enemy-slow` | Defensive control; one living enemy, including strong enemies | 60 s | 25 s | 30 gold | -40% movement and attack speed for 15 s. Does not reduce damage per hit. |
 | **Stoneguard** / `stoneguard` | Defense; one living friendly dwarf | 60 s | 30 s | 35 gold | A stone shield absorbs damage equal to 40% of the dwarf's maximum health. Ends when depleted or after 20 s. |
@@ -27,7 +30,7 @@ Research and preparation times are seconds of active work by one Runesmith at no
 
 ## Research and casting rules
 
-- A functional Library and an available research-capable Runesmith are needed to research or replenish a spell. Initially allow all catalog research choices without a prerequisite tree; the longer research times make the larger tactical effects later investments. Campaign unlocks remain open.
+- Except for the innate Summon Miner spell, a functional Library and an available research-capable Runesmith are needed to research or replenish a spell. Initially allow all catalog research choices without a prerequisite tree; the longer research times make the larger tactical effects later investments. Campaign unlocks remain open.
 - Retain one prepared charge per spell for the whole stronghold. Different spells can be researched or prepared in separate reachable Library service slots, with capacity set by room floor area. Researchers cannot combine on the same order. Pausing or losing a slot retains progress, unlocks and prepared charges; decorative desks and shelves have no gameplay effect.
 - A successful cast consumes the charge and gold, then queues preparation immediately. There is no separate cooldown; repeat preparation is the reuse gate and can benefit from research-speed bonuses. Prepared spells can still be cast without an active researcher.
 - Casting is instant after valid target selection. Dwarf buffs target a currently visible friendly dwarf; hostile spells target currently visible enemies. Use the world's visibility rules, never camera position or unexplored terrain. Casting has no additional distance limit from the Hearth or researcher, allowing support at a distant explored battlefront.

@@ -72,11 +72,11 @@ Runesmiths research spells in the Library. The current [training, research and a
 
 ### Dwarfs
 
-The Dwarfs tab opens with a compact icon matrix: Miner, Engineer, Warrior and Runesmith role icons down the side, and Idle, Working, Needs and Combat icons across the top. Each cell shows its live population count; zero counts are muted. Hover labels and accessible names explain the icons. Click a count to list matching residents, or a role icon to show that whole type. Expand a resident for work, needs, pay, training and condition details, with a Locate dwarf button. Recruitment, pay, wellbeing and specialist attraction details are grouped in an expandable section below the matrix.
+The Dwarfs tab opens with a compact icon matrix: Miner, Engineer, Warrior and Runesmith role icons down the side, and Idle, Working, Needs and Combat icons across the top. Each cell shows its live population count; zero counts are muted. Hover labels and accessible names explain the icons. Click a count to list matching residents, or a role icon to show that whole type. Expand a resident for work, needs, pay, training and condition details, with a Locate dwarf button. Pay, wellbeing and specialist attraction details are grouped in an expandable section below the matrix.
 
 Activity groups use current simulation state, including travel toward the current job. Working includes hauling, construction, training and Hearthstone activation; Needs includes eating, sleeping, collecting pay and departure; Combat includes pursuit and rally response. Idle includes waiting for available work. These are activity counts, not unmet-need warnings; wellbeing warnings remain available separately.
 
-Recruit Miner is available here with the current purchase price and affordability visible before the click. The action recruits at the Hearthstone; it does not require moving the camera there first. Refresh the price when the number of living miners changes. Other types show their attraction requirements and support limitations rather than a direct purchase button.
+Miner recruitment uses the Summon Miner icon in Spells. There is no text recruitment button in Dwarfs. Summon Miner needs no Library research or preparation, and Cast summons at the Hearthstone without world targeting. Its header and Cast button show the current 50 + 25 × living Miners gold cost and explain missing support. Specialist attraction requirements remain in the expandable population details.
 
 Selecting a dwarf in the world opens its information in the sidebar. A locate action from the population panel can center the camera on that dwarf. Inspection is informational: it does not enable individual movement orders, possession, manual job assignment, or selecting an army to command.
 
