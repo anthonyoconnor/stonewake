@@ -4,7 +4,7 @@ import {characterDefinitions,maxCharacterLevel} from '../content/characters';
 import {tuning} from '../content/tuning';
 import {wallBuildDuration} from '../game/walls';
 import {TuningDialog} from './tuning-dialog';
-import { Matrix } from '@babylonjs/core';
+import { FullMap, drawMap } from './map';
 import type { GameScene } from '../view/scene';
 import type { CameraControls } from '../view/controls';
 import type {Selection} from './selection';
@@ -34,6 +34,7 @@ const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwar
 export class Sidebar {
   root:HTMLElement; panel:HTMLElement; minimap:HTMLCanvasElement; category='rooms';
   tuningDialog=new TuningDialog();
+  fullMap:FullMap;
   lab=false;labType='treasure';labShape='Compact';
   inspectedUnit?:SpellTarget;
   onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
@@ -46,7 +47,7 @@ export class Sidebar {
     this.root=document.createElement('aside');this.root.id='sidebar';this.root.setAttribute('aria-label','Stronghold controls');
     this.root.innerHTML=`
       <header class="brand"><span class="crest">◇</span><div><h1>STONEWAKE</h1><p>RECLAIM THE DEEP</p></div></header>
-      <section class="map-section"><div class="eyebrow"><span>${view.world.name}</span><span class="live-dot"></span></div><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas><div class="map-caption"><span>THE UPPER WORKINGS</span><span>48 × 48</span></div></section>
+      <section class="map-section"><div class="eyebrow"><span>${view.world.name}</span><button id="show-map" aria-label="Show full map" title="Show full map (M)" aria-keyshortcuts="M" aria-haspopup="dialog">⛶</button></div><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas><div class="map-caption"><span>THE UPPER WORKINGS</span><span>48 × 48</span></div></section>
       <div class="reserves"><div><span class="gold-symbol">◆</span><strong id="gold-total">0</strong><small>GOLD</small></div><div><span>♟</span><strong id="dwarf-total">0</strong><small>DWARFS</small></div></div>
       <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs','debug'].map(id=>`<button data-category="${id}" aria-label="${id[0].toUpperCase()+id.slice(1)}" title="${id}"><span>${glyphs[id]}</span><small>${id}</small></button>`).join('')}</nav>
       <div class="work-tools"><button data-tool="bridge" title="Build stone bridges">Bridge</button><button data-tool="remove-bridge" title="Remove bridges or cancel bridge plans">Remove bridge</button><button data-tool="dig">${actionIcon('dig')} Excavate</button><button data-tool="erase" aria-label="Remove excavation marks" title="Clear excavation">${actionIcon('erase')}</button><button data-tool="wall" aria-label="Build walls" title="Build walls">${actionIcon('wall')}</button><button data-tool="reclaim" aria-label="Reclaim room tiles" title="Reclaim room tiles">${actionIcon('reclaim')}</button></div>
@@ -61,6 +62,7 @@ export class Sidebar {
       if(e.target.closest('[data-tool],[data-room],[data-recipe],[data-research],[data-pause-research],[data-cast],#dismiss-rally,#add-test-dwarf,#advance-encounter,#free-rooms,#lab-arrivals,#open-tuning')){e.preventDefault();e.stopImmediatePropagation();this.root.querySelector('#feedback')!.textContent='This area has ended. Restart to continue.';}
     },true);
     this.panel=this.root.querySelector('#panel')!;this.minimap=this.root.querySelector('#minimap')!;
+    this.fullMap=new FullMap(view,controls,this.root.querySelector<HTMLButtonElement>('#show-map')!);
     mountEncounterAlerts(this);mountMoraleAlerts(this);mountHearth(this);
     const messages=document.createElement('section');messages.id='sidebar-messages';this.root.querySelector('footer')!.before(messages);messages.append(this.root.querySelector('#encounter-alerts')!,this.root.querySelector('#morale-alerts')!);
     this.root.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b=>b.onclick=()=>this.show(b.dataset.category!));
@@ -87,7 +89,7 @@ export class Sidebar {
     if(category==='rooms'&&this.lab)category='lab';
     this.category=category;
     this.root.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',(b as HTMLElement).dataset.category===(category==='lab'?'rooms':category==='harnesses'?'debug':category)));
-    if(category==='help')this.panel.innerHTML='<p class="eyebrow">FIELD GUIDE</p><h2>Find your foothold.</h2><p>Explore the stone halls around your Hearthstone.</p><dl><dt>Cursor icon</dt><dd>Pickaxe: dig · minus: clear · pointer: inspect · room icon: build</dd><dt>Right click / Esc</dt><dd>Return to excavation</dd><dt>W A S D / edges</dt><dd>Pan camera</dd><dt>Left Ctrl + A/D</dt><dd>Orbit viewed point (also Q/E)</dd><dt>Mouse wheel</dt><dd>Zoom</dd><dt>Middle drag</dt><dd>Orbit viewed point horizontally</dd><dt>Home</dt><dd>Return to hearth</dd></dl>';
+    if(category==='help')this.panel.innerHTML='<p class="eyebrow">FIELD GUIDE</p><h2>Find your foothold.</h2><p>Explore the stone halls around your Hearthstone.</p><dl><dt>Cursor icon</dt><dd>Pickaxe: dig · minus: clear · pointer: inspect · room icon: build</dd><dt>Right click / Esc</dt><dd>Return to excavation</dd><dt>W A S D / edges</dt><dd>Pan camera</dd><dt>Left Ctrl + A/D</dt><dd>Orbit viewed point (also Q/E)</dd><dt>Mouse wheel</dt><dd>Zoom</dd><dt>Middle drag</dt><dd>Orbit viewed point horizontally</dd><dt>Home</dt><dd>Return to hearth</dd><dt>M</dt><dd>Show / close full map</dd></dl>';
     else if(category==='debug'){
       this.panel.innerHTML=`<p class="eyebrow">${this.lab?'TEST WORLD DEBUG':'IN-GAME DEBUG'}</p><p class="muted">Actions here affect the current world.</p><button id="open-harnesses" class="wide">Test harnesses</button><h3>Shared session settings</h3><p class="muted">These settings also affect your retained stronghold.</p><label class="toggle"><input id="free-rooms" type="checkbox" ${this.view.world.freeRoomBuilding?'checked':''}/> Free room construction</label><p class="muted">${this.view.world.freeRoomBuilding?'Room construction and expansion cost no gold.':'Normal room costs are active.'} Placement and access rules still apply.</p><button id="open-tuning" class="wide">Game configuration</button>${this.lab?'':'<h3>Reset game</h3><p class="muted">Discards the stronghold and starts a fresh game.</p><button id="restart" class="wide">Restart stronghold</button>'}`;
       this.panel.querySelector<HTMLInputElement>('#free-rooms')!.onchange=e=>{const value=(e.target as HTMLInputElement).checked;this.onFreeBuild(value);this.selection.draw();this.show('debug');};
@@ -165,19 +167,8 @@ export class Sidebar {
     header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='reclaim'?'Reclaim room tiles':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='reclaim'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% of paid cost back</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span><span class="room-price">${room!.capacityPerTile} ${room!.service==='storage'?'gold storage':'dwarf capacity'} / square</span>`}</div>`;
   }
   drawMap(){
-    const c=this.minimap.getContext('2d')!,w=this.view.world,sx=this.minimap.width/w.width,sz=this.minimap.height/w.height;
-    c.fillStyle='#0c1319';c.fillRect(0,0,240,170);
-    const color:Record<string,string>={dirt:'#6f5a43',rock:'#91938a',bedrock:'#3c4d55',gold:'#dba949',gem:'#857ab9',floor:'#8b8067',water:'#286e86',lava:'#df5423',chasm:'#101323'};
-    for(const t of w.tiles)if(t.known){c.fillStyle=t.core?'#8de3e5':t.bridge?'#bdad86':t.room?roomDefinitions.find(r=>r.id===t.room)!.color:color[t.terrain];c.fillRect(t.x*sx,t.z*sz,sx+.4,sz+.4);}
-    c.strokeStyle='#ddd4b2';c.lineWidth=1;c.beginPath();
-    const scene=this.view.scene,e=this.view.engine;
-    const width=this.view.canvas.clientWidth,height=this.view.canvas.clientHeight;
-    [[0,0],[width,0],[width,height],[0,height]].forEach(([x,y],i)=>{
-      const ray=scene.createPickingRay(x,y,Matrix.Identity(),this.view.camera);const d=-ray.origin.y/ray.direction.y;
-      const px=(ray.origin.x+ray.direction.x*d)*sx,pz=(ray.origin.z+ray.direction.z*d)*sz;
-      if(i===0)c.moveTo(px,pz);else c.lineTo(px,pz);
-    });c.closePath();c.stroke();
-    c.fillStyle='#effaf4';c.fillRect(this.view.camera.target.x*sx-1.5,this.view.camera.target.z*sz-1.5,3,3);
+    drawMap(this.minimap,this.view.world);
+    this.fullMap.update();
   }
   update(){
     const pause=this.panel.querySelector<HTMLButtonElement>('#toggle-simulation');if(pause)pause.textContent=this.isPaused()?'Resume simulation':'Pause simulation';
@@ -219,7 +210,6 @@ export class Sidebar {
       }
     }
     const attraction=this.panel.querySelector('#debug-attraction');if(attraction)attraction.textContent=attractionStatus(w,this.panel.querySelector<HTMLSelectElement>('#debug-dwarf-type')!.value);
-    const c=this.minimap.getContext('2d')!;c.fillStyle='#efe5bd';for(const a of w.agents)c.fillRect(a.x*240/w.width-1,a.z*170/w.height-1,2,2);
     const craftStatus=this.panel.querySelector('#craft-status');if(craftStatus){
       const start=w.agents[0]??w.tiles.find(t=>t.claimed&&!t.core&&t.terrain==='floor'),access=start?reachable(w,start):new Set<string>();
       craftStatus.textContent=`${w.roomServices.filter(f=>f.service==='craft'&&access.has(key(f.access))).reduce((sum,f)=>sum+f.capacity,0)} dwarf crafting capacity · ${w.agents.filter(a=>recipes.some(r=>a.capabilities.includes(r.capability))).length} capable workers. Engineers need a reachable Workshop, spare accommodation and food support to arrive.`;

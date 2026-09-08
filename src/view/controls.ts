@@ -46,6 +46,7 @@ export class CameraControls {
   zoom(factor:number){this.view.camera.radius=Math.max(tuning.minZoom,Math.min(tuning.maxZoom,this.view.camera.radius*factor));}
   home(){this.center(this.view.world.hearth.x,this.view.world.hearth.z);this.view.camera.radius=tuning.homeZoom;}
   update(dt:number){
+    if(document.querySelector('#full-map-dialog[open]'))return;
     const speed=this.view.camera.radius*tuning.panSpeed*dt;
     const horizontal=Number(this.keys.has('KeyD'))-Number(this.keys.has('KeyA'));
     const orbit=this.keys.has('ControlLeft');

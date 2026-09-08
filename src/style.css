@@ -33,3 +33,5 @@ button{font:inherit;color:inherit;background:none;border:1px solid #34414b;curso
 #sidebar-messages{max-height:20vh;min-height:0;overflow:auto;flex-shrink:1}.panel{min-height:0}
 
 .work-tools button{min-width:0;padding:3px 4px}.work-tools [data-tool="bridge"],.work-tools [data-tool="remove-bridge"],.work-tools [data-tool="dig"]{grid-column:span 3}
+
+#show-map{font-size:21px;line-height:1;padding:2px 5px;color:#d5bc81}#full-map-dialog{padding:18px;background:#172229;color:#e1dbc9;border:1px solid #647065;border-radius:6px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px)}#full-map-dialog::backdrop{background:#071015cc}#full-map-dialog header{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:14px}#full-map-dialog h2{font:24px Georgia;margin:0}#full-map-dialog button{font-size:24px;padding:0 10px}#full-map{display:block;max-width:100%;object-fit:contain;image-rendering:pixelated;cursor:crosshair;border:1px solid #64706566}
