@@ -28,9 +28,9 @@ export class Selection {
     canvas.addEventListener('pointerdown',e=>{if(e.button===2){this.setTool('dig');return;}if(e.button!==0)return;this.start=pick(e);const tile=this.start&&tileAt(view.world,this.start.x,this.start.z);this.dragAdds=this.start&&['dig','erase','wall'].includes(this.tool)?this.tool==='wall'?!tile?.wallPlanned:this.tool==='dig'&&!tile?.designated:undefined;this.hover=this.start;this.draw();canvas.setPointerCapture(e.pointerId);});
     canvas.addEventListener('pointermove',e=>{this.hover=pick(e);this.draw();});
     canvas.addEventListener('pointerup',e=>{
-      if(e.button!==0)return;const end=pick(e);
+      if(e.button!==0)return;const bounds=canvas.getBoundingClientRect();const end=e.clientX>=bounds.left&&e.clientX<bounds.right&&e.clientY>=bounds.top&&e.clientY<bounds.bottom?pick(e):undefined;
       if(this.start&&end){const points=this.rectangle(this.start,end);
-        if(view.world.outcome){if(tileAt(view.world,end.x,end.z)?.known)this.inspect(end);}
+        if(view.world.outcome){const unit=targetAt(view.world,'dwarf-haste',end)??targetAt(view.world,'enemy-slow',end);if(unit)this.onUnitInspect(unit);else if(tileAt(view.world,end.x,end.z)?.known)this.inspect(end);}
         else if(spellById(this.tool)){
           const target=targetAt(view.world,this.tool,end),message=castSpell(view.world,this.tool,target);
           if(message.includes(' cast.')){this.setTool('dig');if(target&&target.kind!=='point')this.onUnitInspect(target);}
@@ -49,9 +49,12 @@ export class Selection {
         else this.inspect(end);
       }
       this.start=undefined;this.dragAdds=undefined;this.draw(false);
+      if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
     });
+    canvas.addEventListener('pointercancel',()=>{this.start=undefined;this.dragAdds=undefined;this.draw(false);});
+    canvas.addEventListener('lostpointercapture',()=>{this.start=undefined;this.dragAdds=undefined;});
     const cancel=()=>this.setTool('dig');
-    canvas.addEventListener('contextmenu',cancel);window.addEventListener('keydown',e=>{if(e.key==='Escape')cancel();if(e.key.toLowerCase()==='r'&&defenseById(this.tool)?.kind==='bolt'&&!(e.target instanceof HTMLElement&&e.target.closest('input,select,textarea,dialog'))){this.rotation=(this.rotation+1)%4;this.draw();}});
+    canvas.addEventListener('contextmenu',cancel);window.addEventListener('keydown',e=>{if(e.target instanceof Element&&e.target.closest('dialog'))return;if(e.key==='Escape')cancel();if(e.key.toLowerCase()==='r'&&!e.ctrlKey&&!e.metaKey&&defenseById(this.tool)?.kind==='bolt'&&!(e.target instanceof HTMLElement&&e.target.closest('input,select,textarea,button,summary,[contenteditable]'))){this.rotation=(this.rotation+1)%4;this.draw();}});
   }
   updateCursor(){const tile=this.hover&&tileAt(this.view.world,this.hover.x,this.hover.z);const action=this.tool==='dig'?(this.dragAdds!==undefined?(this.dragAdds?'dig':'erase'):tile?.designated?'erase':tile?.known&&(tile.terrain==='floor'||isHazard(tile))?'inspect':'dig'):this.tool;this.view.canvas.style.cursor=spellById(this.tool)?'crosshair':actionCursor(action);}
   setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=this.view.world.outcome?'inspect':tool;this.draw();this.onChange('');}

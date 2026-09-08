@@ -1,20 +1,26 @@
 import {hasteRate} from '../game/spell-effects';
-import {MeshBuilder,TransformNode,Vector3,type Mesh} from '@babylonjs/core';
+import {MeshBuilder,TransformNode,Vector3,Mesh} from '@babylonjs/core';
 import type {GameScene} from './scene';
 import {characterById} from '../content/characters';
-type Model={root:TransformNode;legs:TransformNode[];arm:TransformNode;leftArm:TransformNode;tool:TransformNode;load:TransformNode;shadow:Mesh;trainingWeights:TransformNode[];shield?:TransformNode;book?:TransformNode};
+import {characterStats} from '../game/progression';
+import type {Resident} from '../game/types';
+import {residentSurface,costumeDetails} from './resident-detail';
+type Pose={rotation:number[];arms:number[];legs:number[];y:number};
+type Model={root:TransformNode;legs:TransformNode[];arm:TransformNode;leftArm:TransformNode;tool:TransformNode;load:TransformNode;shadow:Mesh;trainingWeights:TransformNode[];shield?:TransformNode;book?:TransformNode;actor?:Resident;lastX?:number;lastZ?:number;lastTime?:number;stride:number;walking:boolean;pose?:Pose;removedAt?:number};
 export class ResidentView {
   nodes=new Map<number,Model>();
+  reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   constructor(public view:GameScene){}
   reset(){for(const m of this.nodes.values()){m.root.dispose();m.shadow.dispose();}this.nodes.clear();}
   create(id:number,type:string):Model{
     const v=this.view,def=characterById(type)!,engineer=def.appearance==='braids',warrior=def.appearance==='warrior',runesmith=def.appearance==='runesmith';
-    const root=new TransformNode(`dwarf-${id}`,v.scene),cloth=v.material(`${type} cloth`,def.color),skin=v.material('skin','#d2a27b'),leather=v.material('leather','#59402b'),iron=v.material('iron','#637079'),brass=v.material('brass','#b5975d');
-    const hair=warrior?v.material('warrior beard','#353a3a'):runesmith?v.material('silver hair','#ccc9b9'):v.material('hair','#774325'),ivory=v.material('scholar trim','#d4c5a4');
+    const root=new TransformNode(`dwarf-${id}`,v.scene),cloth=residentSurface(v,`${type} cloth`,def.color),skin=residentSurface(v,'skin','#c99a76'),leather=residentSurface(v,'leather','#513c2c'),iron=residentSurface(v,'steel','#56636a',true),brass=residentSurface(v,'brass','#a48a55',true);
+    const hair=residentSurface(v,`${type} hair`,warrior?'#302e2c':runesmith?'#b9b7a8':'#694026'),ivory=residentSurface(v,'ivory','#c4bb9d');
     const part=(name:string,x:number,y:number,z:number,w:number,h:number,d:number,mat=cloth,parent=root)=>{const m=v.box(name,x,y,z,w,h,d,mat,parent);m.isPickable=false;return m;};
     const round=(name:string,x:number,y:number,z:number,w:number,h:number,d:number,mat=cloth,parent=root)=>{const m=MeshBuilder.CreateSphere(name,{diameter:1,segments:8},v.scene);m.scaling.set(w,h,d);m.position.set(x,y,z);m.parent=parent;m.material=mat;m.isPickable=false;return m;};
     const legs=[-.13,.13].map(x=>{const leg=new TransformNode('leg pivot',v.scene);leg.position.set(x,.25,0);leg.parent=root;round('boot',0,-.14,.045,.23,.24,.34,leather,leg);part('boot cuff',0,-.02,0,.21,.1,.25,iron,leg);return leg;});
-    round('tunic',0,.42,0,.52,.45,.39);part('belt',0,.28,0,.47,.075,.38,leather);part('buckle',0,.28,.2,.12,.09,.025,brass);
+    const tunic=MeshBuilder.CreateLathe('tailored tunic',{shape:[new Vector3(0,.2,0),new Vector3(.24,.21,0),new Vector3(.25,.3,0),new Vector3(.27,.47,0),new Vector3(.23,.58,0),new Vector3(.12,.63,0),new Vector3(0,.63,0)],tessellation:12,cap:Mesh.CAP_ALL},v.scene);tunic.scaling.z=.76;tunic.material=cloth;tunic.parent=root;tunic.isPickable=false;
+    part('belt',0,.28,0,.47,.075,.38,leather);part('buckle',0,.28,.2,.12,.09,.025,brass);
     round('face',0,.69,.005,.34,.31,.31,skin);round('nose',0,.69,.178,.11,.09,.1,skin);
     for(const x of [-.085,.085]){part('eye',x,.737,.145,.035,.025,.025,v.material('eyes','#242829'));round('ear',x*2,.69,0,.08,.12,.07,skin);}
     const hat=round(engineer?'hair bun':runesmith?'scholar hair':'helmet',0,.835,engineer||runesmith?-.04:0,engineer?.29:runesmith?.34:.41,engineer?.26:.22,.36,engineer||runesmith?hair:iron);
@@ -86,24 +92,48 @@ export class ResidentView {
     round('gold satchel',0,0,0,.3,.31,.23,leather,load);
     for(let i=0;i<3;i++)part('satchel gold',(i-1)*.06,.15,0,.055,.06,.08,v.material('gold metal','#edb855'),load);
     load.setEnabled(false);hat.rotation.z=.02;
+    costumeDetails(v,root,type,legs,arms,shield,book);
+    // Merge stationary pieces within each animated pivot, keeping equipment toggles independent.
+    const pivots=[root,...root.getDescendants(false).filter((n):n is TransformNode=>n instanceof TransformNode&&!(n instanceof Mesh))];
+    for(const pivot of pivots){
+      const groups=new Map<Mesh['material'],Mesh[]>();
+      for(const mesh of pivot.getChildMeshes(true))if(mesh instanceof Mesh&&mesh.material)groups.set(mesh.material,[...(groups.get(mesh.material)??[]),mesh]);
+      for(const [material,meshes] of groups)if(meshes.length>1){
+        const inverse=pivot.computeWorldMatrix(true).clone().invert();
+        const merged=Mesh.MergeMeshes(meshes,true,true);
+        if(merged){merged.bakeTransformIntoVertices(inverse);merged.parent=pivot;merged.isPickable=false;const mat=material as typeof cloth;if(mat.emissiveColor.r+mat.emissiveColor.g+mat.emissiveColor.b>.3)v.includeGlow(merged);}
+      }
+    }
     const shadow=v.shadow(0,0,.88,.73,v.terrainRoot);
-    return {root,legs,arm:arms[1],leftArm:arms[0],tool,load,shadow,trainingWeights,shield,book};
+    return {root,legs,arm:arms[1],leftArm:arms[0],tool,load,shadow,trainingWeights,shield,book,stride:id,walking:false};
   }
   update(){
     const v=this.view,time=v.world.elapsed;
-    for(const [id,m] of this.nodes)if(!v.world.agents.some(a=>a.id===id)){m.root.dispose();m.shadow.dispose();this.nodes.delete(id);}
+    for(const [id,m] of this.nodes)if(!v.world.agents.some(a=>a.id===id)){
+      if((m.actor?.health??1)<=0){
+        m.removedAt??=time;const age=time-m.removedAt;
+        m.root.rotation.z=Math.min(1,age/.55)*Math.PI/2;m.root.position.y=-Math.min(.12,age*.2);
+        m.tool.setEnabled(false);m.load.setEnabled(false);m.book?.setEnabled(false);
+        for(const weight of m.trainingWeights)weight.setEnabled(false);
+        if(age<2)continue;
+      }
+      m.root.dispose();m.shadow.dispose();this.nodes.delete(id);
+    }
     for(const a of v.world.agents){
       let m=this.nodes.get(a.id);if(!m){m=this.create(a.id,a.type);this.nodes.set(a.id,m);}
-      const walking=a.path.length>0,j=a.job,working=!!j&&!walking,phase=time*11*hasteRate(v.world,a)+a.id;
+      const dt=Math.max(0,Math.min(.15,time-(m.lastTime??time))),distance=Math.hypot(a.x-(m.lastX??a.x),a.z-(m.lastZ??a.z));
+      if(dt>0){m.walking=distance>.0005;m.stride+=distance*9;}
+      m.lastTime=time;m.lastX=a.x;m.lastZ=a.z;m.actor=a;
+      const walking=m.walking,j=a.job,working=!!j&&!a.path.length&&!walking,phase=m.stride,reduced=this.reduced.matches;
       m.root.position.set(a.x,walking?Math.abs(Math.sin(phase))*.025:0,a.z);m.root.rotation.set(0,a.facing,0);
-      m.root.scaling.y=1+Math.sin(time*2+a.id)*.008;m.shadow.position.set(a.x,.025,a.z);
+      m.root.scaling.y=1+(reduced?0:Math.sin(time*2+a.id)*.008);m.shadow.position.set(a.x,.025,a.z);
       m.legs.forEach((leg,i)=>leg.rotation.x=walking?Math.sin(phase+i*Math.PI)*.4:0);
       m.arm.rotation.x=walking?Math.sin(phase)*.22:0;m.leftArm.rotation.x=walking?-Math.sin(phase)*.35:0;
       m.arm.rotation.z=0;m.leftArm.rotation.z=0;
       const handsFree=working&&['sleep','eat','claim','train','research'].includes(j!.kind);
       m.tool.setEnabled(!handsFree);m.shield?.setEnabled(!handsFree);
       for(const weight of m.trainingWeights)weight.setEnabled(false);
-      m.book?.setEnabled(!working||j?.kind==='idle'||j?.kind==='research');
+      m.book?.setEnabled(a.activity!=='Fighting'&&!a.carrying&&(!working||j?.kind==='idle'||j?.kind==='research'));
       if(m.book&&m.book.isEnabled()){m.arm.rotation.x=-.78;m.leftArm.rotation.x=-.78;m.book.rotation.z=walking?Math.sin(phase)*.025:0;}
       if(working&&j){
         // Keep room activities readable beside cosmetic props, within the real service tile.
@@ -127,8 +157,26 @@ export class ResidentView {
           m.root.position.y=.22;m.root.rotation.set(-Math.PI/2,a.facing,0);m.arm.rotation.x=.1;m.leftArm.rotation.x=.1;
         }
       }
+      if(j?.kind==='activate'&&working){m.tool.setEnabled(false);m.shield?.setEnabled(false);m.arm.rotation.x=-1.15;m.leftArm.rotation.x=-1.15;m.root.rotation.x=.08;}
+      if(a.activity==='Fighting'){
+        const interval=characterStats(a).attackSeconds/hasteRate(v.world,a),age=Math.max(0,time-((a.nextAttackAt??time)-interval));
+        const strike=Math.max(0,1-age/.35);m.arm.rotation.x=-.45-strike*1.5;m.leftArm.rotation.x=-.9;m.root.rotation.y+=strike*.12;
+      }
+      const recoil=a.hitAt===undefined?0:Math.max(0,1-(time-a.hitAt)/.25);
+      if(recoil&&!reduced){m.root.rotation.x-=recoil*.16;m.root.rotation.z+=recoil*.07;}
+      m.load.setEnabled(a.carrying>0);m.load.rotation.z=walking&&!reduced?Math.sin(phase)*.1:0;
+      if(a.carrying&&walking){m.leftArm.rotation.x=-.35;m.root.rotation.x=.06;}
+      if(reduced)m.root.position.y=working&&j?.kind==='sleep'?.22:0;
+      // Ease changes between jobs and shortest-path turns, without moving feet away from simulation positions.
+      const target:Pose={rotation:[m.root.rotation.x,m.root.rotation.y,m.root.rotation.z],arms:[m.arm.rotation.x,m.arm.rotation.z,m.leftArm.rotation.x,m.leftArm.rotation.z],legs:m.legs.map(l=>l.rotation.x),y:m.root.position.y};
+      if(m.pose){
+        const blend=1-Math.exp(-dt*16),mix=(before:number,after:number)=>before+(after-before)*blend;
+        target.rotation=target.rotation.map((n,i)=>m.pose!.rotation[i]+Math.atan2(Math.sin(n-m.pose!.rotation[i]),Math.cos(n-m.pose!.rotation[i]))*blend);
+        target.arms=target.arms.map((n,i)=>mix(m.pose!.arms[i],n));target.legs=target.legs.map((n,i)=>mix(m.pose!.legs[i],n));target.y=mix(m.pose.y,target.y);
+      }
+      m.pose=target;m.root.rotation.set(target.rotation[0],target.rotation[1],target.rotation[2]);m.root.position.y=target.y;
+      m.arm.rotation.x=target.arms[0];m.arm.rotation.z=target.arms[1];m.leftArm.rotation.x=target.arms[2];m.leftArm.rotation.z=target.arms[3];m.legs.forEach((l,i)=>l.rotation.x=target.legs[i]);
       m.shadow.position.x=m.root.position.x;m.shadow.position.z=m.root.position.z;
-      if(a.activity==='Fighting'){m.arm.rotation.x=-.8+Math.sin(time*9)*.8;m.leftArm.rotation.x=-.7;} m.load.setEnabled(a.carrying>0);m.load.rotation.z=walking?Math.sin(phase)*.1:0;
     }
   }
 }

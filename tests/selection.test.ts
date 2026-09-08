@@ -8,13 +8,14 @@ import {tileAt} from '../src/game/types.ts';
 import {addResidents} from '../src/game/simulation.ts';
 import {queueResearch} from '../src/game/research.ts';
 import {goldTotal} from '../src/game/rooms.ts';
+class TestElement extends EventTarget { closest(){return null;} }
 
 test('first tile locks excavation drag action and cancelling construction restores it',()=>{
  const engine=new NullEngine(),scene=new Scene(engine);
  const world=createWorld({id:'selection',name:'Selection',width:16,height:16,hearth:{x:4,z:4},openings:[[2,2,8,8]],seams:[]});
  for(const t of world.tiles){t.known=true;if(t.terrain==='floor')t.claimed=true;}
- const canvas=Object.assign(new EventTarget(),{style:{cursor:''},getBoundingClientRect:()=>({left:0,top:0}),setPointerCapture(){}});
- const win=new EventTarget();Object.assign(globalThis,{window:win});
+ const canvas=Object.assign(new EventTarget(),{style:{cursor:''},getBoundingClientRect:()=>({left:0,top:0,right:16,bottom:16}),setPointerCapture(){},hasPointerCapture:()=>false,releasePointerCapture(){}});
+ const win=new EventTarget();Object.assign(globalThis,{window:win,Element:TestElement,HTMLElement:TestElement});
  scene.pick=((x:number,y:number)=>({pickedMesh:{metadata:{tile:{x,z:y}}}})) as never;
  const selection=new Selection({scene,world,canvas,box:()=>({material:{}}),material:()=>({})} as never);
  const emit=(type:string,x=10,z=10,button=0)=>canvas.dispatchEvent(Object.assign(new Event(type),{clientX:x,clientY:z,button,pointerId:1}));
@@ -28,16 +29,17 @@ test('first tile locks excavation drag action and cancelling construction restor
   emit('pointerdown');emit('pointermove',12,10);assert.equal(canvas.style.cursor,actionCursor('erase'));emit('pointerup',12,10);
   assert.equal(tileAt(world,10,10)!.designated,false);assert.equal(tileAt(world,11,10)!.designated,false);assert.equal(tileAt(world,12,10)!.designated,false);
   selection.setTool('treasure');assert.equal(canvas.style.cursor,actionCursor('treasure'));click(7,7);assert.equal(tileAt(world,7,7)!.room,'treasure');
+  const beforeOutside=world.spent;emit('pointerdown',8,7);emit('pointermove',-5,7);emit('pointerup',-5,7);assert.equal(world.spent,beforeOutside);assert.equal(tileAt(world,8,7)!.room,undefined,'Release outside the world never builds behind the sidebar');
   emit('pointerdown',8,7);emit('pointerdown',8,7,2);emit('pointerup',8,7);assert.equal(tileAt(world,8,7)!.room,undefined);assert.equal(selection.tool,'dig');
   click();assert.equal(tileAt(world,10,10)!.designated,true);
   selection.setTool('treasure');win.dispatchEvent(Object.assign(new Event('keydown'),{key:'Escape'}));assert.equal(selection.tool,'dig');
   emit('pointermove',7,7);assert.equal(canvas.style.cursor,actionCursor('inspect'));click(7,7);assert.deepEqual(selection.selected,{x:7,z:7});
   tileAt(world,12,10)!.known=false;tileAt(world,12,10)!.terrain='floor';emit('pointermove',12,10);assert.equal(canvas.style.cursor,actionCursor('dig'));click(12,10);assert.equal(tileAt(world,12,10)!.designated,true);assert.equal(tileAt(world,12,10)!.known,false);click(12,10);assert.equal(tileAt(world,12,10)!.designated,false);
-  selection.setTool('reclaim');click(7,7);assert.equal(tileAt(world,7,7)!.room,undefined);assert.equal(world.allowance,394);
+  selection.setTool('sell');click(7,7);assert.equal(tileAt(world,7,7)!.room,undefined);assert.equal(world.allowance,394);
   selection.setTool('wall');click(7,7);assert(tileAt(world,7,7)!.wallPlanned);
   emit('pointerdown',8,7);emit('pointerup',7,7);assert(tileAt(world,7,7)!.wallPlanned);assert(tileAt(world,8,7)!.wallPlanned);
   emit('pointerdown',7,7);emit('pointerup',8,8);assert(!tileAt(world,7,7)!.wallPlanned);assert(!tileAt(world,8,7)!.wallPlanned);assert(!tileAt(world,8,8)!.wallPlanned);
- }finally{scene.dispose();engine.dispose();Reflect.deleteProperty(globalThis,'window');}
+ }finally{scene.dispose();engine.dispose();for(const k of ['window','Element','HTMLElement'])Reflect.deleteProperty(globalThis,k);}
 });
 
 test('spell pointer targeting casts once on the selected dwarf and cancellation spends nothing',()=>{
@@ -46,7 +48,7 @@ test('spell pointer targeting casts once on the selected dwarf and cancellation 
  for(const t of world.tiles){t.known=true;t.claimed=t.terrain==='floor';}
  addResidents(world,'miner',2);world.agents.forEach((a,i)=>Object.assign(a,{x:8+i*2,z:8}));
  queueResearch(world,'dwarf-haste');world.researchOrders![0].state='ready';
- const canvas=Object.assign(new EventTarget(),{style:{cursor:''},getBoundingClientRect:()=>({left:0,top:0}),setPointerCapture(){}}),win=new EventTarget();Object.assign(globalThis,{window:win});
+ const canvas=Object.assign(new EventTarget(),{style:{cursor:''},getBoundingClientRect:()=>({left:0,top:0,right:16,bottom:16}),setPointerCapture(){},hasPointerCapture:()=>false,releasePointerCapture(){}}),win=new EventTarget();Object.assign(globalThis,{window:win,Element:TestElement,HTMLElement:TestElement});
  scene.pick=((x:number,y:number)=>({pickedMesh:{metadata:{tile:{x,z:y}}}})) as never;
  const selection=new Selection({scene,world,canvas,box:()=>({material:{}}),material:()=>({})} as never);
  const emit=(type:string,x=8,z=8,button=0)=>canvas.dispatchEvent(Object.assign(new Event(type),{clientX:x,clientY:z,button,pointerId:1}));
@@ -56,5 +58,5 @@ test('spell pointer targeting casts once on the selected dwarf and cancellation 
   selection.setTool('dwarf-haste');emit('pointerdown',12,12);emit('pointerup',12,12);assert.equal(goldTotal(world),gold);
   emit('pointerdown');emit('pointerup');assert.equal(goldTotal(world),gold-25);assert.equal(selection.tool,'dig');assert.equal(world.agents[0].effects?.length,1);assert(!world.agents[1].effects?.length);
   selection.setTool('dwarf-haste');win.dispatchEvent(Object.assign(new Event('keydown'),{key:'Escape'}));assert.equal(selection.tool,'dig');
- }finally{scene.dispose();engine.dispose();Reflect.deleteProperty(globalThis,'window');}
+ }finally{scene.dispose();engine.dispose();for(const k of ['window','Element','HTMLElement'])Reflect.deleteProperty(globalThis,k);}
 });

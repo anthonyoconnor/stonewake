@@ -1,6 +1,6 @@
 import { type World, type Point, type Resident, type Enemy, tileAt, neighbors, key } from './types.ts';
 import { tuning } from '../content/tuning.ts';
-import { raiderDefinition } from '../content/defenses.ts';
+import { enemyById, enemyBehaviorTuning } from '../content/enemies.ts';
 import { alive, slowRate, spellLine } from './spell-effects.ts';
 import { canStand, findPath } from './navigation.ts';
 import { nearest, releaseJob, take } from './jobs/common.ts';
@@ -54,15 +54,17 @@ export function damageHearth(w: World, amount: number) {
 /** Natural attackers use the same physical reach, obstruction and cooldown as their melee attacks. */
 export function tryAttackHearth(w: World, enemy: Enemy) {
   if (w.outcome || !w.hearthState || !enemy.sourceId || enemy.dormant || enemy.health <= 0) return false;
+  const definition=enemyById(enemy.type);
   const target = w.tiles.find(
-    (t) => t.core && Math.hypot(t.x - enemy.x, t.z - enemy.z) <= 1.05 && spellLine(w, enemy, t),
+    (t) => t.core && Math.hypot(t.x - enemy.x, t.z - enemy.z) <= (definition.range??enemyBehaviorTuning.meleeReach) && spellLine(w, enemy, t),
   );
   if (!target) return false;
   enemy.activity = 'Attacking Stone Hearth';
   enemy.facing = Math.atan2(target.x - enemy.x, target.z - enemy.z);
   if (enemy.nextAttackAt <= w.elapsed) {
-    damageHearth(w, raiderDefinition.damage);
-    enemy.nextAttackAt = w.elapsed + raiderDefinition.attackSeconds / slowRate(w, enemy);
+    damageHearth(w, definition.damage);
+    enemy.attackedAt=w.elapsed;enemy.shotEnd=definition.range?{x:target.x,z:target.z}:undefined;
+    enemy.nextAttackAt = w.elapsed + definition.attackSeconds / slowRate(w, enemy);
   }
   return true;
 }

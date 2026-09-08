@@ -1,4 +1,8 @@
 import { createCrossingScenario } from './crossings.ts';
+import { startCampaign } from '../game/campaign.ts';
+import { createEnemyLab } from './enemy-lab.ts';
+import { createCharacterLab } from './character-lab.ts';
+import { createEnemyRegion } from './enemy-regions.ts';
 import { prototypeLevel } from './levels.ts';
 import { createWorld } from '../game/world.ts';
 import { createRoomLab, showcaseRooms } from './room-lab.ts';
@@ -43,11 +47,7 @@ export function populateShowcase(world: World) {
 type ScenarioFactory = (free: boolean) => World;
 export const scenarioFactories = {
   stronghold: (free) => {
-    const w = createWorld(prototypeLevel);
-    w.freeRoomBuilding = free;
-    addMiners(w);
-    enableRecruitment(w);
-    return w;
+    return startCampaign(free);
   },
   'room-lab': (free) => {
     const w = createRoomLab();
@@ -64,6 +64,13 @@ export const scenarioFactories = {
   defenses: createDefenseLab,
   spells: createSpellLab,
   encounters: createEncounterLab,
+  'enemy-roster': createEnemyLab,
+  'character-models': createCharacterLab,
+  'region-upper': (free) => createEnemyRegion('upper', free),
+  'region-fungal': (free) => createEnemyRegion('fungal', free),
+  'region-ancient': (free) => createEnemyRegion('ancient', free),
+  'region-crystal': (free) => createEnemyRegion('crystal', free),
+  'region-volcanic': (free) => createEnemyRegion('volcanic', free),
   economy: createEconomyLab,
   hearth: createHearthLab,
   'hearth-defeat': createHearthDefeatLab,

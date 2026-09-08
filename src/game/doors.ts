@@ -7,11 +7,13 @@ export const doorAt=(w:World,p:Point)=>w.defenses?.find(d=>isDoor(d)&&d.x===p.x&
 export const overlapsDoor=(p:Point,d:Point)=>Math.abs(p.x-d.x)<.5+tuning.radius&&Math.abs(p.z-d.z)<.5+tuning.radius;
 export const doorOccupied=(w:World,d:Defense)=>w.agents.some(a=>overlapsDoor(a,d))||!!w.enemies?.some(e=>e.health>0&&overlapsDoor(e,d));
 export const doorIsOpen=(w:World,d:Defense)=>d.mode==='open'||doorOccupied(w,d)||(d.mode==='closed'&&d.openUntil>w.elapsed);
-export type Walker='dwarf'|'enemy'|'breach';
+export type Walker='dwarf'|'enemy'|'breach'|'enemy-lava'|'breach-lava';
+export const isEnemyWalker=(walker?:Walker)=>walker!==undefined&&walker!=='dwarf';
+export const isBreachWalker=(walker?:Walker)=>walker==='breach'||walker==='breach-lava';
 export interface Passage {walker?:Walker;escape?:number}
 export function doorBlocks(w:World,p:Point,passage:Passage={}){
-  const d=doorAt(w,p);if(!d||d.id===passage.escape||passage.walker==='breach')return false;
-  return passage.walker==='enemy'?!doorIsOpen(w,d):d.mode==='locked';
+  const d=doorAt(w,p);if(!d||d.id===passage.escape||isBreachWalker(passage.walker))return false;
+  return isEnemyWalker(passage.walker)?!doorIsOpen(w,d):d.mode==='locked';
 }
 export function passageFrom(w:World,p:Point,walker:Walker='dwarf'):Passage {
   return {walker,escape:w.defenses?.find(d=>isDoor(d)&&overlapsDoor(p,d))?.id};

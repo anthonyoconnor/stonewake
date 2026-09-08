@@ -1,10 +1,12 @@
 import { terrainOpaque } from './terrain.ts';
 import {type World,type Point,type Defense,type DoorMode,type Enemy,tileAt,key} from './types.ts';
-import {defenseById,defenseDirections,raiderDefinition} from '../content/defenses.ts';
-import {defenseAt,doorAt,isDoor,doorIsOpen,doorOccupied,passageFrom} from './doors.ts';
-import {blocked,findPath,clearLine} from './navigation.ts';
-import {alive,slowRate,damageEnemy,damageResident,damageBarrier,spellLine} from './spell-effects.ts';
-import {tryAttackHearth} from './hearth.ts';
+import {defenseById,defenseDirections} from '../content/defenses.ts';
+import {enemyById,enemyDefinitions} from '../content/enemies.ts';
+import {enemyWalker,tickEnemies} from './enemy-ai.ts';
+import {defenseAt,doorAt,isDoor,doorIsOpen,doorOccupied} from './doors.ts';
+import {blocked} from './navigation.ts';
+import {damageEnemy} from './spell-effects.ts';
+
 
 // Player tool availability, also checked when confirming an already-selected tool.
 export function defenseToolStatus(w:World,type:string){
@@ -55,10 +57,12 @@ export function damageDoor(w:World,d:Defense,damage:number){
   if(!d.health){w.defenses=w.defenses!.filter(o=>o!==d);w.routesChanged=true;}
   w.revision++;
 }
-export function addRaider(w:World,spawn:Point,target:Point){
+export const addRaider=(w:World,spawn:Point,target:Point)=>addEnemy(w,spawn,target);
+export function addEnemy(w:World,spawn:Point,target:Point,type='goblin-raider'){
   if(w.outcome)return;
-  if(blocked(w,spawn,undefined,{walker:'enemy'}))return;
-  const e:Enemy={id:w.nextEnemyId=(w.nextEnemyId??0)+1,...spawn,target:{...target},health:raiderDefinition.health,facing:0,pinnedUntil:0,nextAttackAt:0,activity:'Approaching',hitAt:-100};
+  if(!enemyDefinitions.some(d=>d.id===type)||blocked(w,spawn,undefined,{walker:enemyWalker(type)}))return;
+  const def=enemyById(type);
+  const e:Enemy={id:w.nextEnemyId=(w.nextEnemyId??0)+1,...spawn,target:{...target},type,maxHealth:def.health,health:def.health,facing:0,pinnedUntil:0,nextAttackAt:0,activity:'Approaching',hitAt:-100};
   (w.enemies??=[]).push(e);return e;
 }
 function trigger(w:World,d:Defense,e:Enemy){
@@ -85,38 +89,5 @@ export function boltTarget(w:World,d:Defense){
 export function tickDefenses(w:World,dt:number){
   if(w.outcome)return;
   for(const d of w.defenses??[])if(defenseById(d.type)?.kind==='bolt'&&d.readyAt<=w.elapsed){const target=boltTarget(w,d);if(target)trigger(w,d,target);}
-  for(const e of w.enemies??[]){
-    if(w.outcome)break;
-    if(e.health<=0)continue;
-    spikeAtEnemy(w,e);if(e.health<=0)continue;
-    if(e.dormant){e.activity='Guarding camp';continue;}
-    if(e.pinnedUntil>w.elapsed){if(e.activity!=='Pinned by spikes')e.activity='Stunned';continue;}
-    const victim=w.agents.filter(a=>alive(a)&&Math.hypot(a.x-e.x,a.z-e.z)<=6&&spellLine(w,e,a)).sort((a,b)=>Math.hypot(a.x-e.x,a.z-e.z)-Math.hypot(b.x-e.x,b.z-e.z))[0];
-    if(victim&&Math.hypot(victim.x-e.x,victim.z-e.z)<=1.05){
-      e.activity='Attacking dwarf';e.facing=Math.atan2(victim.x-e.x,victim.z-e.z);
-      if(e.nextAttackAt<=w.elapsed){damageResident(w,victim,raiderDefinition.damage);e.nextAttackAt=w.elapsed+raiderDefinition.attackSeconds/slowRate(w,e);}continue;
-    }
-    if(tryAttackHearth(w,e))continue;
-    let remaining=raiderDefinition.speed*slowRate(w,e)*dt;
-    const destination=victim?{x:Math.round(victim.x),z:Math.round(victim.z)}:e.target;
-    const path=findPath(w,e,destination,'enemy')??findPath(w,e,destination,'breach');
-    if(!path){e.activity='No route';continue;}
-    e.activity='Approaching';
-    while(remaining>0&&path.length){
-      const p=path[0],dx=p.x-e.x,dz=p.z-e.z,distance=Math.hypot(dx,dz);
-      if(distance<.001){path.shift();continue;}
-      const step=Math.min(.1,distance,remaining),next={x:e.x+dx/distance*step,z:e.z+dz/distance*step};
-      e.facing=Math.atan2(dx,dz);
-      if(!clearLine(w,e,next,passageFrom(w,e,'enemy'))){
-        const door=w.defenses?.filter(d=>isDoor(d)&&!doorIsOpen(w,d)&&Math.hypot(d.x-e.x,d.z-e.z)<1.2&&(d.x-e.x)*dx+(d.z-e.z)*dz>0).sort((a,b)=>Math.hypot(a.x-e.x,a.z-e.z)-Math.hypot(b.x-e.x,b.z-e.z))[0];
-        const barrier=w.barrier&&Math.hypot(w.barrier.x-e.x,w.barrier.z-e.z)<1.2&&(w.barrier.x-e.x)*dx+(w.barrier.z-e.z)*dz>0?w.barrier:undefined;
-        e.activity=door?'Breaking down door':barrier?'Breaking runic barrier':'Blocked';
-        if((door||barrier)&&e.nextAttackAt<=w.elapsed){if(door)damageDoor(w,door,raiderDefinition.damage);else damageBarrier(w,raiderDefinition.damage);e.nextAttackAt=w.elapsed+raiderDefinition.attackSeconds/slowRate(w,e);}
-        break;
-      }
-      e.x=next.x;e.z=next.z;remaining-=step;spikeAtEnemy(w,e);
-      if(!e.health||e.pinnedUntil>w.elapsed)break;
-    }
-    if(e.health>0&&Math.hypot(e.x-e.target.x,e.z-e.target.z)<.05)e.activity=e.sourceId?'Holding Hearth approach':'Reached test target';
-  }
+  tickEnemies(w,dt,spikeAtEnemy,damageDoor);
 }

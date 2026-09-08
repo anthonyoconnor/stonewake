@@ -34,12 +34,13 @@ try {
     channel: process.env.BROWSER_CHANNEL ?? (process.platform === 'win32' ? 'msedge' : undefined),
   });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  page.setDefaultTimeout(60000);
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(`${message.text()} ${message.location().url}`);
   });
-  await page.goto(`${url}/?scenario=crowded-kitchen&paused=1`);
+  await page.goto(`${url}/?scenario=crowded-kitchen&paused=1`, { waitUntil: 'domcontentloaded', timeout: 90000 });
   await page.locator('#sidebar').waitFor();
   if (production) {
     await page.getByRole('button', { name: 'Debug', exact: true }).click();

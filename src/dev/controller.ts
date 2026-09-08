@@ -6,7 +6,7 @@ import { buildRoom, reclaimRoom } from '../game/rooms.ts';
 import { planWalls } from '../game/walls.ts';
 import { queueCraft } from '../game/crafting.ts';
 import { queueResearch, cancelResearch, castSpell, type SpellTarget } from '../game/research.ts';
-import { placeDefense, removeDefense, setDoorMode, addRaider } from '../game/defenses.ts';
+import { placeDefense, removeDefense, setDoorMode, addRaider, addEnemy } from '../game/defenses.ts';
 import { enableRecruitment, purchaseMiner } from '../game/recruitment.ts';
 import { diagnosticSnapshot, enableDiagnostics, inspectResident } from '../game/diagnostics.ts';
 import { advance } from './stepping.ts';
@@ -30,7 +30,8 @@ export type DevCommand =
   | { kind: 'place-defense'; type: string; point: Point; rotation?: number }
   | { kind: 'remove-defense'; id: number }
   | { kind: 'door'; id: number; mode: DoorMode }
-  | { kind: 'raider'; spawn: Point; target: Point };
+  | { kind: 'raider'; spawn: Point; target: Point }
+  | { kind: 'enemy'; spawn: Point; target: Point; type: string };
 
 /** A small adapter over gameplay services, shared by Node checks and the browser. */
 export class DevelopmentController {
@@ -156,6 +157,8 @@ export class DevelopmentController {
       }
       case 'raider':
         return addRaider(w, command.spawn, command.target) ? 'Test raider added.' : 'Spawn is blocked.';
+      case 'enemy':
+        return addEnemy(w, command.spawn, command.target, command.type) ? 'Test enemy added.' : 'Spawn is blocked.';
       default: {
         const unhandled: never = command;
         throw new Error(`Unknown development command: ${JSON.stringify(unhandled)}`);

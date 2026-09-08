@@ -1,10 +1,21 @@
 import { MeshBuilder, TransformNode, type StandardMaterial } from '@babylonjs/core';
 import type { GameScene } from './scene';
 import type { Furnishing } from '../game/types';
+import { dressedBlock } from './environment';
 
-export interface FurnishingDisplay { storedGold?:number; output?:string; outputCount?:number; eating?:boolean }
+export interface FurnishingDisplay {
+  storedGold?: number;
+  output?: string;
+  outputCount?: number;
+  eating?: boolean;
+}
 
-export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: TransformNode, display:FurnishingDisplay={}) {
+export function drawFurnishingModel(
+  view: GameScene,
+  f: Furnishing,
+  parent: TransformNode,
+  display: FurnishingDisplay = {},
+) {
   const model = f.model ?? f.kind;
   const wide = f.cells.some((p) => p.x !== f.x),
     deep = f.cells.some((p) => p.z !== f.z);
@@ -26,7 +37,19 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       d: number,
       m: StandardMaterial,
     ) => {
-      view.box(n, x, y, z, w, h, d, m, bed).isPickable = false;
+      dressedBlock(
+        view,
+        n,
+        x,
+        y,
+        z,
+        w,
+        h,
+        d,
+        m,
+        bed,
+        Math.min(0.018, h * 0.15, w * 0.15, d * 0.15),
+      ).isPickable = false;
     };
     part('bed frame', 0, 0.19, 0, 0.75, 0.22, 1.75, wood);
     part('blanket', 0, 0.34, 0.17, 0.68, 0.14, 1.25, view.material('blanket', '#6c8278'));
@@ -46,6 +69,10 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       );
     for (const x of [-0.34, 0.34])
       for (const z of [-0.82, 0.82]) part('bedpost', x, 0.3, z, 0.1, 0.6, 0.1, wood);
+    for (const x of [-0.34, 0.34])
+      for (const z of [-0.82, 0.82]) part('bedpost cap', x, 0.6, z, 0.12, 0.055, 0.12, metal);
+    part('footboard', 0, 0.31, 0.83, 0.72, 0.27, 0.07, wood);
+    for (const x of [-0.29, 0.29]) part('headboard corner inlay', x, 0.49, -0.88, 0.022, 0.28, 0.018, metal);
     return;
   }
   if (['mushrooms', 'stove', 'table', 'barrel'].includes(model)) {
@@ -62,7 +89,19 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       d: number,
       m: StandardMaterial,
     ) => {
-      view.box(n, x, y, z, w, h, d, m, root).isPickable = false;
+      dressedBlock(
+        view,
+        n,
+        x,
+        y,
+        z,
+        w,
+        h,
+        d,
+        m,
+        root,
+        Math.min(0.018, h * 0.15, w * 0.15, d * 0.15),
+      ).isPickable = false;
     };
     const cylinder = (
       n: string,
@@ -99,6 +138,20 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       part('coals', 0, 0.2, -0.38, 0.4, 0.17, 0.025, view.material('fire', '#ed9b47', false, 0.6));
       cylinder('cooking pot', 0, 0.63, 0, 0.24, 0.46, view.material('pot', '#383c3f'));
       cylinder('prepared food', 0, 0.77, 0, 0.02, 0.38, view.material('stew', '#c8a059'));
+      for (const x of [-0.29, 0.29]) {
+        const handle = MeshBuilder.CreateTorus(
+          'pot handle',
+          { diameter: 0.16, thickness: 0.035, tessellation: 10 },
+          view.scene,
+        );
+        handle.position.set(x, 0.67, 0);
+        handle.rotation.z = Math.PI / 2;
+        handle.material = metal;
+        handle.parent = root;
+        handle.isPickable = false;
+      }
+      for (const x of [-0.16, 0, 0.16]) part('stove grate', x, 0.21, -0.4, 0.028, 0.22, 0.04, metal);
+      part('stove hood lip', 0, 0.49, -0.36, 0.79, 0.055, 0.12, metal);
     } else if (model === 'barrel') {
       cylinder('brew barrel', 0, 0.37, 0, 0.72, 0.6, wood);
       for (const y of [0.13, 0.59]) {
@@ -113,12 +166,29 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
         ring.isPickable = false;
       }
       part('tap', 0, 0.24, -0.36, 0.07, 0.13, 0.12, metal);
+      cylinder('barrel lid', 0, 0.74, 0, 0.035, 0.54, wood);
+      for (let i = 0; i < 10; i++) {
+        const angle = (i * Math.PI) / 5;
+        part(
+          'cask stave joint',
+          Math.sin(angle) * 0.293,
+          0.36,
+          Math.cos(angle) * 0.293,
+          0.012,
+          0.59,
+          0.012,
+          view.material('wood joint', '#32271e'),
+        );
+      }
     } else {
       part('tabletop', 0, 0.52, 0, 0.8, 0.12, 0.76, wood);
       for (const x of [-0.3, 0.3])
         for (const z of [-0.27, 0.27]) part('table leg', x, 0.26, z, 0.07, 0.5, 0.07, wood);
-      if (display.eating)
-        cylinder('meal plate', 0, 0.6, 0, 0.025, 0.25, view.material('plate', '#d4c5a0'));
+      for (const z of [-0.24, 0.24]) part('table apron', 0, 0.42, z, 0.67, 0.11, 0.05, wood);
+      for (const z of [-0.21, 0, 0.21])
+        part('table plank joint', 0, 0.583, z, 0.77, 0.004, 0.008, view.material('wood joint', '#32271e'));
+      cylinder('drinking cup', 0.24, 0.65, 0.21, 0.14, 0.09, view.material('copper cup', '#a77449'));
+      if (display.eating) cylinder('meal plate', 0, 0.6, 0, 0.025, 0.25, view.material('plate', '#d4c5a0'));
     }
     return;
   }
@@ -141,13 +211,36 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       d: number,
       m: StandardMaterial,
     ) => {
-      view.box(n, x, y, z, w, h, d, m, root).isPickable = false;
+      dressedBlock(
+        view,
+        n,
+        x,
+        y,
+        z,
+        w,
+        h,
+        d,
+        m,
+        root,
+        Math.min(0.018, h * 0.15, w * 0.15, d * 0.15),
+      ).isPickable = false;
     };
     const iron = view.material('workshop iron', '#57626a');
     if (model === 'anvil') {
       part('anvil plinth', 0, 0.15, 0, 0.65, 0.3, 0.65, wood);
       part('anvil waist', 0, 0.42, 0, 0.25, 0.3, 0.27, iron);
       part('anvil top', 0, 0.59, 0, 0.7, 0.12, 0.32, iron);
+      const horn = MeshBuilder.CreateCylinder(
+        'anvil horn',
+        { height: 0.3, diameterBottom: 0.19, diameterTop: 0.02, tessellation: 5 },
+        view.scene,
+      );
+      horn.rotation.z = -Math.PI / 2;
+      horn.position.set(0.42, 0.58, 0);
+      horn.parent = root;
+      horn.material = iron;
+      horn.isPickable = false;
+      for (const x of [-0.23, 0.23]) part('anvil base strap', x, 0.2, 0, 0.045, 0.3, 0.67, metal);
     } else {
       const width = model === 'assembly' ? 1.7 : 0.78;
       part('work bench', 0, 0.55, 0, width, 0.17, 0.7, wood);
@@ -155,6 +248,9 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
         for (const z of [-0.25, 0.25]) part('bench leg', x, 0.25, z, 0.09, 0.5, 0.09, wood);
       part('vice', 0.21, 0.7, 0, 0.16, 0.18, 0.23, iron);
       part('parts tray', -0.2, 0.66, 0.05, 0.24, 0.03, 0.28, metal);
+      part('bench lower brace', 0, 0.2, 0.23, width - 0.08, 0.08, 0.065, wood);
+      for (const x of [-width / 2 + 0.08, width / 2 - 0.08])
+        part('bench iron corner', x, 0.56, -0.36, 0.1, 0.19, 0.035, metal);
       for (const x of [-0.3, 0]) {
         part('bench tool handle', x, 0.66, -0.2, 0.03, 0.03, 0.2, wood);
         part('bench tool head', x, 0.69, -0.28, 0.13, 0.06, 0.055, iron);
@@ -226,7 +322,19 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
       d: number,
       m: StandardMaterial,
     ) => {
-      const mesh = view.box(n, x, y, z, w, h, d, m, root);
+      const mesh = dressedBlock(
+        view,
+        n,
+        x,
+        y,
+        z,
+        w,
+        h,
+        d,
+        m,
+        root,
+        Math.min(0.018, h * 0.15, w * 0.15, d * 0.15),
+      );
       mesh.isPickable = false;
       return mesh;
     };
@@ -323,7 +431,32 @@ export function drawFurnishingModel(view: GameScene, f: Furnishing, parent: Tran
     view.box('prototype facility', f.x, 0.3, f.z, 0.7, 0.6, 0.7, metal, parent).isPickable = false;
     return;
   }
-  view.box('chest', f.x, 0.23, f.z, 0.68, 0.44, 0.65, wood, parent).isPickable = false;
+  dressedBlock(view, 'chest base', f.x, 0.11, f.z, 0.7, 0.2, 0.66, wood, parent, 0.028).isPickable = false;
+  view.box(
+    'chest interior',
+    f.x,
+    0.215,
+    f.z,
+    0.57,
+    0.022,
+    0.53,
+    view.material('chest lining', '#302a22'),
+    parent,
+  ).isPickable = false;
+  for (const dx of [-0.3, 0.3])
+    dressedBlock(view, 'chest side', f.x + dx, 0.31, f.z, 0.08, 0.36, 0.65, wood, parent, 0.016).isPickable =
+      false;
+  for (const dz of [-0.285, 0.285])
+    dressedBlock(view, 'chest end', f.x, 0.31, f.z + dz, 0.61, 0.36, 0.07, wood, parent, 0.012).isPickable =
+      false;
+  // Open vault lid leaves the real stored-gold display readable from overhead.
+  const lid = new TransformNode('raised chest lid', view.scene);
+  lid.parent = parent;
+  lid.position.set(f.x, 0.46, f.z + 0.31);
+  lid.rotation.x = -0.98;
+  dressedBlock(view, 'chest lid', 0, 0.015, 0.29, 0.7, 0.075, 0.61, wood, lid, 0.022).isPickable = false;
+  for (const dx of [-0.24, 0.24])
+    view.box('lid iron band', dx, 0.061, 0.29, 0.045, 0.026, 0.6, metal, lid).isPickable = false;
   for (const dz of [-0.32, 0.32])
     view.box('vault rim', f.x, 0.47, f.z + dz, 0.71, 0.075, 0.05, metal, parent).isPickable = false;
   view.box('chest lock', f.x, 0.32, f.z - 0.337, 0.12, 0.16, 0.035, metal, parent).isPickable = false;

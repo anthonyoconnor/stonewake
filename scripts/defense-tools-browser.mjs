@@ -37,7 +37,7 @@ try{
   };
 
  await panel('Defenses');
- assert(await page.locator('[data-defense]').evaluateAll(bs=>bs.every(b=>b.disabled)));
+ assert(await page.locator('[data-defense]').evaluateAll(bs=>bs.every(b=>b.getAttribute('aria-disabled')==='true')));
  assert.match(await page.locator('[data-defense="spike-trap"]').getAttribute('title'),/Workshop/);
  assert.equal(await page.locator('[data-tool="remove-bridge"],[data-tool="reclaim"],[data-tool="dig"],[data-tool="erase"],.work-tools').count(),0);
  await panel('Rooms');
@@ -45,18 +45,18 @@ try{
  assert.equal((await page.locator('[data-tool="bridge"]').textContent()).trim(),'');
  assert.equal(await page.locator('[data-tool="bridge"] img').count(),1);
  await load('defenses');await panel('Defenses');
- assert(await page.locator('[data-defense]').evaluateAll(bs=>bs.every(b=>!b.disabled)));
+ assert(await page.locator('[data-defense]').evaluateAll(bs=>bs.every(b=>b.getAttribute('aria-disabled')!=='true')));
  await page.locator('[data-defense="spike-trap"]').click();await clickTile(13,12);
  let w=await state();assert(w.defenses.some(d=>d.x===13&&d.z===12));
- await page.waitForFunction(()=>document.querySelector('[data-defense="spike-trap"]').disabled);
+ await page.waitForFunction(()=>document.querySelector('[data-defense="spike-trap"]')?.getAttribute('aria-disabled')==='true');
  await panel('Rooms');await page.locator('[data-tool="sell"]').click();await clickTile(13,12);
  w=await state();assert(!w.defenses.some(d=>d.x===13&&d.z===12));
  await panel('Defenses');
  const workshops=w.tiles.filter(t=>t.room==='workshop');
  await command({kind:'reclaim',points:workshops});
- await page.waitForFunction(()=>[...document.querySelectorAll('[data-defense]')].every(b=>b.disabled));
+ await page.waitForFunction(()=>[...document.querySelectorAll('[data-defense]')].every(b=>b.getAttribute('aria-disabled')==='true'));
  await command({kind:'build',room:'workshop',points:[workshops[0]]});
- await page.waitForFunction(()=>!document.querySelector('[data-defense="timber-door"]').disabled);
+ await page.waitForFunction(()=>document.querySelector('[data-defense="timber-door"]')?.getAttribute('aria-disabled')!=='true');
  await load('crossings');await page.evaluate(()=>window.strongholdDev.advance(15));await panel('Rooms');
  await page.locator('[data-tool="bridge"]').click();await clickTile(10,9);
  w=await state();assert(w.tiles[w.width*9+10].bridgePlanned);

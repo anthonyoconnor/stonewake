@@ -6,6 +6,8 @@ import {defenseToolStatus,setDoorMode,removeDefense,addRaider} from '../game/def
 import {addResidents} from '../game/simulation';
 import {type DoorMode,tileAt} from '../game/types';
 import {actionIcon} from './icons';
+import {actionAvailability} from './action-help';
+import {enemyById} from '../content/enemies';
 const feedback=(s:Sidebar,message:string)=>{s.root.querySelector('#feedback')!.textContent=message;};
 export function showDefenses(s:Sidebar){
   s.panel.innerHTML=`<div id="defense-inspector"></div><details id="build-defenses" open><summary>Build defenses</summary><div id="selected-defense" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Defense choices">${defenseDefinitions.map(d=>`<button data-defense="${d.id}" class="room-choice" aria-label="${d.name}" title="${d.name}">${actionIcon(d.id)}</button>`).join('')}</div><p id="defense-description" class="muted"></p><div id="bolt-facing-controls"><label>Bolt facing<select id="defense-facing">${defenseDirections.map((d,i)=>`<option value="${i}" ${i===s.selection.rotation?'selected':''}>${d.name}</option>`).join('')}</select></label><p class="muted">R rotates a bolt before placement.</p></div><button id="inspect-defense" class="wide">Inspect placed defense</button></details><details><summary>Placed defenses</summary><div id="placed-defenses"></div></details>`;
@@ -25,11 +27,9 @@ export function updateDefenses(s:Sidebar){
   const w=s.view.world;
   for(const def of defenseDefinitions){
     const status=defenseToolStatus(w,def.id),button=s.panel.querySelector<HTMLButtonElement>(`[data-defense="${def.id}"]`)!;
-    button.disabled=!status.available;
     button.classList.toggle('active',s.selection.tool===def.id);
     button.setAttribute('aria-pressed',String(s.selection.tool===def.id));
-    button.title=`${def.name} · ${status.stock} in stock · ${status.reason||'Click to place'}`;
-    button.setAttribute('aria-label',button.title);
+    actionAvailability(button,status.available,`${def.name} · ${status.stock} in stock · ${status.reason||'Click to place'}`);
   }
   const selectedDef=defenseById(s.selection.tool);
   const header=s.panel.querySelector<HTMLElement>('#selected-defense')!;
@@ -52,5 +52,5 @@ export function updateDefenses(s:Sidebar){
   }
   const placed=s.panel.querySelector<HTMLElement>('#placed-defenses')!,signature=(w.defenses??[]).map(d=>d.id).join(',');
   if(placed.dataset.ids!==signature){placed.dataset.ids=signature;placed.innerHTML=(w.defenses??[]).map(d=>`<button class="wide" data-inspect-fixture="${d.id}">${defenseById(d.type)!.name} · ${d.x}, ${d.z}</button>`).join('')||'<p class="muted">None placed.</p>';placed.querySelectorAll<HTMLButtonElement>('[data-inspect-fixture]').forEach(b=>b.onclick=()=>{const d=w.defenses!.find(d=>d.id===Number(b.dataset.inspectFixture))!;s.selection.selected=d;s.selection.setTool('inspect');s.controls.center(d.x,d.z);updateDefenses(s);});}
-  const enemies=s.panel.querySelector('#test-enemies');if(enemies)enemies.innerHTML=(w.enemies??[]).slice(-5).map(e=>`<p class="muted">Raider ${e.id} · ${e.health} health · ${e.activity}</p>`).join('');
+  const enemies=s.panel.querySelector('#test-enemies');if(enemies)enemies.innerHTML=(w.enemies??[]).slice(-5).map(e=>`<p class="muted">${enemyById(e.type).name} ${e.id} · ${e.health} health · ${e.activity}</p>`).join('');
 }

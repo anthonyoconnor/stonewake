@@ -1,7 +1,10 @@
 import { type World, type Point, type Enemy, tileAt } from './types.ts';
-import { addRaider } from './defenses.ts';
+import { addEnemy } from './defenses.ts';
+import { enemyDefinitions, enemyById } from '../content/enemies.ts';
+import { enemyWalker, burrowPath } from './enemy-ai.ts';
 import { reachable, blocked } from './navigation.ts';
 import { alive, visible } from './spell-effects.ts';
+import { type Walker } from './doors.ts';
 
 /** Positions are physical spawn squares, never alternative spawn searches. */
 export interface EncounterDefinition {
@@ -9,6 +12,8 @@ export interface EncounterDefinition {
   name: string;
   kind: 'camp' | 'nest' | 'entrance';
   positions: Point[];
+  /** Species per physical position. Omit for legacy Raider-only sources. */
+  roster?: string[];
   activation: 'discovery' | 'route' | 'time';
   delay: number;
   warningSeconds: number;
@@ -41,13 +46,14 @@ export function encounterTarget(
   w: World,
   from: Point,
   routes = reachable(w, from, undefined, 'breach'),
+  walker: Walker = 'breach',
 ): Point | undefined {
   const approaches = w.tiles
     .filter(
       (t) =>
         Math.max(Math.abs(t.x - w.hearth.x), Math.abs(t.z - w.hearth.z)) === 2 &&
         (Math.abs(t.x - w.hearth.x) <= 1 || Math.abs(t.z - w.hearth.z) <= 1) &&
-        !blocked(w, t, undefined, { walker: 'breach' }),
+        !blocked(w, t, undefined, { walker }),
     )
     .sort((a, b) => distance(a, from) - distance(b, from));
   const target = approaches.find((p) => routes.has(`${p.x},${p.z}`)) ?? approaches[0];
@@ -55,31 +61,41 @@ export function encounterTarget(
 }
 
 function sourceRoute(w: World, source: EncounterState) {
-  return source.definition.positions.every((p) => {
-    const routes = reachable(w, p, undefined, 'breach');
-    const target = encounterTarget(w, p, routes);
-    return target && routes.has(`${target.x},${target.z}`);
+  return source.definition.positions.every((p, i) => {
+    const type = source.definition.roster?.[i];
+    const walker = enemyWalker(type, true),
+      routes = reachable(w, p, undefined, walker);
+    const target = encounterTarget(w, p, routes, walker);
+    return (
+      target &&
+      (routes.has(`${target.x},${target.z}`) ||
+        (enemyById(type).ability === 'burrow' && !!burrowPath(w, p, target)))
+    );
   });
 }
 
-function spawnSquareFree(w: World, p: Point) {
+function spawnSquareFree(w: World, p: Point, type?: string) {
   const tile = tileAt(w, p.x, p.z);
   return (
     !!tile &&
     !tile.claimed &&
     !tile.room &&
     !tile.wallPlanned &&
-    !blocked(w, p, undefined, { walker: 'enemy' }) &&
+    !blocked(w, p, undefined, { walker: enemyWalker(type) }) &&
     !w.agents.some((a) => alive(a) && distance(a, p) < 0.8) &&
     !(w.enemies ?? []).some((e) => e.health > 0 && distance(e, p) < 0.8)
   );
 }
 
 function spawnGroup(w: World, source: EncounterState, dormant: boolean) {
-  if (!source.definition.positions.every((p) => spawnSquareFree(w, p))) return false;
+  if (!source.definition.positions.every((p, i) => spawnSquareFree(w, p, source.definition.roster?.[i])))
+    return false;
   const group: Enemy[] = [];
-  for (const position of source.definition.positions) {
-    const enemy = addRaider(w, position, encounterTarget(w, position) ?? position)!;
+  for (const [i, position] of source.definition.positions.entries()) {
+    const type = source.definition.roster?.[i];
+    const walker = enemyWalker(type, true),
+      routes = reachable(w, position, undefined, walker);
+    const enemy = addEnemy(w, position, encounterTarget(w, position, routes, walker) ?? position, type)!;
     enemy.sourceId = source.definition.id;
     enemy.dormant = dormant;
     enemy.activity = dormant ? 'Guarding camp' : 'Approaching';
@@ -95,6 +111,9 @@ export function initializeEncounters(w: World, definitions: EncounterDefinition[
     if (
       ids.has(definition.id) ||
       !definition.positions.length ||
+      (definition.roster !== undefined &&
+        (definition.roster.length !== definition.positions.length ||
+          definition.roster.some((id) => !enemyDefinitions.some((e) => e.id === id)))) ||
       definition.delay < 0 ||
       definition.warningSeconds < 0 ||
       (definition.repeatSeconds !== undefined && definition.repeatSeconds <= 0)
@@ -183,7 +202,9 @@ export function tickEncounters(w: World) {
     if (living.length) {
       for (const enemy of living) {
         enemy.dormant = false;
-        enemy.target = encounterTarget(w, enemy) ?? enemy.target;
+        const walker = enemyWalker(enemy.type, true),
+          routes = reachable(w, enemy, undefined, walker);
+        enemy.target = encounterTarget(w, enemy, routes, walker) ?? enemy.target;
       }
     } else {
       // A sealed entrance retains one pending warned wave. It cannot accumulate or teleport waves.

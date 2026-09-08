@@ -8,7 +8,7 @@ export class CameraControls {
     this.view=view;
     const canvas=view.canvas;
     window.addEventListener('keydown',e=>{
-      if((e.target as HTMLElement).matches('input,select,textarea'))return;
+      if(e.target instanceof Element&&e.target.closest('input,select,textarea,button,summary,[contenteditable],dialog'))return;
       const k=e.code;
       if(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','Home','ControlLeft'].includes(k)){
         e.preventDefault();this.keys.add(k);
@@ -19,7 +19,8 @@ export class CameraControls {
     const clear=()=>{this.keys.clear();this.drag=undefined;this.pointer=undefined;};
     window.addEventListener('blur',clear);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)clear();});
-    window.addEventListener('pointermove',e=>{this.pointer=e.pointerType==='mouse'?{x:e.clientX,y:e.clientY}:undefined;});
+    window.addEventListener('pointermove',e=>{this.pointer=e.pointerType==='mouse'&&e.target===canvas?{x:e.clientX,y:e.clientY}:undefined;});
+    document.addEventListener('focusin',e=>{if(e.target instanceof Element&&e.target.closest('#sidebar,dialog'))clear();});
     document.addEventListener('pointerleave',()=>this.pointer=undefined);
     canvas.addEventListener('contextmenu',e=>e.preventDefault());
     canvas.addEventListener('wheel',e=>{e.preventDefault();this.zoom(Math.exp(e.deltaY*tuning.wheelSensitivity));},{passive:false});

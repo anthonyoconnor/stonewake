@@ -8,6 +8,8 @@ export function bridgeWorkSite(w: World, t: Tile, p: Tile) {
   return !!t.bridgePlanned && !t.bridge && p.claimed && terrainWalkable(p) && canStand(w, p);
 }
 export function bridgeQuote(w: World, points: Point[]) {
+  if (w.campaign && !w.campaign.unlockedBuildings.includes('bridge'))
+    return {tiles: [] as Tile[], cost: 0, valid: false, reason: 'Awaken the first onward Hearthstone to recover stonebridge plans.'};
   const candidates = [...new Map(points.map((p) => [key(p), tileAt(w, p.x, p.z)])).values()].filter(
     (t): t is Tile => !!t?.known && bridgeable(t) && !t.bridge && !t.bridgePlanned,
   );

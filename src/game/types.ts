@@ -1,6 +1,7 @@
 import type { EncounterDefinition, EncounterState } from './encounters.ts';
 import type { HearthState, OnwardHearthDefinition, OnwardHearthState } from './hearth.ts';
 import type { MoraleCause, MoraleState } from './morale.ts';
+import type { CampaignState } from './campaign.ts';
 export type Terrain = 'floor' | 'dirt' | 'rock' | 'bedrock' | 'gold' | 'gem' | 'water' | 'lava' | 'chasm';
 export interface Point { x: number; z: number }
 export interface Tile extends Point {
@@ -31,6 +32,7 @@ export interface LevelDefinition {
   onwardHearth?: OnwardHearthDefinition;
 }
 export interface World {
+  campaign?: CampaignState;
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
   agents: Resident[]; furnishings: Furnishing[]; roomServices: RoomService[]; elapsed: number; nextPaydayAt:number; allowance: number; spent: number; freeRoomBuilding:boolean;
   craftOrders:CraftOrder[];outputs:Record<string,number>;
@@ -57,6 +59,8 @@ export interface Defense extends Point {
   openUntil:number; readyAt:number; triggeredAt:number; shotEnd?:Point;
 }
 export interface Enemy extends Point {
+  type?:string; maxHealth?:number; attackedAt?:number; abilityReadyAt?:number; shotEnd?:Point;
+  chargeUntil?:number; digging?:Point&{progress:number};
   id:number; health:number; target:Point; facing:number; pinnedUntil:number;
   nextAttackAt:number; activity:string; hitAt:number; diedAt?:number;
   effects?:SpellEffect[];

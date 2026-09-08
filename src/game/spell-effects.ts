@@ -3,11 +3,12 @@ import {type World,type Point,type Resident,type Enemy,tileAt} from './types.ts'
 import {doorAt,doorIsOpen} from './doors.ts';
 import {tuning} from '../content/tuning.ts';
 import {characterLevel} from '../content/characters.ts';
+import {enemyById} from '../content/enemies.ts';
 export const alive=(a:Resident)=>health(a)>0;
 export const maxHealth=(a:Resident)=>a.maxHealth??characterLevel(a.type,a.level).health;
 export const health=(a:Resident)=>a.health??maxHealth(a);
 export const effect=(w:World,a:Resident|Enemy,kind:string)=>a.effects?.find(e=>e.kind===kind&&e.until>w.elapsed);
-export const hasteRate=(w:World,a:Resident)=>1+(effect(w,a,'haste')?.strength??0);
+export const hasteRate=(w:World,a:Resident)=>(1+(effect(w,a,'haste')?.strength??0))*(1-(effect(w,a,'slow')?.strength??0));
 export const slowRate=(w:World,a:Enemy)=>1-(effect(w,a,'slow')?.strength??0);
 export const barrierAt=(w:World,p:Point)=>w.barrier&&w.barrier.health>0&&w.barrier.until>w.elapsed&&w.barrier.x===p.x&&w.barrier.z===p.z?w.barrier:undefined;
 // Sight rays ignore furnishings but stop at terrain, shut doors and spell barriers.
@@ -25,7 +26,8 @@ export function visible(w:World,p:Point){
 }
 export function damageEnemy(w:World,e:Enemy,amount:number,source:'dwarf'|'spell'|'trap'='spell'){
   if(e.health<=0)return;
-  e.health=Math.max(0,e.health-amount*(source==='dwarf'?1+(effect(w,e,'reckoning')?.strength??0):1));e.hitAt=w.elapsed;
+  const armor=source==='spell'?0:(enemyById(e.type).armor??0);
+  e.health=Math.max(0,e.health-amount*(1-armor)*(source==='dwarf'?1+(effect(w,e,'reckoning')?.strength??0):1));e.hitAt=w.elapsed;
   if(!e.health){e.diedAt=w.elapsed;e.activity='Defeated';e.effects=[];}w.revision++;
 }
 export function damageResident(w:World,a:Resident,amount:number){

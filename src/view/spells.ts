@@ -8,7 +8,12 @@ export class SpellView {
   reset(){for(const n of this.nodes.values())n.dispose();this.nodes.clear();}
   private model(key:string,id:string,radius=.5){
     let root=this.nodes.get(key);if(root)return root;
-    const v=this.view,s=spellById(id)!;root=new TransformNode(key,v.scene);this.nodes.set(key,root);
+    const v=this.view,s=spellById(id)??({
+      'spider-web':{color:'#a5c9c5',effect:'slow'},
+      'spore-cloud':{color:'#c9b971',effect:'slow'},
+    } as Record<string,{color:string;effect:string}>)[id];
+    root=new TransformNode(key,v.scene);this.nodes.set(key,root);
+    if(!s)return root;
     const mat=v.material('spell '+id,s.color,false,.35);
     const part=(x:number,y:number,z:number,sx:number,sy:number,sz:number)=>{const m=v.box(id,x,y,z,sx,sy,sz,mat,root);m.isPickable=false;return m;};
     if(s.effect==='barrier'){

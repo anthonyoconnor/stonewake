@@ -1,7 +1,6 @@
 import { tuning } from './content/tuning';
 import './style.css';
-import { prototypeLevel } from './content/levels';
-import { createWorld } from './game/world';
+import { startCampaign, restartCampaignArea, travelOnward } from './game/campaign';
 import { GameScene } from './view/scene';
 import { CameraControls } from './view/controls';
 import { Sidebar } from './ui/sidebar';
@@ -19,10 +18,7 @@ import { HearthView } from './view/hearth';
 import { createSpellLab } from './content/spell-lab';
 import { populateShowcase } from './content/scenarios';
 import type { DevelopmentController } from './dev/controller';
-let world = createWorld(prototypeLevel);
-world.freeRoomBuilding = import.meta.env.VITE_FREE_ROOM_BUILDING === 'true';
-addMiners(world);
-enableRecruitment(world);
+let world = startCampaign(import.meta.env.VITE_FREE_ROOM_BUILDING === 'true');
 const view = new GameScene(document.querySelector<HTMLCanvasElement>('#world')!, world);
 const controls = new CameraControls(view);
 // A browser owns Ctrl+W; protect the in-memory session at the point of leaving.
@@ -137,15 +133,23 @@ sidebar.onFreeBuild = (value) => {
 };
 sidebar.onRestart = () => {
   const free = world.freeRoomBuilding;
-  world = createWorld(prototypeLevel);
-  world.freeRoomBuilding = free;
-  addMiners(world);
-  enableRecruitment(world);
+  world = startCampaign(free);
   sidebar.onLab(false);
 };
 sidebar.onRestartArea = () => {
-  if (development && development.scenario !== 'custom' && development.scenario !== 'stronghold') { development.load(development.scenario); refresh(); }
+  const restarted = restartCampaignArea(view.world);
+  if (restarted) { world = restarted; sidebar.onLab(false); sidebar.onPause(false); sidebar.show('hearth'); refresh(); }
+  else if (development && development.scenario !== 'custom' && development.scenario !== 'stronghold') { development.load(development.scenario); refresh(); }
   else { sidebar.onRestart(); sidebar.onPause(false); }
+};
+sidebar.onTravel = () => {
+  const next = travelOnward(view.world);
+  if (!next) return;
+  world = next;
+  sidebar.onLab(false);
+  sidebar.onPause(false);
+  sidebar.show('hearth');
+  refresh();
 };
 let uiTime = 0;
 if (import.meta.env.DEV)

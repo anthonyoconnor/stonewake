@@ -48,7 +48,7 @@ try {
     const api=window.strongholdDev, a=api.state().agents[0];
     api.command({kind:'cast', spell:'dwarf-haste', target:{kind:'dwarf',id:a.id}});
   });
-  await page.waitForFunction(() => document.querySelector('[data-spell="dwarf-haste"]').disabled);
+  await page.waitForFunction(() => document.querySelector('[data-spell="dwarf-haste"]')?.getAttribute('aria-disabled')==='true');
   assert.deepEqual(errors, []);
   console.log('Summon Miner browser checks passed: no old recruitment controls, innate casting, exact escalating charges, research switching and missing-support feedback.');
 } finally { await browser.close(); }
