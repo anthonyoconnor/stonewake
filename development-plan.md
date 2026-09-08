@@ -40,7 +40,7 @@ Other broad systems still pending include guard duty, retreat, door repairs/upgr
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight Miner-work seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 
-**Dwarf overview:** role/activity icon counts open filtered resident lists with expandable stats and camera location. Wages, wellbeing and attraction details are expandable below the grid. Miner recruitment is the innate Summon Miner spell in Spells, costing 50 + 25 per living Miner; support/access checks still apply.
+**Dwarf overview:** role/activity icon counts open filtered resident lists with expandable stats and camera location. Wages, wellbeing and attraction details are expandable below the grid. Miner recruitment is the innate Summon Miner spell in Spells, costing 50 + 25 per living Miner; support/access checks still apply. Spell icons activate directly and are disabled while unusable; research remains accessible through the Library research selector.
 
 **Map navigation:** M or the expand icon beside the minimap opens a full-level map with the same terrain colors and fog of war. Both maps omit the camera overlay; the full map supports click-to-center and M/Escape/close dismissal.
 

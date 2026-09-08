@@ -147,7 +147,7 @@ A possible simple formula for testing is:
 
 `next_cost = minimum_cost + (cost_step * current_miner_count)`
 
-Miner recruitment is the innate Summon Miner spell in the Spells icon grid. Cast summons at the Hearth without research, preparation or selecting a world target; the old Dwarfs text recruitment action is removed. The prototype uses this linear formula with a 50-gold minimum and 25 gold per living Miner, including the starting crew. A purchase needs spare reachable Dormitory and Kitchen support, a clear claimed arrival square connected to the Hearth, and enough shared gold. Failed purchases spend nothing. Death or departure lowers the next price; lifetime purchases do not count. These values are editable and provisional. Purchased miners have the same wages, food and rest needs as other residents.
+Miner recruitment is the innate Summon Miner spell in the Spells icon grid. Clicking its enabled icon summons at the Hearth without research, preparation or selecting a world target; the old Dwarfs text recruitment action is removed. The prototype uses this linear formula with a 50-gold minimum and 25 gold per living Miner, including the starting crew. A purchase needs spare reachable Dormitory and Kitchen support, a clear claimed arrival square connected to the Hearth, and enough shared gold. Failed purchases spend nothing. Death or departure lowers the next price; lifetime purchases do not count. These values are editable and provisional. Purchased miners have the same wages, food and rest needs as other residents.
 
 ## 9. Attraction and arrival
 

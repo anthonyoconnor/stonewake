@@ -9,12 +9,31 @@ import { goldTotal } from '../game/rooms';
 import { dismissRally } from '../game/spell-effects';
 
 export function showSpells(sidebar: Sidebar) {
-  sidebar.panel.innerHTML = `<div id="selected-spell" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Spell choices">${[summonMinerSpell,...spellDefinitions].map(s=>`<button class="room-choice spell-choice" data-spell="${s.id}" aria-label="${s.name}" title="${s.name}">${actionIcon(s.id)}<span class="spell-state" aria-hidden="true"></span></button>`).join('')}</div><article data-spell-details="summon-miner" hidden><p>Summon one Miner at the Hearth. Available without research.</p><p id="summon-miner-status" class="muted"></p><button class="wide" data-cast="summon-miner">Cast</button></article>${spellDefinitions.map((s) => `<article data-spell-details="${s.id}" hidden><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<details class="production"><summary>Library research</summary><p class="muted">Library floor area determines how many Runesmiths can research at once. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div></details><p id="active-spells" class="muted"></p>`;
+  sidebar.panel.innerHTML = `<div id="selected-spell" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Spell choices">${[summonMinerSpell,...spellDefinitions].map(s=>`<button class="room-choice spell-choice" data-spell="${s.id}" aria-label="${s.name}" title="${s.name}">${actionIcon(s.id)}<span class="spell-state" aria-hidden="true"></span></button>`).join('')}</div><article data-spell-details="summon-miner" hidden><p>Summon one Miner at the Hearth. Available without research.</p><p id="summon-miner-status" class="muted"></p></article>${spellDefinitions.map((s) => `<article data-spell-details="${s.id}" hidden><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div></article>`).join('')}<details class="production"><summary>Library research</summary><label>Research spell<select id="research-spell"><option value="">Choose a spell</option>${spellDefinitions.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></label><p class="muted">Library floor area determines how many Runesmiths can research at once. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div></details><p id="active-spells" class="muted"></p>`;
   sidebar.panel.dataset.selectedSpell=spellDefinitions.some(s=>s.id===sidebar.selection.tool)?sidebar.selection.tool:summonMinerSpell.id;
-  sidebar.panel.querySelectorAll<HTMLButtonElement>('[data-spell]').forEach(b=>b.onclick=()=>{
-    if(spellDefinitions.some(s=>s.id===sidebar.selection.tool))sidebar.selection.setTool('dig');
-    sidebar.panel.dataset.selectedSpell=b.dataset.spell;
-    sidebar.update();
+  const inspect=(id:string)=>{sidebar.panel.dataset.selectedSpell=id;sidebar.update();};
+  sidebar.panel.querySelector<HTMLSelectElement>('#research-spell')!.onchange=()=>{
+    if(!sidebar.panel.querySelector<HTMLSelectElement>('#research-spell')!.value)return;
+    inspect(sidebar.panel.querySelector<HTMLSelectElement>('#research-spell')!.value);
+    sidebar.panel.querySelector<HTMLElement>(`[data-spell-details="${sidebar.panel.dataset.selectedSpell}"]`)!.scrollIntoView({block:'nearest'});
+  };
+  sidebar.panel.querySelectorAll<HTMLButtonElement>('[data-spell]').forEach(b=>{
+    b.onmouseenter=()=>inspect(b.dataset.spell!);
+    b.onfocus=()=>inspect(b.dataset.spell!);
+    b.onclick=()=>{
+      sidebar.update(); // Recheck live costs and readiness before activation.
+      if(b.disabled)return;
+      const id=b.dataset.spell!;
+      sidebar.panel.dataset.selectedSpell=id;
+      if(id===summonMinerSpell.id){
+        sidebar.selection.setTool('dig');
+        sidebar.root.querySelector('#feedback')!.textContent=castSpell(sidebar.view.world,id);
+      }else{
+        sidebar.selection.setTool(id);
+        sidebar.root.querySelector('#feedback')!.textContent='Choose a visible target. Right-click or Escape cancels.';
+      }
+      sidebar.update();
+    };
   });
   sidebar.panel.querySelectorAll<HTMLButtonElement>('[data-research]').forEach(
     (b) =>
@@ -30,20 +49,7 @@ export function showSpells(sidebar: Sidebar) {
         sidebar.update();
       }),
   );
-  sidebar.panel.querySelectorAll<HTMLButtonElement>('[data-cast]').forEach(
-    (b) =>
-      (b.onclick = () => {
-        if(b.dataset.cast===summonMinerSpell.id){
-          sidebar.selection.setTool('dig');
-          sidebar.root.querySelector('#feedback')!.textContent=castSpell(sidebar.view.world,summonMinerSpell.id);
-          sidebar.update();return;
-        }
-        sidebar.selection.setTool(b.dataset.cast!);
-        sidebar.root.querySelector('#feedback')!.textContent =
-          'Choose a visible target. Right-click or Escape cancels.';
-        sidebar.update();
-      }),
-  );
+
 }
 export function updateSpells(sidebar: Sidebar) {
   const w = sidebar.view.world;
@@ -66,9 +72,7 @@ export function updateSpells(sidebar: Sidebar) {
     summonChoice.querySelector('.spell-state')!.textContent=quote.eligible?'◆':'◇';
     sidebar.panel.querySelector<HTMLElement>('[data-spell-details="summon-miner"]')!.hidden=!summonSelected;
     sidebar.panel.querySelector('#summon-miner-status')!.textContent=`${quote.miners} living Miners · ${quote.message}`;
-    const summonCast=sidebar.panel.querySelector<HTMLButtonElement>('[data-cast="summon-miner"]')!;
-    summonCast.disabled=!quote.eligible;
-    summonCast.textContent=`Cast · ${quote.price} gold`;
+    summonChoice.disabled=!quote.eligible;
     if(summonSelected){
       const header=sidebar.panel.querySelector<HTMLElement>('#selected-spell')!;
       const summary=actionIcon(summonMinerSpell.id)+`<div><strong>Summon Miner</strong><span class="room-price"><b>${quote.price}</b> gold / cast</span></div>`;
@@ -82,11 +86,13 @@ export function updateSpells(sidebar: Sidebar) {
       const choice=sidebar.panel.querySelector<HTMLButtonElement>(`[data-spell="${spell.id}"]`)!;
       choice.classList.toggle('active',selected);
       choice.setAttribute('aria-pressed',String(selected));
-      const state=ready?'Ready':paused?'Paused':order?(order.unlocked?'Preparing':'Researching'):'Not researched';
-      choice.title=`${spell.name} · ${state}`;
+      const usable=!!ready && goldTotal(w)>=spell.cost && !w.outcome && !(spell.effect==='rally'&&w.rally) && !(spell.effect==='barrier'&&w.barrier);
+      choice.disabled=!usable;
+      const state=w.outcome?'Area ended':ready?(goldTotal(w)<spell.cost?'Needs gold':(spell.effect==='rally'&&w.rally)||(spell.effect==='barrier'&&w.barrier)?'Already active':'Ready'):paused?'Paused':order?(order.unlocked?'Preparing':'Researching'):'Not researched';
+      choice.title=`${spell.name} · ${spell.cost} gold · ${state}`;
       choice.setAttribute('aria-label',choice.title);
       choice.querySelector('.spell-state')!.textContent=ready?'◆':paused?'Ⅱ':order?'◷':'◇';
-      choice.classList.toggle('spell-ready',!!ready);
+      choice.classList.toggle('spell-ready',usable);
       sidebar.panel.querySelector<HTMLElement>(`[data-spell-details="${spell.id}"]`)!.hidden=!selected;
       if(selected){
         const header=sidebar.panel.querySelector<HTMLElement>('#selected-spell')!;
@@ -104,9 +110,7 @@ export function updateSpells(sidebar: Sidebar) {
       research.textContent = paused ? 'Resume' : 'Research';
       sidebar.panel.querySelector<HTMLButtonElement>(`[data-pause-research="${spell.id}"]`)!.disabled =
         !order || !!paused || ready;
-      const cast = sidebar.panel.querySelector<HTMLButtonElement>(`[data-cast="${spell.id}"]`)!;
-      cast.disabled = !ready || goldTotal(w) < spell.cost;
-      cast.textContent = `Cast · ${spell.cost} gold${ready && goldTotal(w) < spell.cost ? ' · Needs gold' : ''}`;
+
     }
     sidebar.panel.querySelector('#active-spells')!.textContent = [
       w.rally

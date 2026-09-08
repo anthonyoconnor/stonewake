@@ -21,8 +21,8 @@ try {
   await page.waitForFunction(() => window.strongholdDev?.status().scenario === 'stronghold');
   const minerControl = async (method, status = false) => {
     await page.getByRole('button', { name: 'Spells', exact: true }).click();
-    await page.locator('[data-spell="summon-miner"]').click();
-    const result = await page.locator(status ? '#summon-miner-status' : '[data-cast="summon-miner"]')[method]();
+    const control = page.locator(status ? '#summon-miner-status' : '[data-spell="summon-miner"]');
+    const result = method === 'textContent' && !status ? await control.getAttribute('title') : await control[method]();
     await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
     await page.locator('.population-details').evaluate(e => { e.open = true; });
     return result;

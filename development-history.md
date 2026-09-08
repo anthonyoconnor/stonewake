@@ -520,3 +520,9 @@ Verification: TypeScript check and production build passed (existing large-bundl
 
 - Moved normal Miner recruitment from the Dwarfs text controls to the innate Summon Miner spell icon, with the standard Cast control and live price. No Library, research, preparation or world target is required. Retained actual Hearth arrival, shared support/access checks and existing configurable 50 + 25 × living Miners pricing. Removed the old recruitment button and explanatory recruitment section from Dwarfs.
 - Verified two new casting checks plus 20 economy/spell regression checks, source/test typecheck, the production build and `node scripts/summon-miner-browser.mjs`. Browser checks covered consecutive exact-price casts, immediate price updates, no old recruitment controls, switching to researched spells and blocked support. `git diff --check` passed. Existing recruitment and morale browser scripts now inspect the spell control.
+
+## 2026-09-07 — Direct spell icon activation
+
+- Spell icons now activate directly: Summon Miner immediately summons one resident, while prepared targeted spells start world targeting. Removed all separate Cast buttons. Icons use native disabled state and muted grayscale artwork when unprepared, unaffordable, blocked by arrival/support, already active (rally/barrier), or the area has ended. Cost and reason remain in tooltips; hover/focus inspects details without activation.
+- Added a Library research selector so unavailable spells retain accessible Research/Resume and Pause controls. Existing sidebar browser checks use the icon for activation and its tooltip for the price.
+- Verification: source/test typecheck, production build, 12 summon/spell simulation checks, `node scripts/summon-miner-browser.mjs` (direct repeated summons, rising exact costs, no Cast buttons, disabled support/unresearched states, research access, ready targeting, cancellation and consumed-charge disabling), browser visual review, and `git diff --check`.
