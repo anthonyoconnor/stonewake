@@ -1,6 +1,6 @@
 import { type World, type Resident, type Point, key, tileAt } from './types.ts';
 import { tuning } from '../content/tuning.ts';
-import { characterById, isConstruct } from '../content/characters.ts';
+import { characterById, isConstruct, isAnimal } from '../content/characters.ts';
 import { reachable, canStand, findPath } from './navigation.ts';
 import { wageStatus } from './wages.ts';
 import { hearthArrival } from './recruitment.ts';
@@ -67,7 +67,7 @@ function missingSupport(w: World) {
     const route = routes.get(a.id)!;
     const usable = w.roomServices.filter((s) => route.has(key(s.access)) && canStand(w, s.access));
     const active: MoraleCause[] = [];
-    if (!usable.some((s) => s.service === 'dining' && s.assigned === a.id)) active.push('food');
+    if (!isAnimal(a.type) && !usable.some((s) => s.service === 'dining' && s.assigned === a.id)) active.push('food');
     if (!usable.some((s) => s.service === 'rest' && s.assigned === a.id)) active.push('accommodation');
     const wage = a.pay?.due.length ? wageStatus(w, a) : undefined;
     if (wage?.overdue && (wage.state === 'no-gold' || wage.state === 'no-access')) active.push('pay');

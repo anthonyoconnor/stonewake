@@ -1,5 +1,5 @@
 import {type World,type Point,key} from './types.ts';
-import {characterDefinitions,characterById,isConstruct} from '../content/characters.ts';
+import {characterDefinitions,characterById,isConstruct,isAnimal} from '../content/characters.ts';
 import {tuning} from '../content/tuning.ts';
 import {canStand,reachable} from './navigation.ts';
 import {alive} from './spell-effects.ts';
@@ -16,6 +16,15 @@ export function recruitmentStatus(w:World,type:string){
   const start=hearthArrival(w);if(!start)return no('Needs an open Hearth arrival route.');
   if(def.construct)return {eligible:true,message:'Hearth arrival route is available.',capacity:Infinity};
   const routes=reachable(w,start),usable=w.roomServices.filter(f=>routes.has(key(f.access)));
+  const population=w.agents.filter(a=>alive(a)&&!isConstruct(a.type)).length;
+  const bedCapacity=usable.filter(f=>f.service==='rest').length;
+  const beds=bedCapacity-population;
+  if(def.animal){
+    const limit=animalLimit(bedCapacity),animals=w.agents.filter(a=>alive(a)&&isAnimal(a.type)).length;
+    if(!bedCapacity||beds<=0)return no('Needs a spare reachable Dormitory place.');
+    if(animals>=limit)return no(`Companion limit ${animals}/${limit}. More Dormitory capacity supports dwarfs; animal cap ${tuning.animalPopulationCap}.`);
+    return {eligible:true,message:`Companions ${animals}/${limit}. One Dormitory place supplies food and rest; no wages or training.`,capacity:Math.min(beds,limit-animals)};
+  }
   let slots=Infinity;
   for(const service of def.attractionServices){
     const capacity=usable.filter(f=>f.service===service).length;
@@ -24,26 +33,30 @@ export function recruitmentStatus(w:World,type:string){
     if(capacity<=residents)return no(`Needs spare ${service} capacity.`);
     slots=Math.min(slots,capacity-residents);
   }
-  const population=w.agents.filter(a=>alive(a)&&!isConstruct(a.type)).length;
-  const beds=usable.filter(f=>f.service==='rest').length-population;
   if(beds<=0)return no('Needs spare bed capacity.');
-  const foodSlots=usable.filter(f=>f.service==='dining').length-population;
+  const foodSlots=usable.filter(f=>f.service==='dining').length-w.agents.filter(a=>alive(a)&&!isConstruct(a.type)&&!isAnimal(a.type)).length;
   if(foodSlots<=0)return no('Needs spare Kitchen food capacity.');
   return {eligible:true,message:'Room and settlement support are available.',capacity:Math.floor(Math.min(slots,beds,foodSlots))};
 }
 export const attractionStatus=(w:World,type:string)=>recruitmentStatus(w,type).message;
+// A single shared quota prevents adding another animal species from multiplying arrivals.
+export const animalLimit=(beds:number)=>beds<1?0:Math.min(tuning.animalPopulationCap,Math.max(1,Math.floor(beds/tuning.bedsPerAnimal)));
 export function enableRecruitment(w:World,enabled=true){
   if(w.outcome)return;
-  w.recruitment={enabled,nextAt:w.elapsed+tuning.recruitmentSeconds,cursor:w.recruitment?.cursor??0};
+  w.recruitment={enabled,nextAt:w.elapsed+tuning.recruitmentSeconds,cursor:w.recruitment?.cursor??0,companionIntroduced:w.recruitment?.companionIntroduced};
 }
 export function recruitSpecialist(w:World,spawn:(type:string,origin:Point)=>boolean){
   const state=w.recruitment;if(w.outcome||!state?.enabled||w.elapsed<state.nextAt)return;
   state.nextAt=w.elapsed+tuning.recruitmentSeconds;
-  const specialists=characterDefinitions.filter(d=>d.attractionServices.length);
-  for(let i=0;i<specialists.length;i++){
-    const index=(state.cursor+i)%specialists.length,def=specialists[index];
+  const candidates=characterDefinitions.filter(d=>d.attractionServices.length||d.animal);
+  const animals=w.agents.filter(a=>alive(a)&&isAnimal(a.type)).length;
+  const ranked=candidates.map((def,index)=>({def,index,count:w.agents.filter(a=>alive(a)&&a.type===def.id).length})).sort((a,b)=>{
+    const priority=(entry:typeof a)=>entry.def.animal?(animals===0&&!state.companionIntroduced?-1:1):0;
+    return priority(a)-priority(b) || a.count/(a.def.recruitmentWeight??1)-b.count/(b.def.recruitmentWeight??1) || (a.index-state.cursor+candidates.length)%candidates.length-(b.index-state.cursor+candidates.length)%candidates.length;
+  });
+  for(const {def,index} of ranked){
     if(!recruitmentStatus(w,def.id).eligible)continue;
-    const origin=hearthArrival(w);if(origin&&spawn(def.id,origin)){state.cursor=(index+1)%specialists.length;w.revision++;return;}
+    const origin=hearthArrival(w);if(origin&&spawn(def.id,origin)){if(def.animal)state.companionIntroduced=true;state.cursor=(index+1)%candidates.length;w.revision++;return;}
   }
 }
 export const livingMiners=(w:World)=>w.agents.filter(a=>a.type==='miner'&&alive(a)).length;

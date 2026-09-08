@@ -1,3 +1,4 @@
+import { isAnimal } from '../content/characters.ts';
 import { type World, type Point, type Resident, type Enemy, tileAt, neighbors, key } from './types.ts';
 import { tuning } from '../content/tuning.ts';
 import { enemyById, enemyBehaviorTuning } from '../content/enemies.ts';
@@ -91,6 +92,7 @@ function interactionSquares(w: World) {
 }
 
 function eligible(w: World, a: Resident) {
+  if(isAnimal(a.type))return false;
   if (
     !alive(a) ||
     a.morale?.leaving ||

@@ -122,3 +122,7 @@ New job execution must satisfy the exhaustive handler table. Preserve the explic
 Stonehand verification: `node --test tests/stonehands.test.ts`, `node scripts/miners-browser.mjs --stonehands`, and `node scripts/summon-miner-browser.mjs` (the historical filename now tests Create Stonehand). The Character Model Studio includes Stonehand and retained Miner silhouettes side by side.
 
 `node scripts/stonehands-browser.mjs` verifies the smaller silhouette against the retained Miner, captures close-up renders, and checks construct-only sidebar details.
+
+## Cave Hound checks
+
+The `cave-hounds` scenario uses a normally priced four-place Dormitory, automatic arrivals and a partly unexplored bent tunnel. Run `node --test tests/cave-hounds.test.ts` for quotas, specialist composition, den needs, scouting and combat. Run `node scripts/hounds-browser.mjs` for real arrival, Dormitory expansion, population limits, scouting/home watch, sidebar and quadruped rendering checks. Both animal concept sheets are saved; only Cave Hounds are implemented.

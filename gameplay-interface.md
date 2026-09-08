@@ -88,9 +88,11 @@ Runesmiths research spells in the Library. The current [training, research and a
 
 ### Workforce
 
+Cave Hound details show bite strength, health and den food/rest, with no wage or training requirements. Expand population details to see the shared animal quota and each role’s arrival eligibility. After the first companion, specialist arrivals favor the configured Warrior/support mix.
+
 Stonehand details show health, cargo and current work, with a short note that they need no food, beds, wages or training. Dwarf details retain their living needs and progression.
 
-The Workforce tab opens with a compact icon matrix: Stonehand, retained Miner, Engineer, Warrior and Runesmith role icons down the side, and Idle, Working, Needs and Combat icons across the top. Each cell shows its live population count; zero counts are muted. Hover labels and accessible names explain the icons. Click a count to list matching residents, or a role icon to show that whole type. Expand a resident for work, needs, pay, training and condition details, with a Locate worker button. Pay, wellbeing and specialist attraction details are grouped in an expandable section below the matrix.
+The Workforce tab opens with a compact icon matrix: Cave Hound, Stonehand, retained Miner, Engineer, Warrior and Runesmith role icons down the side, and Idle, Working, Needs and Combat icons across the top. Each cell shows its live population count; zero counts are muted. Hover labels and accessible names explain the icons. Click a count to list matching residents, or a role icon to show that whole type. Expand a resident for work, needs, pay, training and condition details, with a Locate worker button. Pay, wellbeing and specialist attraction details are grouped in an expandable section below the matrix.
 
 Activity groups use current simulation state, including travel toward the current job. Working includes hauling, construction, training and Hearthstone activation; Needs includes eating, sleeping, collecting pay and departure; Combat includes pursuit and rally response. Idle includes waiting for available work. These are activity counts, not unmet-need warnings; wellbeing warnings remain available separately.
 

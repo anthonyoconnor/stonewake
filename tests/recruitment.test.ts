@@ -16,7 +16,7 @@ test('specialists arrive through shared eligibility only when enabled and stop a
  try{
   const w=settlement();run(w,3);assert.equal(w.agents.length,0,'Room laboratory does not silently recruit.');
   for(const type of ['engineer','warrior','runesmith'])assert(recruitmentStatus(w,type).eligible,type);
-  enableRecruitment(w);run(w,3.2);assert.deepEqual(new Set(w.agents.map(a=>a.type)),new Set(['engineer','warrior','runesmith']));
+  enableRecruitment(w);run(w,4.2);assert.deepEqual(new Set(w.agents.map(a=>a.type)),new Set(['cave-hound','engineer','warrior','runesmith']));
   run(w,30);const population=w.agents.length;assert(population<=w.roomServices.filter(f=>f.service==='rest').length);
   assert(['engineer','warrior','runesmith'].every(type=>!recruitmentStatus(w,type).eligible));run(w,5);assert.equal(w.agents.length,population);
  }finally{tuning.recruitmentSeconds=cadence;}

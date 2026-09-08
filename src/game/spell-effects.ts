@@ -3,6 +3,7 @@ import {type World,type Point,type Resident,type Enemy,tileAt} from './types.ts'
 import {doorAt,doorIsOpen} from './doors.ts';
 import {tuning} from '../content/tuning.ts';
 import {characterLevel} from '../content/characters.ts';
+import {sightRadius} from './scouting.ts';
 import {enemyById} from '../content/enemies.ts';
 export const alive=(a:Resident)=>health(a)>0;
 export const maxHealth=(a:Resident)=>a.maxHealth??characterLevel(a.type,a.level).health;
@@ -22,7 +23,7 @@ export function spellLine(w:World,from:Point,to:Point){
 }
 export function visible(w:World,p:Point){
   if(!tileAt(w,Math.round(p.x),Math.round(p.z))?.known)return false;
-  return [w.hearth,...w.agents.filter(alive)].some(a=>Math.hypot(a.x-p.x,a.z-p.z)<=tuning.sightRadius&&spellLine(w,a,p));
+  return [w.hearth,...w.agents.filter(alive)].some(a=>Math.hypot(a.x-p.x,a.z-p.z)<=('type' in a?sightRadius(a as Resident):tuning.sightRadius)&&spellLine(w,a,p));
 }
 export function damageEnemy(w:World,e:Enemy,amount:number,source:'dwarf'|'spell'|'trap'='spell'){
   if(e.health<=0)return;

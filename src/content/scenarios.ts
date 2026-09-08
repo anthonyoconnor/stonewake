@@ -1,3 +1,4 @@
+import {createHoundLab} from './hound-lab.ts';
 import { createCrossingScenario } from './crossings.ts';
 import { startCampaign } from '../game/campaign.ts';
 import { createEnemyLab } from './enemy-lab.ts';
@@ -73,6 +74,7 @@ export const scenarioFactories = {
   'region-crystal': (free) => createEnemyRegion('crystal', free),
   'region-volcanic': (free) => createEnemyRegion('volcanic', free),
   economy: createEconomyLab,
+  'cave-hounds':createHoundLab,
   stonehands: (free) => createMinerWorkLab(free, 'stonehand'),
   'miner-work': createMinerWorkLab,
   hearth: createHearthLab,

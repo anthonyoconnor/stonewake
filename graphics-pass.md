@@ -96,3 +96,7 @@ The [Goblin Raider concept](concept-art/enemies/goblin-raider-v1.png) guides the
 ## Stonehand mechanical worker
 
 The approved [Stonehands v2 sheet](concept-art/stonehands/README.md) now guides a separate procedural model: about 0.53 tiles tall beside a roughly 0.95-tile dwarf, exposed narrow rods and pins, a single amber lamp eye, suspended rune tablet, small stone palms and an open basket. Shared walk/work/carry/hit/death poses drive its joints; it does not breathe, eat, sleep or train. The original Miner model remains available in the Character Model Studio for future reuse.
+
+## Cave Hound companion
+
+The saved [Cave Hound concept](concept-art/cave-hounds/README.md) guides a separate quadruped model: stocky charcoal coat, sandy muzzle and brows, pointed ears, leather collar/harness, rune tag and small amber lamp. Four legs trot in diagonal pairs; the head dips for scouting/feeding, the jaw animates bites, the tail moves and the body settles for sleep. It uses actual movement, job and combat state, supports reduced motion, and shares the existing hit/death cleanup without world labels.

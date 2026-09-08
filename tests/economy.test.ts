@@ -60,7 +60,7 @@ test('late arrivals join the shared payday without back pay or moving the schedu
 
 test('specialist wages rise while Miner wages and earlier debt keep their value', () => {
   const w = createRoomLab();
-  for (const def of characterDefinitions.filter(c=>!c.construct)) addResidents(w, def.id, 1);
+  for (const def of characterDefinitions.filter(c=>!c.construct&&!c.animal)) addResidents(w, def.id, 1);
   const expected = [[4,4,4,4,4], [7,9,11,13,15], [8,10,12,14,16], [10,12,14,16,18]];
   for (let level = 1; level <= 5; level++) {
     for (const a of w.agents) a.level = level;
@@ -158,7 +158,7 @@ test('each dwarf physically collects its positive wage once and the shared balan
 
 test('a single starter treasury queues collectors and combines reachable stored reserves', () => {
   const w = createRoomLab();
-  for (const type of characterDefinitions.filter(c=>!c.construct).map((d) => d.id)) addResidents(w, type);
+  for (const type of characterDefinitions.filter(c=>!c.construct&&!c.animal).map((d) => d.id)) addResidents(w, type);
   w.nextPaydayAt = 0;
   for (const a of w.agents) a.capabilities = [];
   const wages = characterDefinitions.reduce((sum, d) => sum + d.levels[0].wage, 0);

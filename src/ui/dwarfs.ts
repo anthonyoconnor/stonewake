@@ -15,7 +15,7 @@ export function dwarfActivity(a: Resident): string {
   if (a.job && ['eat', 'sleep', 'pay'].includes(a.job.kind)) return 'needs';
   return a.job && a.job.kind !== 'idle' ? 'work' : 'idle';
 }
-const roleIcons: Record<string, string> = { stonehand: 'stonehand', miner: 'dig', engineer: 'workshop', warrior: 'guard', runesmith: 'library' };
+const roleIcons: Record<string, string> = { 'cave-hound':'cave-hound', stonehand: 'stonehand', miner: 'dig', engineer: 'workshop', warrior: 'guard', runesmith: 'library' };
 const filters = new WeakMap<Sidebar, { type: string; activity?: string }>();
 
 export function showDwarfs(s: Sidebar) {

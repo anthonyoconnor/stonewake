@@ -25,6 +25,7 @@ export function validJob(w: World, a: Resident) {
     );
   if (j.kind === 'collect') return t.loose > 0;
   if (j.kind === 'drop') return a.carrying > 0 && canStand(w, j.work);
+  if (j.kind === 'scout') return t.known && !t.wallPlanned && canStand(w,j.work);
   if (j.kind === 'idle') return canStand(w, j.work);
   if (j.kind === 'pay') return validPayJob(w, a);
   if (j.kind === 'activate') return validHearthJob(w,a);

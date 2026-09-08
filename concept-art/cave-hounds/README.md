@@ -6,4 +6,4 @@ Visual exploration of a domesticated underground hound for early defense and exp
 
 ![Cave hound concept sheet](cave-hounds-v1.png)
 
-This is a concept proposal, not implemented gameplay. Dormitory-only arrival, food requirements and exploration behavior still need gameplay decisions. [Generation prompt](prompts-v1.md).
+Cave Hounds are implemented as Dormitory-supported defenders/scouts with a shared animal population quota. The sheet guides their prototype model; [current character rules](../../characters.md#cave-hounds-and-population-balance) define gameplay. [Generation prompt](prompts-v1.md).

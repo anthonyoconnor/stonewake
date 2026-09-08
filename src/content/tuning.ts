@@ -1,6 +1,12 @@
 // Balance values live here; labels/ranges also generate the in-game tuning editor.
 const value=(value:number,label:string,group:string,min:number,max:number,step=.1,note='Applies live.')=>({value,label,group,min,max,step,note});
 export const tuningSpec={
+ animalPopulationCap:value(2,'Animal companion limit','Economy & world',1,10,1,'Shared by all companion species; excess existing animals are not removed.'),
+ bedsPerAnimal:value(4,'Dormitory places per companion','Economy & world',2,20,1,'The first companion needs one place; a second needs eight at the default ratio. Remaining places support dwarfs.'),
+ scoutRange:value(18,'Hound scouting distance from Hearth','Exploration',3,40,1,'Explores reachable visible routes only; never digs or crosses unbridged hazards.'),
+ scoutSightBonus:value(2,'Hound extra sight distance','Exploration',0,8,1),
+ scoutOutingSeconds:value(20,'Hound scouting outing · seconds','Exploration',5,120,1,'Returns to the Hearth between outings.'),
+ scoutHomeSeconds:value(15,'Hound watch at home · seconds','Exploration',1,120,1),
  stonehandCost:value(25,'Create Stonehand · gold','Economy & world',0,10000,1,'Fixed cost; no food, beds or wages.'),
  startingStonehands:value(3,'Starting Stonehands','Economy & world',1,30,1,'New stronghold only.'),
  mineSeconds:value(2.8,'Excavate dirt · seconds','Mining & work',.1,120),

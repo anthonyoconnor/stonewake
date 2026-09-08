@@ -1,4 +1,4 @@
-import { isConstruct } from '../../content/characters.ts';
+import { isConstruct, isAnimal } from '../../content/characters.ts';
 import { type World, type Resident, tileAt, neighbors, key } from '../types.ts';
 import { canStand } from '../navigation.ts';
 import { tuning } from '../../content/tuning.ts';
@@ -12,6 +12,7 @@ import { doorAt } from '../doors.ts';
 import { choosePayJob, wageStatus } from '../wages.ts';
 import { chooseHearthJob } from '../hearth.ts';
 import { nearest, take, storage, availableStations } from './common.ts';
+import { chooseScoutJob } from '../scouting.ts';
 import { createWorkPool, choosePoolJob, type WorkPool } from './pool.ts';
 export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool(w)) {
   if (a.carrying) {
@@ -40,6 +41,7 @@ export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool
     if (slot && take(w, a, 'eat', slot, slot.access, slot.id)) return;
   }
   if (choosePayJob(w, a)) return;
+  if (a.capabilities.includes('scout') && chooseScoutJob(w,a)) return;
   if (chooseHearthJob(w, a)) return;
   if (canTrain(w, a))
     for (const f of availableStations(w, a, 'training')) if (take(w, a, 'train', f, f.access, f.id)) return;
@@ -115,7 +117,7 @@ export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool
     : waitingForGold
       ? 'Waiting for production gold'
       : !isConstruct(a.type) && a.hunger < tuning.hungerThreshold
-        ? 'Needs spare reachable Kitchen capacity'
+        ? (isAnimal(a.type) ? 'Needs a reachable Dormitory den' : 'Needs spare reachable Kitchen capacity')
         : !isConstruct(a.type) && a.energy < tuning.restThreshold
           ? 'Needs spare reachable Dormitory capacity'
           : a.capabilities.includes('research')

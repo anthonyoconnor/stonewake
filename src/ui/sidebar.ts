@@ -1,7 +1,7 @@
 import { showDwarfs, updateDwarfs } from './dwarfs';
 import { bridgeSettings } from '../game/terrain.ts';
 import {showSpells,updateSpells} from './spells';
-import {characterDefinitions,maxCharacterLevel,isConstruct} from '../content/characters';
+import {characterDefinitions,maxCharacterLevel,isConstruct,isAnimal} from '../content/characters';
 import {tuning} from '../content/tuning';
 import {wallBuildDuration} from '../game/walls';
 import {TuningDialog} from './tuning-dialog';
@@ -216,6 +216,7 @@ export class Sidebar {
     if(list){const markup=residents.map(a=>{
       const stats=characterStats(a),next=nextCharacterLevel(a),progress=a.experience??0;
       const training=maxCharacterLevel(a.type)===1?'No training or leveling':next?`Next: level ${next.level}<br>Experience ${Math.min(progress,next.trainingSeconds).toFixed(1)} / ${next.trainingSeconds} XP<br>Training 1 XP/s · Combat ${tuning.combatExperienceRate}× rate on hits<br>${(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds (combat still earns XP)`:`${a.job?.kind==='train'?'Training now':'Ready to train'} · One level per visit`}`:'Maximum level reached';
+      if(isAnimal(a.type))return `<details class="resident-row" data-resident="${a.id}"><summary><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name}</span></strong><span class="muted">${a.activity}</span></summary><button data-locate-dwarf="${a.id}" class="wide">Locate companion</button><small>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Bite ${stats.damage} · Interval ${stats.attackSeconds}s<br>Rest ${Math.round(a.energy*100)}% · Fed ${Math.round(a.hunger*100)}%<br>Dormitory den supplies food and rest.<br>No wages or training.<br>${residentMoraleText(w,a)}</small></details>`;
       if(isConstruct(a.type))return `<details class="resident-row" data-resident="${a.id}"><summary><strong>${a.name} <span class="resident-type">Stonehand</span></strong><span class="muted">${a.activity}</span></summary><button data-locate-dwarf="${a.id}" class="wide">Locate worker</button><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Fragile mechanical worker · Cannot fight<br>No food, beds, wages or training.</small></details>`;
       return `<details class="resident-row" data-resident="${a.id}"><summary><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><span class="muted">${a.activity}</span></summary><button data-locate-dwarf="${a.id}" class="wide">Locate worker</button><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}<br><span class="resident-pay">${residentPayText(w,a)}</span><br><span class="resident-morale">${residentMoraleText(w,a)}</span></small></details>`;
     }).join('');
@@ -232,7 +233,7 @@ export class Sidebar {
       }
     }}
     list?.querySelectorAll<HTMLButtonElement>('[data-locate-dwarf]').forEach(b=>b.onclick=()=>{const a=w.agents.find(a=>a.id===Number(b.dataset.locateDwarf));if(a){this.controls.center(a.x,a.z);this.inspectedUnit={kind:'dwarf',id:a.id};this.update();this.unitInspection.scrollIntoView({block:'nearest'});}});
-    const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`Specialists arrive through the Hearth when rooms and settlement have spare capacity. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
+    const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`One early companion, then eligible specialists take priority. Warriors target twice the population of each support role. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);
       summary.textContent='';

@@ -24,6 +24,12 @@ type JobHandler = (
   work: number,
 ) => boolean;
 const handlers = {
+  scout: (w,a,j) => {
+    if(j.furnishing !== 'home-watch'){a.activity='Sniffing out tunnels';return j.progress>=1;}
+    a.activity='Watching the Hearth';
+    if(a.scout?.returning){a.scout.returning=false;a.scout.homeUntil=w.elapsed+tuning.scoutHomeSeconds;}
+    return w.elapsed >= (a.scout?.homeUntil??w.elapsed);
+  },
   buildBridge: (w,a,j,t,dt,work) => {
     a.activity='Building stone bridge';t.bridgeProgress=(t.bridgeProgress??0)+work;
     if(t.bridgeProgress<bridgeSettings.seconds)return false;

@@ -7,10 +7,16 @@ export interface CharacterLevel {
 export interface CharacterDefinition {
   id:string; name:string; names:string[]; color:string; speedMultiplier:number;
   construct?:boolean;
-  capabilities:string[]; appearance:'helmet'|'braids'|'warrior'|'runesmith'|'stonehand';
+  animal?:boolean;
+  recruitmentWeight?:number;
+  capabilities:string[]; appearance:'helmet'|'braids'|'warrior'|'runesmith'|'stonehand'|'hound';
   attractionServices:string[]; levels:CharacterLevel[];
 }
 export const characterDefinitions:CharacterDefinition[]=[
+  {id:'cave-hound',name:'Cave Hound',names:['Flint','Bramble','Snuff'],color:'#605b51',speedMultiplier:1.5,
+    animal:true,capabilities:['fight','scout'],appearance:'hound',attractionServices:['rest'],levels:[
+      {level:1,wage:0,trainingSeconds:0,health:100,damage:10,attackSeconds:1,workMultiplier:1}
+    ]},
   {id:'stonehand',name:'Stonehand',names:['Clink','Tick','Chip'],color:'#b89158',speedMultiplier:3 / 1.8,
     construct:true,capabilities:['mine','haul','claim','reinforce','buildWall'],appearance:'stonehand',attractionServices:[],levels:[
       {level:1,wage:0,trainingSeconds:0,health:30,damage:0,attackSeconds:1.5,workMultiplier:1}
@@ -27,7 +33,7 @@ export const characterDefinitions:CharacterDefinition[]=[
       {level:4,wage:13,trainingSeconds:60,health:130,damage:8,attackSeconds:1.5,workMultiplier:1.3},
       {level:5,wage:15,trainingSeconds:90,health:150,damage:10,attackSeconds:1.5,workMultiplier:1.4}
     ]},
-  {id:'warrior',name:'Warrior',names:['Dagna','Torvald','Brynja'],color:'#954d37',speedMultiplier:1,
+  {id:'warrior',name:'Warrior',names:['Dagna','Torvald','Brynja'],color:'#954d37',speedMultiplier:1,recruitmentWeight:2,
     capabilities:['fight'],appearance:'warrior',attractionServices:['training'],levels:[
       {level:1,wage:8,trainingSeconds:0,health:140,damage:12,attackSeconds:1,workMultiplier:1},
       {level:2,wage:10,trainingSeconds:15,health:165,damage:15,attackSeconds:1,workMultiplier:1},
@@ -46,6 +52,8 @@ export const characterDefinitions:CharacterDefinition[]=[
 ];
 export const characterById=(id:string)=>characterDefinitions.find(c=>c.id===id);
 export const isConstruct=(id:string)=>characterById(id)?.construct===true;
+export const isAnimal=(id:string)=>characterById(id)?.animal===true;
+export const earnsWages=(id:string)=>!isConstruct(id)&&!isAnimal(id);
 export const maxCharacterLevel=(type:string)=>(characterById(type)??characterById('miner')!).levels.length;
 export function characterLevel(type:string,level=1):CharacterLevel {
   const rows=(characterById(type)??characterById('miner')!).levels;

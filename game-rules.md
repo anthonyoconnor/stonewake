@@ -141,6 +141,10 @@ Stonehands are the normal terrain workers: three start each area, and Create Sto
 
 ## 9. Attraction and arrival
 
+Cave Hounds are the early defense and exploration companion. A spare reachable Dormitory place is their only room requirement: that den supplies both food and rest, with physical visits and no Kitchen place, wages, training or XP. They arrive automatically through the Hearth on the normal 45-second arrival cadence. The first animal can arrive with one bed; the default shared limit is one animal per four accessible Dormitory places (minimum one), capped at two animals. A second therefore needs eight places. This quota is shared across all future animal species, not granted separately to each species. Shrinking capacity blocks new arrivals without deleting existing animals; lost den support uses the normal grace/departure rules.
+
+Early-companion priority is granted only once per area; deaths and arrival toggles do not reset it. After the first companion, eligible dwarf specialists take priority over additional animals. Specialist selection favors the least-filled population relative to editable role weights: Warrior 2, Engineer 1, Runesmith 1. Existing role-room, spare bed and Kitchen requirements still apply. This aims for two Warriors per support specialist when enough capacity exists, rather than filling rooms with whichever cheap type qualifies first. Stonehands occupy no living support and the old Miner stays in debug for later reuse. Tunnel Badgers remain saved concept art only.
+
 Other dwarf types are attracted by suitable facilities and a settlement able to support them.
 
 | Facility | Dwarf attracted | Shared stronghold purpose |
@@ -167,7 +171,7 @@ All dwarfs share one payday every 120 game seconds from the start of the area. N
 
 Immediate combat, carried-resource delivery and food/rest take priority over wages; due, funded wages precede training and ordinary work. Interrupted visits retain the debt, release their collection space and spend no gold. Reclaiming or blocking a treasury cancels access safely. Collection rechecks funds after travel so construction, spells and other collectors cannot double-spend them. Times and amounts are tunable prototype values.
 
-Every resident uses one Dormitory accommodation slot, provisionally one slot per floor square. All dwarf types, including Warriors, use this shared room. Visible beds are decorative and never determine availability. Relative wage tiers appear in the character roster; exact amounts and need intervals remain to be balanced.
+Every living resident uses one Dormitory accommodation slot (Stonehands are exempt), provisionally one slot per floor square. All dwarf types, including Warriors, use this shared room. Visible beds are decorative and never determine availability. Relative wage tiers appear in the character roster; exact amounts and need intervals remain to be balanced.
 
 All dwarfs get food from the Kitchen, provisionally one supported resident per floor square. One large Kitchen or several reachable Kitchens must support the population, serving existing residents before qualifying more arrivals. Dwarfs still travel there and spend time eating. Ingredients, meal/ale inventories and growing/cooking/brewing production chains are absent; mushrooms, stoves, tables and casks are visual details only.
 

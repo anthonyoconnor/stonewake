@@ -4,6 +4,7 @@ import { reveal } from './world.ts';
 import { tuning } from '../content/tuning.ts';
 import { assignRoomSupport } from './food.ts';
 import { characterById, characterLevel, isConstruct } from '../content/characters.ts';
+import { sightRadius } from './scouting.ts';
 import { recruitSpecialist } from './recruitment.ts';
 import { tickDefenses } from './defenses.ts';
 import { alive, tickSpellEffects } from './spell-effects.ts';
@@ -146,6 +147,6 @@ export function tick(w: World, dt: number) {
   finishHearth(w);
   if (w.outcome) return;
   if (Math.floor((w.elapsed - dt) * 2) !== Math.floor(w.elapsed * 2))
-    for (const a of w.agents) reveal(w, a, tuning.sightRadius);
+    for (const a of w.agents) reveal(w, a, sightRadius(a));
   recruitSpecialist(w, (type, origin) => addResidents(w, type, 1, origin) > 0);
 }

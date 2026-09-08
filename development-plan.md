@@ -8,6 +8,8 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 
 ## Current implementation status
 
+**Current recruitment balance:** animal companions share a quota of one per four reachable Dormitory places (minimum one if any exist), maximum two; second animal needs eight places. First companion precedes specialists; then eligible specialists take priority, with Warrior/Engineer/Runesmith population weights 2/1/1. Den needs use Dormitory capacity only. Tunnel Badgers remain concept-only. This targeted unit balance update does not complete the broader M19 campaign-balance pass.
+
 Last checked: **2026-09-08** against the room and character definitions and the verified development record. This is the canonical content-status inventory; milestone completion above does **not** mean the full game design is implemented.
 
 | Room or structure | Current status | Remaining integration |
@@ -29,6 +31,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 | Workforce type | Current status | Remaining integration |
 |---|---|---|
+| Cave Hound | Implemented: Dormitory-only automatic arrival; den food/rest, no wages/training; 100 health/10-damage bite; autonomous bounded scouting and home watch, Call to Arms, dedicated quadruped model | Combat values provisional |
 | Stonehand | Implemented: starting crew, fixed 25-gold Hearth creation, shared terrain pool and stable 20-second productive assignments; no needs, support slots, pay, training, morale or combat; 30 health, cargo drops on destruction; accepted v2 mechanical model | Balance values provisional |
 | Miner | Retained definition, model and debug fixtures; fixed level 1, legacy work and self-defense | Possible basic fighter repurposing deferred |
 | Engineer | Implemented: normal Workshop-based arrivals, crafting, shared food/rest/wages/departure, levels 1–5 and adjacent self-defense; also in Debug | Repairs deferred |
@@ -37,7 +40,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-The remaining active milestone is M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, guard duty, emergency retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. All four resident types share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
+The remaining active milestone is M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, guard duty, emergency retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight worker seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 

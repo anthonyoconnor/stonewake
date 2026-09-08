@@ -6,14 +6,16 @@ import {characterStats} from '../game/progression';
 import type {Resident} from '../game/types';
 import {residentSurface,costumeDetails} from './resident-detail';
 import {createStonehandModel} from './stonehands';
+import {createHoundModel,animateHound,type HoundRig} from './hounds';
 type Pose={rotation:number[];arms:number[];legs:number[];y:number};
-type Model={root:TransformNode;legs:TransformNode[];arm:TransformNode;leftArm:TransformNode;tool:TransformNode;load:TransformNode;shadow:Mesh;trainingWeights:TransformNode[];shield?:TransformNode;book?:TransformNode;actor?:Resident;lastX?:number;lastZ?:number;lastTime?:number;stride:number;walking:boolean;pose?:Pose;removedAt?:number};
+type Model={root:TransformNode;legs:TransformNode[];arm:TransformNode;leftArm:TransformNode;tool:TransformNode;load:TransformNode;shadow:Mesh;trainingWeights:TransformNode[];hound?:HoundRig;shield?:TransformNode;book?:TransformNode;actor?:Resident;lastX?:number;lastZ?:number;lastTime?:number;stride:number;walking:boolean;pose?:Pose;removedAt?:number};
 export class ResidentView {
   nodes=new Map<number,Model>();
   reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   constructor(public view:GameScene){}
   reset(){for(const m of this.nodes.values()){m.root.dispose();m.shadow.dispose();}this.nodes.clear();}
   create(id:number,type:string):Model{
+    if(characterById(type)?.appearance==='hound')return createHoundModel(this.view,id);
     if(characterById(type)?.construct)return createStonehandModel(this.view,id);
     const v=this.view,def=characterById(type)!,engineer=def.appearance==='braids',warrior=def.appearance==='warrior',runesmith=def.appearance==='runesmith';
     const root=new TransformNode(`dwarf-${id}`,v.scene),cloth=residentSurface(v,`${type} cloth`,def.color),skin=residentSurface(v,'skin','#c99a76'),leather=residentSurface(v,'leather','#513c2c'),iron=residentSurface(v,'steel','#56636a',true),brass=residentSurface(v,'brass','#a48a55',true);
@@ -126,6 +128,7 @@ export class ResidentView {
       const dt=Math.max(0,Math.min(.15,time-(m.lastTime??time))),distance=Math.hypot(a.x-(m.lastX??a.x),a.z-(m.lastZ??a.z));
       if(dt>0){m.walking=distance>.0005;m.stride+=distance*9;}
       m.lastTime=time;m.lastX=a.x;m.lastZ=a.z;m.actor=a;
+      if(m.hound){animateHound({...m,hound:m.hound},a,time,this.reduced.matches);continue;}
       const walking=m.walking,j=a.job,working=!!j&&!a.path.length&&!walking,phase=m.stride,reduced=this.reduced.matches;
       m.root.position.set(a.x,walking?Math.abs(Math.sin(phase))*.025:0,a.z);m.root.rotation.set(0,a.facing,0);
       m.root.scaling.y=1+(reduced||characterById(a.type)?.construct?0:Math.sin(time*2+a.id)*.008);m.shadow.position.set(a.x,.025,a.z);

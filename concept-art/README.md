@@ -27,11 +27,11 @@ The gallery contains the current four-role roster shown above. Superseded sheets
 
 ## Stonehands labor constructs
 
-[View the Stonehands concept sheet](stonehands/README.md): the revised small, fragile mechanical worker has exposed linkages and a rune core, with front, back, overhead, mining and hauling views. This is visual exploration for replacing dwarf Miners; the gameplay replacement is not yet implemented. [Revision prompt](stonehands/prompts-v2.md).
+[View the Stonehands concept sheet](stonehands/README.md): the revised small, fragile mechanical worker has exposed linkages and a rune core, with front, back, overhead, mining and hauling views. The gameplay replacement is implemented; the original Miner remains available for later reuse. [Revision prompt](stonehands/prompts-v2.md).
 
 ## Cave hounds
 
-[View the Cave Hound concept sheet](cave-hounds/README.md): a rugged dwarven companion explored for early defense and scouting, with profile, overhead, scent-tracking and protective poses. Gameplay remains a proposal. [Generation prompt](cave-hounds/prompts-v1.md).
+[View the Cave Hound concept sheet](cave-hounds/README.md): a rugged dwarven companion explored for early defense and scouting, with profile, overhead, scent-tracking and protective poses. Cave Hounds are now implemented; see their gallery for current rules. [Generation prompt](cave-hounds/prompts-v1.md).
 
 ## Tunnel badgers
 
