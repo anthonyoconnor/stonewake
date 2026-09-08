@@ -14,6 +14,8 @@ The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel 
 
 ## Dwarf characters
 
+[Dwarf attraction infographic](infographics/dwarf-attraction-v1.png) shows the shared support requirements, specialist room mappings and paid Miner exception using current prototype defaults. Its [generation prompt and rule sources](infographics/prompts.md) are saved alongside it.
+
 [View the complete dwarf gallery](dwarfs/README.md).
 
 - [Miner](dwarfs/miner-v1.png)
