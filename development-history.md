@@ -388,3 +388,9 @@ Documentation correction — 2026-09-07: added this inventory after the missing-
 Moved completed milestone specifications, completed tracker rows and dated development records out of the active plan. Preserved the active implementation inventory, current rules, pending M10–M19 roadmap and parallel-work guidance. Updated startup and maintenance references to make historical reading optional and keep future completion records here. Documentation-only reorganization; no game behavior changed.
 
 Verification: completed milestone specifications and prior development records were preserved verbatim, the unfinished roadmap was unchanged, and 143 local documentation links/anchors resolved. Whitespace review passed; no simulation/browser tests were needed for this documentation-only move.
+
+### Defense and spell menu styling — 2026-09-07
+
+Defenses and Spells now share the Rooms four-column icon grid, selected-item header and active/focus styling. Distinct door-tier and spell artwork identifies each choice. Defense stock, manufacture costs, placement details and bolt facing remain available; Spells shows one selected spell’s research and casting controls, with compact state markers and expandable Library details.
+
+Verified: 32 focused defense, spell and progression/research simulation checks; TypeScript/production build; browser checks for all eight spell choices, research/pause/resume, unavailable and prepared casting, defense selection/facing and a 1024×720 layout. Reviewed both rendered menus and found no browser runtime errors. Existing Babylon bundle-size advisory remains.

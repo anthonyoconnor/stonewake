@@ -2,6 +2,14 @@ import {roomLook} from '../content/rooms.ts';
 import {defenseById} from '../content/defenses.ts';
 // Shared vector artwork keeps menu icons and action cursors visually identical.
 const artwork:Record<string,string>={
+ 'dwarf-haste':'<path d="M12 15 29 32 12 49M31 15 48 32 31 49" fill="none" stroke="url(#gold)" stroke-width="9"/>',
+ 'enemy-slow':'<path d="M15 9H49M15 55H49M20 10Q20 25 32 32Q44 39 44 54M44 10Q44 25 32 32Q20 39 20 54" fill="none" stroke="url(#steel)" stroke-width="5"/><path d="m23 19 9 10 9-10M23 49l9-10 9 10Z" fill="#80c8ee"/>',
+ stoneguard:'<path d="M12 12 32 6 52 12V31Q49 45 32 55Q15 45 12 31Z" fill="url(#steel)"/><path d="m32 16 10 15-10 15-10-15Z" fill="url(#gold)"/>',
+ 'thunder-rune':'<circle cx="32" cy="32" r="25" fill="#514265"/><path d="M35 7 15 35H29L25 57 50 26H35L42 7Z" fill="#dcc5ff"/>',
+ 'runic-barrier':'<path d="M10 53V24Q32-5 54 24V53Z" fill="#315c6a" stroke="#79cddd" stroke-width="4"/><path d="M22 20V49M42 20V49M13 33H51M32 12V53" stroke="#a7e9ed" stroke-width="3"/>',
+ 'mending-rune':'<path d="m32 5 26 27-26 27L6 32Z" fill="#345b48"/><path d="M26 15H38V26H49V38H38V49H26V38H15V26H26Z" fill="#81d7a1"/>',
+ 'rune-of-reckoning':'<circle cx="32" cy="32" r="20" fill="#703f36" stroke="#ed9c7b" stroke-width="4"/><path d="M32 5V19M32 45V59M5 32H19M45 32H59" stroke="url(#gold)" stroke-width="5"/><path d="m32 22 8 10-8 10-8-10Z" fill="#ed9c7b"/>',
+ 'call-to-arms':'<path d="M16 57V8" stroke="url(#steel)" stroke-width="5"/><path d="M19 10H53L44 23 53 37H19Z" fill="#bd7843"/><path d="m32 15 7 8-7 8-7-8Z" fill="url(#gold)"/>',
  door:'<path d="M12 55V10H52V55H45V17H19V55Z" fill="url(#steel)"/><path d="M20 19H44V55H20Z" fill="url(#wood)"/><path d="M21 28H43M21 44H43" stroke="#35434c" stroke-width="5"/><path d="M35 32H42V41H35Z" fill="url(#gold)"/>',
  spike:'<path d="m6 43 25-12 27 12-27 15Z" fill="url(#steel)"/><path d="m13 41 6-28 7 29Zm14 7 6-34 7 34Zm13-8 6-27 7 28Z" fill="url(#steel)"/>',
  bolt:'<path d="m17 51 24-36" stroke="#ac7b42" stroke-width="10"/><path d="m14 14 24 7 17 19M14 14l8 26 33 0" fill="none" stroke="url(#steel)" stroke-width="5"/><path d="m22 42 23-32m-6 1 7-4-1 8" fill="none" stroke="url(#gold)" stroke-width="4"/>',
@@ -16,8 +24,11 @@ const artwork:Record<string,string>={
  library:'<path d="M7 15Q20 8 32 16Q44 8 57 15V48Q44 41 32 49Q20 41 7 48Z" fill="#947049"/><path d="M10 13Q23 10 32 17Q42 10 54 13V43Q42 40 32 47Q21 40 10 43Z" fill="#e8d4a0"/><path d="M32 17V45M15 22l11 2M15 29l11 2M15 36l11 2M38 24l11-2M38 31l11-2M38 38l11-2" stroke="#917351" stroke-width="2"/><path d="M28 12H35V28L31 24 28 27Z" fill="#658dba"/>',
  guard:'<path d="M12 12 32 6 52 12V31Q49 45 32 55Q15 45 12 31Z" fill="url(#steel)"/><path d="M17 16 32 11 47 16V30Q45 40 32 49Q20 41 17 30Z" fill="#557580"/><path d="m32 17 10 12-10 16-10-16Z" fill="url(#gold)"/><path d="M32 22V36" stroke="#fff0bf" stroke-width="3"/>',
 };
+artwork['timber-door']=artwork.door.replace('M21 28H43M21 44H43','M24 20V53M32 20V53M40 20V53').replace('stroke-width="5"','stroke-width="2"');
+artwork['reinforced-door']=artwork.door;
+artwork['steel-door']=artwork.door.replace('url(#wood)','url(#steel)')+'<path d="M24 22 40 50M40 22 24 50" stroke="#dbe3d6" stroke-width="3"/>';
 const defs='<defs><linearGradient id="gold" x2="0.4" y2="1"><stop stop-color="#fff0b2"/><stop offset=".5" stop-color="#d7ac58"/><stop offset="1" stop-color="#806033"/></linearGradient><linearGradient id="steel" x2=".6" y2="1"><stop stop-color="#f0f7ec"/><stop offset=".45" stop-color="#9baeb0"/><stop offset="1" stop-color="#455a66"/></linearGradient><linearGradient id="wood" x2=".3" y2="1"><stop stop-color="#d5a163"/><stop offset="1" stop-color="#63402a"/></linearGradient><linearGradient id="copper" x2=".7" y2="1"><stop stop-color="#f2ca83"/><stop offset=".5" stop-color="#b87845"/><stop offset="1" stop-color="#624135"/></linearGradient></defs>';
-export const actionIconSvg=(id:string,cursor=false)=>`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">${defs}<g stroke="#18232a" stroke-width="2" stroke-linejoin="round">${artwork[id==='erase'?'dig':defenseById(id)?.kind??roomLook(id).icon]??artwork.guard}</g>${id==='erase'?'<circle cx="48" cy="47" r="12" fill="#9a4339" stroke="#ffe0b0" stroke-width="2"/><path d="M41 47H55" stroke="#fff1cf" stroke-width="4"/>':''}${cursor?'<path d="M2 2 3 19 8 14 14 13Z" fill="#fff2c6" stroke="#14202a" stroke-width="2"/>':''}</svg>`;
+export const actionIconSvg=(id:string,cursor=false)=>`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">${defs}<g stroke="#18232a" stroke-width="2" stroke-linejoin="round">${artwork[id==='erase'?'dig':(artwork[id]?id:defenseById(id)?.kind??roomLook(id).icon)]??artwork.guard}</g>${id==='erase'?'<circle cx="48" cy="47" r="12" fill="#9a4339" stroke="#ffe0b0" stroke-width="2"/><path d="M41 47H55" stroke="#fff1cf" stroke-width="4"/>':''}${cursor?'<path d="M2 2 3 19 8 14 14 13Z" fill="#fff2c6" stroke="#14202a" stroke-width="2"/>':''}</svg>`;
 const iconCache=new Map<string,string>();
 export function actionIconUrl(id:string,cursor=false){const key=id+cursor;let url=iconCache.get(key);if(!url){url=`data:image/svg+xml,${encodeURIComponent(actionIconSvg(id,cursor))}`;iconCache.set(key,url);}return url;}
 export const actionIcon=(id:string)=>id==='inspect'?'':`<img class="action-icon" src="${actionIconUrl(id)}" alt="" draggable="false"/>`;

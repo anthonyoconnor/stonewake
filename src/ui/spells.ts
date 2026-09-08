@@ -1,3 +1,4 @@
+import { actionIcon } from './icons';
 import type { Sidebar } from './sidebar';
 import { spellDefinitions, spellDescription } from '../content/spells';
 import { queueResearch, cancelResearch } from '../game/research';
@@ -7,7 +8,13 @@ import { goldTotal } from '../game/rooms';
 import { dismissRally } from '../game/spell-effects';
 
 export function showSpells(sidebar: Sidebar) {
-  sidebar.panel.innerHTML = `<p class="eyebrow">LIBRARY RESEARCH</p><p class="muted">Library floor area determines how many Runesmiths can research at once. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div>${spellDefinitions.map((s) => `<article class="spell-card"><h3>${s.name}</h3><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<p id="active-spells" class="muted"></p>`;
+  sidebar.panel.innerHTML = `<div id="selected-spell" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Spell choices">${spellDefinitions.map(s=>`<button class="room-choice spell-choice" data-spell="${s.id}" aria-label="${s.name}" title="${s.name}">${actionIcon(s.id)}<span class="spell-state" aria-hidden="true"></span></button>`).join('')}</div>${spellDefinitions.map((s) => `<article data-spell-details="${s.id}" hidden><p>${spellDescription(s)}</p><p data-research-status="${s.id}" class="muted"></p><div class="lab-actions"><button data-research="${s.id}">Research</button><button data-pause-research="${s.id}">Pause</button></div><button class="wide" data-cast="${s.id}">Cast · ${s.cost} gold</button></article>`).join('')}<details class="production"><summary>Library research</summary><p class="muted">Library floor area determines how many Runesmiths can research at once. After casting, they prepare the spell again.</p><div id="research-capacity" class="muted"></div></details><p id="active-spells" class="muted"></p>`;
+  sidebar.panel.dataset.selectedSpell=spellDefinitions.some(s=>s.id===sidebar.selection.tool)?sidebar.selection.tool:spellDefinitions[0].id;
+  sidebar.panel.querySelectorAll<HTMLButtonElement>('[data-spell]').forEach(b=>b.onclick=()=>{
+    if(spellDefinitions.some(s=>s.id===sidebar.selection.tool))sidebar.selection.setTool('dig');
+    sidebar.panel.dataset.selectedSpell=b.dataset.spell;
+    sidebar.update();
+  });
   sidebar.panel.querySelectorAll<HTMLButtonElement>('[data-research]').forEach(
     (b) =>
       (b.onclick = () => {
@@ -47,6 +54,21 @@ export function updateSpells(sidebar: Sidebar) {
       const order = w.researchOrders?.find((o) => o.spell === spell.id),
         ready = order?.state === 'ready',
         paused = order?.paused;
+      const selected=sidebar.panel.dataset.selectedSpell===spell.id;
+      const choice=sidebar.panel.querySelector<HTMLButtonElement>(`[data-spell="${spell.id}"]`)!;
+      choice.classList.toggle('active',selected);
+      choice.setAttribute('aria-pressed',String(selected));
+      const state=ready?'Ready':paused?'Paused':order?(order.unlocked?'Preparing':'Researching'):'Not researched';
+      choice.title=`${spell.name} · ${state}`;
+      choice.setAttribute('aria-label',choice.title);
+      choice.querySelector('.spell-state')!.textContent=ready?'◆':paused?'Ⅱ':order?'◷':'◇';
+      choice.classList.toggle('spell-ready',!!ready);
+      sidebar.panel.querySelector<HTMLElement>(`[data-spell-details="${spell.id}"]`)!.hidden=!selected;
+      if(selected){
+        const header=sidebar.panel.querySelector<HTMLElement>('#selected-spell')!;
+        const summary=actionIcon(spell.id)+`<div><strong>${spell.name}</strong><span class="room-price"><b>${spell.cost}</b> gold / cast</span></div>`;
+        if(header.dataset.summary!==summary){header.dataset.summary=summary;header.innerHTML=summary;}
+      }
       const duration = order?.unlocked ? spell.prepareSeconds : spell.researchSeconds;
       sidebar.panel.querySelector(`[data-research-status="${spell.id}"]`)!.textContent = ready
         ? 'Ready to cast'

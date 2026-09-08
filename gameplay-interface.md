@@ -53,7 +53,7 @@ Room floors and available wall treatments identify the room as soon as it is des
 
 ### Defenses
 
-Provide door and trap icons with the selected fixture's purpose and current placement requirements in the sidebar. Any defined manufacturing availability, cost, or production status is reported in this panel.
+Defenses use the same four-column icon grid and selected-item header as Rooms. Timber, reinforced and steel doors have distinct artwork. Selecting a fixture shows its name, finished stock, manufacturing gold/work cost, purpose and placement requirements; hover titles also report stock. Bolt facing controls appear only for the bolt trap. Workshop production and placed-fixture inspection remain available below the choices.
 
 Selecting a fixture gives a grid-aligned placement preview in the world. A valid preview and an invalid preview use different outlines or patterns as well as color. Explain an invalid location in the sidebar or message area, not beside the cursor.
 
@@ -63,7 +63,7 @@ Click a placed fixture with Inspect or the default floor-inspection action. Its 
 
 ### Spells
 
-Spells are accessed through their own sidebar category. Selecting an available spell shows its effect, applicable cost, availability, and targeting requirements there. A spell needing a world target enters targeting mode; the player clicks a valid location to cast it and can cancel before casting.
+Spells use the same four-column icon grid and selected-item header as Rooms, with distinct vector artwork for every spell. The header shows the selected name and gold cost per cast; only that spell’s effect, research progress and Research/Resume, Pause and Cast controls appear below the grid. Small icon markers distinguish unresearched, researching/preparing, paused and ready states, with full names and states in accessible labels and hover titles. Library staffing details are expandable. Selecting another spell cancels existing spell targeting; Cast explicitly starts targeting. Selecting an available spell shows its effect, applicable cost, availability, and targeting requirements there. A spell needing a world target enters targeting mode; the player clicks a valid location to cast it and can cancel before casting.
 
 Use an understated target outline or effect preview when useful. No floating spell name, cost, range number, or cooldown counter appears in the world. Any defined cooldown or research progress belongs in the spell panel. Unavailable spells have a distinct icon state, with the reason available on selection or focus.
 
