@@ -1,8 +1,9 @@
 import {type World,type Point,type Resident,type Enemy,tileAt} from './types.ts';
 import {doorAt,doorIsOpen} from './doors.ts';
 import {tuning} from '../content/tuning.ts';
-export const alive=(a:Resident)=> (a.health??100)>0;
-export const maxHealth=(a:Resident)=>a.maxHealth??100;
+import {characterLevel} from '../content/characters.ts';
+export const alive=(a:Resident)=>health(a)>0;
+export const maxHealth=(a:Resident)=>a.maxHealth??characterLevel(a.type,a.level).health;
 export const health=(a:Resident)=>a.health??maxHealth(a);
 export const effect=(w:World,a:Resident|Enemy,kind:string)=>a.effects?.find(e=>e.kind===kind&&e.until>w.elapsed);
 export const hasteRate=(w:World,a:Resident)=>1+(effect(w,a,'haste')?.strength??0);

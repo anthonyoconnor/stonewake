@@ -12,7 +12,7 @@ The grid, adaptable room shapes, distinctive floors and walls, fixed Hearthstone
 
 ## Training Room and Library prototype rules
 
-The Training Room costs 22 gold per square and provisionally supports one simultaneous trainee per square. Every resident can train autonomously, with or without visible equipment. A visit ends after gaining one level: the dwarf releases its slot, returns to normal activities and starts a personal 45-second cooldown before it can train again. Each level takes 12 seconds of practice and gives an 8% work-speed increase, up to five levels. Food and rest take priority. Training costs time only. Partial progress belongs to the dwarf and survives interruptions, expansion and room reclaim. Combat effects and guard duty remain future work.
+The Training Room costs 22 gold per square and provisionally supports one simultaneous trainee per square. Every resident can train autonomously, with or without visible equipment. A visit ends after gaining one character level: the dwarf releases its slot, returns to normal activities and starts its personal cooldown. Training requires a free reachable slot, adequate needs, the preceding level and the next level's active training time. Partial progress belongs to the dwarf and survives interruptions, expansion and room reclaim. [Character levels and training](characters.md#character-levels-and-training) owns the level limits, per-type health/combat/work statistics, training durations and cooldown. Work and combat do not grant experience. Guard duty remains future work.
 
 The Library costs 26 gold per square and provisionally supports one simultaneous researcher per square. Only residents with the `research` capability perform research. Select a spell in **Spells → Research**; each order reserves one researcher and one reachable room slot. Different spells can progress simultaneously within the room's capacity. Pause/resume retains progress. Losing a slot or room access releases its worker without erasing research or prepared spells. Lecterns, shelves and desks are visual arrangements only.
 
@@ -165,12 +165,12 @@ Food support and accommodation must serve existing residents as well as qualify 
 | Facility | Staffing and inputs | Proposed output handling | What keeps it useful |
 |---|---|---|---|
 | Workshop | Engineer working time and gold | Manufactured items support player-selected door and trap placements | New defenses, repairs, and replacement mechanisms |
-| Training Room | Any dwarf's time and an accessible training position; time-only prototype cost | Work-speed progression applied to the trainee | Developing the fresh population in every stronghold, across all roles |
+| Training Room | Any eligible dwarf's active practice time and a free reachable training slot | One character level per visit, applying its defined health, combat and work statistics | Developing the fresh population in every stronghold, across all roles |
 | Library | Research-capable resident's time and accessible research position; casting costs shared gold | Initial research and one prepared charge per spell | Preparing spells again after casting; campaign progression remains open |
 
 The Workshop combines metalworking and mechanism assembly in one facility. The Library is the single spell-research facility. Gold, labor, room capacity, and food support this simplified draft; separate equipment production, ore processing, and magical currencies are not established systems.
 
-Training is available to every dwarf type. The player supplies room capacity, and dwarfs train autonomously. Current scheduling, work bonuses and limits are recorded in the prototype rules above; defense integration remains open. Capacity feedback shows occupied and available training positions rather than beds or Warrior-only slots.
+Training is available to every dwarf type. The player supplies room capacity, and dwarfs train autonomously through their type's defined levels. [Characters](characters.md#character-levels-and-training) records advancement rules and balance. Capacity feedback shows occupied and available training positions; cooldown does not occupy a slot, and training provides no accommodation.
 
 The room catalog supports the [dwarf roster](characters.md). Additional rooms and more powerful dwarf types can be introduced later, after the core gameplay works.
 
@@ -208,7 +208,7 @@ Doors occupy one clear, claimed square between two opposite walls, with walkable
 
 Spikes trigger when an enemy crosses the pressure plate, including fast crossings. A lethal hit defeats it; a survivor cannot move or attack during the pin. Bolts fire automatically along the selected compass direction, hit one enemy, and do not pierce. Walls, the Hearth and physically shut doors block shots; cosmetic furniture does not. Both traps ignore dwarfs, cause no friendly fire, and **automatically reset after their cooldown**. They need no ammunition, replacement supplies or Engineer rearming. Cooldown starts when triggered; unused traps remain ready.
 
-Defenses are available in the normal stronghold. Enemy movement, trap damage, pinning and door breaking can currently be exercised with manually spawned Goblin Raiders in **Debug → Defense test yard**. This uses real construction, production, placement and movement services with supplied test stock. Natural encounters, raids, dwarf fighting and Hearth damage/defeat are still pending. Stonefall and additional slowing traps are design-only possibilities.
+Defenses are available in the normal stronghold. Enemy movement, trap damage, pinning and door breaking can currently be exercised with manually spawned Goblin Raiders in **Debug → Defense test yard**. This uses real construction, production, placement and movement services with supplied test stock. Dwarf fighting is implemented against debug enemies; natural encounters, raids and Hearth damage/defeat remain pending. Stonefall and additional slowing traps are design-only possibilities.
 
 ## Reinforced walls
 
@@ -224,7 +224,7 @@ The proposed wall model has one visible reinforced state. Reinforced earth is ha
 - Exact specialist attraction thresholds and migration rate.
 - Kitchen support per tile and the duration/frequency of eating visits.
 - Broader spell list and progression across levels; preparation after casting is the current continuing Library service.
-- Balance of prototype training gains, limits and scheduling, plus future combat integration.
+- Balance of the per-character level definitions, active training times and personal cooldown.
 - Door, trap, bridge, and core repair rules.
 - Room selling, refunds, and rebuilding damaged facilities.
 

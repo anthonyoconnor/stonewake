@@ -4,7 +4,7 @@ import { tuning } from '../../content/tuning.ts';
 import { recipeById } from '../../content/recipes.ts';
 import { spendGold } from '../rooms.ts';
 import { wallBuildDuration } from '../walls.ts';
-import { workRate } from '../progression.ts';
+import { workRate, nextCharacterLevel, levelUp } from '../progression.ts';
 import { researchDuration } from '../research.ts';
 import { spellById } from '../../content/spells.ts';
 import { hasteRate } from '../spell-effects.ts';
@@ -128,12 +128,11 @@ const handlers = {
   },
   train: (w, a, j, t, dt, work) => {
     a.activity = 'Training';
+    const next = nextCharacterLevel(a);
+    if (!next) return true;
     a.trainingProgress = (a.trainingProgress ?? 0) + dt * hasteRate(w, a);
-    if (a.trainingProgress < tuning.trainingSeconds) return false;
-    a.trainingLevel = Math.min(tuning.trainingLevels, (a.trainingLevel ?? 0) + 1);
-    a.trainingProgress = 0;
-    a.nextTrainingAt = w.elapsed + tuning.trainingInterval;
-    w.revision++;
+    if (a.trainingProgress < next.trainingSeconds) return false;
+    levelUp(w, a);
 
     return true;
   },

@@ -34,7 +34,9 @@ Workshop production is under Rooms, Defenses or Debug. In **Defenses → Build d
 
 The Kitchen supports one resident per square provisionally, with no ingredients, stored meals or ale production. Dwarfs still visit to eat. Dormitory floor supplies accommodation; Workshop, Training Room and Library floor supply concurrent working capacity. See [Rooms](rooms.md#placement-and-capacity) for the tunable defaults.
 
-Build a Training Room for autonomous training by every dwarf type. Each visit ends after one level, releases its slot and starts a personal cooldown before the dwarf can train again. Build a Library and choose **Spells → Research** to unlock spells. See [Spells](spells.md) for the catalog and implementation status. Specialists arrive automatically when reachable specialist rooms and spare accommodation/food support them. The Dwarfs panel explains missing support and shows training progress. Use **Debug → Test dwarf type → Add test dwarf** to exercise registered types. See the [current inventory](development-plan.md#current-implementation-status) for implemented content and remaining work.
+Build a Training Room for autonomous character advancement. Dwarfs start at level 1; each type has explicit health, damage, attack timing, work-speed and training-time values through level 5. Only active training grants levels. Each visit ends after one level, releases its slot and starts a personal cooldown. Warriors pursue and rally; workers have weaker adjacent self-defense. See [Character levels](characters.md#character-levels-and-training) for the current rules and provisional balance.
+
+Build a Library and choose **Spells → Research** to unlock spells. See [Spells](spells.md) for the catalog and implementation status. Specialists arrive automatically when reachable specialist rooms and spare accommodation/food support them. The Dwarfs panel explains missing support and shows training progress. Use **Debug → Test dwarf type → Add test dwarf** to exercise registered types. See the [current inventory](development-plan.md#current-implementation-status) for implemented content and remaining work.
 
 Prepared spells enter targeting when you click **Cast**. Click a visible unit or floor point; right-click or Escape cancels. **Debug → Spell test yard** offers ready charges, test enemies and pause/reset controls for trying effects and autonomous Warrior combat. Health and effect timers stay in the sidebar.
 
@@ -44,7 +46,7 @@ Prepared spells enter targeting when you click **Cast**. Click a visible unit or
 |---|---|
 | Level dimensions, openings and resource seams | [Level definitions](src/content/levels.ts) |
 | Room prices, footprints, capacity and services | [Room definitions](src/content/rooms.ts) and [room checklist](room-development-checklist.md) |
-| Character capabilities and recipes | [Characters](src/content/characters.ts), [recipes](src/content/recipes.ts) |
+| Character level statistics, training times, capabilities and recipes | [Characters](src/content/characters.ts), [recipes](src/content/recipes.ts) |
 | Door tiers, trap balance, placement and enemy interactions | [Defense definitions](src/content/defenses.ts), [defense simulation](src/game/defenses.ts), [door passage queries](src/game/doors.ts) |
 | Work pace, shared needs and jobs | [Tuning](src/content/tuning.ts), [simulation](src/game/simulation.ts), [job selection](src/game/jobs/selection.ts), [job execution](src/game/jobs/work.ts) |
 | Construction, tile-based room services, cosmetic furnishing and path access | [Rooms](src/game/rooms.ts), [navigation](src/game/navigation.ts) |

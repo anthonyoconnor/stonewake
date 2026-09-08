@@ -55,11 +55,12 @@ The typed [command union](src/dev/controller.ts) supports `build`, `reclaim`, `d
 ```sh
 npm run verify                       # Typecheck source/tests, select checks from uncommitted changes
 npm run verify -- research            # Explicit subsystem
+npm run verify -- characters          # Level progression, combat, settings and related services
 npm run verify -- movement --browser  # Focused simulation plus browser smoke check
 npm run verify -- all --browser --production
 ```
 
-Scopes: `changed` (default), `all`, `development`, `movement`, `rooms`, `research`, `defenses`, or a test filename such as `gold-bags`. Changed-file selection follows local imports from each test. Unknown dependencies, changes outside that graph, or a clean working tree conservatively run the full suite. Documentation-only changes still typecheck. The printed file list makes selection reviewable.
+Scopes: `changed` (default), `all`, `development`, `movement`, `rooms`, `characters`, `research`, `defenses`, or a test filename such as `gold-bags`. The `characters` group covers level definitions/progression, learning rooms, combat and spells, settings, and additive content. Changed-file selection follows local imports from each test. Unknown dependencies, changes outside that graph, or a clean working tree conservatively run the full suite. Documentation-only changes still typecheck. The printed file list makes selection reviewable.
 
 Add `--list` to inspect the selected tests without running them.
 
@@ -67,7 +68,7 @@ Add `--list` to inspect the selected tests without running them.
 
 Browser checks use a separate headless browser and never attach to an existing player tab. Windows defaults to installed Edge. Set `BROWSER_CHANNEL=chrome` to use Chrome. Other platforms use Playwright Chromium; install it once with `npx playwright install chromium` if needed. Screenshots go to ignored `test-results/`.
 
-`node scripts/rooms-browser.mjs` runs the focused room browser playtest against the same running server and browser settings. It constructs unfurnished single-tile Kitchen, Dormitory and Training Rooms through normal commands, verifies sidebar capacity, autonomous needs, one-level training visits and released capacity during cooldown, then exercises the furnished showcase. It uses the same ignored screenshot directory.
+`node scripts/rooms-browser.mjs` runs the focused room browser playtest against the same running server and browser settings. It constructs unfurnished single-tile Kitchen, Dormitory and Training Rooms through normal commands, verifies sidebar capacity, autonomous needs, level-1-to-2 advancement and released capacity during cooldown, then checks retraining toward level 3 and the furnished showcase. It uses the same ignored screenshot directory.
 
 Other commands: `npm run typecheck`, `npm run test:watch -- research` and `npm run format -- path/to/changed-file.ts`. Watch runs an initial typecheck and watches the selected tests/dependencies; rerun typecheck after edits and restart the watcher when changing scope. Apply formatting to touched modules rather than making unrelated changes across the repository.
 
@@ -80,6 +81,9 @@ Tracing is opt-in via `enableDiagnostics(world)`, controller setup or stepping h
 | Concern | Owning module |
 |---|---|
 | Simulation ordering, needs and subsystem ticks | [simulation.ts](src/game/simulation.ts) |
+| Character level definitions and provisional statistics | [content/characters.ts](src/content/characters.ts) |
+| Character stats, next level, work rate and health-preserving advancement | [progression.ts](src/game/progression.ts) |
+| Warrior pursuit/rally and adjacent worker self-defense | [combat.ts](src/game/combat.ts) |
 | Explicit job-selection priority | [jobs/selection.ts](src/game/jobs/selection.ts) |
 | Shared job acquisition, reservations and release | [jobs/common.ts](src/game/jobs/common.ts) |
 | Job validity | [jobs/validation.ts](src/game/jobs/validation.ts) |

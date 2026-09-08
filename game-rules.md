@@ -191,7 +191,7 @@ The player should see floor area, capacity per tile, total capacity and occupanc
 
 Engineers automatically manufacture doors and traps in the Workshop. Runesmiths automatically research spells in the Library. Each is a single combined specialist role. Separate equipment manufacture, enchanting, and shrine services are outside this simplified design.
 
-Every dwarf can autonomously use the Training Room to increase its stats. Floor area limits concurrent trainees, and each visit ends after gaining one level. The dwarf releases its slot and returns to ordinary activities, with a personal cooldown before training again. The room attracts Warriors but is shared by all types and provides no sleeping capacity. The [prototype rules](rooms.md#training-room-and-library-prototype-rules) define provisional duration, cooldown, levels and work bonuses; combat integration remains open.
+Every dwarf starts at character level 1 and can advance through the Training Room. Floor area limits concurrent trainees, and each visit ends after gaining one level. The dwarf releases its slot and returns to ordinary activities, with a personal cooldown before training again. Advancement requires the previous level and the next level's active practice time; partial progress survives interruptions, and work or combat grants no experience. The room attracts Warriors but is shared by all types and provides no sleeping capacity. [Character levels and training](characters.md#character-levels-and-training) defines the level limit, per-type health, combat and work statistics, active training durations and cooldown. All balance values remain provisional.
 
 Every room must remain useful across strongholds. New populations need food, beds, and training; new layouts need manufactured defenses. The Library prototype prepares spells again after casting so it retains work after initial research. Campaign research progression remains open.
 
@@ -200,7 +200,7 @@ The [Library rules](rooms.md#training-room-and-library-prototype-rules) describe
 ## 12. Defense and enemies
 
 - Doors, traps, reinforced walls, guard positions, room locations, and route lengths form the defense system.
-- Dwarfs fight autonomously, with the call to arms providing area-level direction.
+- Warriors pursue nearby enemies and fight autonomously, with Call to Arms providing area-level direction. Miners, Engineers and Runesmiths have weaker adjacent self-defense and never pursue or answer the rally merely because they can attack.
 - Creature types vary by underground region.
 - Enemies physically approach through the map and attempt to destroy the core.
 - Local inhabitants and organized raids are proposed sources of attacks.
@@ -210,7 +210,7 @@ Opening an unknown area can expose a new front. A shortcut that helps workers ca
 
 The current [door and trap rules](rooms.md#doors-and-traps) implement three increasing door tiers, Open/Closed/Locked access, a spike trap with damage and temporary pinning, and a directional bolt trap. Both traps reset automatically after cooldown and ignore friendly dwarfs. Shut doors block sight and delay enemies until broken; locked doors also block dwarf routes. Workshop manufacturing supplies player-placed fixtures.
 
-Defense, targeted spells and autonomous Warrior combat are verified using debug-spawned Goblin Raiders. The [spell rules](spells.md) define temporary effects and the area rally. Natural encounters, raids, Hearth attacks, guard duty and retreat remain pending. Enemy tunneling, broader targeting priorities, repairs under attack and raid triggers remain open.
+Defense, targeted spells, autonomous Warrior combat and worker self-defense use debug-spawned Goblin Raiders. Per-character level definitions supply health, damage and attack timing; temporary spell effects apply on top. The [spell rules](spells.md) define those effects and the area rally. Natural encounters, raids, Hearth attacks, guard duty and retreat remain pending. Enemy tunneling, broader targeting priorities, repairs under attack and raid triggers remain open.
 
 ## 13. Layout consequences to preserve
 
@@ -233,7 +233,7 @@ These are intended design effects to verify during playtesting, not claims about
 
 Development focuses on the [character](characters.md) and [room](rooms.md) catalogs to establish core gameplay. Shared definitions and services must allow additional content; the [implementation inventory](development-plan.md#current-implementation-status) records current support.
 
-- Define each dwarf type as data with a stable identifier, presentation assets, base stats and training progression, needs, recruitment conditions, and job or combat capabilities. Keep appearance separate from behavior; making the Engineer female does not require a different resident system.
+- Define each dwarf type as data with a stable identifier, presentation assets, an explicit level table, needs, recruitment conditions, and job or combat capabilities. Each level supplies health, attack damage, attack interval, work-speed multiplier and required training time. Keep appearance separate from behavior; making the Engineer female does not require a different resident system.
 - Reuse common systems for autonomous movement, needs, payday, departure, training, and job assignment. Determine job eligibility from capabilities and room services rather than hard-coded checks for dwarf names. Shared food, accommodation, and training should support future resident types through the same rules.
 - Define each room type as data with a stable identifier, service, capacity per tile, outputs, floor and wall treatments, and separate cosmetic furnishing variants. Reuse grid construction, room service slots, automatic visual furnishing and capacity feedback for new rooms.
 - Express attraction as configurable conditions referring to room services, usable capacity, and settlement support. Allow multiple dwarf types to use one room and a future dwarf to require several facilities; do not enforce a permanent one-room-to-one-dwarf pairing.
@@ -249,7 +249,7 @@ Build these boundaries while implementing the core types. Additional types, excl
 - Miner price curve, starting crew, starting storage, and resource quantities.
 - Recovery if every miner is lost and the player cannot afford a replacement; no extra defeat rule or free replacement has been agreed.
 - Spell casting, research order, and Library use after available research is complete.
-- Balance of training duration, personal cooldown, level cap and stat gains for all dwarf types; one level per visit is established.
+- Balance of per-type level statistics, active training durations and personal cooldown; the level sequence and one-level-per-visit rule are established.
 - Rally response rules and guard scheduling.
 - Bedrock readability, sight, resource visibility, and claiming details.
 - Reinforcement strength, core repairs, doors, traps, and bridges.

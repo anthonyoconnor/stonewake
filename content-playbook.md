@@ -45,12 +45,12 @@ Report simultaneous work capacity from reachable room service slots, not decorat
 
 ## Add a dwarf using existing behaviors
 
-1. Add one `CharacterDefinition` to `src/content/characters.ts`: unique ID, name, nonempty names list, color, speed multiplier, appearance, capabilities and attraction services. `helmet`, `braids`, `warrior` and `runesmith` are reusable models; any can be used by any type. Do not branch gameplay on the type's name or appearance.
-2. Select existing capabilities: `mine`, `haul`, `claim`, `reinforce`, `buildWall`, `research`, or a capability named by a crafting recipe. Needs, movement and training are shared automatically; they do not need capability flags. A specialist can have several capabilities.
+1. Add one `CharacterDefinition` to `src/content/characters.ts`: unique ID, name, nonempty names list, color, speed multiplier, appearance, capabilities, attraction services and an explicit `levels` table. Each level row supplies `level`, `trainingSeconds`, `health`, `damage`, `attackSeconds` and `workMultiplier`. Use consecutive levels starting at 1, with zero training seconds for the spawn level; later rows specify active practice required to enter them. The shipped types have five levels. `helmet`, `braids`, `warrior` and `runesmith` are reusable models; any can be used by any type. Do not branch gameplay on the type's name or appearance.
+2. Select existing capabilities: `mine`, `haul`, `claim`, `reinforce`, `buildWall`, `research`, or a capability named by a crafting recipe. `fight` permits autonomous pursuit and rally response; `defend` permits attacks only on enemies already within melee reach. Workers use `defend`; a damage value or a higher level alone must not grant pursuit or rally. Needs, movement and training are shared automatically and need no capability flags.
 3. For production, add a recipe to `src/content/recipes.ts` with its ID, name, cost, seconds and required capability. Recipes run in reachable `craft` slots and charge once. A new recipe automatically joins the queue UI and configuration editor. Inputs/outputs currently use gold and item counts; complex input chains require a new shared implementation.
-4. Open Debug or Room Layout Studio, choose the type under **Test dwarf type**, then **Add test dwarf**. The catalog is generated from the definitions. Its attraction message uses required services and shared bed/food support. Per-type speed is in the Dwarfs configuration tab. Capabilities/names/appearance changes apply on spawn or page reload; runtime settings do not rewrite existing job capability lists.
-5. Verify movement through narrow furnished rooms, eating, sleeping, work with/without the required capability, unavailable facilities and cancelled work. Verify it does not acquire abilities merely from using a familiar model.
-6. For a new appearance, extend `src/view/residents.ts` and keep geometry/animations separate from the simulation. For a new behavior such as combat, add its shared service/job with explicit eligibility, reservation, cancellation and tests. A definition alone cannot implement an unimplemented mechanic.
+4. Open Debug or Room Layout Studio, choose the type under **Test dwarf type**, then **Add test dwarf**. The catalog is generated from the definitions and spawns level 1. Its attraction message uses required services and shared bed/food support. Walking speed and per-level statistics/times appear in Game configuration. Capabilities/names/appearance changes apply on spawn or page reload; runtime settings do not rewrite existing job capability lists.
+5. Verify movement, eating, sleeping, work with/without the required capability, unavailable rooms and cancelled work. Check sequential training, partial-progress retention, one level per visit, cooldown release and final-level stopping. Working and combat grant no experience. Verify actual work and combat changes from level rows, preserved wounds on health growth, and the distinction between `fight` and `defend`.
+6. For a new appearance, extend `src/view/residents.ts` and keep geometry/animations separate from the simulation. For an unimplemented behavior, add its shared service/job with explicit eligibility, reservation, cancellation and checks. A definition alone cannot implement a new mechanic, and familiar art must not confer extra abilities.
 7. Update `characters.md`, record checks in the development plan, run focused tests plus the build, browser playtest, and commit.
 
 Example resident entry:
@@ -59,9 +59,18 @@ Example resident entry:
 {
   id: 'artisan', name: 'Artisan', names: ['Ada', 'Dagna'], color: '#738c96',
   speedMultiplier: 1, appearance: 'braids',
-  capabilities: ['craft'], attractionServices: ['craft']
+  capabilities: ['craft', 'defend'], attractionServices: ['craft'],
+  levels: [
+    {level: 1, trainingSeconds: 0, health: 85, damage: 5, attackSeconds: 1.5, workMultiplier: 1},
+    {level: 2, trainingSeconds: 25, health: 100, damage: 6, attackSeconds: 1.5, workMultiplier: 1.1},
+    {level: 3, trainingSeconds: 40, health: 115, damage: 7, attackSeconds: 1.5, workMultiplier: 1.2},
+    {level: 4, trainingSeconds: 60, health: 130, damage: 8, attackSeconds: 1.5, workMultiplier: 1.3},
+    {level: 5, trainingSeconds: 90, health: 150, damage: 10, attackSeconds: 1.5, workMultiplier: 1.4}
+  ]
 }
 ```
+
+The example uses provisional Engineer-like balance. Keep approved shipped values in the owning definition and the central [character level tables](characters.md#character-levels-and-training). `characterLevel` and `maxCharacterLevel` resolve the definition; `characterStats`, `nextCharacterLevel`, `workRate`, `levelUp` and `syncCharacterHealth` in `src/game/progression.ts` are the shared integration points. Do not restore global per-upgrade multipliers or award training progress from unrelated jobs.
 
 ## Add a manufactured defense
 

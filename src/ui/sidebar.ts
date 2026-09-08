@@ -1,5 +1,5 @@
 import {showSpells,updateSpells} from './spells';
-import {characterDefinitions} from '../content/characters';
+import {characterDefinitions,maxCharacterLevel} from '../content/characters';
 import {tuning} from '../content/tuning';
 import {wallBuildDuration} from '../game/walls';
 import {TuningDialog} from './tuning-dialog';
@@ -17,7 +17,7 @@ import {actionIcon} from './icons';
 import {reachable} from '../game/navigation';
 import {key,tileAt} from '../game/types';
 import {spellDefinitions} from '../content/spells';
-import {workRate} from '../game/progression';
+import {characterStats,nextCharacterLevel,syncCharacterHealth} from '../game/progression';
 import {enableRecruitment} from '../game/recruitment';
 import {showDefenses,updateDefenses} from './defenses';
 import {defenseAt} from '../game/doors';
@@ -33,6 +33,7 @@ export class Sidebar {
   inspectedUnit?:SpellTarget;
   onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
   onFreeBuild:(value:boolean)=>void=()=>{};onRestart:()=>void=()=>{};
+  onCharacterHealthChanged:(levels:Set<string>)=>void=()=>{};
   onDevelopmentPanel:()=>void=()=>{};
   constructor(public view:GameScene,public controls:CameraControls,public selection:Selection) {
     this.root=document.createElement('aside');this.root.id='sidebar';this.root.setAttribute('aria-label','Stronghold controls');
@@ -59,7 +60,14 @@ export class Sidebar {
     });
     this.root.querySelector<HTMLButtonElement>('#help')!.onclick=()=>this.show('help');
     this.minimap.onclick=e=>{const r=this.minimap.getBoundingClientRect();controls.center((e.clientX-r.left)/r.width*view.world.width,(e.clientY-r.top)/r.height*view.world.height);};
-    this.tuningDialog.onApply=()=>{furnish(this.view.world);this.view.world.routesChanged=true;this.view.world.revision++;selection.draw();this.show(this.category);};
+    const configuredHealth=new Map<string,number>(characterDefinitions.flatMap(c=>c.levels.map(level=>[`${c.id}:${level.level}`,level.health] as const)));
+    this.tuningDialog.onApply=()=>{
+      const changed=new Set<string>();
+      for(const c of characterDefinitions)for(const level of c.levels){const id=`${c.id}:${level.level}`;if(configuredHealth.get(id)!==level.health)changed.add(id);configuredHealth.set(id,level.health);}
+      for(const a of this.view.world.agents)if(changed.has(`${a.type}:${characterStats(a).level}`))syncCharacterHealth(a);
+      this.onCharacterHealthChanged(changed);
+      furnish(this.view.world);this.view.world.routesChanged=true;this.view.world.revision++;selection.draw();this.show(this.category);
+    };
     this.show('rooms');view.engine.resize();
   }
   show(category:string){
@@ -148,7 +156,11 @@ export class Sidebar {
     this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
     this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
     this.root.querySelector('#gold-total')!.textContent=String(goldTotal(w));this.root.querySelector('#dwarf-total')!.textContent=String(w.agents.length);
-    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>`<div class="resident-row"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>Training ${a.trainingLevel??0} / ${tuning.trainingLevels} · Work +${Math.round((workRate(w,a)-1)*100)}%<br>${(a.trainingLevel??0)>=tuning.trainingLevels?'Training complete':(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds`:`Next level ${Math.min(100,Math.floor((a.trainingProgress??0)/tuning.trainingSeconds*100))}% · One level per visit`}</small></div>`).join('');
+    const list=this.root.querySelector('#residents-list');if(list)list.innerHTML=w.agents.map(a=>{
+      const stats=characterStats(a),next=nextCharacterLevel(a),progress=a.trainingProgress??0;
+      const training=next?`Next: level ${next.level} · ${next.trainingSeconds} seconds training<br>Progress ${Math.min(100,Math.floor(progress/next.trainingSeconds*100))}% · ${Math.min(progress,next.trainingSeconds).toFixed(1)} / ${next.trainingSeconds} seconds<br>${(a.nextTrainingAt??0)>w.elapsed?`Training cooldown · ${Math.ceil(a.nextTrainingAt!-w.elapsed)} seconds`:`${a.job?.kind==='train'?'Training now':'Ready to train'} · One level per visit`}`:'Maximum level reached';
+      return `<div class="resident-row" data-resident="${a.id}"><strong>${a.name} <span class="resident-type">${characterDefinitions.find(c=>c.id===a.type)?.name??a.type}</span></strong><small>${a.activity}${a.carrying?` · ${a.carrying} gold`:''}<br>Level ${stats.level} / ${maxCharacterLevel(a.type)}<br>Health ${Math.ceil(health(a))} / ${maxHealth(a)}<br>Base damage ${stats.damage} · Interval ${stats.attackSeconds}s<br>Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus<br>Energy ${Math.round(a.energy*100)}% · Rests ${a.rested}<br>Fed ${Math.round(a.hunger*100)}% · Meals ${a.meals}<br>${training}</small></div>`;
+    }).join('');
     const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${w.recruitment?.enabled?`Specialists arrive through the Hearth when rooms and settlement have spare capacity. Next check in ${Math.max(0,Math.ceil(w.recruitment.nextAt-w.elapsed))} seconds.`:'Automatic arrivals are off in this room layout. Enable the arrival test in Rooms to exercise normal requirements.'}</p>${characterDefinitions.filter(c=>c.attractionServices.length).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b><br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);
@@ -187,6 +199,9 @@ export class Sidebar {
     const enemy=target?.kind==='enemy'?w.enemies?.find(e=>e.id===target.id&&e.health>0):undefined;
     const unit=dwarf??enemy;
     inspection.hidden=!unit||!visible(w,unit);
-    if(unit&&!inspection.hidden)inspection.textContent=`${dwarf?dwarf.name:'Enemy'} · Health ${Math.ceil(dwarf?health(dwarf):enemy!.health)}${dwarf?' / '+maxHealth(dwarf):''}\n${unit.activity}\n${(unit.effects??[]).filter(e=>e.until>w.elapsed).map(e=>`${spellDefinitions.find(s=>s.id===e.id)?.name??e.id} · ${Math.ceil(e.until-w.elapsed)}s${e.kind==='shield'?' · '+Math.ceil(e.remaining??0)+' shield':''}`).join('\n')}`;
+    if(unit&&!inspection.hidden){
+      const stats=dwarf&&characterStats(dwarf);
+      inspection.textContent=`${dwarf?dwarf.name:'Enemy'} · Health ${Math.ceil(dwarf?health(dwarf):enemy!.health)}${dwarf?' / '+maxHealth(dwarf):''}${stats?`\nLevel ${stats.level} / ${maxCharacterLevel(dwarf!.type)} · Base damage ${stats.damage} every ${stats.attackSeconds}s · Base work ${Math.round((stats.workMultiplier-1)*100)}% bonus`:''}\n${unit.activity}\n${(unit.effects??[]).filter(e=>e.until>w.elapsed).map(e=>`${spellDefinitions.find(s=>s.id===e.id)?.name??e.id} · ${Math.ceil(e.until-w.elapsed)}s${e.kind==='shield'?' · '+Math.ceil(e.remaining??0)+' shield':''}`).join('\n')}`;
+    }
   }
 }

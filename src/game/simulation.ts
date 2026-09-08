@@ -3,11 +3,11 @@ import { canStand, findPath, reachable } from './navigation.ts';
 import { reveal } from './world.ts';
 import { tuning } from '../content/tuning.ts';
 import { assignRoomSupport } from './food.ts';
-import { characterById } from '../content/characters.ts';
+import { characterById, characterLevel } from '../content/characters.ts';
 import { recruitSpecialist } from './recruitment.ts';
 import { tickDefenses } from './defenses.ts';
 import { alive, tickSpellEffects } from './spell-effects.ts';
-import { tickFighter, combatDefaults } from './combat.ts';
+import { tickFighter } from './combat.ts';
 import { releaseJob } from './jobs/common.ts';
 import { chooseJob } from './jobs/selection.ts';
 import { validJob } from './jobs/validation.ts';
@@ -52,11 +52,11 @@ export function addResidents(w: World, type: string, count = 1, origin?: Point) 
       hunger: 1,
       meals: 0,
       crafted: 0,
-      trainingLevel: 0,
+      level: 1,
       trainingProgress: 0,
       nextTrainingAt: w.elapsed,
-      health: def.combat?.health ?? combatDefaults.health,
-      maxHealth: def.combat?.health ?? combatDefaults.health,
+      health: characterLevel(type, 1).health,
+      maxHealth: characterLevel(type, 1).health,
     });
   }
   const added = Math.min(count, positions.length);

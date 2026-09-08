@@ -15,6 +15,13 @@ export const settings:Setting[]=[
   ...r.furnishings.flatMap(f=>['width','depth'].map(k=>field(`room.${r.id}.${f.kind}.${k}`,`${r.name} · ${f.kind} · visual ${k}`,'Room appearance',f,k,1,8,1,'Cosmetic only; reload a room layout to compare.')))
  ]),
  ...characterDefinitions.map(c=>field("dwarf."+c.id+".speedMultiplier",c.name+' · walking speed multiplier','Dwarfs',c,'speedMultiplier',.1,5,.1,'Applies live.')),
+ ...characterDefinitions.flatMap(c=>c.levels.flatMap(level=>[
+  field(`dwarf.${c.id}.level.${level.level}.health`,`${c.name} · level ${level.level} · maximum health`,`${c.name} levels`,level,'health',1,10000,1,'Applies to existing residents; missing health is preserved.'),
+  field(`dwarf.${c.id}.level.${level.level}.damage`,`${c.name} · level ${level.level} · attack damage`,`${c.name} levels`,level,'damage',0,1000,.1,'Applies live to combat.'),
+  field(`dwarf.${c.id}.level.${level.level}.attackSeconds`,`${c.name} · level ${level.level} · attack interval seconds`,`${c.name} levels`,level,'attackSeconds',.1,30,.1,'Used when scheduling the next attack.'),
+  field(`dwarf.${c.id}.level.${level.level}.workMultiplier`,`${c.name} · level ${level.level} · work speed multiplier`,`${c.name} levels`,level,'workMultiplier',.1,10,.05,'Applies live to productive work and research; training keeps its own duration.'),
+  ...(level.level===1?[]:[field(`dwarf.${c.id}.level.${level.level}.trainingSeconds`,`${c.name} · level ${level.level} · training seconds to enter`,`${c.name} levels`,level,'trainingSeconds',.1,600,.1,'Practice required to enter this level; partial progress is retained.')])
+ ])),
  ...recipes.flatMap(r=>[
   field(`recipe.${r.id}.cost`,`${r.name} · input gold`,'Crafting',r,'cost',0,10000,1,'Unpaid work only.'),
   field(`recipe.${r.id}.seconds`,`${r.name} · seconds`,'Crafting',r,'seconds',.1,600,.1,'Applies live.')

@@ -32,13 +32,13 @@ try {
   await page.waitForFunction(() => document.querySelector('#room-summary')?.textContent.includes('1 square · 1 training capacity'));
   assert((await page.locator('#room-summary').textContent()).includes('one level per visit'));
   // Find the first completed visit through actual scheduling, travel, eating and rest.
-  for (let i = 0; i < 20 && !(state.agents[0].trainingLevel > 0); i++) {
+  for (let i = 0; i < 20 && state.agents[0].level < 2; i++) {
     await page.evaluate(() => window.strongholdDev.advance(5));
     state = await page.evaluate(() => window.strongholdDev.state());
   }
   const dwarf = state.agents[0];
   assert(dwarf.meals >= 1 && dwarf.rested >= 1, 'Unfurnished single tiles provide meals and rest');
-  assert.equal(dwarf.trainingLevel, 1, 'The first training visit gains one level');
+  assert.equal(dwarf.level, 2, 'The first training visit advances a new dwarf from level 1 to 2');
   assert.notEqual(dwarf.job?.kind, 'train', 'Training slot releases after gaining a level');
   assert(dwarf.nextTrainingAt > state.elapsed, 'Completed training starts a personal cooldown');
   await page.getByRole('button', { name: 'Dwarfs', exact: true }).click();
@@ -46,13 +46,13 @@ try {
   const remaining = dwarf.nextTrainingAt - state.elapsed;
   await page.evaluate(seconds => window.strongholdDev.advance(seconds), Math.max(.05, remaining - 1));
   state = await page.evaluate(() => window.strongholdDev.state());
-  assert.equal(state.agents[0].trainingLevel, 1);
+  assert.equal(state.agents[0].level, 2);
   assert.notEqual(state.agents[0].job?.kind, 'train');
-  for (let i = 0; i < 15 && state.agents[0].trainingLevel < 2; i++) {
+  for (let i = 0; i < 15 && state.agents[0].level < 3; i++) {
     await page.evaluate(() => window.strongholdDev.advance(5));
     state = await page.evaluate(() => window.strongholdDev.state());
   }
-  assert.equal(state.agents[0].trainingLevel, 2, 'Training resumes after the cooldown');
+  assert.equal(state.agents[0].level, 3, 'Training resumes after the cooldown');
   mkdirSync('test-results', { recursive: true });
   await page.screenshot({ path: 'test-results/rooms-single-tile.png' });
 

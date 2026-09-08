@@ -8,7 +8,7 @@ import {health,hasteRate,slowRate,damageResident,damageEnemy,dismissRally,visibl
 import {addRaider} from '../src/game/defenses.ts';
 import {blocked,findPath} from '../src/game/navigation.ts';
 import {buildRoom,roomQuote,goldTotal} from '../src/game/rooms.ts';
-import {workRate} from '../src/game/progression.ts';
+import {workRate,levelUp} from '../src/game/progression.ts';
 import {type World,tileAt} from '../src/game/types.ts';
 const run=(w:World,seconds:number)=>{for(let i=0;i<Math.round(seconds*20);i++)tick(w,.05);};
 function arena(){
@@ -53,6 +53,23 @@ test('Stoneguard absorbs damage, passes excess through and expires; Mending paus
   damageResident(w,a,1);run(w,2);assert(Math.abs(health(a)-27)<.01);damageResident(w,a,1);run(w,3);assert(Math.abs(health(a)-26)<.01);
   run(w,15);assert.equal(a.effects?.length,0);assert(health(a)<=58.01);
   a.health=100;ready(w,'mending-rune');const gold=goldTotal(w);assert.match(castSpell(w,'mending-rune',{kind:'dwarf',id:a.id}),/wounded/);assert.equal(goldTotal(w),gold);
+});
+
+test('support spells use reached-level health and retain their cast values across a level gain',()=>{
+  const w=arena();w.agents=[];addResidents(w,'warrior');const a=w.agents[0];
+  Object.assign(a,{x:8,z:8,nextTrainingAt:10000});
+  cast(w,'stoneguard',{kind:'dwarf',id:a.id});
+  const shield=a.effects!.find(e=>e.kind==='shield')!;
+  assert.equal(shield.remaining,56);
+  damageResident(w,a,60);assert.equal(health(a),136);
+  levelUp(w,a);assert.equal(a.maxHealth,165);assert.equal(health(a),161);
+  assert.equal(shield.remaining,0,'A level gain does not refill an existing shield');
+  damageResident(w,a,80);cast(w,'mending-rune',{kind:'dwarf',id:a.id});
+  const mend=a.effects!.find(e=>e.kind==='mend')!;
+  assert.equal(mend.remaining,66);assert(Math.abs(mend.rate!-6.6)<1e-8);
+  levelUp(w,a);assert.equal(a.maxHealth,190);assert.equal(health(a),106);
+  assert.equal(mend.remaining,66);assert(Math.abs(mend.rate!-6.6)<1e-8);
+  run(w,4);assert(Math.abs(health(a)-112.6)<.01,'Healing uses the cast-time rate after the damage pause');
 });
 test('Thunder damages and stuns an area without friendly fire or passing through walls',()=>{
   const w=arena(),a=w.agents[0];a.x=10;a.z=8;w.agents[1].x=13;w.agents[1].z=8;

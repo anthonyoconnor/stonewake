@@ -14,12 +14,14 @@ The recruitment, miner pricing, needs, autonomous control, merged specialist rol
 
 Current prototype: all dwarf types share autonomous movement, food, rest and Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when reachable specialist rooms and shared accommodation/food support have spare capacity. One eligible specialist can arrive every 45 seconds; eligible types take turns. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Wages, paid Miner recruitment, departure, guard duty and retreat remain pending.
 
-Training gives up to five levels with 8% work speed per level. A dwarf trains for 12 seconds to gain one level, releases its training slot and returns to normal activities. A personal 45-second cooldown starts when that level is gained and prevents immediate retraining without occupying capacity. Needs take priority and partial progress survives interruptions. These are provisional tunable values; the work bonus does not yet change Warrior combat statistics. Warriors train, use shared needs, fight nearby enemies autonomously and respond to Call to Arms. Combat currently uses debug-spawned enemies; see [Spells](spells.md) for combat values and effects. Runesmiths autonomously research the spells selected in the sidebar and prepare them again after casting. See the [room prototype rules](rooms.md#training-room-and-library-prototype-rules) for details.
+Every dwarf starts at character level 1 and can reach level 5 through Training Room practice. Each type has explicit level definitions for health, attack damage, attack interval, work speed and the training time needed to reach the next level. Working and fighting grant no experience. See [Character levels and training](#character-levels-and-training) for the rules and provisional values.
+
+Warriors pursue nearby enemies, fight autonomously and respond to Call to Arms. Miners, Engineers and Runesmiths have weaker adjacent self-defense: they can hit an enemy already within melee reach but do not pursue enemies or answer the rally. Combat currently uses debug-spawned enemies. Runesmiths research spells selected in the sidebar and prepare them again after casting; [Spells](spells.md) owns spell effects and targeting.
 
 - All resident dwarfs, including purchased miners, need regular pay, accessible bedding, sufficient food, and any facilities required by their role.
 - Dwarfs choose work, eat, sleep, collect wages, and respond to threats autonomously. Players do not possess, move, or issue individual orders to them.
 - Dwarfs and enemies move continuously through halls and rooms in any clear direction. They do not snap to tile centers or occupy exclusive grid squares; obstacles and available physical clearance determine where they can go.
-- A call to arms rallies available fighters to an area. They walk there and fight automatically.
+- A call to arms rallies dwarfs with the `fight` capability, currently Warriors. Workers' adjacent self-defense does not make them rally responders.
 - Persistent unmet needs cause dissatisfaction and eventually departure through the Hearthstone. The interface must identify the actual problem before a dwarf leaves.
 - Attraction does not remove ongoing requirements: a specialist needs reachable room services after arriving. Capacity comes from floor tile count times the configured per-tile value, independent of furniture and room shape.
 - Temporary queues or a short interruption should not immediately trigger departure.
@@ -32,12 +34,62 @@ Training gives up to five levels with 8% work speed per level. A dwarf trains fo
 
 | Character | Main work | Defense or exploration role | Recruitment | Pay requirement | Bedding requirement | Food requirement | Required special room |
 |---|---|---|---|---|---|---|---|
-| Miner | Excavates designated terrain, extracts resources, delivers gold, claims reachable ground, and reinforces walls when other work is complete | Opens routes; retreats from danger under the proposed behavior | Starting crew or direct purchase at the Hearthstone | Low tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | None; works on terrain and needs access to treasure storage |
-| Engineer | Makes doors and traps in the Workshop; repairs and replacement mechanisms are proposed continuing jobs | Supports defense through manufactured fixtures and safe repairs | Attracted by a working Workshop | Standard tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Workshop with available working capacity |
+| Miner | Excavates designated terrain, extracts resources, delivers gold, claims reachable ground, and reinforces walls when other work is complete | Opens routes; adjacent self-defense without pursuit; retreat remains proposed | Starting crew or direct purchase at the Hearthstone | Low tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | None; works on terrain and needs access to treasure storage |
+| Engineer | Makes doors and traps in the Workshop; repairs and replacement mechanisms are proposed continuing jobs | Supports defense through manufactured fixtures; adjacent self-defense without pursuit | Attracted by a working Workshop | Standard tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Workshop with available working capacity |
 | Warrior | Trains, guards designated posts, and responds to nearby threats | Holds entrances and fights at close range | Attracted by a working Training Room | Standard tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Training Room with accessible training capacity, shared with all dwarf types |
-| Runesmith | Researches spells in the Library | Supports the stronghold through researched spells; personal combat abilities remain open | Attracted by a working Library | High tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Library with available research capacity |
+| Runesmith | Researches spells in the Library | Researched spells and adjacent self-defense without pursuit | Attracted by a working Library | High tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Library with available research capacity |
 
 All specialists also depend on the shared treasure, food, and accommodation facilities. A Workshop alone does not make an unsupported settlement ready for Engineers. There is one workshop crafter and one spell researcher; separate equipment production, enchanting, and shrine service systems are not part of this simplified roster. Dedicated rooms for advanced dwarf types may be considered later.
+
+## Character levels and training
+
+All four types spawn at level 1 and have five explicit levels. Advancement comes only from active Training Room practice; mining, crafting, research, combat and kills grant no experience. Levels are sequential, so a level-2 dwarf trains toward level 3 rather than skipping to a later row.
+
+A dwarf can begin or resume practice when its cooldown has expired, its food/rest needs allow it, and a free reachable training slot is available. It practices for the next level's defined time. On reaching that requirement, it gains exactly one level, releases the slot, leaves training and starts a personal **45-second cooldown**. Interrupted practice is retained on the dwarf and can resume in another Training Room. Cooldown holds no room capacity. A level-5 dwarf has no further training job.
+
+Each row below gives the complete statistics at that level. **Training** is the active practice needed to enter that row, not a cumulative experience total; level 1 is free on arrival. Travel, meals, rest and cooldown do not count. Work speed is a multiplier on ordinary productive work, including research; it does not shorten training. Haste can temporarily accelerate work, attacks and practice. These values are provisional and editable in [character definitions](src/content/characters.ts) and **Debug → Game configuration**.
+
+### Miner levels
+
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
+|---|---:|---:|---:|---:|---:|
+| 1 | — | 90 | 4 | 1.5 s | 1.00× |
+| 2 | 20 s | 105 | 5 | 1.5 s | 1.10× |
+| 3 | 35 s | 120 | 6 | 1.5 s | 1.20× |
+| 4 | 55 s | 140 | 7 | 1.5 s | 1.30× |
+| 5 | 80 s | 160 | 8 | 1.5 s | 1.40× |
+
+### Engineer levels
+
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
+|---|---:|---:|---:|---:|---:|
+| 1 | — | 85 | 5 | 1.5 s | 1.00× |
+| 2 | 25 s | 100 | 6 | 1.5 s | 1.10× |
+| 3 | 40 s | 115 | 7 | 1.5 s | 1.20× |
+| 4 | 60 s | 130 | 8 | 1.5 s | 1.30× |
+| 5 | 90 s | 150 | 10 | 1.5 s | 1.40× |
+
+### Warrior levels
+
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
+|---|---:|---:|---:|---:|---:|
+| 1 | — | 140 | 12 | 1.0 s | 1.00× |
+| 2 | 15 s | 165 | 15 | 1.0 s | 1.00× |
+| 3 | 30 s | 190 | 18 | 1.0 s | 1.00× |
+| 4 | 50 s | 215 | 21 | 1.0 s | 1.00× |
+| 5 | 75 s | 240 | 24 | 1.0 s | 1.00× |
+
+### Runesmith levels
+
+| Level | Training | Maximum health | Damage per hit | Attack interval | Work speed |
+|---|---:|---:|---:|---:|---:|
+| 1 | — | 70 | 6 | 1.6 s | 1.00× |
+| 2 | 30 s | 80 | 7 | 1.6 s | 1.10× |
+| 3 | 45 s | 95 | 8 | 1.6 s | 1.20× |
+| 4 | 65 s | 110 | 10 | 1.6 s | 1.30× |
+| 5 | 95 s | 125 | 12 | 1.6 s | 1.40× |
+
+Level gains apply the new maximum health and preserve the amount of existing damage. For example, a Warrior at 100/140 health becomes 125/165 at level 2, still missing 40 health. Gaining a level does not fully heal a wounded dwarf or revive a dead one. The new damage and attack interval apply to combat, and the new work multiplier applies to its eligible jobs. Levels do not grant new capabilities: a stronger Miner still only defends at melee reach, while Warriors can pursue and rally.
 
 ## Miner recruitment
 
@@ -63,11 +115,11 @@ The Engineer is a female dwarf. Her concept uses practical teal workwear, a prot
 
 ### Warrior
 
-The intended role alternates between training, guard duty, and ordinary needs. Guard Posts and the position of the Training Room will influence how quickly Warriors respond. The Training Room attracts Warriors but is available to every dwarf type. It provides training positions, while Warriors sleep in Dormitories like everyone else. Current training progression is defined in the prototype rules above; guarding remains pending; autonomous melee combat and spell rally response are implemented.
+The intended role alternates between training, guard duty, and ordinary needs. Guard Posts and the position of the Training Room will influence how quickly Warriors respond. The Training Room attracts Warriors but is available to every dwarf type. It provides training positions, while Warriors sleep in Dormitories like everyone else. [Character levels](#character-levels-and-training) improve Warrior combat statistics. Guarding remains pending; autonomous pursuit, melee combat and spell rally response are implemented.
 
 ### Runesmith
 
-Works at the Library to research spells. This is the stronghold's single research specialist. The player queues and pauses research; the Library prepares spells again after casting. See [Spells](spells.md) for the catalog and implementation status. Like every dwarf, a Runesmith can train. Campaign research and any personal combat abilities remain open; separate healing or morale duties are not assumed.
+Works at the Library to research spells. This is the stronghold's single research specialist. The player queues and pauses research; the Library prepares spells again after casting. See [Spells](spells.md) for the catalog and implementation status. Training improves its defined work and combat statistics. Runesmiths only fight enemies already in melee reach; they do not pursue or rally. Campaign research remains open; separate personal spells, healing or morale duties are not assumed.
 
 ## Continuing usefulness
 
@@ -85,9 +137,9 @@ The [dwarf concept gallery](concept-art/dwarfs/README.md) contains the character
 
 - Starting miner count, recruitment price curve, wage amounts, and payday interval.
 - Eating/rest intervals and room capacity per tile.
-- Combat abilities and balance of the provisional shared training values.
+- Balance of each type's level statistics, training durations and shared cooldown.
 - Broader spell balance and campaign research progression.
-- Playtest [Call to Arms](spells.md#call-to-arms-behavior) response priorities: all fighting types answer; noncombat support workers continue working, with critical survival needs allowed to override the rally.
+- Playtest [Call to Arms](spells.md#call-to-arms-behavior) response priorities: Warriors answer, workers continue ordinary activity or adjacent self-defense, and critical survival needs can override the rally.
 - Whether individual dwarf names or personalities are included.
 
 ## Implementation playbook

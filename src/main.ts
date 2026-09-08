@@ -10,6 +10,7 @@ import { ResidentView } from './view/residents';
 import { Selection } from './ui/selection';
 import { createRoomLab, labLayout, showcaseRooms } from './content/room-lab';
 import { buildRoom, furnish } from './game/rooms';
+import { characterStats, syncCharacterHealth } from './game/progression';
 import { enableRecruitment } from './game/recruitment';
 import { createDefenseLab } from './content/defense-lab';
 import { DefenseView } from './view/defenses';
@@ -30,6 +31,11 @@ window.addEventListener('beforeunload', (event) => {
 });
 const selection = new Selection(view);
 const sidebar = new Sidebar(view, controls, selection);
+sidebar.onCharacterHealthChanged = (levels) => {
+  if (world !== view.world)
+    for (const a of world.agents)
+      if (levels.has(`${a.type}:${characterStats(a).level}`)) syncCharacterHealth(a);
+};
 selection.setTool('dig');
 const residents = new ResidentView(view);
 const defenses = new DefenseView(view);

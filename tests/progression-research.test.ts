@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createRoomLab} from '../src/content/room-lab.ts';
-import {characterDefinitions} from '../src/content/characters.ts';
+import {characterDefinitions,characterLevel,maxCharacterLevel} from '../src/content/characters.ts';
 import {tuning} from '../src/content/tuning.ts';
 import {spellById} from '../src/content/spells.ts';
 import {roomById} from '../src/content/rooms.ts';
@@ -15,15 +15,18 @@ import {tileAt,type World} from '../src/game/types.ts';
 import {rect,run,until} from './helpers/simulation.ts';
 
 test('every dwarf type trains autonomously, shares the level cap and gains usable work speed',()=>{
- const cap=tuning.trainingLevels;tuning.trainingLevels=1;
+ const cadence=tuning.trainingInterval;
+ const times=characterDefinitions.map(def=>def.levels.map(row=>row.trainingSeconds));
+ tuning.trainingInterval=1;for(const def of characterDefinitions)for(const row of def.levels)if(row.level>1)row.trainingSeconds=.5;
  try{
   const w=createRoomLab();buildRoom(w,'training',rect(7,5,7,5));
   for(const def of characterDefinitions)addResidents(w,def.id);
-  until(w,()=>w.agents.every(a=>a.trainingLevel===1));
-  assert(w.agents.every(a=>workRate(w,a)>1));run(w,70);
-  assert(w.agents.every(a=>a.trainingLevel===1&&a.job?.kind!=='train'));
- }finally{tuning.trainingLevels=cap;}
- const w=createRoomLab();addResidents(w,'miner');const a=w.agents[0];Object.assign(a,{x:11,z:12,trainingLevel:tuning.trainingLevels});
+  assert(w.agents.every(a=>a.level===1));
+  until(w,()=>w.agents.every(a=>a.level===maxCharacterLevel(a.type)));
+  assert(w.agents.every(a=>workRate(w,a)===characterLevel(a.type,5).workMultiplier));run(w,70);
+  assert(w.agents.every(a=>a.level===5&&a.job?.kind!=='train'));
+ }finally{tuning.trainingInterval=cadence;characterDefinitions.forEach((def,i)=>def.levels.forEach((row,j)=>row.trainingSeconds=times[i][j]));}
+ const w=createRoomLab();addResidents(w,'miner');const a=w.agents[0];Object.assign(a,{x:11,z:12,level:5});
  designate(w,[{x:12,z:12}]);run(w,tuning.mineSeconds-.3);
  assert.equal(tileAt(w,12,12)!.terrain,'floor','A trained miner completes actual excavation before the untrained duration.');
 });
@@ -35,7 +38,7 @@ test('training and research release for shared meals and rest, then continue the
   const progress=type==='warrior'?a.trainingProgress!:w.researchOrders![0].progress;
   a.energy=.1;a.hunger=.1;tick(w,.05);assert.equal(a.job?.kind,'sleep');
   until(w,()=>a.rested>0&&a.meals>0);
-  until(w,()=>type==='warrior'?(a.trainingLevel??0)>0:w.researchOrders![0].state==='ready');
+  until(w,()=>type==='warrior'?(a.level??1)>1:w.researchOrders![0].state==='ready');
   assert(progress>0);assert(a.rested>0&&a.meals>0);
  }
 });
@@ -52,22 +55,23 @@ test('Library requires research capability and supports pause, resume and exactl
 });
 
 test('a single unfurnished training square grants one level, releases its slot and sends the trainee out during cooldown',()=>{
- const original={seconds:tuning.trainingSeconds,interval:tuning.trainingInterval,levels:tuning.trainingLevels};
- tuning.trainingSeconds=2;tuning.trainingInterval=12;tuning.trainingLevels=3;
+ const second=characterLevel('warrior',2),third=characterLevel('warrior',3);
+ const original={second:second.trainingSeconds,third:third.trainingSeconds,interval:tuning.trainingInterval};
+ second.trainingSeconds=2;third.trainingSeconds=2;tuning.trainingInterval=12;
  try{
   const w=createRoomLab(),plot={x:8,z:8};buildRoom(w,'training',[plot]);addResidents(w,'warrior',2);w.furnishings=[];
   Object.assign(w.agents[0],{x:8,z:10});Object.assign(w.agents[1],{x:9,z:10});
   until(w,()=>w.agents.some(a=>a.job?.kind==='train'));
   assert.equal(w.agents.filter(a=>a.job?.kind==='train').length,1);
-  until(w,()=>w.agents.some(a=>a.trainingLevel===1));
-  const trained=w.agents.find(a=>a.trainingLevel===1)!,availableAt=trained.nextTrainingAt!;
+  until(w,()=>w.agents.some(a=>a.level===2));
+  const trained=w.agents.find(a=>a.level===2)!,availableAt=trained.nextTrainingAt!;
   assert.equal(availableAt,w.elapsed+12);assert(!w.agents.some(a=>a.id===trained.id&&a.job));
   until(w,()=>Math.round(trained.x)!==plot.x||Math.round(trained.z)!==plot.z,8);
-  assert.equal(trained.trainingLevel,1);assert.notEqual(trained.job?.kind,'train');
-  until(w,()=>w.agents.every(a=>a.trainingLevel===1),8);
-  while(w.elapsed+.05<availableAt){tick(w,.05);assert.equal(trained.trainingLevel,1);assert.notEqual(trained.job?.kind,'train');}
-  until(w,()=>trained.trainingLevel===2,12);
- }finally{tuning.trainingSeconds=original.seconds;tuning.trainingInterval=original.interval;tuning.trainingLevels=original.levels;}
+  assert.equal(trained.level,2);assert.notEqual(trained.job?.kind,'train');
+  until(w,()=>w.agents.every(a=>a.level===2),8);
+  while(w.elapsed+.05<availableAt){tick(w,.05);assert.equal(trained.level,2);assert.notEqual(trained.job?.kind,'train');}
+  until(w,()=>trained.level===3,12);
+ }finally{second.trainingSeconds=original.second;third.trainingSeconds=original.third;tuning.trainingInterval=original.interval;}
 });
 
 test('a Library square with two configured slots lets two Runesmiths research without furniture or separate work coordinates',()=>{
@@ -87,10 +91,10 @@ test('an Engineer leaves training during cooldown even when a queued craft order
  const w=createRoomLab(),plot={x:8,z:8};
  buildRoom(w,'training',[plot]);buildRoom(w,'workshop',[{x:10,z:8}]);addResidents(w,'engineer');
  const a=w.agents[0];Object.assign(a,plot);w.allowance=0;queueCraft(w,'timber-door');
- until(w,()=>a.trainingLevel===1);
+ until(w,()=>a.level===2);
  const availableAt=a.nextTrainingAt!;
  until(w,()=>Math.round(a.x)!==plot.x||Math.round(a.z)!==plot.z,8);
  until(w,()=>a.activity==='Waiting for production gold',8);
- assert.equal(a.trainingLevel,1);assert(w.elapsed<availableAt);assert.equal(w.craftOrders[0].paid,false);
+ assert.equal(a.level,2);assert(w.elapsed<availableAt);assert.equal(w.craftOrders[0].paid,false);
  assert.deepEqual(w.outputs,{});
 });

@@ -6,6 +6,8 @@ import {createWorld} from '../src/game/world.ts';
 import {prototypeLevel} from '../src/content/levels.ts';
 import {addMiners,designate,tick} from '../src/game/simulation.ts';
 import {tileAt} from '../src/game/types.ts';
+import {characterLevel} from '../src/content/characters.ts';
+import {syncCharacterHealth} from '../src/game/progression.ts';
 test('settings validate atomically and drive new-world economy and live mining',()=>{
  const original=settingValues();try{
   const changes={...original,'tuning.startingGold':17,'tuning.mineSeconds':.1,'room.treasure.cost':20};
@@ -18,5 +20,22 @@ test('settings validate atomically and drive new-world economy and live mining',
   assert(settings.some(s=>s.id==='room.kitchen.capacityPerTile'));
   assert(!settings.some(s=>s.id==='room.kitchen.stove.capacity'||s.id==='tuning.cookingSeconds'));
   assert(settings.some(s=>s.id==='recipe.reinforced-door.seconds'));
+ }finally{assert.equal(applySettings(original),'');}
+});
+
+test('per-character level settings validate atomically and preserve injury when health is synchronized',()=>{
+ const original=settingValues();try{
+  const changes={...original,'dwarf.miner.level.1.health':120,'dwarf.warrior.level.3.damage':21,'dwarf.warrior.level.3.attackSeconds':.8,'dwarf.miner.level.2.trainingSeconds':23,'dwarf.miner.level.2.workMultiplier':1.2};
+  assert(applySettings({...changes,'dwarf.miner.level.1.health':0}));
+  assert.equal(characterLevel('warrior',3).damage,original['dwarf.warrior.level.3.damage']);
+  const w=createWorld(prototypeLevel);addMiners(w,2);
+  const [injured,dead]=w.agents;injured.health=injured.maxHealth!-20;dead.health=0;
+  assert.equal(applySettings(changes),'');
+  for(const a of w.agents)syncCharacterHealth(a);
+  assert.equal(injured.maxHealth,120);assert.equal(injured.health,100);assert.equal(dead.health,0);
+  assert.equal(characterLevel('warrior',3).damage,21);assert.equal(characterLevel('warrior',3).attackSeconds,.8);
+  assert.equal(characterLevel('miner',2).trainingSeconds,23);assert.equal(characterLevel('miner',2).workMultiplier,1.2);
+  assert(!settings.some(s=>['tuning.trainingLevels','tuning.trainingBonus','tuning.trainingSeconds'].includes(s.id)));
+  assert.equal(characterLevel('miner',1).trainingSeconds,0);
  }finally{assert.equal(applySettings(original),'');}
 });

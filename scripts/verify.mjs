@@ -14,6 +14,7 @@ const groups = {
   movement: ['movement', 'mining', 'gold-bags', 'defenses', 'spells', 'rooms'],
   rooms: ['rooms', 'learning-rooms', 'reclaim', 'content-extension', 'food', 'recruitment', 'walls'],
   research: ['progression-research', 'learning-rooms', 'spells', 'development'],
+  characters: ['character-levels', 'progression-research', 'learning-rooms', 'spells', 'settings', 'content-extension'],
   defenses: ['defenses', 'spells', 'movement', 'development'],
 };
 const args = process.argv.slice(2),
