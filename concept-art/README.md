@@ -29,6 +29,10 @@ The gallery contains the current four-role roster shown above. Superseded sheets
 
 [View the Stonehands concept sheet](stonehands/README.md): the revised small, fragile mechanical worker has exposed linkages and a rune core, with front, back, overhead, mining and hauling views. This is visual exploration for replacing dwarf Miners; the gameplay replacement is not yet implemented. [Revision prompt](stonehands/prompts-v2.md).
 
+## Cave hounds
+
+[View the Cave Hound concept sheet](cave-hounds/README.md): a rugged dwarven companion explored for early defense and scouting, with profile, overhead, scent-tracking and protective poses. Gameplay remains a proposal. [Generation prompt](cave-hounds/prompts-v1.md).
+
 ## Terrain and resources
 
 [View the gold seam and gem column concept](terrain/README.md). This wider mining area combines one terrain layer, large square excavation cells, gold visible on top and exposed wall faces, persistent gem columns, and connected bedrock. The [revision prompt](terrain/prompts-v2.md), [original prompt](terrain/prompts.md), and user-supplied excavation reference are stored in `terrain/`.
