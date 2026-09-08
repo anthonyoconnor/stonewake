@@ -7,6 +7,7 @@ export const tuningSpec={
  goldYield:value(15,'Gold per extraction','Mining & work',1,1000,1),
  gemSeconds:value(.5,'Gem extraction interval · seconds','Mining & work',.05,30,.05),
  gemYield:value(15,'Gold per gem extraction','Mining & work',1,1000,1),
+ minersPerResourceWorker:value(3,'Miners per resource worker','Mining & work',1,30,1,'Reserve about one resource worker per this many available miners, with a minimum of one when marked gold or gems are reachable.'),
  carry:value(45,'Bag capacity · gold','Mining & work',1,1000,1,'Applies to new loads; existing bags are preserved.'),
  claimSeconds:value(.5,'Claim floor · seconds','Mining & work',.1,60),
  reinforceSeconds:value(6,'Reinforce wall · seconds','Mining & work',.1,180),

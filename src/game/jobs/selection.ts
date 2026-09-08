@@ -1,4 +1,3 @@
-import { bridgeWorkSite } from '../bridges.ts';
 import { type World, type Resident, tileAt, neighbors, key } from '../types.ts';
 import { canStand } from '../navigation.ts';
 import { tuning } from '../../content/tuning.ts';
@@ -6,14 +5,14 @@ import { foodSupport } from '../food.ts';
 import { recipeById } from '../../content/recipes.ts';
 import { roomById } from '../../content/rooms.ts';
 import { goldTotal } from '../rooms.ts';
-import { wallEligible } from '../walls.ts';
 import { canTrain } from '../progression.ts';
 import { spellById } from '../../content/spells.ts';
 import { doorAt } from '../doors.ts';
 import { choosePayJob, wageStatus } from '../wages.ts';
 import { chooseHearthJob } from '../hearth.ts';
-import { nearest, take, storage, availableStorage, availableStations, reserved } from './common.ts';
-export function chooseJob(w: World, a: Resident) {
+import { nearest, take, storage, availableStations } from './common.ts';
+import { createWorkPool, choosePoolJob, type WorkPool } from './pool.ts';
+export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool(w)) {
   if (a.carrying) {
     for (const f of storage(w, a)) if (take(w, a, 'deliver', f, f.access, f.id)) return;
     const origin = a.cargoOrigin && tileAt(w, a.cargoOrigin.x, a.cargoOrigin.z);
@@ -41,10 +40,6 @@ export function chooseJob(w: World, a: Resident) {
   }
   if (choosePayJob(w, a)) return;
   if (chooseHearthJob(w, a)) return;
-  if(a.capabilities.includes('buildWall'))
-    for(const t of nearest(a,w.tiles.filter(t=>t.bridgePlanned&&!reserved(w,'buildBridge',t))))
-      for(const p of nearest(a,neighbors(w,t).filter(p=>bridgeWorkSite(w,t,p))))
-        if(take(w,a,'buildBridge',t,p))return;
   if (canTrain(w, a))
     for (const f of availableStations(w, a, 'training')) if (take(w, a, 'train', f, f.access, f.id)) return;
   if (a.capabilities.includes('research'))
@@ -75,85 +70,7 @@ export function chooseJob(w: World, a: Resident) {
       }
     }
   }
-  if (!waitingForGold) {
-    if (a.resumeMine) {
-      const t = tileAt(w, a.resumeMine.x, a.resumeMine.z);
-      if (
-        t?.known &&
-        t.designated &&
-        t.terrain === 'gold' &&
-        a.capabilities.includes('mine') &&
-        !reserved(w, 'mine', t)
-      ) {
-        for (const p of nearest(a, neighbors(w, t))) if (take(w, a, 'mine', t, p)) return;
-      }
-      a.resumeMine = undefined;
-    }
-    if (a.capabilities.includes('haul') && availableStorage(w, a))
-      for (const t of nearest(
-        a,
-        w.tiles.filter((t) => t.loose && !reserved(w, 'collect', t)),
-      )) {
-        for (const p of t.terrain === 'floor' ? [t] : neighbors(w, t))
-          if (take(w, a, 'collect', t, p)) return;
-      }
-    if (a.capabilities.includes('mine'))
-      for (const t of nearest(
-        a,
-        w.tiles.filter(
-          (t) =>
-            t.known &&
-            t.designated &&
-            t.terrain !== 'gem' &&
-            t.terrain !== 'floor' &&
-            !reserved(w, 'mine', t),
-        ),
-      )) {
-        for (const p of nearest(a, neighbors(w, t))) if (take(w, a, 'mine', t, p)) return;
-      }
-    if (a.capabilities.includes('claim'))
-      for (const t of nearest(
-        a,
-        w.tiles.filter((t) => t.known && t.terrain === 'floor' && !t.claimed && !reserved(w, 'claim', t)),
-      ))
-        if (take(w, a, 'claim', t, t)) return;
-    if (a.capabilities.includes('buildWall'))
-      for (const t of nearest(
-        a,
-        w.tiles.filter((t) => t.wallPlanned && wallEligible(w, t) && !reserved(w, 'buildWall', t)),
-      )) {
-        for (const p of nearest(
-          a,
-          neighbors(w, t).filter((p) => !p.wallPlanned),
-        ))
-          if (take(w, a, 'buildWall', t, p)) return;
-      }
-    if (a.capabilities.includes('mine'))
-      for (const t of nearest(
-        a,
-        w.tiles.filter((t) => t.known && t.designated && t.terrain === 'gem' && !reserved(w, 'mine', t)),
-      )) {
-        for (const p of nearest(a, neighbors(w, t))) if (take(w, a, 'mine', t, p)) return;
-      }
-    if (a.capabilities.includes('reinforce'))
-      for (const t of nearest(
-        a,
-        w.tiles.filter(
-          (t) =>
-            t.known &&
-            !t.reinforced &&
-            !t.designated &&
-            ['dirt', 'rock'].includes(t.terrain) &&
-            !reserved(w, 'reinforce', t),
-        ),
-      )) {
-        for (const p of nearest(
-          a,
-          neighbors(w, t).filter((p) => p.claimed && p.terrain === 'floor'),
-        ))
-          if (take(w, a, 'reinforce', t, p)) return;
-      }
-  }
+  if (!waitingForGold && choosePoolJob(w, a, pool)) return;
   const trainingSquares = new Set(
     w.tiles.filter((t) => t.terrain === 'floor' && roomById(t.room ?? '')?.service === 'training').map(key),
   );

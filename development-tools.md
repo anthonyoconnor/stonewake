@@ -46,6 +46,7 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `spells` | Existing prepared-spell and Warrior combat yard |
 | `crowded-kitchen` | Six hungry miners sharing food and accommodation |
 | `research-interruption` | Runesmith, queued research, food and beds; interrupt via needs or research pause |
+| `miner-work` | Three supported Miners, marked gold/gems and earth, loose gold and wall plans; shared work allocation and resource coverage |
 | `locked-door-hauling` | Loose gold across a locked door; verify failure then resume by changing door mode |
 | `encounters` | Hidden camp beyond a mineable gate, warned entrance waves, real traps/Warriors, source clearing and repeat rules |
 | `economy` | One resident of each type, spare support, first payday at 10 seconds and treasury access controlled by one door |
@@ -77,6 +78,8 @@ Add `--list` to inspect the selected tests without running them.
 Browser checks use a separate headless browser and never attach to an existing player tab. Windows defaults to installed Edge. Set `BROWSER_CHANNEL=chrome` to use Chrome. Other platforms use Playwright Chromium; install it once with `npx playwright install chromium` if needed. Screenshots go to ignored `test-results/`.
 
 `node scripts/rooms-browser.mjs` runs the focused room browser playtest against the same running server and browser settings. It constructs unfurnished single-tile Kitchen, Dormitory and Training Rooms through normal commands, verifies sidebar capacity, autonomous needs, level-1-to-2 advancement and released capacity during cooldown, then checks retraining toward level 3 and the furnished showcase. It uses the same ignored screenshot directory.
+
+`node scripts/miners-browser.mjs` checks resource coverage, distinct mining targets and simultaneous excavation/construction/delivery progress in the shared `miner-work` yard. Use `npm run verify -- miner-work-pool` for focused allocation checks.
 
 Other commands: `npm run typecheck`, `npm run test:watch -- research` and `npm run format -- path/to/changed-file.ts`. Watch runs an initial typecheck and watches the selected tests/dependencies; rerun typecheck after edits and restart the watcher when changing scope. Apply formatting to touched modules rather than making unrelated changes across the repository.
 

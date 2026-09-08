@@ -58,10 +58,10 @@ test('late arrivals join the shared payday without back pay or moving the schedu
   assert(w.agents.every(a => a.pay!.due.at(-1)!.at === 240));
 });
 
-test('every type earns increasing level wages while earlier debt keeps its value', () => {
+test('specialist wages rise while Miner wages and earlier debt keep their value', () => {
   const w = createRoomLab();
   for (const def of characterDefinitions) addResidents(w, def.id, 1);
-  const expected = [[4,5,6,7,8], [7,9,11,13,15], [8,10,12,14,16], [10,12,14,16,18]];
+  const expected = [[4,4,4,4,4], [7,9,11,13,15], [8,10,12,14,16], [10,12,14,16,18]];
   for (let level = 1; level <= 5; level++) {
     for (const a of w.agents) a.level = level;
     w.elapsed = level * 120;

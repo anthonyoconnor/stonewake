@@ -103,7 +103,13 @@ Miners are bought directly; constructing a room does not attract free additional
 - Each new level begins with its own starting crew and local economy.
 - Purchased miners have the same ongoing needs as other residents. Buying one does not exempt it from wages or provide free bedding and food.
 
-The proposed job priority is designated excavation and resource work, then outstanding hauling and claiming, then reinforcement. The exact scheduling needs playtesting so resources continue reaching storage. Gem deposits must have limited working positions so an endless mining job does not absorb every idle miner.
+## Miner work allocation
+
+Miners share a pool of discovered, marked resource mining and excavation targets, loose-resource hauling, planned bridge/wall construction, claiming and reinforcement. Each task reserves its target for one worker; mining and collecting are separate tasks, so another miner can haul from a working seam. Workers choose nearby reachable targets within their allocated kind of work.
+
+After delivery, needs, wages and requested Hearth activation, resource mining gets about one worker per three available Miners, rounded up with a minimum of one. The ratio is editable as **Miners per resource worker** in Game configuration. Remaining workers fill unstaffed hauling, excavation, construction and claiming work first, then split evenly between those kinds; that listed order breaks ties. Extra resource mining uses otherwise spare workers, and reinforcement is last. Returning gold miners prefer their unfinished seam only when assigned resource work again.
+
+If nobody is assigned to gold or gems, the pool checks every half-second and redirects an eligible miner from ordinary work after finding a real route. Carrying loads, hauling, food/rest, wages, combat, departure and Hearth activation are protected; idle miners select jobs through the normal needs checks. Travel and interruptions can cause brief mining gaps. Hidden, unmarked or unreachable deposits do not reserve workers. A lone available miner prioritizes resources and periodically collects a full gem load for delivery, so permanent deposits cannot prevent income from reaching storage. With no reachable storage, extracted resources remain at the site as before.
 
 ## Specialist behavior proposals
 

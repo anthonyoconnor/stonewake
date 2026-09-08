@@ -12,6 +12,7 @@ import { createEncounterLab } from './encounter-lab.ts';
 import { createHearthLab, createHearthDefeatLab } from './hearth-lab.ts';
 import { createMoraleLab } from './morale-lab.ts';
 import { createEconomyLab } from './economy-lab.ts';
+import { createMinerWorkLab } from './miner-work-lab.ts';
 import { buildRoom } from '../game/rooms.ts';
 import { addMiners, addResidents, designate } from '../game/simulation.ts';
 import { queueCraft } from '../game/crafting.ts';
@@ -72,6 +73,7 @@ export const scenarioFactories = {
   'region-crystal': (free) => createEnemyRegion('crystal', free),
   'region-volcanic': (free) => createEnemyRegion('volcanic', free),
   economy: createEconomyLab,
+  'miner-work': createMinerWorkLab,
   hearth: createHearthLab,
   'hearth-defeat': createHearthDefeatLab,
   morale: createMoraleLab,

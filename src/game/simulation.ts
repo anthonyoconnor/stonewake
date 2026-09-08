@@ -10,6 +10,7 @@ import { alive, tickSpellEffects } from './spell-effects.ts';
 import { tickFighter } from './combat.ts';
 import { releaseJob } from './jobs/common.ts';
 import { chooseJob } from './jobs/selection.ts';
+import { createWorkPool, coverResourceVacancy } from './jobs/pool.ts';
 import { validJob } from './jobs/validation.ts';
 import { performJob } from './jobs/work.ts';
 import { moveResident } from './movement.ts';
@@ -109,6 +110,7 @@ export function tick(w: World, dt: number) {
   if (supportChanged) assignRoomSupport(w);
   tickMorale(w,dt);
   tickHearth(w);
+  const workPool = createWorkPool(w);
   for (const a of [...w.agents]) {
     if (a.job?.kind !== 'sleep') a.energy = Math.max(0, a.energy - dt / tuning.restInterval);
     if (a.job?.kind !== 'eat') a.hunger = Math.max(0, a.hunger - dt / tuning.hungerInterval);
@@ -125,7 +127,7 @@ export function tick(w: World, dt: number) {
     if (!a.job) {
       a.retry -= dt;
       if (a.retry <= 0) {
-        chooseJob(w, a);
+        chooseJob(w, a, workPool);
         if (!a.job) recordJob(w, a, 'waiting', a.activity);
       }
     }
@@ -136,6 +138,8 @@ export function tick(w: World, dt: number) {
     a.job = undefined;
     a.path = [];
   }
+  if (Math.floor((w.elapsed - dt) * 2) !== Math.floor(w.elapsed * 2))
+    coverResourceVacancy(w, workPool);
   tickEncounters(w);
   tickDefenses(w, dt);
   finishHearth(w);
