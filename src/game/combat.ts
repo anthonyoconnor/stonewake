@@ -73,6 +73,7 @@ export function tickFighter(w: World, a: Resident, dt: number, release: JobRelea
         const stats = characterStats(a),
           before = target.health;
         damageEnemy(w, target, stats.damage, 'dwarf');
+        a.attackedAt = w.elapsed;
         a.nextAttackAt = w.elapsed + stats.attackSeconds / hasteRate(w, a);
         if (target.health < before)
           gainExperience(w, a, stats.attackSeconds * tuning.combatExperienceRate, 'combat');

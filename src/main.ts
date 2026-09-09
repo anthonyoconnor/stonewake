@@ -20,6 +20,8 @@ import { createDefenseLab } from './content/defense-lab';
 import { DefenseView } from './view/defenses';
 import { SpellView } from './view/spells';
 import { HearthView } from './view/hearth';
+import { GameAudio } from './view/audio';
+import { createAudioDialog } from './ui/audio';
 import { createSpellLab } from './content/spell-lab';
 import { populateShowcase } from './content/scenarios';
 import type { DevelopmentController } from './dev/controller';
@@ -41,6 +43,17 @@ export async function initializeGame(loading: LoadingScreen) {
   });
   const selection = new Selection(view);
   const sidebar = new Sidebar(view, controls, selection);
+  const audio = new GameAudio();
+  const unlockAudio = () => { void audio.unlock(); };
+  document.addEventListener('pointerdown', unlockAudio);
+  document.addEventListener('keydown', unlockAudio);
+  const soundDialog = createAudioDialog(() => audio.applySettings());
+  const soundButton = document.createElement('button');
+  soundButton.id = 'sound-settings'; soundButton.textContent = '♪'; soundButton.title = 'Sound settings'; soundButton.setAttribute('aria-label', 'Sound settings');
+  soundButton.onclick = () => soundDialog.show(); sidebar.root.querySelector('footer')!.append(soundButton);
+  if (import.meta.env.DEV) Object.assign(view, { audio });
+  window.addEventListener('pagehide', () => audio.suspend());
+  if (import.meta.hot) import.meta.hot.dispose(() => { audio.dispose(); document.removeEventListener('pointerdown', unlockAudio); document.removeEventListener('keydown', unlockAudio); });
   sidebar.onCharacterHealthChanged = (levels) => {
     if (world !== view.world)
       for (const a of world.agents)
@@ -288,13 +301,14 @@ export async function initializeGame(loading: LoadingScreen) {
     });
   view.engine.runRenderLoop(() => {
     if ((menu.open || document.hidden) && !loading.busy) {
+      audio.update(view.world, { x: view.camera.target.x, z: view.camera.target.z }, false);
       accumulator = 0;
       controls.keys.clear();
       controls.pointer = undefined;
       return;
     }
     const dt = Math.min(0.25, view.engine.getDeltaTime() / 1000);
-    const menuBlocked = loading.busy || menu.open || !!document.querySelector('.discard-dialog[open]');
+    const menuBlocked = loading.busy || menu.open || soundDialog.element.open || !!document.querySelector('.discard-dialog[open]');
     if (!sidebar.tuningDialog.open && !menuBlocked) controls.update(Math.min(0.05, dt));
     else {
       controls.keys.clear();
@@ -317,6 +331,7 @@ export async function initializeGame(loading: LoadingScreen) {
     defenses.update();
     magic.update();
     hearth.update();
+    audio.update(view.world, { x: view.camera.target.x, z: view.camera.target.z }, !document.hidden && !menuBlocked && !sidebar.tuningDialog.open && !sidebar.isPaused() && !view.world.spellTest?.paused);
     view.render();
     uiTime += dt;
     if (uiTime > 0.15) {

@@ -1,5 +1,6 @@
 import { playableLevels } from '../content/playable-levels';
 import { presentation } from '../content/presentation';
+import { audioControls, bindAudioControls } from './audio';
 import './menu.css';
 
 export class MainMenu {
@@ -28,7 +29,7 @@ export class MainMenu {
     } else if (screen === 'free') {
       this.element.innerHTML = `<div class="free-shell"><header class="free-heading"><span aria-hidden="true">◇</span><div><h1>Free Play</h1><p>Choose a level.</p></div></header>
         <div class="level-list" role="group" aria-label="Playable levels">${playableLevels.map(l => `<button class="level-choice" data-level="${l.id}" aria-pressed="${this.selected === l.id}"><img src="${l.image}" alt="" loading="lazy"><span>${l.name}</span><b class="selected-rune" aria-hidden="true">♢</b></button>`).join('')}</div>
-        <article class="level-preview" aria-label="Selected level"><img id="level-art" alt=""><div class="preview-caption"><p id="level-region"></p><h2 id="level-title"></h2><p id="level-description"></p><small>Fresh settlement · Normal economy · All current room plans</small></div></article>
+        <article class="level-preview" aria-label="Selected level"><img id="level-art" alt=""><div class="preview-caption"><p id="level-region"></p><h2 id="level-title"></h2><p id="level-description"></p><small>Fresh settlement · Normal economy · Authored starting plans</small></div></article>
         <footer class="free-actions"><button class="stone-button secondary" id="menu-back">‹ &nbsp; Back</button><button class="stone-button primary" id="start-level">Start level &nbsp; ›</button></footer></div>`;
       this.element.querySelectorAll<HTMLButtonElement>('[data-level]').forEach(b => b.onclick = () => { this.selected = b.dataset.level!; this.updatePreview(); });
       this.button('#menu-back', () => this.show()); this.button('#start-level', () => this.start('free-play', this.selected));
@@ -38,6 +39,8 @@ export class MainMenu {
       const motion = this.element.querySelector<HTMLSelectElement>('#motion')!; motion.value = presentation.motion;
       motion.onchange = () => { presentation.motion = motion.value as typeof presentation.motion; document.documentElement.dataset.motion = motion.value; };
       this.element.querySelector<HTMLInputElement>('#edge-scrolling')!.onchange = e => presentation.edgeScrolling = (e.target as HTMLInputElement).checked;
+      this.element.querySelector('#menu-back')!.insertAdjacentHTML('beforebegin', audioControls());
+      bindAudioControls(this.element);
       this.button('#menu-back', () => this.show());
     }
     this.element.querySelector<HTMLButtonElement>('button')?.focus();
