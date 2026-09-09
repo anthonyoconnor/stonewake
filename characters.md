@@ -6,6 +6,8 @@ Working design for the dwarven stronghold game. Companion documents: [Rooms](roo
 
 ## Implementation status
 
+Normal campaign recruitment follows the [campaign brief](levels.md#campaign-brief-and-progression): Cave Hounds and Stonehands begin the journey; Warriors, Engineers and Runesmiths arrive in successive areas after their supporting plans unlock. Recruitment checks both knowledge and ordinary reachable room/food/bed support. Earlier roles remain available thereafter. Retained Miners stay outside the campaign catalog; debug fixtures and legacy Free Play deliberately retain them.
+
 See the [current implementation inventory](development-plan.md#current-implementation-status) for all dwarf types, including debug-only availability and missing recruitment/work systems. The roster and rules below describe the intended design, not a list of completed features. Update the inventory whenever a dwarf or its supporting systems change.
 
 All dwarfs share one payday every 120 game seconds from the start of the area. New arrivals join the next scheduled payday and receive their full current wage, with no back pay. Level 1 wages are 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths; Miners remain at 4 gold, and each additional specialist level adds 2 gold. Wages are explicit editable values in each character level row. Each payment uses the level reached when payday arrives; later level or configuration changes do not alter existing debt. Dwarfs spend one second collecting each due payment at a reachable Treasure Room or Hearth treasury; 45 seconds of overdue grace allows travel/queues. Current values are editable and provisional. [Payday rules](game-rules.md#10-needs-payday-and-departure) define access, interruption and funding behavior.

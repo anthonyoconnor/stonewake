@@ -19,15 +19,23 @@ The campaign reclaims separate sites within a lost dwarven kingdom. Each level i
 - A level ends in defeat if enemies destroy the Stone Hearth protecting the Hearthstone.
 - Every level has a separate onward Hearthstone that the player must find and reach to open progression to the next area. Its difficult approach supplies the primary level objective.
 
-The campaign premise, level structure and onward Hearthstone objective are established. The two authored areas and activation rules below describe the implemented prototype; candidate levels remain authoring proposals. All ten current enemy concepts now have implemented roles and provisional balance in [Enemies](enemies.md). M11 implements objective/defeat using an enemy-held land route. M16 adds the Emberwater Crossing scenario with water, lava, chasms and constructed stone bridges. The two-area campaign links Border Foothold to Emberwater Crossing through explicit sidebar travel.
+The campaign follows five regions from the upper workings to the royal volcanic stronghold, with explicit sidebar travel after each relay. All ten enemy concepts have implemented roles and provisional balance in [Enemies](enemies.md). The older Border Foothold/Emberwater prototype journey remains deliberately available as independent Free Play maps.
 
-## Planned campaign expansion
+## Campaign brief and progression
 
-The user has completed the two-area prototype campaign. The next campaign should introduce rooms and characters gradually across consecutive levels, give specialists time and meaningful challenges to justify their use, and use deliberate layouts rather than treating the prototype maps as the final structure.
+The five-area campaign introduces one specialist at a time. Unlocks arrive at the next Hearth so each expedition begins with an explicit, stable catalog. Earlier knowledge stays useful and no later stage removes it. The final royal relay reconnects the kingdom and ends the journey. Counts, dimensions and timing remain editable prototype decisions.
+
+| Area / region | Learning goal and new content | Revisited mechanics and onward purpose |
+|---|---|---|
+| Border Foothold / upper workings | Stonehands, Cave Hounds, Treasure Room, Dormitory, Kitchen and walls | Excavate room space, gather finite gold, support hounds and secure the watch relay; recover training records |
+| Fungal Hollows / fungal caves | Training Room and Warriors | Train while hounds scout; open alternate nest approaches against slowing/control; recover the guild relay |
+| Fallen City / ancient halls | Workshop, Engineers, all door tiers and traps | Reclaim districts, protect intersections, train defenders and finance manufactured defenses against armor; recover the archive relay |
+| Crystal Divide / crystal caverns | Library, Runesmiths and the complete research catalog | Prepare protection/healing/control, defend remote income and break ranged sight lines; recover stonebridge plans |
+| Royal Deep / volcanic depths | Stone bridges | Combine all prior roles, training, defenses and spells across lava; secure the final royal relay |
 
 Gold seams should guide exploration toward authored destinations. Renewable gems should be rare strategic attractions and may be absent from a level. Biomes should include appropriate natural caverns/tunnels, active inhabitants and level/species-specific recurring pressure. Discoverable dwarven ruins should offer coherent laid-out rooms that can be secured and reclaimed. The implemented starting menu offers Campaign and a data-driven Free Play level list with independent starting availability.
 
-Campaign expansion remains planned under [M26–M29](development-plan.md#milestone-tracker), not descriptions of current behavior. M26 will establish the campaign sequence and unlock schedule; M27 owns habitat/pressure behavior, M28 reclamation rules, and M29 concrete maps and resource placement. Exact level counts, sizes and timings remain provisional.
+The declarative catalog is in `src/content/campaign.ts`; shared availability checks apply to room/wall/bridge construction, recruitment, manufacturing, defense placement, research and casting. Free room construction changes gold costs only. The retained Miner is excluded from campaign arrivals and Summon Miner; it remains deliberately available in debug and legacy prototype Free Play.
 
 ## Onward Hearthstone objective
 
@@ -40,24 +48,27 @@ Every level contains two distinct Hearthstone roles: the starting Hearthstone an
 - Activation completes the local objective and freezes the area with progression readiness. In campaign play, the sidebar offers travel to the next authored area; the final relay gives a journey-complete endpoint. Starting-core destruction takes precedence if both outcomes would occur in the same simulation tick. Camera movement or remote clicks never complete activation.
 - The starting Stone Hearth has 400 health and remains the defeat target throughout the level. Natural raiders attack an adjacent dwarf first, otherwise an accessible core tile within melee reach. The core stays impassable and has no repair, upgrade or relocation in M11. The onward stone is indestructible reserved floor: it cannot hold a room, wall or fixture, become another treasury/recruitment core or move the player's base.
 - Campaign travel begins a fresh foothold in the next area. Research/building unlocks carry forward under the working design; local armies and stockpiles stay behind. The implementation uses session memory without adding save infrastructure.
-- The Emberwater Hearthstone completes the current two-area journey. There is no next-area link after it; the sidebar offers Restart area or Begin a new journey. Further campaign areas remain an authoring choice.
+- The Royal Deep Hearthstone completes the five-area journey. There is no next-area link after it; the sidebar offers Restart area or Begin a new journey.
 
 Optional camp-clearing, relic or district tasks can shape the approach, but do not replace the shared Hearthstone objective. Exact positions and defenses vary by level.
 
 ## Authored campaign and travel
 
-The ordinary game starts a two-area journey defined in `src/content/campaign.ts`:
+The ordinary game starts the five-area journey defined in `src/content/campaign.ts`:
 
 | Area | Approach | Result |
 |---|---|---|
-| Border Foothold | Establish a settlement and excavate the occupied northern halls | Activate the northern stone to recover stonebridge plans and choose travel to Emberwater |
-| Emberwater Crossing | Establish a fresh settlement, construct paid water/lava bridges and defeat the far island's Cinderling | Activate the final relay to complete the available journey |
+| Border Foothold | Establish a settlement and secure the upper watch | Travel to Fungal Hollows with Training Room plans |
+| Fungal Hollows | Train defenders and open branching nest approaches | Travel to Fallen City with Workshop plans |
+| Fallen City | Secure ruined districts and manufacture defenses | Travel to Crystal Divide with Library plans |
+| Crystal Divide | Prepare spells and secure remote crystal income | Travel to Royal Deep with stonebridge plans |
+| Royal Deep | Build crossings and overcome the volcanic royal watch | Activate the final relay to complete the journey |
 
 The Hearth panel provides an area briefing. Discovering its onward stone reveals the local story detail without exposing hidden positions in advance. Activation must still satisfy physical reach and security; travel only becomes available after successful activation and never occurs automatically.
 
-Travel preserves completed spell research and building knowledge in session memory. All six implemented rooms and reinforced-wall construction are known at the start; stonebridge plans unlock on arrival at Emberwater. These facilities remain useful in both settlements, and bridges retain their usual gold/work costs. Standalone debug and regional scenarios retain their existing construction catalog.
+Travel preserves completed spell research and cumulative building, role, recipe and spell availability in session memory. The schedule in the campaign brief owns introductions; research availability is distinct from researched knowledge. A Library must still research every newly available spell. Debug worlds omit campaign restrictions.
 
-Each destination is a new world: three level-1 Miners by default, normal starting gold, empty treasury, no rooms/defenses/stockpiles, fresh needs/payday and new authored enemies. Local jobs, events, crafting queues, research progress, prepared charges, active spells and resident levels stay behind. Carried research appears as unlocked, unprepared, paused preparation orders; use the Library's Resume control to prepare a local charge. Incomplete initial research does not transfer.
+Each destination is a new world: the normal Stonehand crew and starting gold, empty treasury, no owned rooms/defenses/stockpiles, fresh needs/payday and new authored enemies. Neutral ruins remain to be discovered and claimed. Local jobs, events, crafting queues, research progress, prepared charges, active spells and resident levels stay behind. Carried research appears as unlocked, unprepared, paused preparation orders; use the Library's Resume control to prepare a local charge. Incomplete initial research does not transfer.
 
 Restart area reconstructs the current area with the knowledge available at its arrival, discarding work learned during the failed/retried attempt. Begin a new journey resets to Border Foothold with initial knowledge. Debug worlds are separate from the retained campaign; returning to the stronghold restores its exact in-memory state. There are no browser/disk saves.
 
@@ -186,7 +197,7 @@ Every playable level needs:
 
 ## Decisions still open
 
-- Campaign length, level order, unlock sequence and final story endpoint.
+- Broader campaign balance, pressure cadence and presentation refinement; the implemented five-area order and endpoint are specified above.
 - Onward Hearthstone activation conditions, interaction timing/cost, damage policy and exact approaches; finding and reaching one in every level is agreed.
 - Initial miner counts, usable starting storage, and starting gold.
 - Resource placement visibility, environmental hazards, and bridge behavior.
@@ -195,4 +206,4 @@ Every playable level needs:
 
 ## Free Play availability
 
-The starting menu lists Border Foothold, Emberwater Crossing and the five regional maps as deliberately retained playable prototype content. Each entry in `src/content/playable-levels.ts` owns its level, illustration, description, starting room/building plans and known spells. All seven currently start with every implemented room plus walls/bridges, no researched spells, the normal Stonehand crew and starting gold, natural recruitment, no supplied rooms, stock or prepared charges. Room support and Library research still apply. Campaign progress never changes these arrivals. Restart recreates the selected entry, including its initial knowledge; standalone victory offers restart or menu, with no campaign travel. Campaign retains its existing bridge unlock and carry rules. M26 owns broader staged availability.
+The starting menu retains Border Foothold, Emberwater Crossing and the five regional prototype maps with all room/building plans, roles and research availability. Five entries marked Campaign expose the authored campaign maps independently with the cumulative availability of that area. Each entry in `src/content/playable-levels.ts` owns its map, illustration, description and starting catalog. All start with no researched spells, the normal Stonehand crew and gold, natural recruitment, and no owned rooms, stock or prepared charges. Room support and Library research still apply. Campaign progress never changes these arrivals. Restart recreates the selected entry, including its initial knowledge; standalone victory offers restart or menu with no campaign travel.

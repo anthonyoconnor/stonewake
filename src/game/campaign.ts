@@ -1,4 +1,5 @@
-import { campaignStage, campaignStages } from '../content/campaign.ts';
+import { campaignStage, campaignStages, campaignStartingAvailability } from '../content/campaign.ts';
+import { copyAvailability } from './availability.ts';
 import { spellById } from '../content/spells.ts';
 import { createWorld } from './world.ts';
 import { addStonehands } from './simulation.ts';
@@ -18,16 +19,17 @@ function enterArea(state: CampaignState, free: boolean): World {
   const stage = campaignStage(state.stageId);
   if (!stage) throw new Error(`Unknown campaign area: ${state.stageId}`);
   const w = createWorld(stage.level);
+  w.availability = copyAvailability(campaignStartingAvailability(stage.id));
   w.freeRoomBuilding = free;
   w.campaign = {
     ...state,
     completed: [...state.completed],
     knownSpells: [...state.knownSpells],
-    unlockedBuildings: unique([...state.unlockedBuildings, ...stage.unlockBuildings]),
+    unlockedBuildings: [...w.availability.buildings],
   };
   // Knowledge carries; local progress, workers, prepared charges and queues do not.
   w.researchOrders = state.knownSpells
-    .filter((id) => spellById(id))
+    .filter((id) => spellById(id) && w.availability!.spells.includes(id))
     .map((spell, i) => ({
       id: i + 1,
       spell,

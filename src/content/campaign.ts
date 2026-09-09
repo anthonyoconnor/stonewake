@@ -1,176 +1,59 @@
 import type { LevelDefinition } from '../game/types.ts';
+import type { ContentAvailability } from '../game/availability.ts';
 import { prototypeLevel } from './levels.ts';
-import { crossingLevel } from './crossings.ts';
+import { enemyRegionLevel } from './enemy-regions.ts';
+import { recipes } from './recipes.ts';
+import { spellDefinitions } from './spells.ts';
 
 export interface CampaignStage {
-  id: string;
-  level: LevelDefinition;
-  next?: string;
-  briefing: string;
-  discovery: string;
-  completion: string;
-  unlockBuildings: string[];
+  id: string; level: LevelDefinition; next?: string;
+  briefing: string; discovery: string; completion: string;
+  unlockBuildings: string[]; unlockRoles: string[]; unlockRecipes: string[]; unlockSpells: string[];
 }
 
-/** The runic network links authored areas; this catalog does not carry local worlds. */
+/** Each introduction has a complete area to develop before the next role arrives. */
 export const campaignStages: CampaignStage[] = [
   {
-    id: 'border-foothold',
-    level: {
-      ...prototypeLevel,
-      // Optional branches preserve the northern objective and the eastern raid passage.
-      openings: [
-        ...prototypeLevel.openings,
-        [10, 28, 11, 30],
-        [4, 32, 13, 38],
-        [38, 31, 39, 32],
-        [35, 34, 44, 41],
-      ],
-      seams: [
-        ...prototypeLevel.seams,
-        {
-          terrain: 'rock',
-          cells: [
-            { x: 10, z: 31 },
-            { x: 11, z: 31 },
-            { x: 38, z: 33 },
-            { x: 39, z: 33 },
-          ],
-        },
-      ],
-      encounters: [
-        ...prototypeLevel.encounters!,
-        {
-          id: 'fungal-side-nest',
-          name: 'Fungal side cavern',
-          kind: 'nest',
-          positions: [
-            { x: 12, z: 33 },
-            { x: 6, z: 35 },
-            { x: 10, z: 36 },
-          ],
-          roster: ['tunnel-burrower', 'cave-spider', 'spore-brute'],
-          activation: 'discovery',
-          delay: 0,
-          warningSeconds: 15,
-          clear: 'defeat',
-          warning: 'Claws and spores stir beyond the old fungal tunnel.',
-        },
-        {
-          id: 'ancient-side-watch',
-          name: 'Ancient side hall',
-          kind: 'camp',
-          positions: [
-            { x: 37, z: 37 },
-            { x: 42, z: 38 },
-          ],
-          roster: ['restless-guard', 'ancient-sentinel'],
-          activation: 'discovery',
-          delay: 0,
-          warningSeconds: 15,
-          clear: 'defeat',
-          warning: 'The sealed hall awakens its ancient watch.',
-        },
-      ],
-    },
-    next: 'emberwater-crossing',
-    briefing:
-      'Reclaim the upper workings. Excavate room space around the Hearthstone for beds, food and a treasury, then prepare defenders for the buried northern halls. Find their lost Hearthstone to restore the first runic connection. Old accounts mention fungal caverns southwest of the workings and an ancient watch hall to the southeast; exploring them is optional.',
-    discovery:
-      'The northern stone remembers the old stonebridge craft. Secure its occupied hall and awaken the route to Emberwater.',
-    completion:
-      'The northern route is restored. Stonebridge plans are recovered for the water and lava ahead.',
-    unlockBuildings: ['treasure', 'dormitory', 'kitchen', 'workshop', 'training', 'library', 'wall'],
+    id: 'border-foothold', level: prototypeLevel, next: 'fungal-hollows',
+    briefing: 'Establish a treasury and a Dormitory around the Hearth. Stonehands excavate and Cave Hounds defend and explore. Follow the northern gold to the lost relay; its training records lead into the fungal hollows.',
+    discovery: 'The northern watch holds the first relay. Secure the approach and recover the Warrior training records.',
+    completion: 'The upper relay is restored. Training Room plans and Warriors join the next expedition into the fungal hollows.',
+    unlockBuildings: ['treasure', 'dormitory', 'kitchen', 'wall'], unlockRoles: ['stonehand', 'cave-hound'], unlockRecipes: [], unlockSpells: ['summon-stonehand'],
   },
   {
-    id: 'emberwater-crossing',
-    level: {
-      ...crossingLevel,
-      id: 'campaign-emberwater',
-      // Expand only eastward: both hazard channels still span the full map height.
-      width: 40,
-      openings: [
-        ...crossingLevel.openings,
-        [26, 4, 27, 4],
-        [29, 2, 36, 6],
-        [26, 12, 27, 12],
-        [29, 10, 37, 15],
-      ],
-      seams: [
-        ...crossingLevel.seams,
-        {
-          terrain: 'rock',
-          cells: [
-            { x: 28, z: 4 },
-            { x: 28, z: 12 },
-          ],
-        },
-        {
-          terrain: 'gem',
-          cells: [
-            { x: 34, z: 3 },
-            { x: 31, z: 5 },
-          ],
-        },
-        {
-          terrain: 'lava',
-          cells: [
-            { x: 31, z: 14 },
-            { x: 32, z: 14 },
-            { x: 33, z: 14 },
-          ],
-        },
-      ],
-      encounters: [
-        {
-          id: 'ember-sentry',
-          name: 'Ember watch',
-          kind: 'camp',
-          positions: [{ x: 24, z: 11 }],
-          activation: 'discovery',
-          delay: 0,
-          warningSeconds: 12,
-          clear: 'defeat',
-          warning: 'An ember guardian stirs beyond the crossing.',
-          roster: ['cinderling'],
-        },
-        {
-          id: 'crystal-side-camp',
-          name: 'Crystal side cavern',
-          kind: 'camp',
-          positions: [
-            { x: 32, z: 3 },
-            { x: 34, z: 5 },
-          ],
-          roster: ['crystal-elemental', 'crystalback-stalker'],
-          activation: 'discovery',
-          delay: 0,
-          warningSeconds: 15,
-          clear: 'defeat',
-          warning: 'Crystal shapes move within the opened cavern.',
-        },
-        {
-          id: 'volcanic-side-lair',
-          name: 'Volcanic side lair',
-          kind: 'nest',
-          positions: [{ x: 34, z: 13 }],
-          roster: ['deepmaw'],
-          activation: 'discovery',
-          delay: 0,
-          warningSeconds: 15,
-          clear: 'defeat',
-          warning: 'A heavy predator wakes beneath the volcanic bank.',
-        },
-      ],
-    },
-    briefing:
-      'A fresh crew has reached Emberwater. Build a new foothold, span the water and lava with the recovered stonebridge craft, and secure the far Hearthstone. Research knowledge endures; the Library must prepare new spell charges here. Beyond the far bank, optional eastern tunnels lead to crystal caverns and a volcanic lair.',
-    discovery:
-      'Beyond the molten channel stands the southern relay. Awaken it to reconnect the upper workings with the lost kingdom.',
-    completion:
-      'The Emberwater relay is alight. Two lost routes are restored, and the journey through the available areas is complete.',
-    unlockBuildings: ['bridge'],
+    id: 'fungal-hollows', level: enemyRegionLevel('fungal'), next: 'fallen-city',
+    briefing: 'Build a Training Room to attract Warriors. Let them train while hounds scout the branching fungal tunnels. Spiders slow exposed defenders and the Spore Brute controls narrow approaches; choose where to open the nest.',
+    discovery: 'The nest surrounds a lost guild relay. Its Workshop records will equip the next expedition.',
+    completion: 'The fungal relay is secured. Engineers, Workshop plans and manufactured defenses are recovered for the Fallen City.',
+    unlockBuildings: ['training'], unlockRoles: ['warrior'], unlockRecipes: [], unlockSpells: [],
+  },
+  {
+    id: 'fallen-city', level: enemyRegionLevel('ancient'), next: 'crystal-divide',
+    briefing: 'Reclaim the ancient streets. Workshops attract Engineers who manufacture doors and traps. Protect your routes against the armored watch while trained Warriors and hounds secure the buried districts.',
+    discovery: 'Beyond the old watch lies a relay carrying the Library catalog. Secure it to recover runic knowledge.',
+    completion: 'The city relay is restored. Library plans and Runesmiths join the expedition to the crystal caverns.',
+    unlockBuildings: ['workshop'], unlockRoles: ['engineer'], unlockRecipes: recipes.map(r => r.id), unlockSpells: [],
+  },
+  {
+    id: 'crystal-divide', level: enemyRegionLevel('crystal'), next: 'royal-deep',
+    briefing: 'Build a Library, attract a Runesmith and research protection, healing and battlefield control. Crystal hunters punish exposed approaches. A remote gem can finance repeated spell preparation once its cavern is secured.',
+    discovery: 'The crystal relay guards the stonebridge plans needed to reach the royal stronghold.',
+    completion: 'The crystal relay is alight. Stonebridge plans open the way into Royal Deep; researched spells travel with you.',
+    unlockBuildings: ['library'], unlockRoles: ['runesmith'], unlockRecipes: [], unlockSpells: spellDefinitions.map(s => s.id),
+  },
+  {
+    id: 'royal-deep', level: enemyRegionLevel('volcanic'),
+    briefing: 'Reunite the lost network. Span the lava with stone bridges, prepare spells and defenses, and secure the royal relay. Cinderlings can cross molten ground directly; the Deepmaw punishes an unprepared breach.',
+    discovery: 'The royal Hearthstone is the final relay. Secure its volcanic approaches and awaken the lost kingdom’s network.',
+    completion: 'The royal Hearthstone is alight. All five lost routes are restored and the campaign journey is complete.',
+    unlockBuildings: ['bridge'], unlockRoles: [], unlockRecipes: [], unlockSpells: [],
   },
 ];
-
-export const campaignStage = (id: string) => campaignStages.find((stage) => stage.id === id);
+export const campaignStage = (id: string) => campaignStages.find(stage => stage.id === id);
+export function campaignStartingAvailability(id: string): ContentAvailability {
+  const end = campaignStages.findIndex(stage => stage.id === id);
+  if (end < 0) throw new Error(`Unknown campaign area: ${id}`);
+  const prior = campaignStages.slice(0, end + 1);
+  const gather = (field: 'unlockBuildings' | 'unlockRoles' | 'unlockRecipes' | 'unlockSpells') => [...new Set(prior.flatMap(stage => stage[field]))];
+  return { buildings: gather('unlockBuildings'), roles: gather('unlockRoles'), recipes: gather('unlockRecipes'), spells: gather('unlockSpells') };
+}

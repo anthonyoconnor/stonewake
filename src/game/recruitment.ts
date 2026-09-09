@@ -5,6 +5,7 @@ import { canStand, reachable } from './navigation.ts';
 import { alive } from './spell-effects.ts';
 import { goldTotal, spendGold } from './rooms.ts';
 import { notify } from './notifications.ts';
+import { roleAllowed, availabilityReason } from './availability.ts';
 export function hearthArrival(w: World): Point | undefined {
   const chest = w.roomServices.find((f) => f.id === 'hearth-treasury');
   const approaches = chest
@@ -36,6 +37,7 @@ function arrivalSupport(w: World) {
 function status(w: World, type: string, support: ReturnType<typeof arrivalSupport>, ignoreBeds = false) {
   const no = (message: string) => ({ eligible: false, message, capacity: 0 });
   if (w.outcome) return no('The level has ended.');
+  if (!roleAllowed(w, type)) return no(availabilityReason(w, 'roles', type));
   const def = characterById(type);
   if (!def) return no('Unknown resident type.');
   if (!support.start) return no('Needs an open Hearth arrival route.');

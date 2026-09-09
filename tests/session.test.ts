@@ -16,7 +16,7 @@ test('every listed standalone starts and restarts with its authored content and 
     assert.equal(w.agents.length, tuning.startingStonehands);
     assert(w.agents.every(a => a.type === 'stonehand'));
     assert.deepEqual(w.freePlay!.buildings, level.starting.buildings);
-    assert(w.freePlay!.buildings.includes('bridge'));
+    assert.deepEqual(w.availability!.buildings, level.starting.buildings);
     assert(w.onwardHearth && !w.onwardHearth.discovered && !w.outcome);
     w.allowance += 5000; w.outputs['bolt-trap'] = 40;
     w.freePlay!.knownSpells.push('enemy-slow'); w.freePlay!.buildings.length = 0;

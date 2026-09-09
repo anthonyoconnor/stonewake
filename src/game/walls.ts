@@ -2,12 +2,14 @@ import {type World,type Point,type Tile,tileAt,key} from './types.ts';
 import {blocked} from './navigation.ts';
 import {tuning} from '../content/tuning.ts';
 import {defenseAt} from './doors.ts';
+import {buildingAllowed,availabilityReason} from './availability.ts';
 export function wallEligible(w:World,t:Tile|undefined):t is Tile {
  return !!t&&t.known&&t.terrain==='floor'&&t.claimed&&!t.core&&!t.room&&!t.loose&&!defenseAt(w,t)&&!blocked(w,t)&&!w.roomServices.some(f=>key(f.access)===key(t));
 }
 export const wallBuildDuration=()=>Math.max(tuning.wallBuildSeconds,Math.max(tuning.mineSeconds,tuning.rockSeconds)+tuning.reinforceSeconds+1);
 export function planWalls(w:World,points:Point[],add=true){
  if(w.outcome)return 'This area has ended. Restart to build walls.';
+ if(add&&!buildingAllowed(w,'wall'))return availabilityReason(w,'buildings','wall');
  let count=0;
  for(const p of new Map(points.map(p=>[key(p),p])).values()){
   const t=tileAt(w,p.x,p.z);if(!t?.known)continue;

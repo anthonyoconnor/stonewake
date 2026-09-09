@@ -4,6 +4,8 @@
 
 The catalog below is implemented in the browser prototype. Its numerical values remain provisional starting points for playtesting.
 
+The campaign introduces the Library, Runesmith and research catalog at Crystal Divide, following the [campaign brief](levels.md#campaign-brief-and-progression). Availability permits research; it does not supply charges or completed knowledge. Research and casting use the same arrival restrictions, including free construction sessions. Completed research travels onward as paused, unprepared orders; restart restores knowledge carried into the current area. Debug fixtures retain unrestricted access.
+
 Create Stonehand is an innate Hearth action available from the start for 50 gold + 25 per living Stonehand. It needs no Library, research, preparation, food or bed capacity. Each cast assembles one Stonehand with an open Hearth route, a free claimed arrival square and enough shared gold. Failed casts spend nothing. Legacy Summon Miner remains callable only by development fixtures.
 
 Hearth Prospect and global Hearth Haste have been removed. The catalog uses targeted casting, individual effects and the shared Library research/preparation service. Offensive spells work against authored encounters/raids and debug-spawned enemies.

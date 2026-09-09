@@ -7,12 +7,13 @@ import {defenseAt,doorAt,isDoor,doorIsOpen,doorOccupied} from './doors.ts';
 import {blocked} from './navigation.ts';
 import {damageEnemy} from './spell-effects.ts';
 import {reportAttack} from './security.ts';
+import {recipeAllowed,availabilityReason} from './availability.ts';
 
 
 // Player tool availability, also checked when confirming an already-selected tool.
 export function defenseToolStatus(w:World,type:string){
   const stock=w.outputs[type]??0;
-  const reason=w.outcome?'Area ended.':!w.roomServices.some(f=>f.service==='craft'&&f.capacity>0)?'Build a Workshop.':stock<1?'Manufacture this item in the Workshop.':'';
+  const reason=w.outcome?'Area ended.':!recipeAllowed(w,type)?availabilityReason(w,'recipes',type):!w.roomServices.some(f=>f.service==='craft'&&f.capacity>0)?'Build a Workshop.':stock<1?'Manufacture this item in the Workshop.':'';
   return {available:!reason,stock,reason};
 }
 export function defenseQuote(w:World,type:string,p:Point){
@@ -20,6 +21,7 @@ export function defenseQuote(w:World,type:string,p:Point){
   const invalid=(reason:string)=>({valid:false,reason,rotation:0});
   if(w.outcome)return invalid('This level has ended. Restart to play again.');
   if(!def)return invalid('Unknown defense.');
+  if(!recipeAllowed(w,type))return invalid(availabilityReason(w,'recipes',type));
   if(!t?.known||t.terrain!=='floor'||!t.claimed||t.core||t.onward||t.room||t.wallPlanned||t.loose||defenseAt(w,p)||blocked(w,p)||w.roomServices.some(f=>f.id==='hearth-treasury'&&key(f.access)===key(p)))return invalid('Choose clear, claimed floor outside a room.');
   let rotation=0;
   if(def.kind==='door'){

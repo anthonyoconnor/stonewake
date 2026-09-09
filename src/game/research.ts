@@ -7,10 +7,11 @@ import {blocked,findPath} from './navigation.ts';
 import {defenseAt} from './doors.ts';
 import {alive,health,maxHealth,effect,visible,spellLine,damageEnemy} from './spell-effects.ts';
 import {recordJob} from './diagnostics.ts';
+import {spellAllowed,availabilityReason} from './availability.ts';
 export const researchDuration=(order:ResearchOrder)=>{const spell=spellById(order.spell);return (order.unlocked?spell?.prepareSeconds:spell?.researchSeconds)??Infinity;};
 export function queueResearch(w:World,spell:string){
   if(w.outcome)return;
-  if(!spellById(spell))return;
+  if(!spellById(spell)||!spellAllowed(w,spell))return;
   w.researchOrders??=[];const existing=w.researchOrders.find(o=>o.spell===spell);
   if(existing){existing.paused=false;w.revision++;return;}
   w.researchOrders.push({id:Math.max(0,...w.researchOrders.map(o=>o.id))+1,spell,state:'queued',progress:0,unlocked:false});w.revision++;
@@ -58,6 +59,7 @@ export function spellTargetError(w:World,id:string,target?:SpellTarget):string {
   return '';
 }
 export function castSpell(w:World,id:string,target?:SpellTarget){
+  if(!spellAllowed(w,id))return availabilityReason(w,'spells',id);
   if(id===summonStonehandSpell.id) return purchaseStonehand(w,(type,origin)=>addResidents(w,type,1,origin)>0).message;
   if(id===summonMinerSpell.id){
     const result=purchaseMiner(w,(type,origin)=>addResidents(w,type,1,origin)>0);

@@ -14,6 +14,7 @@ import { chooseHearthJob } from '../hearth.ts';
 import { nearest, take, storage, availableStations } from './common.ts';
 import { chooseScoutJob } from '../scouting.ts';
 import { createWorkPool, choosePoolJob, type WorkPool } from './pool.ts';
+import { recipeAllowed, spellAllowed } from '../availability.ts';
 export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool(w)) {
   if (a.carrying) {
     for (const f of storage(w, a)) if (take(w, a, 'deliver', f, f.access, f.id)) return;
@@ -47,7 +48,7 @@ export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool
     for (const f of availableStations(w, a, 'training')) if (take(w, a, 'train', f, f.access, f.id)) return;
   if (a.capabilities.includes('research'))
     for (const order of w.researchOrders ?? []) {
-      if (order.state !== 'queued' || order.paused || !spellById(order.spell)) continue;
+      if (order.state !== 'queued' || order.paused || !spellById(order.spell) || !spellAllowed(w, order.spell)) continue;
       for (const f of availableStations(w, a, 'research'))
         if (take(w, a, 'research', f, f.access, f.id)) {
           a.job!.order = order.id;
@@ -58,6 +59,7 @@ export function chooseJob(w: World, a: Resident, pool: WorkPool = createWorkPool
     }
   let waitingForGold = false;
   for (const order of w.craftOrders.filter((o) => o.state === 'queued')) {
+    if (!recipeAllowed(w, order.recipe)) continue;
     const recipe = recipeById(order.recipe)!;
     if (!a.capabilities.includes(recipe.capability)) continue;
     if (!order.paid && goldTotal(w) < recipe.cost) {
