@@ -24,6 +24,8 @@ export const groups: Record<string, string[]> = {
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  'graphics-gallery': [['scripts/graphics-gallery-browser.mjs']],
+  'terrain-comparison': [['scripts/terrain-comparison-browser.mjs']],
   ruins: [['scripts/ruin-inspection-browser.mjs']],
   audio: [['scripts/audio-browser.mjs']],
   animation: [['scripts/character-visuals-browser.mjs'], ['scripts/enemies-browser.mjs']],

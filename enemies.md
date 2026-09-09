@@ -1,5 +1,7 @@
 # Enemies
 
+All ten models have subsequently been rebuilt and individually compared with their concept sheets. See the [graphics overhaul](graphics-overhaul.md) for character-specific refinements, retained original/refined pairs and rendering limits.
+
 All ten creatures in the [enemy concept gallery](concept-art/enemies/README.md) are implemented as editable definitions in [src/content/enemies.ts](src/content/enemies.ts). The provisional values below establish distinct tactical roles; M19 still owns campaign-wide balance.
 
 | Region          | Enemy               | Health | Role and behavior                                                                                                                                                                                                                                           |

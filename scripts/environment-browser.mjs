@@ -15,6 +15,7 @@ const report = resumeRooms
   : { phase, views: [], checks: [], profiles: [], errors: [] };
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.routeWebSocket(/.*/, () => {});
   page.setDefaultTimeout(90000);
   page.on('pageerror', (e) => report.errors.push(e.message));
   await page.goto(`${process.env.GAME_URL ?? 'http://127.0.0.1:5173'}/?scenario=stronghold&paused=1`, {
@@ -234,10 +235,10 @@ try {
           const s = window.visualBabylon.EngineStore.LastCreatedScene,
             frameTimes = [];
           let previous = performance.now();
-          for (let i = 0; i < 90; i++)
+          for (let i = 0; i < 150; i++)
             await new Promise((resolve) =>
               requestAnimationFrame((now) => {
-                if (i >= 30) frameTimes.push(now - previous);
+                if (i >= 60) frameTimes.push(now - previous);
                 previous = now;
                 resolve();
               }),
@@ -246,9 +247,9 @@ try {
           const mean = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
           return {
             scenario,
-            frames: 60,
+            frames: 90,
             meanMs: +mean.toFixed(2),
-            p95Ms: +frameTimes[56].toFixed(2),
+            p95Ms: +frameTimes[85].toFixed(2),
             fps: +(1000 / mean).toFixed(1),
             renderer: s.getEngine().getGlInfo().renderer,
             meshes: s.meshes.length,

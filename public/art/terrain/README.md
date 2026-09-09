@@ -1,0 +1,15 @@
+# Terrain material assets
+
+Original generated albedo textures, created with the built-in image generation tool on 2026-09-09 for this project. No third-party texture pack. Exact prompts follow. These surfaces accompany the [cohesion concept](../../../concept-art/terrain/stronghold-cohesion-v2.png); runtime material tint, modest relief and world-aligned UVs preserve gameplay readability.
+
+## fractured-earth
+
+Use case: stylized-concept. Asset type: seamless game terrain albedo texture, square 1024x1024. Fill entire image with weathered excavated compact earth and fractured sedimentary stone, top-down orthographic, no perspective, no objects, no text, no border. Broad irregular interlocking clods and rocky plates with fine branching cracks, variable sizes approximately 12-18 larger shapes across the image, warm gray/taupe neutral stone (medium-light values so game can tint umber). Tactile hand-painted stylized 3D fantasy game material; restrained bevel edge highlights, darker hairline crevices, mineral grain and tiny embedded pebbles. Subtle large-scale mottling, not individual floating rocks; NOT brickwork, NOT regular rows, NOT uniform cobblestones, no gold. Uniform diffuse lighting, no directional cast shadows. Seamless repeat with visual continuity across all four edges. No giant black gaps. Make relief detailed but gentle enough for overhead game.
+
+## slate
+
+Use case: stylized-concept. Asset type: seamless game rock albedo texture, square 1024x1024. Fill whole image with a continuous weathered fractured slate bedrock surface viewed exactly orthographic top down. Large interlocking angular irregular plates and finer hairline branching fissures, varied shape sizes, chipped facets and subtle strata. Neutral medium-light cool gray for runtime tinting, restrained value contrast, subtle bright worn edges, tactile hand-painted stylized 3D fantasy mine material. Uniform diffuse illumination, no perspective, no cast shadows, no scattered standalone rocks, no masonry courses, no regular cobbles, no grid, no labels/borders/objects. Seamless all four edges; continuous dense solid geology with narrow dark fissures, not black gaps.
+
+## flagstone
+
+Use case: stylized-concept. Asset type: seamless stone floor albedo texture for fantasy dwarven game, square 1024x1024. Orthographic straight-down view filling entire image with fitted ancient flagstones, broad roughly rectangular irregularly chipped slabs in a practical ashlar arrangement, 4-5 stones across, varied widths and subtle offsets, medium-light neutral warm gray stone for runtime tinting. Hairline dark joints, very shallow bevels, worn corners, subtle mineral flecks and fine cracks, restrained rough hand-painted stylized 3D finish. Floor must feel flat and traversable, not cobbles or boulders. Uniform diffuse light with no cast shadows; seamless all four edges. No weeds, gold, runes, decorations, perspective, grid overlay, text, border or other objects. Avoid large dark gaps and overly bright edge outlines.

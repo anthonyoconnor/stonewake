@@ -1,254 +1,127 @@
-import {
-  Color3,
-  DynamicTexture,
-  MeshBuilder,
-  TransformNode,
-  Vector3,
-  type StandardMaterial,
-} from '@babylonjs/core';
+import { Color3, DynamicTexture } from '@babylonjs/core';
 import type { GameScene } from './scene';
 
-/** Small shared surfaces and sculpted costume pieces based on the four current dwarf sheets. */
+/** Shared surfaces keep skin quiet while woven cloth, worn leather and forged steel catch the light. */
 export function residentSurface(v: GameScene, name: string, color: string, metal = false) {
-  const key = `dwarf ${name}`,
+  const key = `sculpt resident ${name}`,
     existing = v.materials.get(key);
   if (existing) return existing;
   const material = v.material(key, color);
-  material.specularColor = new Color3(metal ? 0.16 : 0.025, metal ? 0.17 : 0.025, metal ? 0.18 : 0.025);
-  material.specularPower = metal ? 28 : 8;
-  const texture = new DynamicTexture(`${key} grain`, { width: 64, height: 64 }, v.scene, false);
+  const leather = /leather|strap|binding|apron/.test(name),
+    hair = /hair|beard|fur|sandy/.test(name),
+    cloth = /cloth|woven|trouser/.test(name),
+    textured = leather || cloth || metal;
+  material.specularColor = new Color3(
+    metal ? 0.22 : leather ? 0.045 : 0.024,
+    metal ? 0.23 : 0.033,
+    metal ? 0.23 : 0.027,
+  );
+  material.specularPower = metal ? 48 : leather ? 20 : 9;
+  const size = textured ? 256 : 128;
+  const texture = new DynamicTexture(`${key} albedo`, { width: size, height: size }, v.scene, false);
   const c = texture.getContext();
-  c.fillStyle = '#dedbd5';
-  c.fillRect(0, 0, 64, 64);
-  for (let y = 0; y < 64; y += 2)
-    for (let x = 0; x < 64; x += 2) {
-      const n = (x * 73 + y * 29 + x * y * 7) % 41;
-      c.fillStyle = `rgba(${metal ? 80 : 100},${metal ? 86 : 90},${metal ? 90 : 75},${n / 250})`;
-      c.fillRect(x, y, metal ? 1 : 2, 1);
+  c.fillStyle = textured ? '#f1eee6' : '#f8f4ed';
+  c.fillRect(0, 0, size, size);
+  const hash = (x: number, y: number) => (Math.sin(x * 127.1 + y * 311.7) * 43758.5453) % 1;
+  for (let y = 0; y < size; y += 2)
+    for (let x = 0; x < size; x += 2) {
+      const n = Math.abs(hash(x, y));
+      c.fillStyle = `rgba(72,62,47,${n * (textured ? 0.07 : 0.022)})`;
+      c.fillRect(x, y, hair ? 1 : 2, hair ? 6 : 2);
     }
+  if (cloth) {
+    // Alternating warp/weft strands and coarse yarn variation stay legible at studio distance.
+    for (let i = 0; i < size; i += 6) {
+      c.fillStyle = `rgba(68,69,62,${0.09 + (i % 18) / 240})`;
+      c.fillRect(i, 0, 1, size);
+      c.fillStyle = 'rgba(255,255,250,.38)';
+      c.fillRect(i + 1, 0, 1, size);
+      c.fillStyle = 'rgba(75,71,59,.10)';
+      c.fillRect(0, i, size, 1);
+      c.fillStyle = 'rgba(255,255,245,.23)';
+      c.fillRect(0, i + 2, size, 1);
+    }
+    for (let y = 0; y < size; y += 6)
+      for (let x = 0; x < size; x += 6) {
+        c.fillStyle = 'rgba(64,61,50,.075)';
+        c.fillRect(x + ((x + y) % 12 === 0 ? 1 : 3), y + 2, 2, 3);
+      }
+  } else if (leather) {
+    // Large soft wear patches over a broken fine grain avoid a tiled "cracked mud" effect.
+    for (let i = 0; i < 40; i++) {
+      const x = (i * 83) % size,
+        y = (i * 139) % size,
+        r = 9 + ((i * 13) % 24),
+        g = c.createRadialGradient(x, y, 1, x, y, r);
+      g.addColorStop(0, i % 3 ? 'rgba(82,59,34,.065)' : 'rgba(255,246,218,.20)');
+      g.addColorStop(1, 'rgba(120,99,65,0)');
+      c.fillStyle = g;
+      c.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    for (let i = 0; i < 95; i++) {
+      const x = (i * 67) % size,
+        y = (i * 107) % size;
+      c.strokeStyle = i % 3 ? 'rgba(90,66,39,.10)' : 'rgba(255,244,215,.25)';
+      c.lineWidth = i % 3 ? 0.65 : 1;
+      c.beginPath();
+      c.moveTo(x, y);
+      c.quadraticCurveTo(x + 3, y - 2, x + 5 + (i % 5), y + 2);
+      c.stroke();
+    }
+  } else if (metal) {
+    for (let y = 0; y < size; y++) {
+      c.fillStyle = `rgba(72,80,78,${((y * 37) % 23) / 360})`;
+      c.fillRect(0, y, size, 1);
+    }
+    for (let i = 0; i < 70; i++) {
+      const x = (i * 79) % size,
+        y = (i * 131) % size;
+      c.strokeStyle = i % 4 ? 'rgba(255,255,241,.21)' : 'rgba(60,66,62,.13)';
+      c.lineWidth = 0.6;
+      c.beginPath();
+      c.moveTo(x, y);
+      c.lineTo(x + 4 + (i % 10), y + 1 + (i % 3));
+      c.stroke();
+    }
+    for (let i = 0; i < 24; i++) {
+      const x = (i * 117) % size,
+        y = (i * 47) % size,
+        g = c.createRadialGradient(x, y, 0, x, y, 13);
+      g.addColorStop(0, 'rgba(84,75,47,.055)');
+      g.addColorStop(1, 'rgba(84,75,47,0)');
+      c.fillStyle = g;
+      c.fillRect(x - 13, y - 13, 26, 26);
+    }
+  }
   texture.update();
   material.diffuseTexture = texture;
+  if (textured) {
+    const normal = new DynamicTexture(`${key} tactile grain`, { width: size, height: size }, v.scene, false),
+      nc = normal.getContext(),
+      pixels = nc.getImageData(0, 0, size, size);
+    const height = (x: number, y: number) =>
+      cloth
+        ? Math.sin((x * Math.PI) / 3) * 0.035 + Math.sin((y * Math.PI) / 3) * 0.028
+        : metal
+          ? Math.sin(y * 1.73) * 0.006 + Math.abs(hash(x, y)) * 0.005
+          : Math.sin(x * 0.71 + Math.sin(y * 0.33)) * 0.012 +
+            Math.sin(y * 0.91) * 0.01 +
+            Math.abs(hash(x, y)) * 0.012;
+    for (let y = 0; y < size; y++)
+      for (let x = 0; x < size; x++) {
+        const dx = (height(x - 1, y) - height(x + 1, y)) * 2.2,
+          dy = (height(x, y - 1) - height(x, y + 1)) * 2.2,
+          length = Math.hypot(dx, dy, 1),
+          p = (y * size + x) * 4;
+        pixels.data[p] = Math.round(((dx / length) * 0.5 + 0.5) * 255);
+        pixels.data[p + 1] = Math.round(((dy / length) * 0.5 + 0.5) * 255);
+        pixels.data[p + 2] = Math.round(((1 / length) * 0.5 + 0.5) * 255);
+        pixels.data[p + 3] = 255;
+      }
+    nc.putImageData(pixels, 0, 0);
+    normal.update();
+    normal.level = cloth ? 0.5 : leather ? 0.38 : 0.24;
+    material.bumpTexture = normal;
+  }
   return material;
-}
-
-export function costumeDetails(
-  v: GameScene,
-  root: TransformNode,
-  role: string,
-  legs: TransformNode[],
-  arms: TransformNode[],
-  shield?: TransformNode,
-  book?: TransformNode,
-) {
-  const steel = residentSurface(v, 'steel', '#56636a', true),
-    brass = residentSurface(v, 'brass', '#a48a55', true),
-    leather = residentSurface(v, 'leather', '#513c2c'),
-    ivory = residentSurface(v, 'ivory', '#c4bb9d');
-  const hair = residentSurface(
-    v,
-    `${role} hair`,
-    role === 'warrior' ? '#302e2c' : role === 'runesmith' ? '#b9b7a8' : '#694026',
-  );
-  const part = (
-    name: string,
-    x: number,
-    y: number,
-    z: number,
-    w: number,
-    h: number,
-    d: number,
-    mat: StandardMaterial,
-    parent = root,
-  ) => {
-    const m = v.box(name, x, y, z, w, h, d, mat, parent);
-    m.isPickable = false;
-    return m;
-  };
-  const line = (name: string, points: Vector3[], radius: number, mat: StandardMaterial, parent = root) => {
-    const m = MeshBuilder.CreateTube(name, { path: points, radius, tessellation: 5 }, v.scene);
-    m.material = mat;
-    m.parent = parent;
-    m.isPickable = false;
-    return m;
-  };
-  for (let i = 0; i < legs.length; i++) {
-    const leg = legs[i];
-    part('stitched boot sole', 0, -0.245, 0.055, 0.25, 0.045, 0.35, leather, leg);
-    part('forged toe guard', 0, -0.15, 0.167, 0.23, 0.07, 0.08, steel, leg);
-    for (const y of [-0.07, 0.01]) part('boot leather strap', 0, y, 0.132, 0.22, 0.024, 0.02, leather, leg);
-    part('boot side buckle', i === 0 ? -0.11 : 0.11, -0.06, 0.085, 0.025, 0.065, 0.06, brass, leg);
-  }
-  for (const x of [-0.155, 0.155]) {
-    const brow = line(
-      'sculpted brow',
-      [new Vector3(x * 0.3, 0.778, 0.159), new Vector3(x * 0.68, 0.792, 0.171), new Vector3(x, 0.765, 0.146)],
-      0.022,
-      hair,
-    );
-    brow.rotation.z = role === 'engineer' ? -Math.sign(x) * 0.1 : 0;
-    for (let i = 0; i < 3; i++)
-      part('strap fastener', x, 0.39 + i * 0.075, 0.201, 0.029, 0.029, 0.015, brass);
-  }
-  if (role === 'engineer') {
-    for (const x of [-0.16, 0.16]) {
-      line(
-        'apron stitched edge',
-        [new Vector3(x, 0.23, 0.213), new Vector3(x * 1.03, 0.43, 0.216), new Vector3(x * 0.82, 0.55, 0.192)],
-        0.009,
-        brass,
-      );
-      line(
-        'back pack strap',
-        [new Vector3(x, 0.56, -0.18), new Vector3(x, 0.45, -0.33), new Vector3(x, 0.3, -0.23)],
-        0.026,
-        leather,
-      );
-    }
-    part('apron pocket', 0, 0.31, 0.221, 0.22, 0.105, 0.025, leather);
-    part('pack mechanism plate', 0, 0.45, -0.329, 0.22, 0.2, 0.024, steel);
-    const gear = MeshBuilder.CreateTorus(
-      'mechanism gear',
-      { diameter: 0.12, thickness: 0.025, tessellation: 8 },
-      v.scene,
-    );
-    gear.rotation.x = Math.PI / 2;
-    gear.position.set(0, 0.45, -0.346);
-    gear.material = brass;
-    gear.parent = root;
-    gear.isPickable = false;
-    for (const x of [-0.1, 0.1])
-      for (const y of [0.37, 0.53]) part('pack rivet', x, y, -0.35, 0.025, 0.025, 0.014, brass);
-    const spanner = part('belt spanner', 0.265, 0.32, 0.13, 0.037, 0.25, 0.035, steel);
-    spanner.rotation.z = -0.24;
-    for (const x of [0.245, 0.285]) part('spanner jaw', x, 0.46, 0.13, 0.024, 0.05, 0.037, steel);
-  } else {
-    for (const x of [-0.095, 0, 0.095]) {
-      for (let i = 0; i < 3; i++)
-        line(
-          'beard carved strand',
-          [
-            new Vector3(x + (i - 1) * 0.025, 0.67, 0.225),
-            new Vector3(x + (i - 1) * 0.035, 0.56, 0.279),
-            new Vector3(x + (i - 1) * 0.023, 0.4 + Math.abs(x) * 0.3, 0.251),
-          ],
-          0.016,
-          hair,
-        );
-    }
-    for (const side of [-1, 1])
-      line(
-        'swept moustache',
-        [
-          new Vector3(side * 0.02, 0.671, 0.219),
-          new Vector3(side * 0.095, 0.659, 0.249),
-          new Vector3(side * 0.17, 0.625, 0.22),
-        ],
-        0.035,
-        hair,
-      );
-    if (role !== 'runesmith') {
-      for (const x of [-0.16, 0.16])
-        line(
-          'helmet arched band',
-          [
-            new Vector3(x, 0.795, -0.08),
-            new Vector3(x * 0.75, 0.917, -0.03),
-            new Vector3(x * 0.55, 0.923, 0.07),
-            new Vector3(x, 0.8, 0.16),
-          ],
-          0.013,
-          steel,
-        );
-      for (let i = 0; i < 8; i++) {
-        const angle = (i * Math.PI) / 4;
-        part(
-          'helmet rivet',
-          Math.cos(angle) * 0.205,
-          0.805,
-          Math.sin(angle) * 0.18,
-          0.025,
-          0.027,
-          0.025,
-          brass,
-        );
-      }
-    }
-    if (role === 'miner') {
-      for (const side of [-1, 1])
-        line(
-          'crossed back harness',
-          [
-            new Vector3(side * 0.2, 0.57, -0.15),
-            new Vector3(0, 0.44, -0.217),
-            new Vector3(-side * 0.17, 0.31, -0.18),
-          ],
-          0.032,
-          leather,
-        );
-      part('harness center clasp', 0, 0.44, -0.242, 0.115, 0.11, 0.025, steel).rotation.z = Math.PI / 4;
-      part('lantern crossbar', 0, 0.83, 0.272, 0.103, 0.018, 0.012, steel);
-      part('lantern grille', 0, 0.83, 0.274, 0.018, 0.086, 0.012, steel);
-    }
-    if (role === 'warrior') {
-      for (const arm of arms)
-        for (let i = 0; i < 3; i++) {
-          const plate = part(
-            'overlapping shoulder lames',
-            0,
-            -0.035 - i * 0.045,
-            0.085,
-            0.275 - i * 0.018,
-            0.06,
-            0.235,
-            steel,
-            arm,
-          );
-          plate.rotation.z = (arm === arms[0] ? -1 : 1) * 0.12;
-          part(
-            'shoulder edge rivet',
-            arm === arms[0] ? -0.11 : 0.11,
-            -0.04 - i * 0.045,
-            0.208,
-            0.025,
-            0.025,
-            0.02,
-            brass,
-            arm,
-          );
-        }
-      if (shield)
-        for (const x of [-0.11, 0, 0.11]) {
-          part('shield board seam', x, 0, 0.04, 0.014, 0.47, 0.015, steel, shield);
-          for (const y of [-0.22, 0.22])
-            part('shield band rivet', x, y, 0.066, 0.025, 0.025, 0.018, brass, shield);
-        }
-    }
-    if (role === 'runesmith') {
-      for (const side of [-1, 1])
-        for (let i = 0; i < 4; i++) {
-          const knot = part(
-            'mantle knotwork',
-            side * 0.243,
-            0.47 + i * 0.045,
-            0.202,
-            0.037,
-            0.037,
-            0.013,
-            brass,
-          );
-          knot.rotation.z = Math.PI / 4;
-        }
-      for (let i = 0; i < 7; i++)
-        part('robe hem embroidery', -0.22 + i * 0.073, 0.15, 0.244, 0.027, 0.032, 0.012, brass).rotation.z =
-          Math.PI / 4;
-      if (book) {
-        for (const x of [-0.22, 0.22])
-          for (const z of [-0.14, 0.14])
-            part('book brass corner', x, 0.061, z, 0.065, 0.018, 0.05, brass, book);
-        part('book spine', 0, 0.044, 0, 0.023, 0.04, 0.34, leather, book);
-        for (const x of [-0.12, 0.12])
-          part('page rune', x, 0.072, 0, 0.09, 0.01, 0.018, ivory, book).rotation.y = 0.7;
-      }
-    }
-  }
 }

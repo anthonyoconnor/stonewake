@@ -4,6 +4,29 @@ Read this file only when past context, original milestone requirements, verifica
 
 This archive preserves completed milestone specifications and dated development records, including M5.1. Historical requirements and provisional values may have been superseded; current design documents and the user's latest decisions take precedence. Remaining limitations belong in the active plan so they do not require loading this archive.
 
+## 2026-09-09 — Character and terrain graphics overhaul
+
+Completed the user's request to revisit every character individually, keep each starting model for comparison, then generate new environment direction and iterate terrain and whole-level appearance. The [overhaul record](graphics-overhaul.md) links all sixteen reviewed concept sheets and describes the character-specific changes and remaining procedural limitations.
+
+The starting resident, enemy, scene, terrain and surface renderers were archived before editing in commit `6c4cf1b`. Six residents and ten enemies now use revised silhouettes, continuous/custom geometry, shaped clothing and equipment, clearer faces, organic armor and restrained material detail. Front/back/three-quarter comparisons drove multiple iterations, including winding/cap corrections, hair and face continuity, fitted animal scutes and more readable creature masks. Gameplay and animation rig interfaces remain intact.
+
+`graphics-gallery` retains all sixteen native-scale original/refined pairs with separate material caches and matching studio lights, empty cargo and book poses. `terrain-comparison` mirrors geology, all six normally constructed room types, automatic furnishings, hazards and completed bridges across five regional palettes. Its paid/free fixture uses real placement, pricing and completion services. Selection, synchronized turns, close views, reset/return and baseline cleanup are verified; labels remain in the sidebar.
+
+Generated cohesion v1/v2 concepts and three original runtime albedo maps are retained with exact prompts and provenance. The revised terrain has continuous geological/paving coordinates, shallow bank relief, derived normal maps, broad gold fragments, grouped blue/violet crystals, flowing water and dark lava crust with incandescent fissures. Real visible stove/candle furnishings add bounded warm lighting. New reference art does not change the common floor/bank heights, terrain access, capacity or discovery rules.
+
+Verification:
+
+- `npm run verify -- all`: **247/247 simulation tests passed**, including all ten ordinary paid campaign routes and the new discovered-furnishing light regression. Source/test typechecking passed, with a final repeat after the last presentation cleanup.
+- Character gallery: three full sixteen-pair capture passes; the final set is `test-results/graphics-gallery-final/`. Front/back/three-quarter images exist for every pair, with extra close Engineer/Runesmith views. All six final resident sets were visually inspected, alongside enemy-specific iteration reviews. Static actors, original/current material isolation, compact controls and retained-world restoration passed.
+- Resident activity browser: real excavation, reinforcement, claiming, hauling, construction, crafting, research, training, eating/resting, hound bite timing, defeat cleanup, paused poses and reduced motion passed with no page errors (`test-results/character-overhaul/`). Enemy browser passed all ten rigs, natural combat/traps, corpse disposal, hidden regional starts, actual Burrower excavation, reverse views and reduced motion (`test-results/m17-enemies/`).
+- Terrain studio: all five regions, 108 real room squares, 57 automatic furnishings, 12 finished bridge squares, paid/free costs, upward bank normals, material/normal-map isolation, unchanged gameplay tiles and exit cleanup passed (`test-results/terrain-comparison/`).
+- Full environment browser passed all six rooms in strips/L shapes/retained-earth layouts, paid/free expansion, reinforced walls, doors/traps, water/lava plans/decks, chasms, exact fog picking and reduced motion. Final 18 same-camera environment captures include the showcase, crossings and arrival/detail/reverse views in all five campaign regions; arrival discovery remained unchanged and no browser errors occurred (`test-results/graphics-overhaul/environment-after/`). Local detail disclosures are presentation fixtures, not additional campaign-route claims.
+- Hidden gold/gems, surrounding fog and unchanged discovery under camera movement passed. The resource browser's obsolete gem-on-first-level assumption was corrected to use the existing crystal-region fixture. `npx vite build` and production startup/isolation smoke passed; generated builds remain ignored.
+
+A screen-space contact-occlusion experiment proved too expensive and was removed. Settled final-renderer samples at 1440×1000 on Intel Iris Plus/ANGLE D3D11 used 60 warm-up frames and 90 measured frames: **60.6 FPS** at the starting Hearth (16.5 ms mean) and **28.6–29.1 FPS** in the fully furnished showcase (34.4–35.0 ms mean, 50.1 ms p95). Disabling normal maps produced no convincing gain; disabling six local source lights improved the showcase to 39.3 FPS. Normal maps and the bounded six-light service were retained for visual quality. These samples precede only removal of an overly dark cosmetic bank-foot shadow, which was inspected in the final environment views. Busy settlements, active battles and setup can be slower; these are machine-specific paused-rendering samples. Profile evidence is in `test-results/graphics-overhaul/normal-map-profile.json`.
+
+The result remains editable procedural art, with simplified concept microdetail and no cloth deformation, finger articulation, foot IK or detailed cast-shadow system. Those limits and the original M30 listening review remain explicit; no deferred gameplay features were added.
+
 ## Completed milestone tracker
 
 | Milestone | Outcome | Status |

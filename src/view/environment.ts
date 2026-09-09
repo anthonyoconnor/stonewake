@@ -80,26 +80,8 @@ export function terrainRelief(view: GameScene, t: Tile, material: StandardMateri
     if (n.known && (n.terrain === 'floor' || isHazard(n))) {
       const dx = n.x - t.x,
         dz = n.z - t.z;
-      if (!t.reinforced) {
-        // Broken shallow strata give natural banks an excavated face instead of oversized bricks.
-        for (let row = 0; row < 4; row++) {
-          const offset = Math.sin(t.x * 13 + t.z * 7 + row * 4) * 0.08;
-          const stone = MeshBuilder.CreateIcoSphere(
-            'natural bank stratum',
-            { radius: 1, subdivisions: 1, flat: true },
-            view.scene,
-          );
-          stone.position.set(
-            t.x + dx * 0.479 + dz * offset,
-            0.17 + row * 0.35,
-            t.z + dz * 0.479 + dx * offset,
-          );
-          stone.scaling.set(dx ? 0.041 : 0.47, 0.15 + (row % 2) * 0.025, dz ? 0.041 : 0.47);
-          stone.material = relief;
-          stone.parent = parent;
-          stone.isPickable = false;
-        }
-      } else {
+      // Natural banks carry relief in their continuous sculpted face, not repeated floating shelves.
+      if (t.reinforced) {
         for (let row = 0; row < 3; row++)
           for (let col = 0; col < 3; col++) {
             const offset = (col - 1) * 0.32 + (row % 2 ? 0.025 : 0),
@@ -124,12 +106,12 @@ export function terrainRelief(view: GameScene, t: Tile, material: StandardMateri
       view.box(
         'bank foot',
         t.x + dx * 0.48,
-        0.07,
+        0.022,
         t.z + dz * 0.48,
-        dx ? 0.045 : 0.99,
-        0.1,
-        dz ? 0.045 : 0.99,
-        view.material('bank crevice', '#39372f'),
+        dx ? 0.026 : 0.99,
+        0.035,
+        dz ? 0.026 : 0.99,
+        view.material('bank crevice', '#4a4237'),
         parent,
       ).isPickable = false;
     }
@@ -361,26 +343,45 @@ export function crystalMesh(
   color: string,
   parent: TransformNode,
 ) {
-  const m = MeshBuilder.CreateCylinder(
-    'crystal',
-    { height: size, diameterTop: 0, diameterBottom: size * 0.46, tessellation: 5, subdivisions: 2 },
-    view.scene,
-  );
-  // A long faceted shaft and short point read as quartz rather than a smooth cone.
-  const positions = m.getVerticesData('position')!;
-  for (let i = 0; i < positions.length; i += 3) {
-    const vertical = positions[i + 1] / size;
-    if (Math.abs(vertical) < 0.01) {
-      positions[i] *= 1.75;
-      positions[i + 2] *= 1.75;
-      positions[i + 1] = size * 0.22;
-    }
+  const m = new Mesh('crystal', view.scene),
+    positions: number[] = [],
+    indices: number[] = [],
+    colors: number[] = [];
+  const ring = (i: number, height: number, radius: number) => [
+    Math.cos((i * Math.PI) / 3) * size * radius,
+    height * size,
+    Math.sin((i * Math.PI) / 3) * size * radius,
+  ];
+  for (let i = 0; i < 6; i++) {
+    const a = ring(i, -0.5, 0.2),
+      b = ring(i + 1, -0.5, 0.2),
+      c = ring(i + 1, 0.19, 0.17),
+      d = ring(i, 0.19, 0.17);
+    const index = positions.length / 3,
+      shade = [0.52, 0.78, 1, 0.65, 0.88, 0.43][i];
+    positions.push(...a, ...b, ...c, ...d, 0, size * 0.5, 0);
+    for (let j = 0; j < 5; j++) colors.push(shade, shade, shade, 1);
+    indices.push(
+      index,
+      index + 1,
+      index + 3,
+      index + 1,
+      index + 2,
+      index + 3,
+      index + 3,
+      index + 2,
+      index + 4,
+    );
   }
-  m.updateVerticesData('position', positions);
-  m.convertToFlatShadedMesh();
-  m.refreshBoundingInfo();
+  const data = new VertexData();
+  data.positions = positions;
+  data.indices = indices;
+  data.colors = colors;
+  data.normals = [];
+  VertexData.ComputeNormals(positions, indices, data.normals);
+  data.applyToMesh(m);
   m.position.set(x, y, z);
-  m.material = view.material(color, color, false, 0.34);
+  m.material = view.material(color, color, false, 0.19);
   m.parent = parent;
   m.isPickable = false;
   view.includeGlow(m);
@@ -388,7 +389,9 @@ export function crystalMesh(
 }
 
 export function goldSeams(view: GameScene, t: Tile) {
-  const gold = view.material('embedded gold metal', '#edb855', false, 0.16);
+  const gold = view.material('embedded gold metal', '#dfa946', false, 0.12);
+  const pale = view.material('gold quartz fleck', '#e9c577', false, 0.045);
+  const ochre = view.material('gold mineral shadow', '#a7742d');
   // Broad, shallow mineral fragments read as ore in the bank, not wires on its surface.
   const fragment = (x: number, y: number, z: number, width: number, height: number, depth: number) => {
     const m = MeshBuilder.CreateIcoSphere(
@@ -403,33 +406,35 @@ export function goldSeams(view: GameScene, t: Tile) {
     m.isPickable = false;
     return m;
   };
-  for (let i = 0; i < 11; i++) {
+  for (let i = 0; i < 16; i++) {
     const phase = i * 1.7 + t.x * 2.3 + t.z * 0.9;
     const m = fragment(
-      t.x - 0.38 + (i % 6) * 0.145,
+      t.x - 0.44 + (i % 8) * 0.127,
       1.487,
-      t.z + Math.sin(phase) * 0.22 + (i < 6 ? -0.08 : 0.12),
-      0.085 + (i % 3) * 0.025,
-      0.025,
-      0.045 + (i % 2) * 0.022,
+      t.z + Math.sin((t.x + (i % 8) / 8) * 3.7 + t.z) * 0.14 + (i < 8 ? -0.17 : 0.18),
+      0.09 + (i % 3) * 0.03,
+      0.024,
+      0.061 + (i % 2) * 0.033,
     );
+    m.material = i % 5 === 0 ? pale : i % 4 === 0 ? ochre : gold;
     m.rotation.y = Math.sin(phase * 2) * 0.9;
   }
   for (const n of neighbors(view.world, t))
     if (n.known && (n.terrain === 'floor' || isHazard(n))) {
       const dx = n.x - t.x,
         dz = n.z - t.z;
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 16; i++) {
         const phase = i * 2.1 + t.x + t.z * 1.3;
-        const offset = ((i % 3) - 1) * 0.27 + Math.sin(phase) * 0.04;
+        const offset = -0.43 + (i % 8) * 0.124;
         const m = fragment(
-          t.x + dx * 0.512 + dz * offset,
-          0.21 + Math.floor(i / 3) * 0.32 + Math.cos(phase) * 0.045,
-          t.z + dz * 0.512 + dx * offset,
-          dx ? 0.028 : 0.09 + (i % 2) * 0.035,
-          0.065 + (i % 3) * 0.023,
-          dz ? 0.028 : 0.09 + (i % 2) * 0.035,
+          t.x + dx * 0.493 + dz * offset,
+          (i < 8 ? 0.43 : 1.06) + Math.sin(((dx ? t.z : t.x) + offset) * 3.5) * 0.16,
+          t.z + dz * 0.493 + dx * offset,
+          dx ? 0.03 : 0.098 + (i % 2) * 0.04,
+          0.078 + (i % 3) * 0.029,
+          dz ? 0.03 : 0.098 + (i % 2) * 0.04,
         );
+        m.material = i % 5 === 0 ? pale : i % 4 === 0 ? ochre : gold;
         if (dx) m.rotation.x = Math.sin(phase) * 0.6;
         else m.rotation.z = Math.sin(phase) * 0.6;
       }

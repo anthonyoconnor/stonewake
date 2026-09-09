@@ -1,5 +1,7 @@
 # Characters
 
+Current character appearance and the retained sixteen-pair starting/refined gallery are documented in the [graphics overhaul](graphics-overhaul.md). Gameplay roles and numerical rules remain here.
+
 Roadmap scope: assigned guard duties, general specialist retreat and Engineer door repairs are deferred outside the active roadmap following removal of M12 and M15. References below remain design proposals. Character model and animation improvements are implemented and verified in [M22](development-history.md#m22--character-models-and-animations-update); current appearance, timing and limits are described in [graphics notes](graphics-pass.md).
 
 Working design for the dwarven stronghold game. Companion documents: [Rooms](rooms.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).

@@ -1,5 +1,7 @@
 # Graphics and animation notes
 
+The subsequent [all-character and terrain overhaul](graphics-overhaul.md) records the current models, generated material maps, new cohesion concepts and permanent starting/refined comparison studios. Earlier milestone sections below describe their original implementation and verification; their old material and geometry limitations are historical.
+
 ## M31 environment refinement and M33 gameplay lighting
 
 The terrain, all six implemented room sheets, Bridge, Fungal Caves and Volcanic Depths reference sheets were compared with ordinary-zoom, close and reversed-camera gameplay captures. The existing timber furniture, fitted room paving, embedded gold, persistent crystal columns and square terrain footprints remain the shared visual language.

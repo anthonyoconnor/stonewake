@@ -7,6 +7,10 @@ import { createLightingLab } from './content/lighting-lab';
 import './style.css';
 import { startCampaign, restartCampaignArea, travelOnward } from './game/campaign';
 import { GameScene } from './view/scene';
+import { GraphicsGallery } from './view/graphics-gallery';
+import { isGraphicsGallery } from './content/graphics-gallery';
+import { isTerrainComparison } from './content/terrain-comparison';
+import { focusTerrainComparison } from './ui/terrain-comparison';
 import { CameraControls } from './view/controls';
 import { Sidebar } from './ui/sidebar';
 import { addMiners, tick } from './game/simulation';
@@ -43,6 +47,8 @@ export async function initializeGame(loading: LoadingScreen) {
   });
   const selection = new Selection(view);
   const sidebar = new Sidebar(view, controls, selection);
+  const gallery = new GraphicsGallery(view);
+  sidebar.graphicsGallery = gallery;
   const audio = new GameAudio();
   const unlockAudio = () => { void audio.unlock(); };
   document.addEventListener('pointerdown', unlockAudio);
@@ -75,6 +81,7 @@ export async function initializeGame(loading: LoadingScreen) {
   };
   let accumulator = 0;
   const refresh = () => {
+    gallery.update();
     residents.update();
     defenses.update();
     magic.update();
@@ -130,6 +137,7 @@ export async function initializeGame(loading: LoadingScreen) {
         );
     }
     residents.reset();
+    gallery.reset();
     defenses.reset();
     magic.reset();
     hearth.reset();
@@ -271,11 +279,13 @@ export async function initializeGame(loading: LoadingScreen) {
           selection.start = undefined;
           selection.hover = undefined;
           residents.reset();
+          gallery.reset();
           defenses.reset();
           magic.reset();
           hearth.reset();
           furnish(next);
           view.setWorld(next);
+          gallery.update();
           controls.center(
             id === 'stronghold' ? next.hearth.x : id === 'defenses' || id === 'locked-door-hauling' ? 18 : 12,
             id === 'stronghold' ? next.hearth.z : 12,
@@ -284,7 +294,7 @@ export async function initializeGame(loading: LoadingScreen) {
           view.camera.beta = id === 'defenses' || id === 'locked-door-hauling' ? 0.35 : tuning.initialTilt;
           selection.setTool('dig');
           sidebar.show('debug');
-          if (next.lightingTest) {
+          if (next.lightingTest && !isGraphicsGallery(next) && !isTerrainComparison(next)) {
             controls.center(8, 14);
             view.camera.radius = 24;
             sidebar.show('lighting');
@@ -292,6 +302,16 @@ export async function initializeGame(loading: LoadingScreen) {
           if (next.combatTest) {
             controls.center(14, 11);
             sidebar.show('combat');
+          }
+          if (isGraphicsGallery(next)) {
+            gallery.focus();
+            selection.setTool('inspect');
+            sidebar.show('graphics-gallery');
+          }
+          if (isTerrainComparison(next)) {
+            focusTerrainComparison(sidebar);
+            selection.setTool('inspect');
+            sidebar.show('terrain-comparison');
           }
           accumulator = 0;
         },
@@ -327,6 +347,7 @@ export async function initializeGame(loading: LoadingScreen) {
         accumulator -= 0.05;
       }
     } else accumulator = 0;
+    gallery.update();
     residents.update();
     defenses.update();
     magic.update();

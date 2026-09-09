@@ -1,8 +1,10 @@
 import { roomLook } from '../content/rooms';
 import { DynamicTexture, type Scene } from '@babylonjs/core';
+import { hazardSurface } from './hazard-surfaces';
 
 // Small generated material sheets keep visual iteration independent of an asset pipeline.
 export function surfaceTexture(scene: Scene, name: string) {
+  if (name === 'water' || name === 'lava') return hazardSurface(scene, name === 'lava');
   const tex = new DynamicTexture(`${name}-surface`, { width: 256, height: 256 }, scene, false);
   const ruined = name.startsWith('ruin-');
   name = name.replace(/^biome-[^-]+-/, '').replace(/^ruin-/, '');

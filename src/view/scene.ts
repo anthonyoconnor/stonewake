@@ -23,6 +23,10 @@ import { type World, type Tile, neighbors, key } from '../game/types';
 import { roomTiles } from '../game/rooms';
 import { roomById, roomLook } from '../content/rooms';
 import { surfaceTexture } from './surfaces';
+import { applyTerrainMaterial, terrainMaterialsReady } from './terrain-materials';
+import { drawStartingTile, startingTerrainView, resetStartingTerrain } from './terrain-reference';
+import { isTerrainComparison, terrainComparisonSplit } from '../content/terrain-comparison';
+import { geologicalBank, alignStoneSurface } from './terrain-sculpt';
 import { environmentPalette } from '../content/environment-visuals';
 import { gameplayLighting } from '../content/lighting';
 import { SceneEffects } from './effects';
@@ -105,9 +109,14 @@ export class GameScene {
     m.diffuseColor = Color3.FromHexString(color);
     m.specularColor = new Color3(0.08, 0.08, 0.08);
     m.emissiveColor = Color3.FromHexString(color).scale(emissive);
-    if (texture) m.diffuseTexture = surfaceTexture(this.scene, name);
+    const painted = texture && applyTerrainMaterial(this.scene, m, name);
+    if (texture && !painted) m.diffuseTexture = surfaceTexture(this.scene, name);
     if (name === 'lava') m.emissiveTexture = m.diffuseTexture;
-    if (texture && /^(ruin-)?floor-/.test(name)) m.diffuseColor = Color3.White();
+    if (texture && !painted && /^(ruin-)?floor-/.test(name)) m.diffuseColor = Color3.White();
+    if (painted) {
+      m.specularColor.set(0.035, 0.035, 0.035);
+      m.diffuseColor = m.diffuseColor.scale(1.4);
+    }
     if (/metal|iron|brass|gold|steel/.test(name)) {
       m.specularColor = new Color3(0.42, 0.35, 0.23);
       m.specularPower = 48;
@@ -217,6 +226,10 @@ export class GameScene {
     this.drawFurniture();
   }
   drawTile(t: Tile) {
+    if (isTerrainComparison(this.world) && t.x < terrainComparisonSplit) {
+      drawStartingTile(this, t);
+      return;
+    }
     // Resource geology is visible for planning without discovering the tile.
     const resource = t.terrain === 'gold' || t.terrain === 'gem';
     if (!t.known && !resource) {
@@ -301,21 +314,25 @@ export class GameScene {
                 : colors[type],
       true,
     );
-    const mesh = solid
-      ? dressedBlock(
-          this,
-          `tile-${t.x}-${t.z}`,
-          t.x,
-          0.68,
-          t.z,
-          0.997,
-          1.6,
-          0.997,
-          mat,
-          this.terrainRoot,
-          0.025,
-        )
-      : this.box(`tile-${t.x}-${t.z}`, t.x, solid ? 0.68 : -0.12, t.z, 0.997, solid ? 1.6 : 0.24, 0.997, mat);
+    const mesh =
+      solid && !t.reinforced
+        ? geologicalBank(this, t, mat)
+        : solid
+          ? dressedBlock(
+              this,
+              `tile-${t.x}-${t.z}`,
+              t.x,
+              0.68,
+              t.z,
+              0.997,
+              1.6,
+              0.997,
+              mat,
+              this.terrainRoot,
+              0.025,
+            )
+          : this.box(`tile-${t.x}-${t.z}`, t.x, -0.12, t.z, 1, 0.24, 1, mat);
+    if (!solid || t.reinforced) alignStoneSurface(mesh, t, isTerrainComparison(this.world));
     mesh.metadata = { tile: { x: t.x, z: t.z } };
     if (t.designated) {
       const m = this.box(
@@ -352,47 +369,34 @@ export class GameScene {
     }
     if (type === 'gold') goldSeams(this, t);
     if (type === 'gem') {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 9; i++) {
         const m = this.crystal(
           t.x + Math.sin(i * 4) * 0.27,
           1.49,
           t.z + Math.cos(i * 4) * 0.27,
-          0.28 + (i % 2) * 0.14,
-          i % 2 ? '#62bad3' : '#9b75d5',
+          0.17 + (i % 3) * 0.085,
+          i % 3 === 0 ? '#477faa' : i % 2 ? '#55a8be' : '#8b61c3',
         );
         m.rotation.z = 0.3 * Math.sin(i);
       }
       for (const n of neighbors(this.world, t).filter(
         (n) => (n.terrain === 'floor' || isHazard(n)) && n.known,
       ))
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 10; i++) {
           const dx = n.x - t.x,
             dz = n.z - t.z,
             c = this.crystal(
-              t.x + dx * 0.48 + (dz ? ((i % 2) - 0.5) * 0.4 : 0),
-              0.27 + Math.floor(i / 2) * 0.43,
-              t.z + dz * 0.48 + (dx ? ((i % 2) - 0.5) * 0.4 : 0),
-              0.27 + (i % 2) * 0.09,
-              i % 2 ? '#6fbaca' : '#a183d1',
+              t.x + dx * 0.485 + (dz ? Math.sin(i * 2.4 + t.z) * 0.31 : 0),
+              0.17 + i * 0.12,
+              t.z + dz * 0.485 + (dx ? Math.sin(i * 2.4 + t.x) * 0.31 : 0),
+              0.16 + (i % 3) * 0.055,
+              i % 3 === 0 ? '#447c9d' : i % 2 ? '#5da9b9' : '#906cba',
             );
           c.rotation.z = dx * 0.5;
           c.rotation.x = dz * 0.5;
         }
     }
     if (!t.known) return;
-    if (type === 'floor' && t.claimed && !room && !t.core) {
-      const m = this.box(
-        'claim inset',
-        t.x,
-        -0.003,
-        t.z,
-        0.055,
-        0.008,
-        0.055,
-        this.material('claim', '#ac9a72'),
-      );
-      m.isPickable = false;
-    }
 
     if (room)
       for (const n of neighbors(this.world, t))
@@ -608,7 +612,12 @@ export class GameScene {
       this.geometryRevision++;
       this.furnitureRoot = node;
       if (f.id === 'hearth-treasury') node.position.y = 0.3;
-      drawFurnishingModel(this, f, node, display);
+      drawFurnishingModel(
+        isTerrainComparison(this.world) && f.x < terrainComparisonSplit ? startingTerrainView(this) : this,
+        f,
+        node,
+        display,
+      );
     }
     this.furnitureRoot = furnitureParent;
     // Static props sharing a material can draw together; animated dwarfs stay separate.
@@ -716,10 +725,12 @@ export class GameScene {
     this.labLighting.update(this.world.lightingTest ?? gameplayLighting(this.world));
     this.scene.render();
   }
-  ready() {
-    return this.scene.whenReadyAsync();
+  async ready() {
+    await terrainMaterialsReady(this.scene);
+    await this.scene.whenReadyAsync();
   }
   setWorld(world: World) {
+    resetStartingTerrain(this);
     this.labLighting?.dispose();
     this.labLighting = undefined;
     this.world = world;

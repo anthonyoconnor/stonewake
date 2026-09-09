@@ -64,6 +64,23 @@ export function lightingSources(w: World): LightSource[] {
           });
       }
   }
+  // Visible stove fires and reading candles provide restrained warm pools beside the cool Hearth.
+  for (const furnishing of w.furnishings) {
+    const model = furnishing.model ?? furnishing.kind;
+    if (!['stove', 'lectern', 'bookshelf'].includes(model) || !tileAt(w, furnishing.x, furnishing.z)?.known)
+      continue;
+    const reading = model !== 'stove',
+      large = model === 'bookshelf';
+    const localX = reading ? (large ? 0.73 : 0.25) : 0,
+      localZ = reading ? 0.2 : -0.27;
+    sources.push({
+      id: `furnishing-${furnishing.id}`,
+      x: furnishing.x + (large && !furnishing.rotation ? 0.5 : 0) + (furnishing.rotation ? localZ : localX),
+      z: furnishing.z + (large && furnishing.rotation ? 0.5 : 0) + (furnishing.rotation ? -localX : localZ),
+      y: reading ? 0.95 : 0.75,
+      color: reading ? '#ffd49a' : '#ffb668',
+    });
+  }
   if (w.onwardHearth && tileAt(w, w.onwardHearth.x, w.onwardHearth.z)?.known)
     sources.push({ ...w.onwardHearth, id: 'onward-hearth', y: 1.5, color: '#8fa6ea' });
   return sources;

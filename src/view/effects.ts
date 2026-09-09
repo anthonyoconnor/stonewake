@@ -77,7 +77,7 @@ export class SceneEffects {
     for (const color of ['#7fdef0', '#579bd0', '#86e5d7']) {
       const crystal = this.view.materials.get(color);
       if (crystal) {
-        crystal.emissiveColor = Color3.FromHexString(color).scale(0.45 * integrity);
+        crystal.emissiveColor = Color3.FromHexString(color).scale(0.58 * integrity);
         crystal.diffuseColor = Color3.FromHexString(color).scale(0.25 + 0.75 * integrity);
       }
     }
@@ -95,7 +95,7 @@ export class SceneEffects {
       }
       if (material && kind === 'lava')
         material.emissiveColor = Color3.FromHexString('#df5423').scale(
-          this.reduced ? 0.38 : 0.37 + Math.sin(time * 0.8) * 0.025,
+          this.reduced ? 1.25 : 1.24 + Math.sin(time * 0.8) * 0.025,
         );
     }
     if (this.reduced)

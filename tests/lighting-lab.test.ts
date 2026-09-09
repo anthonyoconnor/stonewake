@@ -50,3 +50,14 @@ test('light source selection and occlusion never discover the sealed pocket or i
   w.lightingTest.ambient = 1;
   assert.notEqual(other.lightingTest.ambient, w.lightingTest.ambient);
 });
+
+test('furnished stove fires and reading candles illuminate only discovered furnishings', () => {
+  const w = createLightingLab();
+  const sources = lightingSources(w).filter((s) => s.id.startsWith('furnishing-'));
+  assert(sources.length > 0, 'The built Kitchen and Library have visible fire/candle sources');
+  const fixture = w.furnishings.find((f) => sources.some((s) => s.id === `furnishing-${f.id}`))!;
+  tileAt(w, fixture.x, fixture.z)!.known = false;
+  assert(!lightingSources(w).some((s) => s.id === `furnishing-${fixture.id}`));
+  w.furnishings = [];
+  assert.equal(lightingSources(w).filter((s) => s.id.startsWith('furnishing-')).length, 0);
+});

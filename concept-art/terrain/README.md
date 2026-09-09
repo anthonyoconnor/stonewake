@@ -17,6 +17,12 @@ This concept shows one larger connected mine area, using large square excavation
 
 The user approved this image as a representation of the overall terrain appearance, as well as the gem-column design and gold seam's top-and-side treatment. It is the primary visual reference for the [level and region concepts](../levels/README.md). Gold and gems should stay identifiable without relying on selection highlights. The subsequent gameplay decision makes gold and gem deposits visible through unexplored terrain on both planning maps; the main world view still follows normal discovery. Exact tile dimensions, miner-to-cell scale, and selection styling remain visual and implementation details to refine.
 
+## Whole-stronghold cohesion study
+
+[![Refined stronghold cohesion target](stronghold-cohesion-v2.png)](stronghold-cohesion-v2.png)
+
+The 2026-09-09 graphics overhaul adds [cohesion v1](stronghold-cohesion-v1.png) and the current [v2 target](stronghold-cohesion-v2.png), generated from the approved resource terrain and Border Foothold direction. V2 restores the blue crystal Hearth and strengthens the warm earth, cool rock, worn paving and localized warm light. Incidental low walls or apparent steps are illustration artifacts; the common bank height and single walkable floor remain authoritative. See the [exact prompts and review notes](graphics-overhaul-prompts.md), separate [runtime material assets](../../public/art/terrain/README.md), and [implementation record](../../graphics-overhaul.md).
+
 ## References and provenance
 
 Created using the built-in image generation tool. The [revision prompt](prompts-v2.md) records the user's terrain-height corrections and the approved features to preserve. The [original prompt](prompts.md) records the first composition and source roles.

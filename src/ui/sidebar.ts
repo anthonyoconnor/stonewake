@@ -4,6 +4,11 @@ import { showDwarfs, updateDwarfs } from './dwarfs';
 import { showCombatLab, updateCombatLab } from './combat-lab';
 import { defaultCombatSetup, type CombatSetup } from '../content/combat-lab';
 import { showLightingLab } from './lighting-lab';
+import { showGraphicsGallery } from './graphics-gallery';
+import { isGraphicsGallery } from '../content/graphics-gallery';
+import type { GraphicsGallery } from '../view/graphics-gallery';
+import { isTerrainComparison } from '../content/terrain-comparison';
+import { showTerrainComparison } from './terrain-comparison';
 import { bridgeSettings } from '../game/terrain.ts';
 import {showSpells,updateSpells} from './spells';
 import {characterDefinitions,maxCharacterLevel,isConstruct,isAnimal} from '../content/characters';
@@ -52,6 +57,7 @@ export class Sidebar {
   refreshActionHelp:()=>void=()=>{};
   lab=false;labType='treasure';labShape='Compact';
   combatSetup:CombatSetup={...defaultCombatSetup};
+  graphicsGallery?:GraphicsGallery;
   inspectedUnit?:SpellTarget;
   onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
   onFreeBuild:(value:boolean)=>void=()=>{};onRestart:()=>void=()=>{};onRestartArea:()=>void=()=>{};
@@ -110,6 +116,8 @@ export class Sidebar {
     this.show('rooms');view.engine.resize();
   }
   show(category:string){
+    if(category==='rooms'&&isGraphicsGallery(this.view.world))category='graphics-gallery';
+    if(category==='rooms'&&isTerrainComparison(this.view.world))category='terrain-comparison';
     if(category==='rooms'&&this.view.world.lightingTest)category='lighting';
     if(category==='rooms'&&this.view.world.combatTest)category='combat';
     if(category==='rooms'&&this.lab)category='lab';
@@ -145,6 +153,8 @@ export class Sidebar {
     else if(category==='spells')showSpells(this);
     else if(category==='hearth')showHearth(this);
     else if(category==='combat')showCombatLab(this);
+    else if(category==='graphics-gallery')showGraphicsGallery(this);
+    else if(category==='terrain-comparison')showTerrainComparison(this);
     else if(category==='lighting'&&this.view.world.lightingTest)showLightingLab(this,this.view.world.lightingTest);
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
     this.panel.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.tool!));

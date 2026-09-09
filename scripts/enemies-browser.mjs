@@ -11,6 +11,8 @@ mkdirSync(output, { recursive: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }),
     errors = [];
+  await page.routeWebSocket(/.*/, () => {});
+  page.setDefaultTimeout(90000);
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`${url}/?scenario=enemy-roster&paused=1`);
   await page.waitForFunction(() => window.strongholdDev?.status().scenario === 'enemy-roster');
@@ -39,16 +41,34 @@ try {
                 n.name,
               ),
           )
-          .map((n) => ({ name: n.name, enabled: n.isEnabled(), meshes: n.getChildMeshes().length }));
+          .map((n) => ({
+            name: n.name,
+            enabled: n.isEnabled(),
+            meshes: n.getChildMeshes().length,
+            vertices: n.getChildMeshes().reduce((total, mesh) => total + mesh.getTotalVertices(), 0),
+            legs: n
+              .getDescendants()
+              .filter((child) => /^(spider walking leg|foreleg|hindleg|pillar leg)$/.test(child.name)).length,
+            arms: n.getDescendants().filter((child) => child.name === 'striking arm').length,
+            finiteTransforms: n
+              .getChildMeshes()
+              .every((mesh) => [...mesh.computeWorldMatrix(true).m].every(Number.isFinite)),
+          }));
       },
       { x, z, radius, alpha, beta },
     );
   const models = await camera(19, 11, 27);
   assert.equal(models.length, 10);
   assert(
-    models.every((m) => m.enabled && m.meshes > 20),
+    models.every((m) => m.enabled && m.vertices > 1000 && m.finiteTransforms),
     JSON.stringify(models),
   );
+  for (const model of models) {
+    const type = model.name.replace(/ \d+$/, '');
+    const quadruped = ['tunnel-burrower', 'crystalback-stalker', 'deepmaw'].includes(type);
+    assert.equal(model.legs, type === 'cave-spider' ? 8 : quadruped ? 4 : 2, `${type} walking rig`);
+    assert.equal(model.arms, type === 'cave-spider' || quadruped ? 0 : 2, `${type} striking rig`);
+  }
   await page.screenshot({ path: `${output}/all-ten.png` });
   const crowdSample = await page.evaluate(async () => {
     const source = await (await fetch('/src/view/scene.ts')).text();
@@ -105,10 +125,13 @@ try {
       battle.agents.length < initial.agents.length,
   );
   assert(battle.enemies.some((e) => e.attackedAt !== undefined));
-  const expired = battle.enemies.filter(e => e.health <= 0 && battle.elapsed - e.diedAt >= 3);
+  const expired = battle.enemies.filter((e) => e.health <= 0 && battle.elapsed - e.diedAt >= 3);
   const retainedModels = await camera(19, 11, 27);
   assert(expired.length > 0, 'Mixed combat exercises enemy defeat cleanup');
-  assert(expired.every(e => !retainedModels.some(m => m.name === e.type + ' ' + e.id)), 'Expired enemy geometry is released');
+  assert(
+    expired.every((e) => !retainedModels.some((m) => m.name === e.type + ' ' + e.id)),
+    'Expired enemy geometry is released',
+  );
   await page.evaluate(() => window.strongholdDev.load('enemy-roster'));
   await camera(20, 11, 11, Math.PI / 2, 0.8);
   await page.screenshot({ path: `${output}/reverse-view.png` });
@@ -171,6 +194,8 @@ try {
   assert.equal(excavated.tiles[22 * excavated.width + 3].terrain, 'floor');
   await page.close();
   const reducedPage = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await reducedPage.routeWebSocket(/.*/, () => {});
+  reducedPage.setDefaultTimeout(90000);
   reducedPage.on('pageerror', (e) => errors.push(e.message));
   await reducedPage.emulateMedia({ reducedMotion: 'reduce' });
   await reducedPage.goto(`${url}/?scenario=enemy-roster&paused=1`, {

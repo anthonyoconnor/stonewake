@@ -1,0 +1,35 @@
+{
+  "tool": "Built-in image_gen.imagegen",
+  "date": "2026-09-09",
+  "concepts": [
+    {
+      "file": "stronghold-cohesion-v1.png",
+      "prompt": "Use case: stylized-concept\nAsset type: art-direction target for a playable Babylon.js dwarven stronghold management game.\nPrimary request: a refined, cohesive in-game environment concept for Stonewake, using the supplied approved terrain and starting stronghold illustrations as visual references, not edit targets. A single connected subterranean mining settlement viewed from elevated three-quarter overhead. Large square excavation cells, all intact earth/bedrock/ore banks have exactly the same top height, all walkable floor exactly one plane. A modest established Hearth clearing with timber beds, bronze-bound chests, an adjoining workshop and book alcove; rough mined passages lead to chunky gold-bearing earth and permanent dark square gem columns. Show some retained full-height earth cells, connected dark bedrock, a small water channel crossed by a plain fitted stone bridge. Preserve practical game-scale geometry and clear paths.\nStyle: high-quality tactile stylized 3D environment, carefully sculpted broad chipped stone forms, warm umber earth, charcoal blue bedrock, fitted worn gray/brown flagstones, bronze and weathered timber, layered edge wear and soft contact shadows. Natural geology has irregular contiguous strata and fine branching fractures, NOT brick wallpaper or perfectly repeated cobbles. Connected terrain top surfaces should visually flow across grid cells while large excavation footprints remain legible. Broad clustered embedded gold fragments, blue/violet quartz with dark facets. Thin seams and restrained relief on floor so characters read. Small robust dwarf silhouettes and tiny mechanical Stonehands for scale.\nLighting: dark underground atmosphere yet clearly readable surfaces, soft warm work-lamp pools and restrained cool Hearth glow, gentle directional form shading and contact occlusion. Avoid high bloom, toy-plastic shine, excessive cyan, black unlit playable floors. Let one coherent warm/cool palette connect all surfaces and furniture.\nComposition: landscape 1536x1024, primary stronghold panorama occupies entire image, no borders, no typography, no interface, no floating text or bars, no labels. This is a practical achievable modeling target rather than a cinematic vista. No sky, no multiple walkable layers, no staircases, no giant isolated rock boulders.",
+      "references": [
+        "resource-terrain-v2.png",
+        "../levels/border-foothold-v1.png"
+      ]
+    },
+    {
+      "file": "stronghold-cohesion-v2.png",
+      "prompt": "Use case: precise-object-edit. Refine this terrain concept for the same dwarven browser game. Preserve its camera, warm/cool material palette, rich weathered stone, gold seams, dark blue/violet gem columns, timber furniture, restrained warm lanterns, clear paths and overall layout. Correct only gameplay geometry: ALL walkable ground including rooms, paths and bridge decks must be at exactly one common flat plane, with no steps and no raised room platforms. ALL intact earth and bedrock banks must share one common full height. Eliminate low half-height partition walls or convert them to full-height banks of the same height; do not add layers. Replace the central open fire core with the established modest blue crystalline Hearth set in a low circular stone/brass cradle (decorative base only). Keep cooking fires solely in the workshop/kitchen furnishings. Make terrain tops less like tiny repeated brick courses, more broad weathered fractured geological plates, retaining large square excavation footprints. No text/UI. A refined achievable stylized 3D modeling target.",
+      "references": [
+        "stronghold-cohesion-v1.png"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "fractured-earth",
+      "prompt": "Use case: stylized-concept. Asset type: seamless game terrain albedo texture, square 1024x1024. Fill entire image with weathered excavated compact earth and fractured sedimentary stone, top-down orthographic, no perspective, no objects, no text, no border. Broad irregular interlocking clods and rocky plates with fine branching cracks, variable sizes approximately 12-18 larger shapes across the image, warm gray/taupe neutral stone (medium-light values so game can tint umber). Tactile hand-painted stylized 3D fantasy game material; restrained bevel edge highlights, darker hairline crevices, mineral grain and tiny embedded pebbles. Subtle large-scale mottling, not individual floating rocks; NOT brickwork, NOT regular rows, NOT uniform cobblestones, no gold. Uniform diffuse lighting, no directional cast shadows. Seamless repeat with visual continuity across all four edges. No giant black gaps. Make relief detailed but gentle enough for overhead game."
+    },
+    {
+      "name": "slate",
+      "prompt": "Use case: stylized-concept. Asset type: seamless game rock albedo texture, square 1024x1024. Fill whole image with a continuous weathered fractured slate bedrock surface viewed exactly orthographic top down. Large interlocking angular irregular plates and finer hairline branching fissures, varied shape sizes, chipped facets and subtle strata. Neutral medium-light cool gray for runtime tinting, restrained value contrast, subtle bright worn edges, tactile hand-painted stylized 3D fantasy mine material. Uniform diffuse illumination, no perspective, no cast shadows, no scattered standalone rocks, no masonry courses, no regular cobbles, no grid, no labels/borders/objects. Seamless all four edges; continuous dense solid geology with narrow dark fissures, not black gaps."
+    },
+    {
+      "name": "flagstone",
+      "prompt": "Use case: stylized-concept. Asset type: seamless stone floor albedo texture for fantasy dwarven game, square 1024x1024. Orthographic straight-down view filling entire image with fitted ancient flagstones, broad roughly rectangular irregularly chipped slabs in a practical ashlar arrangement, 4-5 stones across, varied widths and subtle offsets, medium-light neutral warm gray stone for runtime tinting. Hairline dark joints, very shallow bevels, worn corners, subtle mineral flecks and fine cracks, restrained rough hand-painted stylized 3D finish. Floor must feel flat and traversable, not cobbles or boulders. Uniform diffuse light with no cast shadows; seamless all four edges. No weeds, gold, runes, decorations, perspective, grid overlay, text, border or other objects. Avoid large dark gaps and overly bright edge outlines."
+    }
+  ]
+}

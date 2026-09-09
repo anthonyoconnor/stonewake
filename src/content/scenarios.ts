@@ -1,6 +1,8 @@
-import {createHoundLab} from './hound-lab.ts';
+import { createHoundLab } from './hound-lab.ts';
 import { createCombatLab } from './combat-lab.ts';
 import { createLightingLab } from './lighting-lab.ts';
+import { createGraphicsGallery } from './graphics-gallery.ts';
+import { createTerrainComparison } from './terrain-comparison.ts';
 import { createCrossingScenario } from './crossings.ts';
 import { startCampaign } from '../game/campaign.ts';
 import { createEnemyLab } from './enemy-lab.ts';
@@ -68,6 +70,8 @@ export const scenarioFactories = {
   defenses: createDefenseLab,
   combat: createCombatLab,
   lighting: createLightingLab,
+  'graphics-gallery': createGraphicsGallery,
+  'terrain-comparison': createTerrainComparison,
   spells: createSpellLab,
   encounters: createEncounterLab,
   'enemy-roster': createEnemyLab,
@@ -78,7 +82,7 @@ export const scenarioFactories = {
   'region-crystal': (free) => createEnemyRegion('crystal', free),
   'region-volcanic': (free) => createEnemyRegion('volcanic', free),
   economy: createEconomyLab,
-  'cave-hounds':createHoundLab,
+  'cave-hounds': createHoundLab,
   stonehands: (free) => createMinerWorkLab(free, 'stonehand'),
   'miner-work': createMinerWorkLab,
   hearth: createHearthLab,

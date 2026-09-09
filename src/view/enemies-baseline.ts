@@ -772,4 +772,3 @@ function dressedBlock(
   mesh.parent = parent;
   return mesh;
 }
-
