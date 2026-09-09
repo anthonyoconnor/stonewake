@@ -2,6 +2,10 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export const groups: Record<string, string[]> = {
+  audio: ['audio'],
+  habitats: ['habitats', 'enemies', 'encounters'],
+  ruins: ['ruins', 'rooms', 'reclaim'],
+  balance: ['campaign-playthrough', 'campaign-pressure', 'combat-balance', 'economy', 'morale'],
   lighting: ['lighting-lab', 'rooms'],
   menus: ['session', 'campaign'],
   combat: ['combat-balance', 'cave-hounds', 'enemies', 'recruitment'],
@@ -16,10 +20,13 @@ export const groups: Record<string, string[]> = {
   rooms: ['rooms', 'food', 'reclaim', 'learning-rooms'],
   research: ['progression-research', 'spells'],
   defenses: ['defenses'], enemies: ['enemies', 'encounters'], encounters: ['encounters'],
-  hearth: ['hearth'], morale: ['morale'], campaign: ['campaign', 'bridges'], bridges: ['bridges'],
+  hearth: ['hearth'], morale: ['morale'], campaign: ['campaign', 'campaign-layouts', 'bridges'], bridges: ['bridges'],
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  ruins: [['scripts/ruin-inspection-browser.mjs']],
+  audio: [['scripts/audio-browser.mjs']],
+  animation: [['scripts/character-visuals-browser.mjs'], ['scripts/enemies-browser.mjs']],
   lighting: [['scripts/lighting-browser.mjs']],
   loading: [['scripts/loading-browser.mjs']],
   menus: [['scripts/menu-browser.mjs']],

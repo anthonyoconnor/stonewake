@@ -1,3 +1,5 @@
+import { roomAllowed, buildingAllowed, recipeAllowed, availabilityReason } from '../game/availability';
+import { ruinStatus } from '../game/ruins';
 import { showDwarfs, updateDwarfs } from './dwarfs';
 import { showCombatLab, updateCombatLab } from './combat-lab';
 import { defaultCombatSetup, type CombatSetup } from '../content/combat-lab';
@@ -86,7 +88,7 @@ export class Sidebar {
     this.root.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(b=>b.onclick=()=>this.show(b.dataset.category!));
     this.root.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>selection.setTool(b.dataset.tool!));
     selection.onChange=message=>{this.root.querySelector('#feedback')!.textContent=message;this.root.querySelectorAll<HTMLElement>('[data-tool],[data-room]').forEach(b=>b.classList.toggle('active',(b.dataset.tool??b.dataset.room)===selection.tool));this.updateSelection();};
-    selection.onInspect=p=>{if(tileAt(this.view.world,p.x,p.z)?.core||tileAt(this.view.world,p.x,p.z)?.onward){this.show('hearth');return;}if(defenseAt(this.view.world,p)){if(this.category!=='defenses')this.show('defenses');else updateDefenses(this);}else if(tileAt(this.view.world,p.x,p.z)?.room&&!['rooms','lab'].includes(this.category))this.show('rooms');};
+    selection.onInspect=p=>{const tile=tileAt(this.view.world,p.x,p.z);if(tile?.core||tile?.onward){this.show('hearth');return;}if(defenseAt(this.view.world,p)){if(this.category!=='defenses')this.show('defenses');else updateDefenses(this);}else if((tile?.room||(tile?.known&&tile.ruin))&&!['rooms','lab'].includes(this.category))this.show('rooms');};
     selection.onUnitInspect=target=>{this.inspectedUnit=target;this.update();this.unitInspection.scrollIntoView({block:'nearest'});};
     this.root.querySelectorAll<HTMLButtonElement>('[data-camera]').forEach(b=>b.onclick=()=>{
       switch(b.dataset.camera){case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
@@ -160,7 +162,7 @@ export class Sidebar {
     }
     if(['rooms','lab','defenses'].includes(category)){
       const production=document.createElement('details');production.className='production';production.innerHTML=`<summary>Workshop production</summary><div class="room-grid" role="group" aria-label="Production recipes">${recipes.map(r=>`<button class="room-choice recipe-choice" data-recipe="${r.id}" aria-label="Queue ${r.name.toLowerCase()} · ${r.cost} gold" title="Queue ${r.name.toLowerCase()} · ${r.cost} gold · ${r.seconds}s Engineer work">${actionIcon(r.id)}<small>${r.cost} ◆</small></button>`).join('')}</div><div id="craft-orders"></div><div id="craft-outputs"></div><details><summary>Workers &amp; access</summary><div id="craft-status" class="muted"></div></details>`;this.panel.append(production);
-      production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.root.querySelector('#feedback')!.textContent=`${recipeById(b.dataset.recipe!)!.name} queued for an Engineer.`;this.update();});
+      production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.root.querySelector('#feedback')!.textContent=recipeAllowed(this.view.world,b.dataset.recipe!)?`${recipeById(b.dataset.recipe!)!.name} queued for an Engineer.`:availabilityReason(this.view.world,'recipes',b.dataset.recipe!);this.update();});
     }
     if(['lab','debug'].includes(category)){
             const catalog=document.createElement('div');catalog.innerHTML=`<h3>Current world: test residents</h3><p class="muted">Adds a dwarf here for free, bypassing arrival requirements. Needs a clear claimed spawn square. Requirements below describe natural arrivals only.</p><label>Test dwarf type<select id="debug-dwarf-type">${characterDefinitions.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></label><button id="add-test-dwarf" class="wide">Add test dwarf</button><p id="debug-attraction" class="muted"></p>`;this.panel.append(catalog);
@@ -200,8 +202,9 @@ export class Sidebar {
     const toolName=room?.name??spellDefinitions.find(s=>s.id===id)?.name??defenseById(id)?.name??({dig:'Excavate',inspect:'Inspect',wall:'Build walls',sell:'Reclaim',bridge:'Build bridges'}[id]??id);
     this.root.querySelector('#active-tool')!.textContent=toolName;
     this.root.querySelector<HTMLButtonElement>('#cancel-tool')!.hidden=id==='dig'||!!w.outcome;
-    this.panel.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>{const locked=b.dataset.tool==='bridge'&&w.campaign&&!w.campaign.unlockedBuildings.includes('bridge');actionAvailability(b,!w.outcome&&!locked,w.outcome?'Area ended':locked?'Awaken the first onward Hearthstone to recover stonebridge plans.':b.dataset.tool==='bridge'?`Build bridges · ${w.freeRoomBuilding?0:bridgeSettings.cost} gold / square · Water and lava only`:b.dataset.tool==='wall'?`Build walls · ${wallBuildDuration()} seconds each`:`Sell rooms, bridges or defenses · ${Math.round(tuning.reclaimRatio*100)}% room and deck refund`);b.classList.toggle('active',b.dataset.tool===id);b.setAttribute('aria-pressed',String(b.dataset.tool===id));});
-    this.root.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>{const selected=b.dataset.room===id,r=roomDefinitions.find(r=>r.id===b.dataset.room)!;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));const price=w.freeRoomBuilding?0:r.cost;actionAvailability(b,!w.outcome&&goldTotal(w)>=price,`${r.name} · ${price} gold / square · ${w.outcome?'Area ended':goldTotal(w)<price?'Needs more gold':r.description}`);});
+    this.panel.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>{const locked=['bridge','wall'].includes(b.dataset.tool!)&&!buildingAllowed(w,b.dataset.tool!);actionAvailability(b,!w.outcome&&!locked,w.outcome?'Area ended':locked?availabilityReason(w,'buildings',b.dataset.tool!):b.dataset.tool==='bridge'?`Build bridges · ${w.freeRoomBuilding?0:bridgeSettings.cost} gold / square · Water and lava only`:b.dataset.tool==='wall'?`Build walls · ${wallBuildDuration()} seconds each`:`Sell rooms, bridges or defenses · ${Math.round(tuning.reclaimRatio*100)}% room and deck refund`);b.classList.toggle('active',b.dataset.tool===id);b.setAttribute('aria-pressed',String(b.dataset.tool===id));});
+    this.root.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>{const selected=b.dataset.room===id,r=roomDefinitions.find(r=>r.id===b.dataset.room)!;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));const price=w.freeRoomBuilding?0:r.cost;actionAvailability(b,r.implemented&&!w.outcome&&roomAllowed(w,r.id)&&goldTotal(w)>=price,`${r.name} · ${price} gold / square · ${w.outcome?'Area ended':!r.implemented?'Deferred':!roomAllowed(w,r.id)?availabilityReason(w,'buildings',r.id):goldTotal(w)<price?'Needs more gold':r.description}`);});
+    this.panel.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>{const recipe=recipeById(b.dataset.recipe!)!;actionAvailability(b,!w.outcome&&recipeAllowed(w,recipe.id),`${recipe.name} · ${recipe.cost} gold · ${availabilityReason(w,'recipes',recipe.id)||'Queue for an Engineer'}`);});
     const header=this.panel.querySelector<HTMLElement>('#selected-action');if(!header)return;
     const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+this.view.world.freeRoomBuilding+':'+bridgeSettings.cost+':'+bridgeSettings.seconds+':'+price+':'+room?.capacityPerTile+':'+tuning.reclaimRatio+':'+wallBuildDuration();
     if(header.dataset.selection===signature)return;header.dataset.selection=signature;
@@ -253,6 +256,7 @@ export class Sidebar {
       summary.textContent='';
       if(p&&tileAt(w,p.x,p.z)?.core){const chest=w.roomServices.find(f=>f.id==='hearth-treasury');summary.textContent=chest?`Hearth treasury · ${chest.stored} / ${chest.capacity} gold`:'';}
       else if(p){
+        const remnant=tileAt(w,p.x,p.z);if(remnant)summary.textContent=ruinStatus(w,remnant)??'';
         const s=roomStats(w,p),room=roomDefinitions.find(r=>r.id===tileAt(w,p.x,p.z)?.room);
         if(room){
           const usable=s.usable.reduce((sum,f)=>sum+f.capacity,0),ids=new Set(s.usable.map(f=>f.id));

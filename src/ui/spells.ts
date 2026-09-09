@@ -1,3 +1,4 @@
+import { spellAllowed, availabilityReason } from '../game/availability';
 import { stonehandPurchaseStatus } from '../game/recruitment';
 import { actionIcon } from './icons';
 import type { Sidebar } from './sidebar';
@@ -87,8 +88,8 @@ export function updateSpells(sidebar: Sidebar) {
       const choice=sidebar.panel.querySelector<HTMLButtonElement>(`[data-spell="${spell.id}"]`)!;
       choice.classList.toggle('active',selected);
       choice.setAttribute('aria-pressed',String(selected));
-      const usable=!!ready && goldTotal(w)>=spell.cost && !w.outcome && !(spell.effect==='rally'&&w.rally) && !(spell.effect==='barrier'&&w.barrier);
-      const state=w.outcome?'Area ended':ready?(goldTotal(w)<spell.cost?'Needs gold':(spell.effect==='rally'&&w.rally)||(spell.effect==='barrier'&&w.barrier)?'Already active':'Ready'):paused?'Paused':order?(order.unlocked?'Preparing':'Researching'):'Not researched';
+      const usable=spellAllowed(w,spell.id) && !!ready && goldTotal(w)>=spell.cost && !w.outcome && !(spell.effect==='rally'&&w.rally) && !(spell.effect==='barrier'&&w.barrier);
+      const state=w.outcome?'Area ended':!spellAllowed(w,spell.id)?availabilityReason(w,'spells',spell.id):ready?(goldTotal(w)<spell.cost?'Needs gold':(spell.effect==='rally'&&w.rally)||(spell.effect==='barrier'&&w.barrier)?'Already active':'Ready'):paused?'Paused':order?(order.unlocked?'Preparing':'Researching'):'Not researched';
       choice.title=`${spell.name} · ${spell.cost} gold · ${state}`;
       actionAvailability(choice,usable,choice.title);
       choice.querySelector('.spell-state')!.textContent=ready?'◆':paused?'Ⅱ':order?'◷':'◇';
@@ -106,7 +107,9 @@ export function updateSpells(sidebar: Sidebar) {
           ? `${paused ? 'Paused' : order.state === 'working' ? 'In progress' : 'Queued'} · ${Math.min(100, Math.floor((order.progress / duration) * 100))}% · ${order.unlocked ? 'Preparing' : 'Researching'}`
           : `Not researched · ${duration} seconds of research`;
       const research = sidebar.panel.querySelector<HTMLButtonElement>(`[data-research="${spell.id}"]`)!;
-      research.disabled = !!order && !paused;
+      research.disabled = !!w.outcome || !spellAllowed(w,spell.id) || (!!order && !paused);
+      research.title = availabilityReason(w,'spells',spell.id);
+      const option=sidebar.panel.querySelector<HTMLOptionElement>(`#research-spell option[value="${spell.id}"]`);if(option){option.disabled=!spellAllowed(w,spell.id);option.title=availabilityReason(w,'spells',spell.id);}
       research.textContent = paused ? 'Resume' : 'Research';
       sidebar.panel.querySelector<HTMLButtonElement>(`[data-pause-research="${spell.id}"]`)!.disabled =
         !order || !!paused || ready;
