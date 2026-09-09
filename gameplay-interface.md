@@ -50,7 +50,7 @@ The sidebar can use restrained dwarven stone, metal, and rune motifs. Borders an
 - Neither map shows a camera footprint, orientation overlay or camera-center marker.
 - Press **M** or the expand icon beside the minimap to open a larger full map using the same colors and fog of war. The entire level fits at once with its aspect ratio preserved. M, Escape and the close button dismiss it; clicking a position recenters the camera and closes it. Simulation continues while the map is open; world camera inputs are suspended.
 - Clicking a known position recenters the camera. Proposed behavior: dragging within the minimap pans the view.
-- Gold seams and gem deposits are always visible on the minimap and full map, including beyond explored terrain, to draw players toward useful areas. Other unexplored ground, caves, enemies and the onward Hearthstone remain concealed. Resource markers do not discover tiles or permit remote mining; deposits still require a physically reachable, discovered work face. Exhausted gold disappears from the resource map; persistent gems remain.
+- Gold seams and gem deposits are always visible in the main view and on the minimap and full map, including beyond explored terrain, to draw players toward useful areas. Other unexplored ground, caves, enemies and the onward Hearthstone remain concealed. Resource markers do not discover tiles or permit remote mining; deposits still require a physically reachable, discovered work face. Exhausted gold disappears from the resource map; persistent gems remain.
 - Current enemy markers require visibility. Remembered terrain and current threats must not be confused.
 - An attack message may briefly emphasize its known location on the minimap, without adding a text label to the world.
 

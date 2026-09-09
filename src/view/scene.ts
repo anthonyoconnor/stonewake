@@ -188,7 +188,7 @@ export class GameScene {
           t.room,
           t.loose,
           t.designated,
-          t.known
+          t.known || t.terrain === 'gold' || t.terrain === 'gem'
             ? neighbors(this.world, t)
                 .map((n) => n.bridge + ':' + n.terrain + ':' + n.known + ':' + n.reinforced + ':' + n.room)
                 .join()
@@ -208,7 +208,9 @@ export class GameScene {
     this.drawFurniture();
   }
   drawTile(t: Tile) {
-    if (!t.known) {
+    // Resource geology is visible for planning without discovering the tile.
+    const resource = t.terrain === 'gold' || t.terrain === 'gem';
+    if (!t.known && !resource) {
       // Fog cells share one geometry and one instanced draw, while retaining individual picks.
       if (!this.unknownBlock) {
         this.unknownBlock = MeshBuilder.CreateBox(
@@ -258,7 +260,7 @@ export class GameScene {
       hazardDetails(this, t);
       return;
     }
-    const type = t.known ? t.terrain : 'unknown',
+    const type = t.terrain,
       solid = type !== 'floor';
     const room = t.known && t.room ? roomById(t.room) : undefined;
     const rawGround = type === 'floor' && !t.claimed && !room && !t.core;
@@ -277,10 +279,10 @@ export class GameScene {
           : t.known && t.reinforced
             ? '#8c9187'
             : colors[type],
-      t.known,
+      true,
     );
     const mesh =
-      t.known && solid
+      solid
         ? dressedBlock(
             this,
             `tile-${t.x}-${t.z}`,
@@ -319,7 +321,6 @@ export class GameScene {
       m.material!.alpha = 0.38;
       m.isPickable = false;
     }
-    if (!t.known) return;
     if (solid) terrainRelief(this, t, mat);
     else floorTransitions(this, t);
     if (t.wallPlanned) {
@@ -365,6 +366,7 @@ export class GameScene {
           c.rotation.x = dz * 0.5;
         }
     }
+    if (!t.known) return;
     if (type === 'floor' && t.claimed && !room && !t.core) {
       const m = this.box(
         'claim inset',

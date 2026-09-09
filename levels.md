@@ -93,7 +93,7 @@ The user approved the [gold seam and gem column concept](concept-art/terrain/REA
 
 Gold veins should be visible on the tops and exposed sides of gold-bearing terrain within the visible area. Gem columns occupy square terrain footprints, show mineral detail from above and on accessible faces, and provide working positions beside the deposit. The column appearance represents the existing persistent gem resource rather than a new currency or power source.
 
-Selection overlays must distinguish designated excavation from the natural gold material. Exact highlight styling and physical cell dimensions remain to be refined. Gold and gem locations are always shown on both planning maps under the visibility rules below.
+Selection overlays must distinguish designated excavation from the natural gold material. Exact highlight styling and physical cell dimensions remain to be refined. Gold and gem locations are always shown in the main view and on both planning maps under the visibility rules below.
 
 ## Discovery and visibility
 
@@ -103,7 +103,7 @@ Selection overlays must distinguish designated excavation from the natural gold 
 - Discovered terrain remains recorded on the map under the proposed visibility model. Current enemy activity requires visibility.
 - Camera rotation, zoom, and any foreground wall fading must preserve discovery boundaries; they cannot expose hidden chambers or inhabitants through solid terrain.
 - Diggable terrain and bedrock must be distinguishable where exposed, so the player can make informed excavation choices.
-- Gold seams and gem deposits are visible everywhere on the minimap and full map from the start, providing destinations for exploration. This reveals only resource locations: nearby terrain, chambers, inhabitants and the onward Hearthstone stay concealed. Main-view terrain discovery and physical mining access are unchanged. Exhausted gold becomes ordinary floor on the map; gems persist.
+- Gold seams and gem deposits are visible everywhere in the main view, minimap and full map from the start, providing destinations for exploration. This reveals only resource locations: nearby terrain, chambers, inhabitants and the onward Hearthstone stay concealed. Resource meshes remain visible while panning, rotating and zooming through unexplored areas; this does not discover their tiles or grant physical mining access. Exhausted gold becomes ordinary floor on the map; gems persist.
 
 ## Emberwater Crossing (M16)
 

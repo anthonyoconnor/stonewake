@@ -719,3 +719,7 @@ Verified: `npm run verify -- notifications` passed source/test typecheck and 20 
 ### 2026-09-08 — Compact Border Foothold arrival
 
 Reduced the starting cavern to a walking ring around the Hearth, requiring excavation for room footprints and routes to existing hidden chambers. Updated the briefing and starting-area rules. Verified source/test typecheck, normal Stonehand excavation and room construction, treasury access, concealed encounters, and raids waiting for an opened eastern route. The focused world, settings, Hearth and encounter tests passed; seven of eight campaign tests passed. The optional volcanic-lair excavation timeout also reproduces with the previous starting layout and remains tracked for M19.
+
+### 2026-09-08 — Main-view resource visibility
+
+Gold seams and gem columns now render through unexplored terrain in the main play area, including when panning, rotating and zooming. Resource visibility does not discover tiles or change mining access, and surrounding terrain remains fogged. Updated the visibility references. Verified source/test typecheck and four world/discovery tests with npm run verify -- world. The focused resource-visibility browser check passed resource materials, surrounding fog and unchanged discovery after camera navigation; visually inspected test-results/resources/main-view.png. No browser runtime errors.
