@@ -136,10 +136,11 @@ Complete when ordinary crews expand and claim a marked area before spending spar
 
 - Treat the report that hounds killed most monsters as a balance hypothesis to measure, not a reason for an arbitrary blanket reduction.
 - Compare single hounds and realistic packs against regional enemies, factoring in recruitment rate, free den support, population growth and enemy group composition.
+- Make the combat test room directly available under **Debug → Test harnesses → Combat test room**. Use the actual shared combat systems and editable roster definitions for repeatable hound, specialist and enemy matchups. Provide matchup selection, reset, Pause/Resume and Return to stronghold; start paused and preserve the retained stronghold and its prior pause state under the existing harness rules. Keep combat stats/results in the sidebar.
 - Preserve useful early scouting, patrol and defense while giving Warriors, manufactured defenses and Runesmith spells meaningful advantages against later threats. Tune existing editable stats/recruitment before adding mechanics or imposing a new animal cap.
 - Record representative matchups and intended roles in characters.md and enemies.md; repeat campaign-context checks after M27/M29.
 
-Complete when hounds handle suitable early threats but hound-only settlements have clear limitations against representative later encounters, with viable specialist/defense responses under normal resource costs.
+Complete when hounds handle suitable early threats but hound-only settlements have clear limitations against representative later encounters, with viable specialist/defense responses under normal resource costs. Browser-check that the combat test room can be opened from Debug → Test harnesses, run and reset with selected matchups, and exited back to the unchanged stronghold with its prior pause state restored.
 
 ### M25 — Starting menu and free-play level selection
 
