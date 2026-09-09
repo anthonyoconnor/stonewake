@@ -67,12 +67,23 @@ export function decorateRoom(w: World, room: string, tiles: Point[], previous: F
           )
             continue;
           const own = new Set(cells.map(key));
-          const access = cells
-            .flatMap((p) => neighbors(w, p))
-            .find((p) => ids.has(key(p)) && !own.has(key(p)) && !occupied.has(key(p)));
-          if (!access) continue;
           const x = t.x + (width - 1) / 2,
             z = t.z + (depth - 1) / 2;
+          // Local fronts point along -z. Face the open room, retaining rotation for footprint size.
+          const acrossX =
+              variant.width === variant.depth ? Math.abs(center.x - x) > Math.abs(center.z - z) : !!rotation,
+            facing = acrossX ? (center.x > x ? -Math.PI / 2 : Math.PI / 2) : center.z > z ? Math.PI : 0,
+            front = { x: Math.round(-Math.sin(facing)), z: Math.round(-Math.cos(facing)) };
+          const accessChoices = cells
+            .flatMap((p) => neighbors(w, p))
+            .filter((p) => ids.has(key(p)) && !own.has(key(p)) && !occupied.has(key(p)));
+          accessChoices.sort(
+            (a, b) =>
+              (b.x - x) * front.x + (b.z - z) * front.z - ((a.x - x) * front.x + (a.z - z) * front.z) ||
+              Math.hypot(a.x - center.x, a.z - center.z) - Math.hypot(b.x - center.x, b.z - center.z),
+          );
+          const access = accessChoices[0];
+          if (!access) continue;
           const edge = cells.reduce(
             (sum, p) => sum + neighbors(w, p).filter((n) => !ids.has(key(n))).length,
             0,
@@ -80,12 +91,17 @@ export function decorateRoom(w: World, room: string, tiles: Point[], previous: F
           const distance = placed.length
             ? Math.min(...placed.flatMap((f) => f.cells.map((p) => Math.hypot(x - p.x, z - p.z))))
             : Math.hypot(x - center.x, z - center.z);
+          const back = cells.filter((p) => !ids.has(key({ x: p.x - front.x, z: p.z - front.z }))).length;
+          const perpendicular = placed.some((f) => f.kind === variant.kind && f.rotation !== rotation);
           const score =
             variant.placement === 'edge'
-              ? edge * 10 + distance
+              ? back * 10 +
+                (perpendicular ? 3 : 0) +
+                distance * 0.35 -
+                Math.hypot(x - center.x, z - center.z) * 0.5
               : variant.placement === 'center'
                 ? -Math.hypot(x - center.x, z - center.z)
-                : distance;
+                : distance - edge * 0.9;
           choices.push({
             score,
             furnishing: {
@@ -96,6 +112,7 @@ export function decorateRoom(w: World, room: string, tiles: Point[], previous: F
               x: t.x,
               z: t.z,
               rotation,
+              facing,
               cells,
               access: { x: access.x, z: access.z },
             },

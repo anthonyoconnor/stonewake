@@ -9,9 +9,20 @@ export function surfaceTexture(scene: Scene, name: string) {
   const tex = new DynamicTexture(`${name}-surface`, { width: 256, height: 256 }, scene, false);
   const ruined = name.startsWith('ruin-');
   name = name.replace(/^biome-[^-]+-/, '').replace(/^ruin-/, '');
-  if(name.startsWith('floor-')) {
-    const floor=roomSurface(scene,name.slice(6),ruined);
-    if(floor){tex.dispose();return floor;}
+  if (name.startsWith('floor-')) {
+    const [id, stamp] = name.slice(6).split('~'),
+      [edges, variant, motif, corners] = stamp?.split('.') ?? [];
+    const [x, y] = motif?.split('_').map(Number) ?? [];
+    const floor = roomSurface(scene, id, ruined, {
+      edgeMask: Number(edges) || 0,
+      cornerMask: Number(corners) || 0,
+      variant: Number(variant) || 0,
+      motif: motif === 's' ? true : motif && motif !== 'n' ? { x, y } : false,
+    });
+    if (floor) {
+      tex.dispose();
+      return floor;
+    }
   }
   const c = tex.getContext() as CanvasRenderingContext2D;
   let seed = 31;

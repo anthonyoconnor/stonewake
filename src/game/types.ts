@@ -81,6 +81,7 @@ export interface Enemy extends Point {
 export interface SpellEffect {id:string;kind:'haste'|'slow'|'shield'|'mend'|'reckoning';until:number;strength:number;remaining?:number;rate?:number;pauseSeconds?:number;startedAt:number}
 export interface SecurityAlert extends Point {id:string;at:number;enemy?:number}
 export interface Furnishing extends Point {
+  facing?: number;
   id:string; room:string; kind:string; model?:string; rotation:number; cells:Point[]; access:Point;
 }
 // Gameplay capacity belongs to room floor, independently of decorative furnishings.

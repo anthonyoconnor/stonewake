@@ -26,6 +26,7 @@ import { type World, type Tile, neighbors, key } from '../game/types';
 import { roomTiles } from '../game/rooms';
 import { roomById, roomLook } from '../content/rooms';
 import { surfaceTexture } from './surfaces';
+import { roomFloorMaterials } from './room-floor-layout';
 import { applyTerrainMaterial, terrainMaterialsReady } from './terrain-materials';
 import { drawStartingTile, startingTerrainView, resetStartingTerrain } from './terrain-reference';
 import { isTerrainComparison, terrainComparisonSplit } from '../content/terrain-comparison';
@@ -63,6 +64,7 @@ export class GameScene {
   lastRevision = -1;
   geometryRevision = 0;
   tileNodes = new Map<string, { signature: string; node: TransformNode }>();
+  roomFloorNames?: Map<string, string>;
   furnitureRoot?: TransformNode;
   furnitureNodes = new Map<string, { signature: string; node: TransformNode }>();
   effects: SceneEffects;
@@ -192,6 +194,7 @@ export class GameScene {
   refresh() {
     if (this.lastRevision === this.world.revision) return;
     this.lastRevision = this.world.revision;
+    this.roomFloorNames = roomFloorMaterials(this.world);
     const root = this.terrainRoot;
     if (!this.tileNodes.size) this.drawHearth();
     for (const t of this.world.tiles) {
@@ -205,6 +208,7 @@ export class GameScene {
           t.reinforced,
           t.wallPlanned,
           t.room,
+          this.roomFloorNames.get(id),
           t.ruin?.id,
           t.ruin?.room,
           t.loose,
@@ -297,7 +301,7 @@ export class GameScene {
     const rawGround = type === 'floor' && !t.claimed && !room && !t.core;
     const mat = this.material(
       room
-        ? `${ruin ? 'ruin-' : ''}floor-${room.id}`
+        ? (this.roomFloorNames?.get(key(t)) ?? `${ruin ? 'ruin-' : ''}floor-${room.id}`)
         : rawGround
           ? `biome-${this.world.biome ?? 'upper'}-raw ground`
           : t.known && t.reinforced
@@ -564,7 +568,12 @@ export class GameScene {
   }
   drawFurniture() {
     this.furnitureRoot ??= new TransformNode('furnishings', this.scene);
-    const decorations: LiveRoomDecoration[] = [...this.world.furnishings,...liveRoomDecorations(this.world).filter(f=>!isTerrainComparison(this.world)||f.x>=terrainComparisonSplit)];
+    const decorations: LiveRoomDecoration[] = [
+      ...this.world.furnishings,
+      ...liveRoomDecorations(this.world).filter(
+        (f) => !isTerrainComparison(this.world) || f.x >= terrainComparisonSplit,
+      ),
+    ];
     const furnitureParent = this.furnitureRoot,
       ids = new Set(decorations.map((f) => f.id));
     for (const [id, old] of this.furnitureNodes)
@@ -574,7 +583,13 @@ export class GameScene {
       }
     for (const f of decorations) {
       const model = f.model ?? f.kind;
-      const display: FurnishingDisplay & Partial<LiveRoomDecoration> = {storedGold:f.storedGold,goldCapacity:f.goldCapacity,residentType:f.residentType,residentId:f.residentId,scale:f.scale};
+      const display: FurnishingDisplay & Partial<LiveRoomDecoration> = {
+        storedGold: f.storedGold,
+        goldCapacity: f.goldCapacity,
+        residentType: f.residentType,
+        residentId: f.residentId,
+        scale: f.scale,
+      };
       if (model === 'chest') {
         if (f.id === 'hearth-treasury')
           display.storedGold = this.world.roomServices.find((s) => s.id === f.id)?.stored ?? 0;
@@ -603,11 +618,17 @@ export class GameScene {
       const signature = [
         model,
         f.rotation,
+        f.facing,
         display.storedGold,
         display.output,
         display.outputCount,
         display.eating,
-        f.x,f.z,f.residentType,f.residentId,f.scale,f.goldCapacity,
+        f.x,
+        f.z,
+        f.residentType,
+        f.residentId,
+        f.scale,
+        f.goldCapacity,
       ].join(':');
       const old = this.furnitureNodes.get(f.id);
       if (old?.signature === signature) continue;
@@ -618,7 +639,9 @@ export class GameScene {
       this.geometryRevision++;
       this.furnitureRoot = node;
       if (f.id === 'hearth-treasury') node.position.y = 0.3;
-      (isTerrainComparison(this.world) && f.x < terrainComparisonSplit ? drawFurnishingModel : drawRoomFurnishing)(
+      (isTerrainComparison(this.world) && f.x < terrainComparisonSplit
+        ? drawFurnishingModel
+        : drawRoomFurnishing)(
         isTerrainComparison(this.world) && f.x < terrainComparisonSplit ? startingTerrainView(this) : this,
         f,
         node,

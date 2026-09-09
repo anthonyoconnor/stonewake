@@ -12,7 +12,7 @@ export const roomFurnishingPlans: Record<string, RoomFurnishingPlan> = {
     coverage: 0.36,
     items: [
       { kind: 'stove', width: 1, depth: 1, limit: 1, placement: 'edge' },
-      { kind: 'dining-table', width: 3, depth: 2, limit: 1, placement: 'center' },
+      { kind: 'dining-table', width: 3, depth: 2, limit: 1, placement: 'edge' },
       {
         kind: 'dining-table',
         model: 'small-dining-table',
@@ -51,12 +51,12 @@ export const roomFurnishingPlans: Record<string, RoomFurnishingPlan> = {
 };
 
 export const roomFloors: Record<string, { base: string; trim: string }> = {
-  treasure: { base: '#363d46', trim: '#bc9550' },
-  dormitory: { base: '#785442', trim: '#d7b887' },
-  kitchen: { base: '#b66e4a', trim: '#e2c99b' },
-  workshop: { base: '#426370', trim: '#c7a95f' },
-  training: { base: '#8e4940', trim: '#d1b887' },
-  library: { base: '#344e79', trim: '#a9c4dc' },
+  treasure: { base: '#414044', trim: '#b78e54' },
+  dormitory: { base: '#68503d', trim: '#c1a276' },
+  kitchen: { base: '#a76d4b', trim: '#d0b28a' },
+  workshop: { base: '#465563', trim: '#b6965f' },
+  training: { base: '#885842', trim: '#b29261' },
+  library: { base: '#414f68', trim: '#a4aaae' },
 };
 
 export const residentBedding: Record<string, { model: 'cot' | 'bed' | 'rune-bed' | 'den'; color: string }> = {

@@ -10,6 +10,7 @@ import type { GameScene } from './scene';
 import { neighbors, type Tile } from '../game/types';
 import { isHazard } from '../game/terrain';
 import { roomLook } from '../content/rooms';
+import { roomFloors } from '../content/room-visuals';
 import { environmentPalette, environmentDetail, hasBiomeGrowth } from '../content/environment-visuals';
 
 /** Small chamfers catch the light without moving the square gameplay footprint or top plane. */
@@ -123,7 +124,7 @@ export function floorTransitions(view: GameScene, t: Tile) {
     if (!n.known) continue;
     const dx = n.x - t.x,
       dz = n.z - t.z;
-    if (room && (n.room ?? n.ruin?.room) !== room) {
+    if (room && !roomFloors[room] && (n.room ?? n.ruin?.room) !== room) {
       const trim = view.material(
         `boundary-${room}${t.room ? '' : '-ruin'}`,
         t.room ? (roomLook(room).trim ?? '#baa06d') : '#77766e',

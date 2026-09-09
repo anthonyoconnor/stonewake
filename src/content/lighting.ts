@@ -67,8 +67,41 @@ export function lightingSources(w: World): LightSource[] {
   // Visible stove fires and reading candles provide restrained warm pools beside the cool Hearth.
   for (const furnishing of w.furnishings) {
     const model = furnishing.model ?? furnishing.kind;
-    if (!['stove', 'lectern', 'bookshelf'].includes(model) || !tileAt(w, furnishing.x, furnishing.z)?.known)
+    if (
+      !['stove', 'lectern', 'bookshelf', 'long-bookcase', 'tool-rack'].includes(model) ||
+      !tileAt(w, furnishing.x, furnishing.z)?.known
+    )
       continue;
+    if (furnishing.facing !== undefined) {
+      const lamps =
+        model === 'long-bookcase'
+          ? [
+              { x: -1.28, y: 1.2, z: -0.29 },
+              { x: 1.28, y: 1.2, z: -0.29 },
+            ]
+          : model === 'tool-rack'
+            ? [
+                { x: -0.8, y: 1.15, z: -0.23 },
+                { x: 0.8, y: 1.15, z: -0.23 },
+              ]
+            : model === 'stove'
+              ? [{ x: 0, y: 0.29, z: -0.34 }]
+              : [{ x: 0, y: 0.99, z: 0.17 }];
+      const x = furnishing.cells.reduce((s, p) => s + p.x, 0) / furnishing.cells.length,
+        z = furnishing.cells.reduce((s, p) => s + p.z, 0) / furnishing.cells.length,
+        cosine = Math.cos(furnishing.facing),
+        sine = Math.sin(furnishing.facing);
+      lamps.forEach((lamp, i) =>
+        sources.push({
+          id: `furnishing-${furnishing.id}${i ? `-${i}` : ''}`,
+          x: x + cosine * lamp.x + sine * lamp.z,
+          z: z - sine * lamp.x + cosine * lamp.z,
+          y: lamp.y,
+          color: model === 'stove' ? '#ffb668' : '#ffd49a',
+        }),
+      );
+      continue;
+    }
     const reading = model !== 'stove',
       large = model === 'bookshelf';
     const localX = reading ? (large ? 0.73 : 0.25) : 0,

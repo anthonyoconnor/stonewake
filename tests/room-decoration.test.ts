@@ -132,3 +132,29 @@ test('terrain comparison retains the archived chest, bed and horizontal equipmen
   for (const kind of ['chest', 'bed', 'weights']) assert(old.some((f) => f.kind === kind));
   assert(!w.furnishings.filter((f) => f.x >= 18).some((f) => ['chest', 'bed', 'weights'].includes(f.kind)));
 });
+
+test('long Library shelves open toward clear room approaches across square and narrow layouts', () => {
+  for (const [width, depth] of [
+    [5, 5],
+    [3, 9],
+    [9, 3],
+  ]) {
+    const w = createRoomLab();
+    buildRoom(w, 'library', rect(4, 4, width, depth));
+    const shelves = w.furnishings.filter((f) => f.model === 'long-bookcase');
+    assert(shelves.length > 0, `${width}x${depth} can fit long shelves`);
+    const occupied = new Set(w.furnishings.flatMap((f) => f.cells.map(key)));
+    for (const shelf of shelves) {
+      assert.notEqual(shelf.facing, undefined, 'Shelves have a direction independent of footprint rotation');
+      const center = {
+        x: shelf.cells.reduce((sum, p) => sum + p.x, 0) / shelf.cells.length,
+        z: shelf.cells.reduce((sum, p) => sum + p.z, 0) / shelf.cells.length,
+      };
+      const front = { x: -Math.sin(shelf.facing!), z: -Math.cos(shelf.facing!) };
+      const towardApproach = front.x * (shelf.access.x - center.x) + front.z * (shelf.access.z - center.z);
+      assert(towardApproach > 0.5, 'The clear approach is in front of the books, not behind the back panel');
+      assert.equal(tileAt(w, shelf.access.x, shelf.access.z)?.room, 'library');
+      assert(!occupied.has(key(shelf.access)), 'Another decorative object cannot cover the shelf approach');
+    }
+  }
+});
