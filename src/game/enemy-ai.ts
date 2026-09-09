@@ -23,6 +23,7 @@ import {
 } from './spell-effects.ts';
 import { tryAttackHearth } from './hearth.ts';
 import { terrainWalkable } from './terrain.ts';
+import { tickHabitat } from './habitats.ts';
 
 export const enemyWalker = (type?: string, breach = false): Walker =>
   enemyById(type).lavaWalker ? (breach ? 'breach-lava' : 'enemy-lava') : breach ? 'breach' : 'enemy';
@@ -112,6 +113,7 @@ function selectVictim(w: World, e: Enemy) {
   const candidates = w.agents.filter(
     (a) =>
       alive(a) &&
+      (!e.habitat?.territorial || distance(a, e.habitat.home) <= e.habitat.radius + 1) &&
       distance(e, a) <= (enemyById(e.type).senseRange ?? balance.senseRange) &&
       spellLine(w, e, a),
   );
@@ -133,16 +135,20 @@ export function tickEnemies(
     if (e.health <= 0) continue;
     spikeAt(w, e);
     if (e.health <= 0) continue;
-    if (e.dormant) {
-      e.activity = 'Guarding camp';
-      continue;
-    }
     if (e.pinnedUntil > w.elapsed) {
       if (e.activity !== 'Pinned by spikes') e.activity = 'Stunned';
       continue;
     }
+    if (e.dormant) {
+      tickHabitat(w, e, dt, spikeAt);
+      continue;
+    }
     const def = enemyById(e.type),
       victim = selectVictim(w, e);
+    if (!victim && e.habitat?.territorial) {
+      tickHabitat(w, e, dt, spikeAt);
+      continue;
+    }
     if (victim && special(w, e, victim)) continue;
     if (victim && distance(victim, e) <= (def.range ?? balance.meleeReach)) {
       e.activity = def.range ? 'Firing at dwarf' : 'Attacking dwarf';
@@ -165,7 +171,7 @@ export function tickEnemies(
       }
       continue;
     }
-    if (tryAttackHearth(w, e)) continue;
+    if (!e.habitat?.territorial && tryAttackHearth(w, e)) continue;
     const charging = (e.chargeUntil ?? 0) > w.elapsed,
       walker = enemyWalker(e.type);
     let remaining = def.speed * slowRate(w, e) * dt * (charging ? balance.charge.speedMultiplier : 1);

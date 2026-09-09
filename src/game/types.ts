@@ -2,6 +2,8 @@ import type { EncounterDefinition, EncounterState } from './encounters.ts';
 import type { HearthState, OnwardHearthDefinition, OnwardHearthState } from './hearth.ts';
 import type { MoraleCause, MoraleState } from './morale.ts';
 import type { CampaignState } from './campaign.ts';
+import type { BiomeId, EnemyHabitat } from '../content/habitats.ts';
+import type { RuinDefinition } from '../content/ruins.ts';
 export type Terrain = 'floor' | 'dirt' | 'rock' | 'bedrock' | 'gold' | 'gem' | 'water' | 'lava' | 'chasm';
 export interface Point { x: number; z: number }
 export interface Tile extends Point {
@@ -20,6 +22,7 @@ export interface Tile extends Point {
   onward?: boolean;
   room?: string;
   roomPaid?: number;
+  ruin?: { id: string; room: string };
   gold: number;
   loose: number;
   source?: 'gold' | 'gem';
@@ -30,8 +33,12 @@ export interface LevelDefinition {
   seams: { terrain: Terrain; cells: Point[] }[];
   encounters?: EncounterDefinition[];
   onwardHearth?: OnwardHearthDefinition;
+  biome?: BiomeId;
+  ruins?: RuinDefinition[];
 }
 export interface World {
+  biome?: BiomeId;
+  availability?: import('./availability.ts').ContentAvailability;
   lightingTest?: import('../content/lighting-lab.ts').LightingSettings;
   freePlay?: { levelId: string; buildings: string[]; knownSpells: string[] };
   combatTest?: { team: string; opponent: string; support: 'none' | 'traps' | 'spells'; initialResidents: number; initialEnemies: number };
@@ -69,6 +76,7 @@ export interface Enemy extends Point {
   nextAttackAt:number; activity:string; hitAt:number; diedAt?:number;
   effects?:SpellEffect[];
   sourceId?:string; dormant?:boolean;
+  habitat?: EnemyHabitat;
 }
 export interface SpellEffect {id:string;kind:'haste'|'slow'|'shield'|'mend'|'reckoning';until:number;strength:number;remaining?:number;rate?:number;pauseSeconds?:number;startedAt:number}
 export interface SecurityAlert extends Point {id:string;at:number;enemy?:number}
@@ -84,6 +92,7 @@ export interface ResearchOrder {id:number;spell:string;state:'queued'|'working'|
 export interface Job { kind:'mine'|'buildBridge'|'buildWall'|'reinforce'|'claim'|'collect'|'deliver'|'drop'|'scout'|'idle'|'sleep'|'eat'|'craft'|'train'|'research'|'pay'|'activate'; target:Point; work:Point; progress:number; furnishing?:string; stalled?:number; lastDistance?:number;order?:number }
 export type WorkGroup = 'resource' | 'haul' | 'excavate' | 'construction' | 'claim' | 'reinforce';
 export interface Resident extends Point {
+  attackedAt?:number;
   id:number; name:string; type:string; capabilities:string[]; job?:Job; path:Point[]; carrying:number;
   activity:string; facing:number; retry:number;
   cargoOrigin?:Point; resumeMine?:Point;

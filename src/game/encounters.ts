@@ -5,6 +5,7 @@ import { enemyWalker, burrowPath } from './enemy-ai.ts';
 import { reachable, blocked } from './navigation.ts';
 import { alive, visible } from './spell-effects.ts';
 import { type Walker } from './doors.ts';
+import { createEnemyHabitat, habitatDefinitions, type HabitatDefinition } from '../content/habitats.ts';
 
 /** Positions are physical spawn squares, never alternative spawn searches. */
 export interface EncounterDefinition {
@@ -22,6 +23,9 @@ export interface EncounterDefinition {
   /** Defeat ends a source; claim allows reinforcements until a dwarf secures its entrance. */
   clear: 'defeat' | 'claim';
   warning?: string;
+  /** Local life is independent of whether this group attacks the settlement. */
+  habitat?: HabitatDefinition;
+  pressure?: 'raid' | 'territorial';
 }
 
 export interface EncounterState {
@@ -98,6 +102,8 @@ function spawnGroup(w: World, source: EncounterState, dormant: boolean) {
     const enemy = addEnemy(w, position, encounterTarget(w, position, routes, walker) ?? position, type)!;
     enemy.sourceId = source.definition.id;
     enemy.dormant = dormant;
+    if (source.definition.habitat)
+      enemy.habitat = createEnemyHabitat(source.definition.habitat, position, type, w.elapsed, i, source.definition.pressure === 'territorial');
     enemy.activity = dormant ? 'Guarding camp' : 'Approaching';
     group.push(enemy);
   }
@@ -116,6 +122,11 @@ export function initializeEncounters(w: World, definitions: EncounterDefinition[
           definition.roster.some((id) => !enemyDefinitions.some((e) => e.id === id)))) ||
       definition.delay < 0 ||
       definition.warningSeconds < 0 ||
+      (definition.pressure === 'territorial' && (!definition.habitat || definition.kind === 'entrance' || definition.repeatSeconds !== undefined)) ||
+      (definition.habitat && (!habitatDefinitions[definition.habitat.biome] ||
+        (definition.habitat.radius !== undefined && definition.habitat.radius <= 0) ||
+        (definition.habitat.pauseSeconds !== undefined && definition.habitat.pauseSeconds <= 0) ||
+        (definition.habitat.speedFraction !== undefined && (definition.habitat.speedFraction <= 0 || definition.habitat.speedFraction > 1)))) ||
       (definition.repeatSeconds !== undefined && definition.repeatSeconds <= 0)
     )
       throw new Error(`Invalid encounter definition: ${definition.id}`);
@@ -154,7 +165,7 @@ export function tickEncounters(w: World) {
   if (w.outcome) return;
   for (const source of w.encounters ?? []) {
     const def = source.definition;
-    if (!source.discovered && def.positions.some((p) => tileAt(w, p.x, p.z)?.known)) {
+    if (!source.discovered && (def.positions.some((p) => tileAt(w, p.x, p.z)?.known) || sourceEnemies(w, source).some(e => visible(w, e)))) {
       source.discovered = true;
       w.revision++;
     }
@@ -249,7 +260,7 @@ export function encounterSummary(w: World, debug = false) {
               ? 'Raid warned; entrance or approach is blocked.'
               : `${source.discovered ? (def.warning ?? 'Hostile movement heard in the tunnels.') : 'Hostile movement heard in the tunnels.'} ${remaining}s warning.`
             : source.phase === 'active'
-              ? 'Hostiles active.'
+              ? def.pressure === 'territorial' ? 'Inhabitants defend their territory.' : 'Hostiles active.'
               : source.phase === 'cooldown'
                 ? `Reinforcements in ${remaining}s, followed by a warning.`
                 : source.phase === 'waiting'
