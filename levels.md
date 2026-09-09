@@ -55,6 +55,8 @@ Restart area reconstructs the current area with the knowledge available at its a
 
 ## Starting area
 
+Border Foothold starts with a 5×5 clearing centered on the 3×3 Stone Hearth: a one-square walking ring keeps the starting crew and treasury accessible. Solid earth surrounds this clearing, so the player excavates space for rooms and routes to the hidden side chambers. The ring can still accept room tiles under the normal construction rules.
+
 Each level includes a small accessible cavern containing a dormant Hearthstone. The mining crew's arrival sequence automatically awakens the crystal and establishes its protective Stone Hearth, leaving the player with miners, limited starting gold, and enough usable space to begin expansion.
 
 The surrounding area can be solid ground even if an ancient settlement exists farther into the map. Ruins may lie beyond collapsed tunnels, sealed districts, or natural rock formations. Players excavate a new foothold and discover the old settlement gradually.

@@ -75,7 +75,7 @@ export const campaignStages: CampaignStage[] = [
     },
     next: 'emberwater-crossing',
     briefing:
-      'Reclaim the upper workings. Establish food, beds and a treasury, then prepare defenders for the buried northern halls. Find their lost Hearthstone to restore the first runic connection. Old accounts mention fungal caverns southwest of the workings and an ancient watch hall to the southeast; exploring them is optional.',
+      'Reclaim the upper workings. Excavate room space around the Hearthstone for beds, food and a treasury, then prepare defenders for the buried northern halls. Find their lost Hearthstone to restore the first runic connection. Old accounts mention fungal caverns southwest of the workings and an ancient watch hall to the southeast; exploring them is optional.',
     discovery:
       'The northern stone remembers the old stonebridge craft. Secure its occupied hall and awaken the route to Emberwater.',
     completion:

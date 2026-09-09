@@ -68,6 +68,11 @@ test('ordinary level has concealed residents and a warned raid entering physical
   assert.equal(entrance.enemyIds.length, 0);
   w.elapsed = 385;
   tickEncounters(w);
+  assert.equal(entrance.enemyIds.length, 0, 'The compact starting clearing seals the raid route');
+  // Model the player opening an eastern tunnel, preserving the undiscovered approach.
+  for (let x = 26; x <= 29; x++) tileAt(w, x, 26)!.terrain = 'floor';
+  w.elapsed += 0.5;
+  tickEncounters(w);
   const enemy = w.enemies!.find((e) => e.id === entrance.enemyIds[0])!;
   assert.deepEqual({ x: enemy.x, z: enemy.z }, { x: 46, z: 26 });
   assert(!visible(w, enemy));

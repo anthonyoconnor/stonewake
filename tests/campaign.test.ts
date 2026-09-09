@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { startCampaign, travelOnward, restartCampaignArea, campaignSummary } from '../src/game/campaign.ts';
 import { campaignStages } from '../src/content/campaign.ts';
-import { goldTotal } from '../src/game/rooms.ts';
+import { goldTotal, buildRoom, roomQuote } from '../src/game/rooms.ts';
 import { bridgeQuote } from '../src/game/bridges.ts';
 import { tuning } from '../src/content/tuning.ts';
 import { tileAt, key } from '../src/game/types.ts';
@@ -13,7 +13,30 @@ import { createWorld, reveal } from '../src/game/world.ts';
 import { reachable } from '../src/game/navigation.ts';
 import { tickEncounters } from '../src/game/encounters.ts';
 import { addMiners, designate } from '../src/game/simulation.ts';
-import { until } from './helpers/simulation.ts';
+import { until, rect } from './helpers/simulation.ts';
+
+test('first arrival has only a Hearth walking ring and can excavate its first room', () => {
+  const w = startCampaign();
+  assert.equal(w.agents.length, tuning.startingStonehands);
+  const routes = reachable(w, w.agents[0]);
+  assert.equal(routes.size, 16, 'Only the walking ring is initially accessible');
+  const treasury = w.roomServices.find((s) => s.id === 'hearth-treasury')!;
+  assert(routes.has(key(treasury.access)));
+  assert(w.enemies!.every((e) => e.dormant));
+  assert(!w.onwardHearth!.discovered);
+
+  const room = rect(21, 19, 3, 3);
+  assert(room.every((p) => tileAt(w, p.x, p.z)!.terrain === 'dirt'));
+  assert(!roomQuote(w, 'treasure', room).valid);
+  designate(w, room);
+  until(w, () => room.every((p) => {
+    const t = tileAt(w, p.x, p.z)!;
+    return t.terrain === 'floor' && t.claimed;
+  }), 120, 'Starting Stonehands excavate and claim room space');
+  assert(roomQuote(w, 'treasure', room).valid);
+  buildRoom(w, 'treasure', room);
+  assert(room.every((p) => tileAt(w, p.x, p.z)!.room === 'treasure'));
+});
 
 function completedFirstArea() {
   const w = startCampaign();
