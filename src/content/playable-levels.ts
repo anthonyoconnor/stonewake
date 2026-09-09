@@ -11,7 +11,7 @@ export interface PlayableLevel {
   level: LevelDefinition; starting: ContentAvailability & { knownSpells: string[] };
 }
 const buildings = ['treasure', 'dormitory', 'kitchen', 'workshop', 'training', 'library', 'wall', 'bridge'];
-const prototypeStarting = () => ({ buildings: [...buildings], roles: ['stonehand','cave-hound','warrior','engineer','runesmith','miner'], recipes: recipes.map(r=>r.id), spells: ['summon-stonehand','summon-miner',...spellDefinitions.map(s=>s.id)], knownSpells: [] });
+const prototypeStarting = () => ({ buildings: [...buildings], roles: ['stonehand','cave-hound','warrior','engineer','runesmith'], recipes: recipes.map(r=>r.id), spells: ['summon-stonehand',...spellDefinitions.map(s=>s.id)], knownSpells: [] });
 const art = {
   upper: new URL('../../concept-art/levels/border-foothold-v1.png', import.meta.url).href,
   fungal: new URL('../../concept-art/levels/fungal-caves-v1.png', import.meta.url).href,

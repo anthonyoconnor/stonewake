@@ -6,7 +6,7 @@ Working design for the dwarven stronghold game. Companion documents: [Rooms](roo
 
 ## Implementation status
 
-Normal campaign recruitment follows the [campaign brief](levels.md#campaign-brief-and-progression): Cave Hounds and Stonehands begin the journey; Warriors, Engineers and Runesmiths arrive in successive areas after their supporting plans unlock. Recruitment checks both knowledge and ordinary reachable room/food/bed support. Earlier roles remain available thereafter. Retained Miners stay outside the campaign catalog; debug fixtures and legacy Free Play deliberately retain them.
+Normal campaign recruitment follows the [campaign brief](levels.md#campaign-brief-and-progression): Cave Hounds and Stonehands begin the journey; Warriors, Engineers and Runesmiths arrive in successive areas after their supporting plans unlock. Recruitment checks both knowledge and ordinary reachable room/food/bed support. Earlier roles remain available thereafter. Retained Miners stay outside normal campaign and Free Play catalogs; debug fixtures retain them.
 
 See the [current implementation inventory](development-plan.md#current-implementation-status) for all dwarf types, including debug-only availability and missing recruitment/work systems. The roster and rules below describe the intended design, not a list of completed features. Update the inventory whenever a dwarf or its supporting systems change.
 

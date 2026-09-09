@@ -17,6 +17,7 @@ test('every listed standalone starts and restarts with its authored content and 
     assert(w.agents.every(a => a.type === 'stonehand'));
     assert.deepEqual(w.freePlay!.buildings, level.starting.buildings);
     assert.deepEqual(w.availability!.buildings, level.starting.buildings);
+    assert(!w.availability!.roles.includes('miner')&&!w.availability!.spells.includes('summon-miner'),'Retained Miners remain debug-only');
     assert(w.onwardHearth && !w.onwardHearth.discovered && !w.outcome);
     w.allowance += 5000; w.outputs['bolt-trap'] = 40;
     w.freePlay!.knownSpells.push('enemy-slow'); w.freePlay!.buildings.length = 0;

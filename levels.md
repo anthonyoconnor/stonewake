@@ -35,7 +35,7 @@ The five-area campaign introduces one specialist at a time. Unlocks arrive at th
 
 Gold seams should guide exploration toward authored destinations. Renewable gems should be rare strategic attractions and may be absent from a level. Biomes should include appropriate natural caverns/tunnels, active inhabitants and level/species-specific recurring pressure. Discoverable dwarven ruins should offer coherent laid-out rooms that can be secured and reclaimed. The implemented starting menu offers Campaign and a data-driven Free Play level list with independent starting availability.
 
-The declarative catalog is in `src/content/campaign.ts`; shared availability checks apply to room/wall/bridge construction, recruitment, manufacturing, defense placement, research and casting. Free room construction changes gold costs only. The retained Miner is excluded from campaign arrivals and Summon Miner; it remains deliberately available in debug and legacy prototype Free Play.
+The declarative catalog is in `src/content/campaign.ts`; shared availability checks apply to room/wall/bridge construction, recruitment, manufacturing, defense placement, research and casting. Free room construction changes gold costs only. Retained Miners and Summon Miner are excluded from normal campaign and Free Play catalogs; debug fixtures retain them.
 
 ## Onward Hearthstone objective
 
@@ -74,7 +74,7 @@ Restart area reconstructs the current area with the knowledge available at its a
 
 ## Starting area
 
-Border Foothold starts with a 5×5 clearing centered on the 3×3 Stone Hearth: a one-square walking ring keeps the starting crew and treasury accessible. Solid earth surrounds this clearing, so the player excavates space for rooms and routes to the hidden side chambers. The ring can still accept room tiles under the normal construction rules.
+Every authored campaign area starts with a 5×5 clearing centered on the 3×3 Stone Hearth: a one-square walking ring keeps the starting crew and treasury accessible. Solid earth surrounds this clearing, so the player excavates space for rooms and routes to hidden side chambers. The ring can accept room tiles under the normal construction rules.
 
 Each level includes a small accessible cavern containing a dormant Hearthstone. The mining crew's arrival sequence automatically awakens the crystal and establishes its protective Stone Hearth, leaving the player with miners, limited starting gold, and enough usable space to begin expansion.
 
@@ -131,7 +131,7 @@ The `crossings` scenario is a 28×18 authored map using normal starting Miners a
 
 ### Optional regional chambers
 
-The 48×48 campaign Border Foothold adds a sealed southwestern fungal cavern (Burrower, Spider and Spore Brute) and southeastern ancient hall (Restless Guard and Sentinel). The northern required camp and eastern raid passage retain their existing routes. Campaign Emberwater expands eastward to 40×18, adding sealed crystal caverns (Elemental and Stalker) and a volcanic lair (Deepmaw); the required far-bank sentry is a Cinderling. The standalone M16 crossings map remains 28×18.
+The deliberately retained legacy Free Play Border Foothold is a 48×48 map with a sealed southwestern fungal cavern (Burrower, Spider and Spore Brute) and southeastern ancient hall (Restless Guard and Sentinel). Legacy Free Play Emberwater extends eastward to 40×18 with crystal caverns (Elemental and Stalker) and a volcanic lair (Deepmaw); the required far-bank sentry is a Cinderling. The separate M16 crossings harness remains 28×18. These layouts are distinct from the five authored campaign areas below.
 
 Briefings mention these optional branches. Inhabitants exist behind ordinary rock gates, remain hidden until exploration, give a 15-second warning and use normal combat/source rules. They lie outside the onward stone’s security radius. The water/lava channels still span the full map height, so the eastern extension does not provide a land bypass. Broader optional-encounter balance remains in M19.
 
@@ -149,7 +149,33 @@ Creature types should be associated with recognizable regions. These example pai
 
 Enemy behaviors should make layout matter: melee groups pressure entrances, ranged enemies challenge exposed approaches, and selected burrowers may threaten ordinary earth walls. The Tunnel Burrower excavates dirt/rock, Cinderling crosses lava, and the roster defines ranged/control/armored/breaching roles. All can break shut doors and threaten the Hearth; [Enemies](enemies.md) gives exact capabilities and resistances. No creature can tunnel through bedrock.
 
-The [enemy concept gallery](concept-art/enemies/README.md) supplies the full ten-enemy roster required by [M17](development-history.md#m17--complete-enemy-roster-and-behavior): Goblin Raider and Tunnel Burrower; Cave Spider and Spore Brute; Restless Guard and Ancient Sentinel; Crystal Elemental and Crystalback Stalker; Cinderling and Deepmaw. All ten are implemented with distinct combat roles, models/animations and ordinary encounter integration. [Enemies](enemies.md) defines abilities, scale, resistances and provisional balance. Five region scenarios provide normal starting crews/resources and hidden two-species encounters; the separate enemy-roster gallery supplies controlled test setups. Their terrain interactions, campaign travel and environment graphics are implemented and verified. The connected campaign includes the full roster through its required approaches and optional regional chambers.
+The [enemy concept gallery](concept-art/enemies/README.md) supplies the full ten-enemy roster required by [M17](development-history.md#m17--complete-enemy-roster-and-behavior): Goblin Raider and Tunnel Burrower; Cave Spider and Spore Brute; Restless Guard and Ancient Sentinel; Crystal Elemental and Crystalback Stalker; Cinderling and Deepmaw. All ten are implemented with distinct combat roles, models/animations and ordinary encounter integration. [Enemies](enemies.md) defines abilities, scale, resistances and provisional balance. Five legacy region scenarios retain normal starting crews/resources and hidden two-species encounters; the separate enemy-roster gallery supplies controlled test setups. The authored campaign distributes the roster across its five habitats.
+
+## Authored layouts and resource destinations
+
+Concrete map geometry, camp positions, finite gold and rare gems live in `src/content/campaign-levels.ts`. Its route waypoints document two feasible excavation spines per map; they are developer playtest guidance, not revealed paths or orders imposed on players. Shared gold remains the only currency. Every map starts with three nearby finite seams that fund settlement growth before opening hostile territory. Further gold highlights north/south choices through the bedrock divide. Gold/gem planning visibility discloses only deposits, never rooms, inhabitants or the onward Hearth.
+
+| Area | Layout, intended route and alternate | Resource purpose and encounter counters |
+|---|---|---|
+| Border Foothold, 32×26 | A compact foothold west of a broken north/south bedrock seam. Follow northern gold into the upper watch; alternatively excavate the southern gate past the waystation and approach the watch from below. | No gems. Finite near gold funds a hound den and treasury; southern reward gold draws exploration toward a burrower den and a suppressible goblin passage. Hounds and deliberately opened narrow approaches carry early defense. |
+| Fungal Hollows, 36×30 | Offset natural caverns surround water pockets. The northern breach approaches the brood directly; the southern waystation leads through branching tunnels around the pools. Both routes stay on land. | No gems. Separate gold branches support Warrior training before the nest opens. Spiders slow isolated defenders and the Spore Brute pressures crowded approaches; a roomy second breach avoids committing the entire force to one control zone. The distant spider passage offers recurring pressure until claimed. |
+| Fallen City, 38×32 | Buried streets and irregular foundry/barracks remnants surround connected bedrock districts. The northern street reaches the relay watch; the southern route secures the foundry and circles a retained wall band. | No gems. Street gold pays wages and Workshop inputs. Reclaimed Workshop/Kitchen floor supports Engineers through ordinary staffing. Restless Guards and the Sentinel reward trained Warriors, door funnels and manufactured traps; the southeast reinforcement passage can be suppressed. |
+| Crystal Divide, 38×30 | Bending crystal chambers above an unbridgeable chasm pocket. The north route threads the relay halls; the south route reclaims the archive and follows the eastern lip around the chasm. | One gem at the remote southeast hunting ground, guarded by a Stalker. Its sustained income rewards a defended hauling route and can finance repeated spells; finite gold remains sufficient for the relay. Library protection, healing and control help against Elemental ranged pressure. |
+| Royal Deep, 40×32 | Full-height interior lava channels divide the settlement from royal ruins. The north crossing reaches the royal watch; the south crossing opens the foundry and a longer route around molten pockets. Both require a two-tile stone bridge. | One remote gem beyond the crossing, guarded by a Cinderling; it supports a prolonged reclamation but is optional for completion. Finite gold pays bridge construction and a combined settlement. Cinderlings bypass lava defenses, while Deepmaw demands trained Warriors supported by hounds, manufactured defenses and runes. |
+
+The layouts interpret the approved concepts through connected bedrock, broad tile footprints, bent caverns, retained earth and coherent room remnants. They preserve one terrain layer; decorative damage and biome furnishings do not alter capacity or access. The old seven prototype maps are retained explicitly in Free Play alongside independent versions of these five areas.
+
+### Habitat activity and pressure
+
+Each campaign source declares its biome and local behavior. Upper patrols, fungal nesting, deliberate ancient sentries, crystal movement and volcanic roaming continue behind normal fog without revealing inhabitants. A territorial side group stays local and returns home when threats leave; the required relay watches can launch an attack after discovery and their warning. Local movement does not excavate or breach walls. Species combat abilities still apply once fighting begins.
+
+Every area has a separate, named reinforcement passage with its own initial delay, a fresh warning, and a recovery interval after the preceding group is defeated. A sealed route retains one pending wave; it never accumulates hidden armies or relocates spawns. Claiming the source's physical entrance suppresses future waves. Existing attackers remain until defeated. Map definitions own those editable timings; [enemy behavior](enemies.md) explains counters and shared rules.
+
+### Discovering and reclaiming ruins
+
+Waystations, foundries, archives and barracks use reusable neutral floor remnants arranged around real corridors. Some cells remain covered by ordinary dirt/rock. Discovery reveals only seen remnants; excavating a covering does not instantly transfer ownership. Stonehands must reach a neutral square and claim it through the ordinary work pool; nearby visible hostiles contest the work. [Room reclamation rules](rooms.md) own the claim timing, security radius and cost, with editable tuning in `src/content/ruins.ts`.
+
+Claimed remnants convert to ordinary rooms only when that arrival knows the room plan. Locked remnants stay neutral and supply no services; free construction cannot bypass this restriction. Reclaimed floor immediately follows normal floor-area capacity, automatic cosmetic furnishings, recruitment, food/bed support and access rules. Retained terrain contributes no room capacity. Reclaiming existing stonework has no repair chain, door maintenance or new resource cost. See the [room rules](rooms.md) and room checklist for service details.
 
 ## Attacks
 
@@ -173,9 +199,9 @@ Ordinary sidebar threat reports omit undiscovered camps and use generic warnings
 | Crystal Divide | Valuable gem deposits across a network of caverns and narrow passages | Sustaining the economy while protecting remote workers | Find the onward Hearthstone beyond guarded gem caverns and a difficult chasm crossing | Mining capacity, treasury access, spells, and defensive corridors |
 | Royal Deep | Extensive ruins, multiple hostile regions, a vulnerable core approach, and limited safe expansion | Maintaining a large settlement during a prolonged reclamation | Reach an onward Hearthstone surrounded by lava within an enemy-held deep stronghold | Combines all available rooms, roles, and defenses |
 
-This table is a concept list, not a commitment to five levels or a fixed order. Basic shared systems must remain available wherever they are required for survival. Later maps should not arbitrarily prohibit previously unlocked rooms or dwarf types. The same Kitchen supports all residents, the Workshop supplies doors and traps, the Library researches spells, and the Training Room develops every dwarf type. Confined or dispersed maps can favor several smaller Kitchens and training facilities instead of one central room.
+This table records the original concept candidates. The implemented five-area order is the campaign brief above; Fungal Hollows joins the journey and Flooded Workings remains a concept. Basic shared systems stay available wherever required for survival, and later maps retain previously unlocked rooms and roles. The same Kitchen supports residents, Workshop supplies doors and traps, Library researches spells, and Training Room develops specialists. Confined or dispersed maps can favor several smaller facilities instead of one central room.
 
-Initial levels must be playable with Miners, Engineers, Warriors, and Runesmiths and the current room catalog. Discovery follows excavation and dwarf visibility without requiring a separate scouting specialist. Level definitions should reference dwarf and room definitions by stable identifiers, so future additions can be introduced without rewriting the level systems or adding new requirements to existing maps. See the [architecture requirements](game-rules.md#14-extensible-character-and-room-definitions).
+Each level must be playable with its staged roster and rooms from the campaign brief. Discovery follows excavation and resident visibility, including Cave Hound scouting. Level definitions reference dwarf and room definitions by stable identifiers, so future additions can be introduced without rewriting the level systems or adding new requirements to existing maps. See the [architecture requirements](game-rules.md#14-extensible-character-and-room-definitions).
 
 ## Level and region concept art
 
@@ -195,14 +221,14 @@ Every playable level needs:
 - Continued uses for every available room and dwarf type, including shared training and useful spell research, with more than one viable approach to major obstacles where practical.
 - Reachable room floor in confined and irregular spaces, with predictable capacity and readable floors, walls and cosmetic furnishings from different camera directions.
 
-## Decisions still open
+## Provisional design choices
 
 - Broader campaign balance, pressure cadence and presentation refinement; the implemented five-area order and endpoint are specified above.
 - Onward Hearthstone activation conditions, interaction timing/cost, damage policy and exact approaches; finding and reaching one in every level is agreed.
 - Initial miner counts, usable starting storage, and starting gold.
 - Resource placement visibility, environmental hazards, and bridge behavior.
 - Per-enemy abilities, scale, resistances and balance for the agreed ten-enemy roster; regional nest activation rules, raid timing and warning tuning.
-- Whether reclaimed rooms can be used immediately or need repair.
+- Reclaimed rooms use ordinary services immediately after secure claiming; additional repair chains remain outside the current scope.
 
 ## Free Play availability
 
