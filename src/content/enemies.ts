@@ -154,7 +154,7 @@ export const enemyDefinitions: EnemyDefinition[] = [
       'A heavy predator whose broad bite hits nearby dwarfs in front of it. Its weight doubles damage to doors and barriers.',
     health: 350,
     speed: 0.7,
-    damage: 35,
+    damage: 40,
     attackSeconds: 2,
     doorMultiplier: 2,
     ability: 'cleave',

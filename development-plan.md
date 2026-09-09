@@ -1,6 +1,6 @@
 # Browser game development plan
 
-Status: **M1–M11, M13–M14, M16–M18, M20–M23 and M34 complete, including M5.1. M19 and M24–M33, including M25.1, remain planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
+Status: **M1–M11, M13–M14, M16–M18, M20–M24 and M34 complete, including M5.1. M19 and M25–M33, including M25.1, remain planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
 
 Completed milestones and verification records are in [development-history.md](development-history.md). **Read that archive only if past context is required; it is not part of routine startup reading.** This file contains the current baseline, unfinished work and dependencies.
 
@@ -33,7 +33,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 | Workforce type | Current status | Remaining integration |
 |---|---|---|
-| Cave Hound | Implemented: Dormitory-only arrival; den needs, no wages/training; continuous shared patrol, new-passage exploration, settlement-wide sighting/attack response, physical melee and Call to Arms, dedicated quadruped model | Combat and response values provisional |
+| Cave Hound | Implemented: Dormitory-only arrival; den needs, no wages/training; continuous shared patrol, new-passage exploration, settlement-wide sighting/attack response, physical melee and Call to Arms, dedicated quadruped model | M24 encounter balance verified; wider campaign values provisional |
 | Stonehand | Implemented: starting crew, population-priced Hearth creation (50 + 25 per living Stonehand), shared terrain pool and stable 20-second productive assignments; no needs, support slots, pay, training, morale or combat; 30 health, cargo drops on destruction; accepted v2 mechanical model | Balance values provisional |
 | Miner | Retained definition, model and debug fixtures; fixed level 1, legacy work and self-defense | Possible basic fighter repurposing deferred |
 | Engineer | Implemented: normal Workshop-based arrivals, crafting, shared food/rest/wages/departure, levels 1–5 and adjacent self-defense; also in Debug | Repairs deferred |
@@ -42,7 +42,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-The remaining active milestones are M24–M33, including M25.1, below, followed by M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
+The remaining active milestones are M25–M33, including M25.1, below, followed by M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight worker seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 
@@ -86,7 +86,6 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 
 | Milestone | Outcome | Status |
 |---|---|---|
-| M24 | Cave Hound and specialist combat balance | Planned |
 | M25 | Starting menu and free-play level selection | Planned; menu concepts approved |
 | M25.1 | Themed startup and level loading screens | Planned |
 | M26 | Campaign structure and gradual content unlocks | Planned |
@@ -111,9 +110,9 @@ For every implementation milestone, update the inventory and owning design docum
 
 ### Work and integration order
 
-The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. M23 and M34 are complete. Remaining milestones stay planned until separately authorized for implementation.
+The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. M23, M24 and M34 are complete. M25 and M25.1 are authorized in this task, followed by an M33 lighting test harness; full M33 remains planned.
 
-M23 and M34 resolve the immediate work-priority and left-edge camera issues; M24 is next for early combat balance. M25 establishes the entry flow using the approved menu concepts, followed by M25.1 for startup and level loading; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M33 owns underground lighting and should be developed alongside M31, then checked with M32 character readability. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
+M23 and M34 resolve the immediate work-priority and left-edge camera issues; M24 combat balance and its test harness are complete. M25 establishes the entry flow using the approved menu concepts, followed by M25.1 for startup and level loading; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M33 owns underground lighting and should be developed alongside M31, then checked with M32 character readability. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
 
 Exact campaign length, level dimensions, unlock sequence, gem counts, raid timings and audio/art asset choices remain provisional. M26 establishes the campaign brief and M29 owns concrete layouts; do not invent fixed numerical design rules in several documents. Preserve the single terrain layer, shared gold currency, autonomous movement, fog rules and sidebar-only information. This roadmap adds no saves, accounts, multiplayer or production release infrastructure and does not reinstate M12 or M15.
 
@@ -126,16 +125,6 @@ Dependencies: completed gameplay foundations and integrated M23–M34, including
 - Check multiple layouts/approaches, escalating threats, recovery from losses and the Library's continuing usefulness. Correct gameplay blockers and visual/sidebar readability problems found during those runs.
 
 Complete when the authored campaign can be played from fresh start through its endpoint using normal rules, defeat is demonstrable, and focused regressions plus browser playtests cover the discovered issues. Record tested routes, timings, provisional values and remaining content/visual limitations. This is a prototype balance pass, not production release machinery or a requirement for final art assets.
-
-### M24 — Cave Hound and specialist combat balance
-
-- Treat the report that hounds killed most monsters as a balance hypothesis to measure, not a reason for an arbitrary blanket reduction.
-- Compare single hounds and realistic packs against regional enemies, factoring in recruitment rate, free den support, population growth and enemy group composition.
-- Make the combat test room directly available under **Debug → Test harnesses → Combat test room**. Use the actual shared combat systems and editable roster definitions for repeatable hound, specialist and enemy matchups. Provide matchup selection, reset, Pause/Resume and Return to stronghold; start paused and preserve the retained stronghold and its prior pause state under the existing harness rules. Keep combat stats/results in the sidebar.
-- Preserve useful early scouting, patrol and defense while giving Warriors, manufactured defenses and Runesmith spells meaningful advantages against later threats. Tune existing editable stats/recruitment before adding mechanics or imposing a new animal cap.
-- Record representative matchups and intended roles in characters.md and enemies.md; repeat campaign-context checks after M27/M29.
-
-Complete when hounds handle suitable early threats but hound-only settlements have clear limitations against representative later encounters, with viable specialist/defense responses under normal resource costs. Browser-check that the combat test room can be opened from Debug → Test harnesses, run and reset with selected matchups, and exited back to the unchanged stronghold with its prior pause state restored.
 
 ### M25 — Starting menu and free-play level selection
 

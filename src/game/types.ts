@@ -32,6 +32,7 @@ export interface LevelDefinition {
   onwardHearth?: OnwardHearthDefinition;
 }
 export interface World {
+  combatTest?: { team: string; opponent: string; support: 'none' | 'traps' | 'spells'; initialResidents: number; initialEnemies: number };
   campaign?: CampaignState;
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
   agents: Resident[]; furnishings: Furnishing[]; roomServices: RoomService[]; elapsed: number; nextPaydayAt:number; allowance: number; spent: number; freeRoomBuilding:boolean;

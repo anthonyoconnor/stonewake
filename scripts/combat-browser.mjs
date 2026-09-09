@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+import { mkdirSync } from 'node:fs';
+const browser = await chromium.launch({ headless: true, channel: process.env.BROWSER_CHANNEL ?? 'msedge' });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${process.env.GAME_URL ?? 'http://127.0.0.1:5173'}/?scenario=stronghold&paused=1`);
+  await page.waitForFunction(() => window.strongholdDev?.status().paused);
+  const before = await page.evaluate(() => window.strongholdDev.state());
+  await page.getByRole('button', { name: 'Debug', exact: true }).click();
+  await page.getByRole('button', { name: 'Test harnesses', exact: true }).click();
+  await page.getByRole('button', { name: 'Combat test room', exact: true }).click();
+  assert(await page.getByRole('button', { name: 'Resume simulation' }).isVisible());
+  await page.locator('#combat-team').selectOption('pack');
+  await page.locator('#combat-opponent').selectOption('volcanic-lair');
+  await page.locator('#combat-reset').click();
+  assert.equal((await page.evaluate(() => window.strongholdDev.state())).agents.length, 6);
+  await page.evaluate(() => window.strongholdDev.advance(14));
+  assert.match(await page.locator('#combat-results').textContent(), /Defenders defeated/);
+  await page.locator('#combat-team').selectOption('squad');
+  await page.locator('#combat-support').selectOption('traps');
+  await page.locator('#combat-reset').click();
+  await page.getByRole('button', { name: 'Resume simulation' }).click();
+  await page.waitForFunction(() => window.strongholdDev.state().elapsed > .1);
+  await page.getByRole('button', { name: 'Pause simulation' }).click();
+  await page.evaluate(() => window.strongholdDev.advance(15));
+  assert.match(await page.locator('#combat-results').textContent(), /Defenders won/);
+  mkdirSync('test-results', { recursive: true });
+  await page.screenshot({ path: 'test-results/m24-combat.png' });
+  await page.locator('#return-stronghold').click();
+  assert.equal(await page.evaluate(() => window.strongholdDev.status().paused), true);
+  assert.deepEqual(await page.evaluate(() => window.strongholdDev.state()), before);
+  // A running stronghold also returns to its prior running state.
+  await page.evaluate(() => window.strongholdDev.pause(false));
+  await page.getByRole('button', { name: 'Debug', exact: true }).click();
+  await page.getByRole('button', { name: 'Test harnesses', exact: true }).click();
+  await page.getByRole('button', { name: 'Combat test room', exact: true }).click();
+  await page.locator('#return-stronghold').click();
+  assert.equal(await page.evaluate(() => window.strongholdDev.status().paused), false);
+  assert.deepEqual(errors, []);
+  console.log('Combat matchups, reset, pause/resume and stronghold preservation passed.');
+} finally { await browser.close(); }

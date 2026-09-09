@@ -175,3 +175,24 @@ The [dwarf concept gallery](concept-art/dwarfs/README.md) contains the character
 ## Implementation playbook
 
 [Adding rooms and dwarf types](content-playbook.md) gives the concrete dwarf-registration steps, supported capabilities/models, debug spawn workflow and test requirements. All dwarf definitions join the debug catalog automatically; per-type walking speed is tunable. Soft crowd avoidance yields to path progress when necessary. Real terrain and gameplay obstacles remain solid; room furniture has no collision or sight effect. Miners can also construct planned walls, with a deliberately longer work duration.
+
+## Combat balance and test room (M24)
+
+Debug → Test harnesses → Combat test room offers single hounds, pairs, packs of six, level-1 specialists and two/four level-3 Warriors against every species or mixed regional groups. Choose support, then Load / reset matchup. Tests start paused; Return to stronghold preserves its world and prior pause state. Support offers supplied bolt traps or prepared Library spells; casting charges normal gold. Stats, casualties and elapsed time stay in the sidebar. Construction, arrivals, training and manufacturing must still be earned during normal play.
+
+Measured open-floor matchups use healthy units starting five tiles apart, normal movement, abilities and combat XP, no automatic recruitment and no player spells unless specified. These are reproducible examples, not guarantees for every layout:
+
+| Defenders | Opponents | Result |
+|---|---|---|
+| One hound | One Raider | Defeated in 5 seconds |
+| Two hounds | One Raider | Win in 8.2 seconds; one survivor at 40 health |
+| Two hounds | One Spider | Win in 6 seconds; both survive |
+| Six hounds | Brute + two Spiders | Win with four survivors |
+| Six hounds | Sentinel + two Guards | Defeated; armor and concentrated attacks resist the pack |
+| Six hounds | Deepmaw + two Cinderlings | Defeated in 11 seconds |
+| Four level-3 Warriors | Sentinel + two Guards | Win in 12.6 seconds; 295 total health remains |
+| Same Warriors + two bolt traps | Same ancient group | Win in 9.6 seconds; 388 total health remains |
+| Same Warriors + Reckoning and Stoneguard | Same ancient group | Win in 11.6 seconds; casting spends 75 gold |
+| Four level-3 Warriors | Deepmaw + two Cinderlings | Win in 9 seconds; all survive |
+
+Hound health, bite, speed, 30-second recruitment, den-only support and lack of an animal cap are retained. Reducing bite damage from 10 to 9 broke the early pair-versus-Raider role. Instead, Deepmaw's existing heavy bite is strengthened in the enemy definition. A six-hound settlement needs six paid den tiles and three minutes of arrivals; supported Warriors take additional Kitchen/Training Room investment, wages and practice, but use fewer residents for durable later defense. The normal recruitment tests cover expansion, losses, specialist reservation and full accommodation. Manufactured bolt traps cost 55 gold each plus staffed Workshop construction; Library spells need staffed research/preparation and casting funds. Focused checks produce the support through normal paid crafting/research. Campaign layouts and repeated pressure may change outcomes and are revisited in M27/M29/M19.

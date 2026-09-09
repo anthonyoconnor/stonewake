@@ -1,4 +1,5 @@
 import { tuning } from './content/tuning';
+import { createCombatLab } from './content/combat-lab';
 import './style.css';
 import { startCampaign, restartCampaignArea, travelOnward } from './game/campaign';
 import { GameScene } from './view/scene';
@@ -70,7 +71,9 @@ sidebar.onLab = async (open, shape, type) => {
   selection.start = undefined;
   selection.hover = undefined;
   const next = open
-    ? shape === 'spells'
+    ? shape === 'combat'
+      ? createCombatLab(world.freeRoomBuilding, sidebar.combatSetup)
+      : shape === 'spells'
       ? createSpellLab(world.freeRoomBuilding)
       : shape === 'defenses'
         ? createDefenseLab(world.freeRoomBuilding)
@@ -90,7 +93,7 @@ sidebar.onLab = async (open, shape, type) => {
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
     }
     populateShowcase(next);
-  } else if (open && shape && shape !== 'empty' && shape !== 'defenses' && shape !== 'spells') {
+  } else if (open && shape && !['empty','defenses','spells','combat'].includes(shape)) {
     buildRoom(next, type ?? sidebar.labType, labLayout(next, shape));
     if (shape === 'Adjacent rooms')
       buildRoom(
@@ -116,6 +119,7 @@ sidebar.onLab = async (open, shape, type) => {
     selection.setTool('dig');
     sidebar.show('spells');
   }
+  if (shape === 'combat') { controls.center(14,11); selection.setTool('inspect'); sidebar.show('combat'); }
   accumulator = 0;
   development?.worldChanged(
     !open
