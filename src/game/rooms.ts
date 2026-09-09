@@ -4,6 +4,7 @@ import {barrierAt} from './spell-effects.ts';
 import {reachable} from './navigation.ts';
 import {tuning} from '../content/tuning.ts';
 import {defenseAt} from './doors.ts';
+import {roomAllowed,availabilityReason} from './availability.ts';
 export const goldTotal=(w:World)=>w.allowance+w.roomServices.filter(f=>f.service==='storage').reduce((sum,f)=>sum+f.stored,0);
 export function spendGold(w:World,amount:number) {
   if(w.outcome)return false;
@@ -14,6 +15,7 @@ export function spendGold(w:World,amount:number) {
 }
 export function roomQuote(w:World,type:string,points:Point[]) {
   if(w.outcome)return {valid:false,cost:0,addedCapacity:0,tiles:[],reason:'This area has ended. Restart to build.'};
+  if(!roomAllowed(w,type))return {valid:false,cost:0,addedCapacity:0,tiles:[],reason:availabilityReason(w,'buildings',type)};
   const def=roomById(type);const unique=[...new Map(points.map(p=>[key(p),p])).values()];
   const tiles=unique.map(p=>tileAt(w,p.x,p.z));
   if(!def?.implemented)return {valid:false,cost:0,addedCapacity:0,tiles:[],reason:'This room is not available.'};
@@ -39,7 +41,7 @@ function areaCapacity(points:Point[],density:number){
 export function buildRoom(w:World,type:string,points:Point[]) {
   const quote=roomQuote(w,type,points);if(!quote.valid)return quote.reason;
   if(!spendGold(w,quote.cost))return 'Not enough stored gold.';
-  for(const t of quote.tiles){t.room=type;t.roomPaid=quote.cost/quote.tiles.length;}
+  for(const t of quote.tiles){t.room=type;t.roomPaid=quote.cost/quote.tiles.length;t.ruin=undefined;}
   furnish(w);w.revision++;return `${roomById(type)!.name} built.`;
 }
 export function reclaimQuote(w:World,points:Point[]){
@@ -51,7 +53,7 @@ export function reclaimQuote(w:World,points:Point[]){
 export function reclaimRoom(w:World,points:Point[]){
   if(w.outcome)return 'This area has ended. Restart to reclaim rooms.';
   const {tiles,refund}=reclaimQuote(w,points);if(!tiles.length)return 'Select room tiles to reclaim.';
-  for(const t of tiles){t.room=undefined;t.roomPaid=undefined;t.claimed=true;}
+  for(const t of tiles){t.room=undefined;t.roomPaid=undefined;t.claimed=true;t.ruin=undefined;}
   furnish(w);
   // Selling grants an immediate credit even when removing the last Treasure Room.
   w.allowance+=refund;w.spent-=refund;w.revision++;
@@ -96,7 +98,7 @@ export function syncRoomServices(w:World){
     if(!tile.room||tile.terrain!=='floor'||tile.core||visited.has(key(tile)))continue;
     const component=roomTiles(w,tile).sort((a,b)=>a.z-b.z||a.x-b.x);
     for(const t of component)visited.add(key(t));
-    const def=roomById(tile.room);if(!def?.implemented)continue;
+    const def=roomById(tile.room);if(!def?.implemented||!roomAllowed(w,tile.room))continue;
     component.forEach((t,index)=>{
       const count=Math.floor((index+1)*def.capacityPerTile+1e-9)-Math.floor(index*def.capacityPerTile+1e-9);
       const slots=def.service==='storage'?Number(count>0):count;

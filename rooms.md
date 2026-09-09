@@ -4,6 +4,18 @@ Roadmap scope: Guard Posts/guard duty and door repairs/upgrades in place are def
 
 Working design for the dwarven stronghold game. Companion documents: [Characters](characters.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
+Campaign room construction and reclaimed room services check the area's shared availability. Free room construction waives construction gold, while room knowledge and normal access remain required.
+
+## Discoverable dwarven ruins
+
+Ruins are pre-laid neutral room remnants defined in `src/content/ruins.ts` and authored per level. Normal fog conceals their floor treatments and furnishings; earth or rock can cover parts of their irregular footprints. Opening a route and discovering a room grants no capacity by itself. Stonehands use the ordinary autonomous claiming work pool, physically reaching each uncovered floor square before converting it to an owned room tile.
+
+The provisional `ruinTuning` values are **four seconds of work per floor square**, **zero gold**, and **four squares of security range**. Living inhabitants within that range and clear sight contest the tile and prevent claiming; a blocked approach prevents the worker reaching it. Locked campaign room types remain neutral and traversable, provide no services, and cannot be claimed until their room plans are available. This also applies in free construction mode. There is no repair chain, relic currency, paid restoration or separate service system.
+
+On conversion, each floor square immediately joins the ordinary room component, capacity and automatic cosmetic furnishing systems. Beds, food, storage, training, crafting and research retain their normal recruitment, staffing, support and reachable-access requirements. A blocked or locked entrance can make claimed services inaccessible. Single tiles, strips, L shapes, separated patches and partially obstructed rooms follow exactly the shared room checklist: only actual owned floor contributes capacity, furnishings never change movement or service capacity, and occupied earth/bedrock contributes none. Ruin room tiles have zero original paid cost, so selling them refunds no gold and cannot produce a free-build resale profit.
+
+The reusable waystation, foundry and archive arrangements can be translated with `placeRuin`, or level definitions can supply arbitrary room footprints. Remnant damage is cosmetic and persists after claiming until the room tile is sold/rebuilt. `tests/ruins.test.ts` covers normal timed reclamation, occupation, excavation, restricted plans, access, layout/capacity, furnishing independence and free construction behavior.
+
 ## Implementation status
 
 See the [current implementation inventory](development-plan.md#current-implementation-status) for all rooms and structures, including missing content and partial integrations. The catalog and rules below describe the intended design, not a list of completed features. Update the inventory whenever a room or its services change.

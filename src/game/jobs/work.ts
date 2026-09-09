@@ -1,4 +1,6 @@
 import { finishBridge } from '../bridges.ts';
+import { finishClaim } from '../ruins.ts';
+import { ruinTuning } from '../../content/ruins.ts';
 import { bridgeSettings } from '../terrain.ts';
 import { type World, type Resident, type Job, tileAt } from '../types.ts';
 import { reveal } from '../world.ts';
@@ -174,11 +176,10 @@ const handlers = {
     return true;
   },
   claim: (w, a, j, t, dt, work) => {
-    a.activity = 'Claiming floor';
-    if (j.progress < tuning.claimSeconds) return false;
-    t.claimed = true;
+    a.activity = t.ruin ? 'Reclaiming ruined room' : 'Claiming floor';
+    if (j.progress < (t.ruin ? ruinTuning.claimSeconds : tuning.claimSeconds)) return false;
+    if (!finishClaim(w, t)) return true;
     reveal(w, t);
-    w.revision++;
 
     return true;
   },

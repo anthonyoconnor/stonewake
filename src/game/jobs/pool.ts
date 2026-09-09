@@ -1,4 +1,5 @@
 import { isConstruct } from '../../content/characters.ts';
+import { canClaimFloor } from '../ruins.ts';
 import { tuning } from '../../content/tuning.ts';
 import { bridgeWorkSite } from '../bridges.ts';
 import { alive } from '../spell-effects.ts';
@@ -52,7 +53,7 @@ export function createWorkPool(w: World): WorkPool {
         'buildWall',
         adjacent.filter((p) => !p.wallPlanned),
       );
-    if (t.terrain === 'floor' && !t.claimed) add('claim', 'claim', 'claim', [t]);
+    if (canClaimFloor(w, t)) add('claim', 'claim', 'claim', [t]);
     if (!t.reinforced && !t.designated && ['dirt', 'rock'].includes(t.terrain))
       add(
         'reinforce',
@@ -73,7 +74,7 @@ function current(w: World, item: WorkItem) {
     case 'collect':
       return t.loose > 0;
     case 'claim':
-      return t.terrain === 'floor' && !t.claimed;
+      return canClaimFloor(w, t);
     case 'buildBridge':
       return !!t.bridgePlanned;
     case 'buildWall':
