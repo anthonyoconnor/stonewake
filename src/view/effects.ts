@@ -1,3 +1,4 @@
+import { reducedMotion } from '../content/presentation';
 import { MeshBuilder, Vector3, Color3, type Mesh, type PointLight, type Texture } from '@babylonjs/core';
 import type { GameScene } from './scene';
 
@@ -14,7 +15,7 @@ export class SceneEffects {
   beats = new Map<number, number>();
   lastTime = 0;
   lastSteam = 0;
-  reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  reduced = reducedMotion();
   constructor(public view: GameScene) {}
   reset() {
     for (const p of this.particles) p.mesh.dispose();
@@ -62,7 +63,7 @@ export class SceneEffects {
     }
   }
   update() {
-    this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reduced = reducedMotion();
     const w = this.view.world,
       time = w.elapsed,
       dt = Math.min(0.1, Math.max(0, time - this.lastTime));

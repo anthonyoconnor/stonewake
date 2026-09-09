@@ -13,10 +13,11 @@ export function mountHearth(sidebar: Sidebar) {
   terminal.className = 'level-outcome';
   terminal.hidden = true;
   terminal.innerHTML =
-    '<strong id="outcome-title"></strong><p id="outcome-message"></p><button id="travel-onward" class="wide" hidden>Travel onward</button><button id="restart-area" class="wide">Restart area</button><button id="restart-campaign" class="wide" hidden>Begin a new journey</button>';
+    '<strong id="outcome-title"></strong><p id="outcome-message"></p><button id="travel-onward" class="wide" hidden>Travel onward</button><button id="restart-area" class="wide">Restart area</button><button id="restart-campaign" class="wide" hidden>Begin a new journey</button><button id="outcome-menu" class="wide">Return to menu</button>';
+  terminal.querySelector<HTMLButtonElement>('#outcome-menu')!.onclick=()=>sidebar.onMenu();
   terminal.querySelector<HTMLButtonElement>('#restart-area')!.onclick = () => sidebar.onRestartArea();
   terminal.querySelector<HTMLButtonElement>('#travel-onward')!.onclick = () => sidebar.onTravel();
-  terminal.querySelector<HTMLButtonElement>('#restart-campaign')!.onclick = () => { sidebar.onRestart(); sidebar.onPause(false); };
+  terminal.querySelector<HTMLButtonElement>('#restart-campaign')!.onclick = () => sidebar.onRestart();
   sidebar.root.querySelector('.camera-tools')!.before(terminal);
 }
 

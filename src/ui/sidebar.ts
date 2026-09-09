@@ -53,6 +53,7 @@ export class Sidebar {
   onLab:(open:boolean,shape?:string,type?:string)=>void=()=>{};
   onFreeBuild:(value:boolean)=>void=()=>{};onRestart:()=>void=()=>{};onRestartArea:()=>void=()=>{};
   onTravel:()=>void=()=>{};
+  onMenu:()=>void=()=>{};
   onCharacterHealthChanged:(levels:Set<string>)=>void=()=>{};
   onDevelopmentPanel:()=>void=()=>{};
   isPaused:()=>boolean=()=>false;
@@ -69,7 +70,7 @@ export class Sidebar {
       <div class="tool-status"><span id="active-tool"></span><button id="cancel-tool" aria-label="Cancel active tool" title="Cancel active tool (Escape / right-click)">×</button></div>
       <div id="feedback" class="feedback" role="status">Choose a task for your stronghold.</div>
       <div class="camera-tools"><button data-camera="home" aria-label="Return to Hearthstone" title="Return to Hearthstone (Home)">⌂</button><button data-camera="in" aria-label="Zoom in" title="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out" title="Zoom out">−</button></div>
-      <footer><button id="help" aria-label="Help" title="Field guide and message history">?</button><span>THE HEARTH IS ALIGHT</span><button data-category="debug" aria-label="Debug" title="Development settings and test harnesses">⌘</button></footer>`;
+      <footer><button id="help" aria-label="Help" title="Field guide and message history">?</button><span>THE HEARTH IS ALIGHT</span><button id="open-menu" aria-label="Main menu" title="Return to main menu">☰</button><button data-category="debug" aria-label="Debug" title="Development settings and test harnesses">⌘</button></footer>`;
     document.querySelector('#app')!.prepend(this.root);
     this.root.addEventListener('click',e=>{
       if(!this.view.world.outcome||!(e.target instanceof Element))return;
@@ -90,6 +91,7 @@ export class Sidebar {
       switch(b.dataset.camera){case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
     });
     this.root.querySelector<HTMLButtonElement>('#help')!.onclick=()=>this.show('help');
+    this.root.querySelector<HTMLButtonElement>('#open-menu')!.onclick=()=>this.onMenu();
     this.root.querySelector<HTMLButtonElement>('#cancel-tool')!.onclick=()=>selection.setTool('dig');
     this.root.querySelector<HTMLButtonElement>('#close-inspection')!.onclick=()=>{this.inspectedUnit=undefined;this.update();};
     this.root.addEventListener('contextmenu',e=>{e.preventDefault();selection.setTool('dig');});

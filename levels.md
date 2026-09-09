@@ -25,9 +25,9 @@ The campaign premise, level structure and onward Hearthstone objective are estab
 
 The user has completed the two-area prototype campaign. The next campaign should introduce rooms and characters gradually across consecutive levels, give specialists time and meaningful challenges to justify their use, and use deliberate layouts rather than treating the prototype maps as the final structure.
 
-Gold seams should guide exploration toward authored destinations. Renewable gems should be rare strategic attractions and may be absent from a level. Biomes should include appropriate natural caverns/tunnels, active inhabitants and level/species-specific recurring pressure. Discoverable dwarven ruins should offer coherent laid-out rooms that can be secured and reclaimed. A starting menu should offer Campaign and a data-driven Free Play level list with independent starting availability.
+Gold seams should guide exploration toward authored destinations. Renewable gems should be rare strategic attractions and may be absent from a level. Biomes should include appropriate natural caverns/tunnels, active inhabitants and level/species-specific recurring pressure. Discoverable dwarven ruins should offer coherent laid-out rooms that can be secured and reclaimed. The implemented starting menu offers Campaign and a data-driven Free Play level list with independent starting availability.
 
-These are planned changes under [M25–M29](development-plan.md#milestone-tracker), not descriptions of current behavior. M26 will establish the campaign sequence and unlock schedule; M27 owns habitat/pressure behavior, M28 reclamation rules, and M29 concrete maps and resource placement. Exact level counts, sizes and timings remain provisional.
+Campaign expansion remains planned under [M26–M29](development-plan.md#milestone-tracker), not descriptions of current behavior. M26 will establish the campaign sequence and unlock schedule; M27 owns habitat/pressure behavior, M28 reclamation rules, and M29 concrete maps and resource placement. Exact level counts, sizes and timings remain provisional.
 
 ## Onward Hearthstone objective
 
@@ -192,3 +192,7 @@ Every playable level needs:
 - Resource placement visibility, environmental hazards, and bridge behavior.
 - Per-enemy abilities, scale, resistances and balance for the agreed ten-enemy roster; regional nest activation rules, raid timing and warning tuning.
 - Whether reclaimed rooms can be used immediately or need repair.
+
+## Free Play availability
+
+The starting menu lists Border Foothold, Emberwater Crossing and the five regional maps as deliberately retained playable prototype content. Each entry in `src/content/playable-levels.ts` owns its level, illustration, description, starting room/building plans and known spells. All seven currently start with every implemented room plus walls/bridges, no researched spells, the normal Stonehand crew and starting gold, natural recruitment, no supplied rooms, stock or prepared charges. Room support and Library research still apply. Campaign progress never changes these arrivals. Restart recreates the selected entry, including its initial knowledge; standalone victory offers restart or menu, with no campaign travel. Campaign retains its existing bridge unlock and carry rules. M26 owns broader staged availability.

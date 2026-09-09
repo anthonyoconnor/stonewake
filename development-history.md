@@ -767,3 +767,20 @@ Complete when hounds handle suitable early threats but hound-only settlements ha
 #### M24 completion — 2026-09-09
 
 Implemented the directly accessible combat harness with selectable defenders, all ten enemies and representative mixed groups, optional traps/prepared spells, sidebar live results and roster/cost details, reset and shared pause/return rules. Measured balance preserves hound stats/cooldowns and raises Deepmaw bite damage to 40. See characters.md and enemies.md for matchup results and limits. Verification: 28 focused combat/hound/enemy/recruitment tests, source/test typecheck and combat browser flow passed (including unchanged stronghold and both prior pause states). Broader campaign-context tuning remains M27/M29/M19.
+
+### M25 — Starting menu and free-play level selection
+
+The user approved the [main-menu and Free Play concepts](concept-art/menus/README.md) as the menus to use for M25. Match their composition, carved stone/bronze controls, typography, warm lantern light and blue Hearthstone atmosphere; preserve Campaign/Free Play/Settings and the illustrated level-list/preview layout. Build responsive interactive controls and prepare background assets from this approved direction rather than substituting a different menu design. The menus are not yet implemented.
+
+- Launch into a starting menu with Campaign and Free Play. Campaign begins the authored journey; Free Play opens a list of playable levels with a short description and explicit start/back controls.
+- Populate the list from stable level metadata so adding a playable level does not require another menu implementation. Keep debug harnesses separate.
+- Give each standalone level an explicit starting content/knowledge set and normal economy, sufficient for its intended challenges, independent of campaign progress.
+- Define restart, victory, defeat and return-to-menu flows, with confirmation before discarding an active run. Switching modes resets the correct session state; nothing persists across reloads.
+- Document entry and navigation rules in gameplay-interface.md and levels.md.
+
+Complete when every listed level starts and restarts correctly, campaign travel still works, and a player can return to the menu and switch modes without leaked units, gold, unlocks or objectives. Check keyboard and compact-window navigation.
+
+
+#### M25 completion — 2026-09-09
+
+Implemented the approved main menu and Free Play compositions with actual responsive HTML controls and two prepared background assets. Seven deliberately retained normal-economy levels have stable metadata and independent starting plans/knowledge; all start with Stonehands. Added session motion/edge-scrolling settings, confirmation/cancel before discarding active play, standalone restarts, campaign and terminal navigation. Browser checks passed all seven start/restart flows, mode isolation, cancel preservation, keyboard/settings and 800/390px layouts. Production build and production isolation passed. Full simulation run exposed a missing .ts import plus obsolete input-document mocks; focused reruns pass after correcting them. The known optional-chamber fixture now isolates its source so an unrelated sentry cannot kill the teleported worker; all campaign tests pass. These fixture fixes do not certify complete campaign balance.

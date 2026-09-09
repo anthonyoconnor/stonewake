@@ -225,7 +225,10 @@ test('normal campaign contains all ten species while optional chambers stay seal
 
 test('optional chambers open through ordinary excavation and reveal warned physical encounters', () => {
   for (const chamber of optionalChambers) {
-    const w = createWorld(campaignStages[chamber.stage].level);
+    const level = campaignStages[chamber.stage].level;
+    // Isolate this breach fixture: teleporting one worker beyond both hazards
+    // must not also activate an unrelated sentry behind its unsupported flank.
+    const w = createWorld({ ...level, encounters: level.encounters!.filter(e => e.id === chamber.id) });
     addMiners(w, 1);
     Object.assign(w.agents[0], chamber.approach);
     reveal(w, chamber.approach);

@@ -42,6 +42,8 @@ try {
   await page.goto(`${url}/?scenario=${production?'crowded-kitchen':'stronghold'}&paused=1`, { waitUntil: 'domcontentloaded', timeout: 90000 });
   await page.locator('#sidebar').waitFor();
   if (production) {
+    await page.locator('#start-campaign').click();
+    await page.locator('#main-menu').waitFor({ state: 'hidden' });
     await page.getByRole('button', { name: 'Debug', exact: true }).click();
     assert.equal(await page.evaluate(() => typeof window.strongholdDev), 'undefined');
     assert.equal(await page.getByRole('heading', { name: 'Additional test scenarios' }).count(), 0);

@@ -20,11 +20,11 @@ Working interface design for the dwarven stronghold game. Companion documents: [
 
 The left-edge panning fix is implemented. Direction stays relative to the rotated view. `node scripts/camera-browser.mjs` checks actual outer edges, sidebar overlap, rotation, compact layouts, ordinary panel interaction, pointer leave, blur and full-map suppression. Future starting menus must retain the same camera suppression as dialogs.
 
-## Approved menu direction and planned loading screens
+## Starting menu and planned loading screens
 
-M25 uses the user-approved [main menu and Free Play designs](concept-art/menus/README.md): carved stone and bronze controls, warm lamps and the blue Hearthstone, with Campaign/Free Play/Settings on the main screen and a level list beside an illustrated preview in Free Play. Implement their appearance with responsive, accessible controls.
+M25 uses the user-approved [main menu and Free Play designs](concept-art/menus/README.md): carved stone and bronze controls, warm lamps and the blue Hearthstone, with Campaign/Free Play/Settings on the main screen and a level list beside an illustrated preview in Free Play. Their composition is implemented with responsive, keyboard-accessible HTML controls. Campaign starts the two-area journey. Free Play uses a scrollable catalog, selected outline/rune, illustrated preview, Start level and Back. Settings holds animation and edge-scrolling preferences in memory. The sidebar menu button and result card provide Return to menu; confirmation offers Keep playing or discard. Active-run restart also confirms, while terminal restarts start immediately. Mode changes reset all local state. Menus and discard confirmations pause simulation and suppress camera/world inputs.
 
-M25.1 adds a lightweight themed loading shell before expensive game initialization to cover the reported blank startup, then consistent loading screens for level entry, travel and restart. Show truthful activity, retain the screen until the destination is rendered and usable, and provide a visible retry/reload path on failure. The initial shell must paint without waiting for the game bundle or large background images. These menu/loading changes remain planned.
+M25.1 adds a lightweight themed loading shell before expensive game initialization to cover the reported blank startup, then consistent loading screens for level entry, travel and restart. Show truthful activity, retain the screen until the destination is rendered and usable, and provide a visible retry/reload path on failure. The initial shell must paint without waiting for the game bundle or large background images. The menus are implemented; the loading shell remains the next M25.1 task.
 
 ## Planned lighting
 

@@ -15,7 +15,7 @@ test('first tile locks excavation drag action and cancelling construction restor
  const world=createWorld({id:'selection',name:'Selection',width:16,height:16,hearth:{x:4,z:4},openings:[[2,2,8,8]],seams:[]});
  for(const t of world.tiles){t.known=true;if(t.terrain==='floor')t.claimed=true;}
  const canvas=Object.assign(new EventTarget(),{style:{cursor:''},getBoundingClientRect:()=>({left:0,top:0,right:16,bottom:16}),setPointerCapture(){},hasPointerCapture:()=>false,releasePointerCapture(){}});
- const win=new EventTarget();Object.assign(globalThis,{window:win,Element:TestElement,HTMLElement:TestElement});
+ const win=new EventTarget();Object.assign(globalThis,{window:win,document:Object.assign(new EventTarget(),{querySelector:()=>null,elementFromPoint:(x:number,y:number)=>x>=0&&y>=0&&x<16&&y<16?canvas:null}),Element:TestElement,HTMLElement:TestElement});
  scene.pick=((x:number,y:number)=>({pickedMesh:{metadata:{tile:{x,z:y}}}})) as never;
  const selection=new Selection({scene,world,canvas,box:()=>({material:{}}),material:()=>({})} as never);
  const emit=(type:string,x=10,z=10,button=0)=>canvas.dispatchEvent(Object.assign(new Event(type),{clientX:x,clientY:z,button,pointerId:1}));
@@ -39,7 +39,7 @@ test('first tile locks excavation drag action and cancelling construction restor
   selection.setTool('wall');click(7,7);assert(tileAt(world,7,7)!.wallPlanned);
   emit('pointerdown',8,7);emit('pointerup',7,7);assert(tileAt(world,7,7)!.wallPlanned);assert(tileAt(world,8,7)!.wallPlanned);
   emit('pointerdown',7,7);emit('pointerup',8,8);assert(!tileAt(world,7,7)!.wallPlanned);assert(!tileAt(world,8,7)!.wallPlanned);assert(!tileAt(world,8,8)!.wallPlanned);
- }finally{scene.dispose();engine.dispose();for(const k of ['window','Element','HTMLElement'])Reflect.deleteProperty(globalThis,k);}
+ }finally{scene.dispose();engine.dispose();for(const k of ['window','document','Element','HTMLElement'])Reflect.deleteProperty(globalThis,k);}
 });
 
 test('spell pointer targeting casts once on the selected dwarf and cancellation spends nothing',()=>{
@@ -48,7 +48,7 @@ test('spell pointer targeting casts once on the selected dwarf and cancellation 
  for(const t of world.tiles){t.known=true;t.claimed=t.terrain==='floor';}
  addResidents(world,'miner',2);world.agents.forEach((a,i)=>Object.assign(a,{x:8+i*2,z:8}));
  queueResearch(world,'dwarf-haste');world.researchOrders![0].state='ready';
- const canvas=Object.assign(new EventTarget(),{style:{cursor:''},getBoundingClientRect:()=>({left:0,top:0,right:16,bottom:16}),setPointerCapture(){},hasPointerCapture:()=>false,releasePointerCapture(){}}),win=new EventTarget();Object.assign(globalThis,{window:win,Element:TestElement,HTMLElement:TestElement});
+ const canvas=Object.assign(new EventTarget(),{style:{cursor:''},getBoundingClientRect:()=>({left:0,top:0,right:16,bottom:16}),setPointerCapture(){},hasPointerCapture:()=>false,releasePointerCapture(){}}),win=new EventTarget();Object.assign(globalThis,{window:win,document:Object.assign(new EventTarget(),{querySelector:()=>null,elementFromPoint:(x:number,y:number)=>x>=0&&y>=0&&x<16&&y<16?canvas:null}),Element:TestElement,HTMLElement:TestElement});
  scene.pick=((x:number,y:number)=>({pickedMesh:{metadata:{tile:{x,z:y}}}})) as never;
  const selection=new Selection({scene,world,canvas,box:()=>({material:{}}),material:()=>({})} as never);
  const emit=(type:string,x=8,z=8,button=0)=>canvas.dispatchEvent(Object.assign(new Event(type),{clientX:x,clientY:z,button,pointerId:1}));
@@ -58,5 +58,5 @@ test('spell pointer targeting casts once on the selected dwarf and cancellation 
   selection.setTool('dwarf-haste');emit('pointerdown',12,12);emit('pointerup',12,12);assert.equal(goldTotal(world),gold);
   emit('pointerdown');emit('pointerup');assert.equal(goldTotal(world),gold-25);assert.equal(selection.tool,'dig');assert.equal(world.agents[0].effects?.length,1);assert(!world.agents[1].effects?.length);
   selection.setTool('dwarf-haste');win.dispatchEvent(Object.assign(new Event('keydown'),{key:'Escape'}));assert.equal(selection.tool,'dig');
- }finally{scene.dispose();engine.dispose();for(const k of ['window','Element','HTMLElement'])Reflect.deleteProperty(globalThis,k);}
+ }finally{scene.dispose();engine.dispose();for(const k of ['window','document','Element','HTMLElement'])Reflect.deleteProperty(globalThis,k);}
 });

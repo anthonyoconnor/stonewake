@@ -54,7 +54,7 @@ export class Selection {
     canvas.addEventListener('pointercancel',()=>{this.start=undefined;this.dragAdds=undefined;this.draw(false);});
     canvas.addEventListener('lostpointercapture',()=>{this.start=undefined;this.dragAdds=undefined;});
     const cancel=()=>this.setTool('dig');
-    canvas.addEventListener('contextmenu',cancel);window.addEventListener('keydown',e=>{if(e.target instanceof Element&&e.target.closest('dialog'))return;if(e.key==='Escape')cancel();if(e.key.toLowerCase()==='r'&&!e.ctrlKey&&!e.metaKey&&defenseById(this.tool)?.kind==='bolt'&&!(e.target instanceof HTMLElement&&e.target.closest('input,select,textarea,button,summary,[contenteditable]'))){this.rotation=(this.rotation+1)%4;this.draw();}});
+    canvas.addEventListener('contextmenu',cancel);window.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;if(e.key==='Escape')cancel();if(e.key.toLowerCase()==='r'&&!e.ctrlKey&&!e.metaKey&&defenseById(this.tool)?.kind==='bolt'&&!(e.target instanceof HTMLElement&&e.target.closest('input,select,textarea,button,summary,[contenteditable]'))){this.rotation=(this.rotation+1)%4;this.draw();}});
   }
   updateCursor(){const tile=this.hover&&tileAt(this.view.world,this.hover.x,this.hover.z);const action=this.tool==='dig'?(this.dragAdds!==undefined?(this.dragAdds?'dig':'erase'):tile?.designated?'erase':tile?.known&&(tile.terrain==='floor'||isHazard(tile))?'inspect':'dig'):this.tool;this.view.canvas.style.cursor=spellById(this.tool)?'crosshair':actionCursor(action);}
   setTool(tool:string){this.start=undefined;this.dragAdds=undefined;this.tool=this.view.world.outcome?'inspect':tool;this.draw();this.onChange('');}

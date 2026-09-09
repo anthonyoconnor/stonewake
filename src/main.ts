@@ -1,4 +1,6 @@
 import { tuning } from './content/tuning';
+import { MainMenu, confirmDiscard } from './ui/menu';
+import { startFreePlay, restartSession } from './game/session';
 import { createCombatLab } from './content/combat-lab';
 import './style.css';
 import { startCampaign, restartCampaignArea, travelOnward } from './game/campaign';
@@ -20,10 +22,14 @@ import { createSpellLab } from './content/spell-lab';
 import { populateShowcase } from './content/scenarios';
 import type { DevelopmentController } from './dev/controller';
 let world = startCampaign(import.meta.env.VITE_FREE_ROOM_BUILDING === 'true');
+const menu = new MainMenu();
+let activeRun = import.meta.env.DEV && (new URLSearchParams(location.search).has('scenario') || new URLSearchParams(location.search).has('paused'));
+if (!activeRun) menu.show();
 const view = new GameScene(document.querySelector<HTMLCanvasElement>('#world')!, world);
 const controls = new CameraControls(view);
 // A browser owns Ctrl+W; protect the in-memory session at the point of leaving.
 window.addEventListener('beforeunload', (event) => {
+  if (!activeRun) return;
   event.preventDefault();
   event.returnValue = true;
 });
@@ -136,11 +142,15 @@ sidebar.onFreeBuild = (value) => {
   view.world.freeRoomBuilding = value;
 };
 sidebar.onRestart = () => {
-  const free = world.freeRoomBuilding;
-  world = startCampaign(free);
-  sidebar.onLab(false);
+  void restartRun(true);
 };
+async function restartRun(newJourney = false) {
+  if (!view.world.outcome && !(await confirmDiscard('Restart area'))) return;
+  world = newJourney && world.campaign && world.outcome === 'victory' ? startCampaign(world.freeRoomBuilding) : restartSession(world);
+  await sidebar.onLab(false); sidebar.onPause(false); sidebar.show('hearth'); refresh();
+}
 sidebar.onRestartArea = () => {
+  if (!sidebar.lab) { void restartRun(); return; }
   const restarted = restartCampaignArea(view.world);
   if (restarted) { world = restarted; sidebar.onLab(false); sidebar.onPause(false); sidebar.show('hearth'); refresh(); }
   else if (development && development.scenario !== 'custom' && development.scenario !== 'stronghold') { development.load(development.scenario); refresh(); }
@@ -154,6 +164,18 @@ sidebar.onTravel = () => {
   sidebar.onPause(false);
   sidebar.show('hearth');
   refresh();
+};
+sidebar.onMenu = async () => {
+  if (!(await confirmDiscard('Return to menu'))) return;
+  activeRun = false; controls.keys.clear(); controls.pointer = undefined; controls.drag = undefined;
+  selection.setTool('dig'); menu.show();
+};
+menu.onStart = async (mode, id) => {
+  const free = world.freeRoomBuilding;
+  world = mode === 'campaign' ? startCampaign(free) : startFreePlay(id!, free);
+  sidebar.fullMap.element.close(); sidebar.tuningDialog.element?.close?.();
+  await sidebar.onLab(false); sidebar.onPause(false); selection.setTool('dig');
+  activeRun = true; view.engine.resize(); refresh();
 };
 let uiTime = 0;
 if (import.meta.env.DEV)
@@ -191,13 +213,15 @@ if (import.meta.env.DEV)
   });
 view.engine.runRenderLoop(() => {
   const dt = Math.min(0.25, view.engine.getDeltaTime() / 1000);
-  if (!sidebar.tuningDialog.open) controls.update(Math.min(0.05, dt));
+  const menuBlocked = menu.open || !!document.querySelector('.discard-dialog[open]');
+  if (!sidebar.tuningDialog.open && !menuBlocked) controls.update(Math.min(0.05, dt));
   else {
     controls.keys.clear();
     controls.pointer = undefined;
   }
   if (
     !document.hidden &&
+    !menuBlocked &&
     !sidebar.tuningDialog.open &&
     !view.world.spellTest?.paused &&
     !sidebar.isPaused()

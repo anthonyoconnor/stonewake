@@ -1,4 +1,5 @@
 import {tuning} from '../content/tuning.ts';
+import { presentation } from '../content/presentation.ts';
 import type { GameScene } from './scene';
 export class CameraControls {
   keys=new Set<string>(); drag?: {x:number;pointerId:number};
@@ -8,6 +9,7 @@ export class CameraControls {
     this.view=view;
     const canvas=view.canvas;
     window.addEventListener('keydown',e=>{
+      if(document.querySelector('dialog[open]'))return;
       if(e.target instanceof Element&&e.target.closest('input,select,textarea,button,summary,[contenteditable],dialog'))return;
       const k=e.code;
       if(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','Home','ControlLeft'].includes(k)){
@@ -58,7 +60,7 @@ export class CameraControls {
     const orbit=this.keys.has('ControlLeft');
     let r=orbit?0:horizontal;
     let f=Number(this.keys.has('KeyW'))-Number(this.keys.has('KeyS'));
-    if(this.pointer&&!this.drag){
+    if(presentation.edgeScrolling&&this.pointer&&!this.drag){
       const {x,y}=this.pointer,edge=tuning.edgePixels;
       // Only outer window edges count; the sidebar/world boundary is not an edge.
       if(x>=0&&x<window.innerWidth&&y>=0&&y<window.innerHeight){

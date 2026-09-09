@@ -1,8 +1,8 @@
 # M25 menu concepts
 
-User-approved designs for the M25 starting menu and Free Play selector, generated with the built-in image generation tool. Use these menus for M25; implementation remains planned. M25.1 loading screens should share this visual language. [Generation prompts](prompts-v1.md).
+User-approved designs for the M25 starting menu and Free Play selector, generated with the built-in image generation tool. M25 implements these menus with real controls and prepared scenic assets. M25.1 loading screens should share this visual language. [Generation prompts](prompts-v1.md).
 
-Return to [all concept art](../README.md). Scope: [M25](../../development-plan.md#m25--starting-menu-and-free-play-level-selection) and [interface rules](../../gameplay-interface.md).
+Return to [all concept art](../README.md). Scope: [M25 completion](../../development-history.md#m25--starting-menu-and-free-play-level-selection) and [interface rules](../../gameplay-interface.md).
 
 ## Main menu
 

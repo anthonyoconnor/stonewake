@@ -35,6 +35,7 @@ export class FullMap {
       if(e.code==='KeyM'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();this.element.close();}
     });
     window.addEventListener('keydown',e=>{
+      if(document.querySelector('dialog[open]'))return;
       if(e.code!=='KeyM'||e.repeat||e.ctrlKey||e.altKey||e.metaKey)return;
       if(e.target instanceof Element&&e.target.closest('input,select,textarea,[contenteditable],dialog'))return;
       e.preventDefault();this.toggle();

@@ -32,6 +32,7 @@ export interface LevelDefinition {
   onwardHearth?: OnwardHearthDefinition;
 }
 export interface World {
+  freePlay?: { levelId: string; buildings: string[]; knownSpells: string[] };
   combatTest?: { team: string; opponent: string; support: 'none' | 'traps' | 'spells'; initialResidents: number; initialEnemies: number };
   campaign?: CampaignState;
   width: number; height: number; name: string; hearth: Point; tiles: Tile[]; revision: number;
