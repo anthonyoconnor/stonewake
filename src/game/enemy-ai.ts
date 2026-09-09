@@ -113,7 +113,7 @@ function selectVictim(w: World, e: Enemy) {
   const candidates = w.agents.filter(
     (a) =>
       alive(a) &&
-      (!e.habitat?.territorial || distance(a, e.habitat.home) <= e.habitat.radius + 1) &&
+      (!(e.habitat && (e.habitat.territorial || e.dormant)) || distance(a, e.habitat.home) <= e.habitat.radius + 1) &&
       distance(e, a) <= (enemyById(e.type).senseRange ?? balance.senseRange) &&
       spellLine(w, e, a),
   );
@@ -139,13 +139,13 @@ export function tickEnemies(
       if (e.activity !== 'Pinned by spikes') e.activity = 'Stunned';
       continue;
     }
-    if (e.dormant) {
+    if (e.dormant && (!e.habitat || e.hitAt < 0)) {
       tickHabitat(w, e, dt, spikeAt);
       continue;
     }
     const def = enemyById(e.type),
       victim = selectVictim(w, e);
-    if (!victim && e.habitat?.territorial) {
+    if (!victim && (e.habitat?.territorial || e.dormant)) {
       tickHabitat(w, e, dt, spikeAt);
       continue;
     }
@@ -171,15 +171,15 @@ export function tickEnemies(
       }
       continue;
     }
-    if (!e.habitat?.territorial && tryAttackHearth(w, e)) continue;
+    if (!e.dormant && !e.habitat?.territorial && tryAttackHearth(w, e)) continue;
     const charging = (e.chargeUntil ?? 0) > w.elapsed,
       walker = enemyWalker(e.type);
     let remaining = def.speed * slowRate(w, e) * dt * (charging ? balance.charge.speedMultiplier : 1);
     const destination = victim ? { x: Math.round(victim.x), z: Math.round(victim.z) } : e.target;
     const path =
       findPath(w, e, destination, walker) ??
-      findPath(w, e, destination, enemyWalker(e.type, true)) ??
-      (def.ability === 'burrow' ? burrowPath(w, e, destination) : undefined);
+      (!e.dormant ? findPath(w, e, destination, enemyWalker(e.type, true)) : undefined) ??
+      (!e.dormant && def.ability === 'burrow' ? burrowPath(w, e, destination) : undefined);
     if (!path) {
       e.activity = 'No route';
       e.digging = undefined;

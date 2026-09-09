@@ -4,7 +4,7 @@ import { createWorld } from '../src/game/world.ts';
 import { tickDefenses } from '../src/game/defenses.ts';
 import { encounterSummary, initializeEncounters, tickEncounters, type EncounterDefinition } from '../src/game/encounters.ts';
 import { tileAt, type World } from '../src/game/types.ts';
-import { visible } from '../src/game/spell-effects.ts';
+import { visible, damageEnemy } from '../src/game/spell-effects.ts';
 import { addResidents } from '../src/game/simulation.ts';
 
 function habitatWorld(def: Partial<EncounterDefinition> = {}) {
@@ -98,4 +98,21 @@ test('two authored pressures preserve independent warning/recovery and a single 
   tileAt(w, 17, 8)!.claimed = true;
   w.elapsed = 21; tickEncounters(w);
   assert.equal(w.encounters![0].phase, 'cleared');
+});
+
+test('attacking a warned inhabitant permits local self-defense without releasing the raid early', () => {
+  const w = habitatWorld({ pressure: 'raid', warningSeconds: 18 });
+  for (const t of w.tiles) if (t.x >= 11) t.known = true;
+  addResidents(w, 'warrior');
+  const e = w.enemies![0], a = w.agents[0];
+  Object.assign(a, { x: e.x + 0.6, z: e.z, health: 1000, maxHealth: 1000 });
+  damageEnemy(w, e, 1, 'dwarf');
+  advance(w, 0.2);
+  assert(a.health! < 1000, 'Warning time cannot make an attacked inhabitant helpless');
+  assert.equal(w.encounters![0].phase, 'warning');
+  assert.equal(w.encounters![0].waves, 0);
+  assert(e.dormant, 'The full source warning still governs settlement raids');
+  w.agents = [];
+  advance(w, 5);
+  assert(e.x > 11, 'Local self-defense does not prematurely march toward the Hearth');
 });
