@@ -21,6 +21,14 @@ The campaign reclaims separate sites within a lost dwarven kingdom. Each level i
 
 The campaign premise, level structure and onward Hearthstone objective are established. The two authored areas and activation rules below describe the implemented prototype; candidate levels remain authoring proposals. All ten current enemy concepts now have implemented roles and provisional balance in [Enemies](enemies.md). M11 implements objective/defeat using an enemy-held land route. M16 adds the Emberwater Crossing scenario with water, lava, chasms and constructed stone bridges. The two-area campaign links Border Foothold to Emberwater Crossing through explicit sidebar travel.
 
+## Planned campaign expansion
+
+The user has completed the two-area prototype campaign. The next campaign should introduce rooms and characters gradually across consecutive levels, give specialists time and meaningful challenges to justify their use, and use deliberate layouts rather than treating the prototype maps as the final structure.
+
+Gold seams should guide exploration toward authored destinations. Renewable gems should be rare strategic attractions and may be absent from a level. Biomes should include appropriate natural caverns/tunnels, active inhabitants and level/species-specific recurring pressure. Discoverable dwarven ruins should offer coherent laid-out rooms that can be secured and reclaimed. A starting menu should offer Campaign and a data-driven Free Play level list with independent starting availability.
+
+These are planned changes under [M25–M29](development-plan.md#milestone-tracker), not descriptions of current behavior. M26 will establish the campaign sequence and unlock schedule; M27 owns habitat/pressure behavior, M28 reclamation rules, and M29 concrete maps and resource placement. Exact level counts, sizes and timings remain provisional.
+
 ## Onward Hearthstone objective
 
 Every level contains two distinct Hearthstone roles: the starting Hearthstone anchors the settlement and receives recruits, while a newly discovered Hearthstone opens the route onward. Finding and reaching the latter restores another connection in the lost kingdom's ancient runic network, explaining the expedition's progress from area to area.

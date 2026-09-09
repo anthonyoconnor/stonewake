@@ -1,6 +1,6 @@
 # Browser game development plan
 
-Status: **M1–M11, M13–M14, M16–M18 and M20–M22 complete, including M5.1. M19 remains planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
+Status: **M1–M11, M13–M14, M16–M18 and M20–M22 complete, including M5.1. M19 and M23–M32 remain planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
 
 Completed milestones and verification records are in [development-history.md](development-history.md). **Read that archive only if past context is required; it is not part of routine startup reading.** This file contains the current baseline, unfinished work and dependencies.
 
@@ -42,7 +42,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-The remaining active milestone is M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
+The remaining active milestones are M23–M32 below, followed by M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight worker seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 
@@ -82,9 +82,19 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 
 | Milestone | Outcome | Status |
 |---|---|---|
-| M19 | Integrated gameplay balance and full-level playtesting | Planned; final pass after M17–M18 and M20–M22 |
+| M23 | Stonehand work priorities | Planned |
+| M24 | Cave Hound and specialist combat balance | Planned |
+| M25 | Starting menu and free-play level selection | Planned |
+| M26 | Campaign structure and gradual content unlocks | Planned |
+| M27 | Living biomes and recurring enemy pressure | Planned |
+| M28 | Discoverable and reclaimable dwarven ruins | Planned |
+| M29 | Authored campaign levels and resource-led exploration | Planned |
+| M30 | Sound and music foundation | Planned |
+| M31 | Environment and room graphics refinement | Planned |
+| M32 | Character animation and combat readability refinement | Planned |
+| M19 | Integrated gameplay balance and full-level playtesting | Planned; final pass after M23–M32 |
 
-M12 (Guard Posts, guard duty and retreat) and M15 (door repairs and upgrades in place) are removed from the active roadmap. Their features are deferred for possible reconsideration. Existing milestone IDs are retained; the new milestones use M20–M22.
+M12 (Guard Posts, guard duty and retreat) and M15 (door repairs and upgrades in place) are removed from the active roadmap. Their features are deferred for possible reconsideration. Existing milestone IDs are retained; the playtest follow-on milestones use M23–M32.
 
 ## Remaining-feature roadmap
 
@@ -96,14 +106,127 @@ For every implementation milestone, update the inventory and owning design docum
 
 ### Work and integration order
 
-M19 follows completed M17–M18 and M20–M22. It remains planned until separately authorized. Keep its balance changes in editable definitions and use normal starting conditions for the broader campaign playtests.
+The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. All remain planned until separately authorized for implementation.
+
+Address M23 and M24 first for immediate playability. M25 establishes the entry flow; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
+
+Exact campaign length, level dimensions, unlock sequence, gem counts, raid timings and audio/art asset choices remain provisional. M26 establishes the campaign brief and M29 owns concrete layouts; do not invent fixed numerical design rules in several documents. Preserve the single terrain layer, shared gold currency, autonomous movement, fog rules and sidebar-only information. This roadmap adds no saves, accounts, multiplayer or production release infrastructure and does not reinstate M12 or M15.
 
 ### M19 — Integrated balance and complete-level playtesting
 
-Dependencies: completed gameplay foundations, M17–M18 and M20–M22. M12 and M15 are excluded.
+Dependencies: completed gameplay foundations and integrated M23–M32. M12 and M15 are excluded.
 
 - Tune starting economy, Stonehand creation cost, dwarf wages, support capacity, specialist arrivals, training/combat XP, spells, bridges and enemy pressure together.
 - Play complete levels from ordinary starting conditions without free construction, supplied stocks, spawned defenders or shortened debug timers. Ensure the onward Hearthstone is challenging but reachable with the tools/resources available on that level.
 - Check multiple layouts/approaches, escalating threats, recovery from losses and the Library's continuing usefulness. Correct gameplay blockers and visual/sidebar readability problems found during those runs.
 
 Complete when the authored campaign can be played from fresh start through its endpoint using normal rules, defeat is demonstrable, and focused regressions plus browser playtests cover the discovered issues. Record tested routes, timings, provisional values and remaining content/visual limitations. This is a prototype balance pass, not production release machinery or a requirement for final art assets.
+
+### M23 — Stonehand work priorities
+
+- Investigate the reported preference for wall reinforcement while digging and claiming remain available, including work-pool allocation and the existing productive-assignment window.
+- Make reachable player-designated excavation and reachable floor claiming take precedence over automatic reinforcement. Reinforcement is background work when higher-priority terrain work is unavailable; unreachable or unsafe marks must not stall all useful work.
+- Preserve resource collection, deliveries, explicit construction and threat escape. Define how an existing reinforcement assignment yields without repeated job switching or abandoned reservations in characters.md.
+
+Complete when ordinary crews expand and claim a marked area before spending spare capacity reinforcing it, including newly added dig orders, mixed resource work, blocked routes and work resumption after danger. Verify focused job simulations and one ordinary browser observation.
+
+### M24 — Cave Hound and specialist combat balance
+
+- Treat the report that hounds killed most monsters as a balance hypothesis to measure, not a reason for an arbitrary blanket reduction.
+- Compare single hounds and realistic packs against regional enemies, factoring in recruitment rate, free den support, population growth and enemy group composition.
+- Preserve useful early scouting, patrol and defense while giving Warriors, manufactured defenses and Runesmith spells meaningful advantages against later threats. Tune existing editable stats/recruitment before adding mechanics or imposing a new animal cap.
+- Record representative matchups and intended roles in characters.md and enemies.md; repeat campaign-context checks after M27/M29.
+
+Complete when hounds handle suitable early threats but hound-only settlements have clear limitations against representative later encounters, with viable specialist/defense responses under normal resource costs.
+
+### M25 — Starting menu and free-play level selection
+
+- Launch into a starting menu with Campaign and Free Play. Campaign begins the authored journey; Free Play opens a list of playable levels with a short description and explicit start/back controls.
+- Populate the list from stable level metadata so adding a playable level does not require another menu implementation. Keep debug harnesses separate.
+- Give each standalone level an explicit starting content/knowledge set and normal economy, sufficient for its intended challenges, independent of campaign progress.
+- Define restart, victory, defeat and return-to-menu flows, with confirmation before discarding an active run. Switching modes resets the correct session state; nothing persists across reloads.
+- Document entry and navigation rules in gameplay-interface.md and levels.md.
+
+Complete when every listed level starts and restarts correctly, campaign travel still works, and a player can return to the menu and switch modes without leaked units, gold, unlocks or objectives. Check keyboard and compact-window navigation.
+
+### M26 — Campaign structure and gradual content unlocks
+
+- Write a campaign brief with a proposed level count/order, regional journey, learning goal, introduced rooms/characters/tools, revisited mechanics and endpoint for each level. The existing two levels are proof-of-concept content, not the required final campaign structure.
+- Begin with Stonehands, Cave Hounds and the basic settlement rooms; introduce Warriors, Engineers and Runesmiths gradually across subsequent levels with their supporting rooms, defenses and spells.
+- Allow enough development time and suitable challenges after each introduction for the new role to matter. Reuse earlier roles in later levels rather than replacing them.
+- Implement declarative per-level availability and campaign unlock transitions using existing content IDs. Apply restrictions consistently to menus, room construction, recruitment, production and research; keep intentional debug access separate.
+- Specify carried knowledge, fresh local state and standalone starting unlocks in levels.md, with supporting character/room/spell rules in their owning documents.
+
+Complete when the campaign brief covers a coherent beginning-to-end progression and checks show early levels cannot acquire later roles/tools, travel unlocks the intended content, restarts restore arrival knowledge, and free play starts with its authored availability.
+
+### M27 — Living biomes and recurring enemy pressure
+
+Dependencies: M26's progression brief for threat pacing; extend the existing enemy and encounter systems.
+
+- Define recognizable upper-workings, fungal, ancient, crystal and volcanic habitats using the existing roster. Give authored territories natural caverns, branching tunnels, nests or halls that fit their inhabitants.
+- Add autonomous local movement before combat: suitable roaming, patrol, nesting or deliberate sentry behavior by species/group. Idle enemies should appear intentionally dormant or guarding rather than all waiting motionless in rooms.
+- Separate habitat activity from attacks on the settlement. Configure which species/groups raid, what activates them, their warning/cadence, group makeup and recovery intervals by level/source; not every creature should launch scheduled attacks.
+- Build distinct challenges from existing abilities: organized goblin groups, burrowing flanks, fungal control, armored guardians, crystal ranged pressure and volcanic terrain access. Define readable cues and available counters.
+- Preserve physical routes, fog, bedrock and resource protections, blocked-wave handling and source suppression. Pressure must offer respite and a way to secure territory rather than accumulate unseen attackers indefinitely.
+- Keep habitat, movement and pressure parameters editable and document behavior in enemies.md and levels.md.
+
+Complete when normal levels show natural movement before contact and several distinct, recurring attacks through real routes, with visible warnings, meaningful counters, source clearing and recovery opportunities. Verify hidden activity does not disclose enemies and blocked routes do not cause teleporting or wave buildup.
+
+### M28 — Discoverable and reclaimable dwarven ruins
+
+Dependencies: M26's availability rules; coordinate inhabitants with M27.
+
+- Author lost dwarven sites with coherent room arrangements, corridors, collapsed approaches and recognizable remnants, concealed by normal discovery.
+- Support neutral pre-laid room areas that players can reach, secure, claim and take over through actual gameplay systems. Define claiming costs/time, ownership conversion and when service capacity becomes usable in rooms.md and levels.md.
+- Reclaimed facilities use ordinary room capacity, automatic cosmetic furnishings, recruitment and access rules. Define how locked campaign room types are handled so ruins cannot accidentally bypass progression.
+- Keep ruin repair chains, door maintenance and new relic currencies outside this milestone. Decorative damage does not imply a new repair system.
+- Make reusable ruin definitions available to level authors, including irregular and partially obstructed sites.
+
+Complete when a player discovers an occupied ruin, clears its approach, claims its rooms and uses their normal services. Follow the room checklist for access, irregular layouts, capacity, automatic furnishings and free construction behavior; verify claiming cannot grant inaccessible or locked services.
+
+### M29 — Authored campaign levels and resource-led exploration
+
+Dependencies: M25–M28; use M24's provisional role balance.
+
+- Build the sequence established by M26, expanding or replacing prototype layouts as needed. Set each map's playable space and pacing around actual settlement growth, specialist use and its primary challenge, rather than increasing dimensions alone.
+- Place gold seams deliberately to suggest routes, stage expansion and draw players toward discoveries. Provide a viable finite-gold opening and choices between safer income and exposed rewards.
+- Make renewable gems rare strategic destinations, not a routine deposit beside every start. Allow gem-free levels; each placed gem needs an authored reason, access challenge and economic consequence.
+- Combine themed natural caverns/tunnels, reclaimed ruins, bedrock barriers, alternate routes and biome pressure. Give maps distinct layouts instead of rectangular monster rooms appended to a main corridor.
+- Keep resource visibility as currently agreed: gold/gems guide exploration through fog without revealing surrounding terrain, inhabitants or the onward stone.
+- Document each level's purpose, availability, resource rationale, threats and intended/alternate routes in levels.md. Keep existing prototype levels in free play only if deliberately retained as playable content.
+
+Complete when the authored campaign has a clear endpoint and each level is playable from normal starting conditions with its permitted roster, introduces or meaningfully reuses a specialist/tool, and has deliberate resource destinations. Check at least an intended route and an alternate approach per level; confirm no mandatory objective depends on unavailable tools or inaccessible income.
+
+### M30 — Sound and music foundation
+
+- Establish an audio direction for underground ambience, restrained music and readable action feedback. Select or create suitable assets and track their source/license where applicable.
+- Add sounds for excavation, claiming/reinforcement, resource delivery, building, room activity, movement, species-specific combat, spells, warnings and Hearth success/defeat.
+- Use biome ambience and restrained exploration/combat music transitions to support atmosphere without masking warnings. Avoid dense repetitive worker sounds dominating large settlements.
+- Drive audio from gameplay events through a small audio service; handle browser interaction-based audio startup, distance/visibility, simultaneous-sound limits and pause/menu/travel cleanup.
+- Provide master, music and effects volume plus mute in settings, held in session memory. Hidden threats must not be revealed through precise positional cues; critical warnings remain visually available.
+- Add an audio design document linked from README, covering cues, assets and controls.
+
+Complete when a full level has coherent ambience and action feedback, controls work after browser audio activation, and restart/travel/pause do not duplicate or strand sounds. Listen through quiet building, crowded work and combat; verify muted play still communicates essential information.
+
+### M31 — Environment and room graphics refinement
+
+Dependencies: representative M27–M29 content.
+
+- Audit actual gameplay against approved concept art at ordinary zoom and multiple camera angles; turn the reported clunkiness into an explicit list of visible problems with before/after captures.
+- Refine terrain joins, exposed wall faces, material scale, excavation transitions, resource silhouettes, water/lava/bridge edges, room floors and furnishing placement.
+- Give biomes and ruins a coherent visual identity through geometry, materials, lighting and restrained atmosphere while keeping gameplay tiles, diggable terrain, bedrock and resources easy to distinguish.
+- Check single-tile, narrow and irregular rooms, camera occlusion and fog boundaries. Decorations remain cosmetic and the single terrain layer remains unchanged.
+- Prioritize the largest visible improvements using editable shared assets/materials; do not require final production art or replace the renderer.
+
+Complete when the recorded environment issues are resolved or explicitly retained as limitations, representative new levels read clearly at play distance, room-checklist visual cases pass, and targeted browser checks show acceptable responsiveness and no discovery leaks.
+
+### M32 — Character animation and combat readability refinement
+
+Dependencies: M24 balance and M27 behavior; coordinate presentation with M31.
+
+- Audit Stonehands, hounds, specialists and the ten enemies in real movement/work/combat scenes against their approved references.
+- Fix conspicuous sliding, abrupt turns, intersections, awkward proportions, repeated poses and disconnected attack/hit timing. Preserve recognizable silhouettes at normal camera distance.
+- Make digging, reinforcing, hauling, crafting, research, rest, patrol and each enemy's distinctive attacks readable through poses and restrained effects. Integrate M30 sound cues with visible action timing.
+- Preserve simulation authority, continuous movement, reduced-motion support and sidebar-only health/status information; visual refinement must not silently change hit ranges or terrain access.
+
+Complete when representative work loops, group travel and mixed-species combat read clearly at ordinary zoom and reverse angles, attack feedback matches actual outcomes, and the recorded animation defects are resolved or documented. Check large-group responsiveness without running unrelated gameplay suites for cosmetic edits.
