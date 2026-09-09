@@ -149,3 +149,5 @@ Stonehand verification: `node --test tests/stonehands.test.ts`, `node scripts/mi
 ## Cave Hound checks
 
 The `cave-hounds` scenario uses a normally priced four-place Dormitory, automatic arrivals and a partly unexplored bent tunnel. Run `npm run verify -- security --browser=security` for continuous patrol, exploration through new excavation, shared threat response, melee/ranged worker escape, safe return to work and related movement/combat regressions. `node scripts/hounds-browser.mjs` separately covers regular arrivals, Dormitory expansion, warning dismissal/build action/clearing/reopening, patrol, sidebar and quadruped rendering. Both animal concept sheets are saved; only Cave Hounds are implemented.
+
+Notification changes use `npm run verify -- notifications --browser=notifications`. The focused browser flow covers real first arrivals, combat and Hearth warnings, dismissal/history/source actions, hidden origins, content-only extensions, overlay input isolation and compact rail overflow. Captures are in ignored `test-results/notifications/`; existing interface, hound and morale flows use the same notification controls.

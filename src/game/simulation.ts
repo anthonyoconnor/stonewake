@@ -22,6 +22,7 @@ import { tickEncounters } from './encounters.ts';
 import { initializePay, tickPayday, shouldSeekPay } from './wages.ts';
 import { tickHearth, finishHearth, shouldSeekHearth } from './hearth.ts';
 import { initializeMorale, tickMorale, tickDeparture } from './morale.ts';
+import { refreshNotifications } from '../content/notifications.ts';
 export const addStonehands = (w: World, count = tuning.startingStonehands) => addResidents(w, 'stonehand', count);
 export const addMiners = (w: World, count = tuning.startingMiners) => addResidents(w, 'miner', count);
 export function addResidents(w: World, type: string, count = 1, origin?: Point) {
@@ -150,8 +151,9 @@ export function tick(w: World, dt: number) {
   tickEncounters(w);
   tickDefenses(w, dt);
   finishHearth(w);
-  if (w.outcome) return;
+  if (w.outcome) { refreshNotifications(w); return; }
   if (Math.floor((w.elapsed - dt) * 2) !== Math.floor(w.elapsed * 2))
     for (const a of w.agents) reveal(w, a, sightRadius(a));
   recruitSpecialist(w, (type, origin) => addResidents(w, type, 1, origin) > 0);
+  refreshNotifications(w);
 }

@@ -87,3 +87,27 @@ Use the actual Workshop queue and `placeDefense` service, including in debug exa
 Room services, furnishing models, summaries and the debug dwarf catalog are driven by definitions. Look data is alongside the room definition. New rooms using existing services and models need only content/art additions, not simulation refactors.
 
 There is no general public mod loader or editor. Room service capacity comes from floor area and the tunable per-tile value; cosmetic objects have no gameplay role. New content still needs balance, real-access and layout checks. Door/trap placement and autonomous combat face authored encounters/raids and debug raiders. Paid Miner recruitment and physical wages are implemented. Hearth damage, guard duty, repairs, departure and campaign progression remain pending. Check the current inventory for verification status of additions.
+
+## Add a notification
+
+Notifications have stable string keys, independent of UI layout. Add a collector to `notificationSources` in [src/content/notifications.ts](src/content/notifications.ts) for a continuing condition. It returns an empty array when resolved, or one `NotificationInput` for each grouped problem. The simulation collects these every tick, including during batched development stepping; the sidebar also refreshes paused worlds. Collectors must be cheap, read-only world queries, without pathfinding or hidden-location disclosure.
+
+For example, a prototype stock notice can reuse the existing icon and actions:
+
+```ts
+{
+  id: 'bolt-stock',
+  collect: w => w.outputs['bolt-trap'] > 0 ? [{
+    key: 'stock:bolt-trap', category: 'Workshop', icon: 'bolt-trap',
+    title: 'Bolt traps available', message: 'Your Workshop has finished bolt traps.',
+    priority: 'info',
+    action: { kind: 'panel', value: 'defenses', label: 'Open defenses' },
+  }] : [],
+}
+```
+
+Use a stable `key` for the same problem. Change `episode` only for a meaningful escalation/new wave, not every count or timer update. An absent condition resolves; recurrence raises a new report. Repeated updates preserve dismissal. `sources` accepts live resident/enemy IDs or known point coordinates; omit it for a report without a location, or use an empty array when an origin is still unknown. Never put concealed encounter names or coordinates into a report. The shared service revalidates targets before navigation. `locateLabel` can name the source action; `action` can open a sidebar `panel` or select a construction `tool`.
+
+For a one-time event, call `notify(world, { ...report, event: true })` from the gameplay transition. Emit once per event; it remains until dismissed or aged out of bounded history. Natural recruitment demonstrates this in `src/game/recruitment.ts`, recording the first recruited type once per area. New types need no notification UI registration. Existing icon IDs work immediately; unknown artwork uses the shared fallback until an icon is added.
+
+The lifecycle, history, priority and quiet intervals are in [src/game/notifications.ts](src/game/notifications.ts). The only renderer is [src/ui/messages.ts](src/ui/messages.ts), styled in `src/ui/notifications.css`. Add simulation tests for meaningful event/episode rules and use `npm run verify -- notifications --browser=notifications` for the focused checks. That browser check includes a temporary content-only type to verify extensibility, plus screenshots in ignored `test-results/notifications/`.

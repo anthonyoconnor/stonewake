@@ -1,6 +1,6 @@
 # Gameplay interface
 
-The player interface uses a compact, persistent left sidebar with four main categories: Rooms, Defenses, Spells and Workforce. The M20 update separates ordinary actions from development tools, makes unavailable actions explainable by keyboard as well as mouse, and keeps messages and inspection within the sidebar.
+The player interface uses a compact, persistent left sidebar with four main categories: Rooms, Defenses, Spells and Workforce. The M20 update separates ordinary actions from development tools and makes unavailable actions explainable by keyboard as well as mouse. Inspection stays in the sidebar; notifications use a rail and temporary card anchored beside it.
 
 ## Current player interface
 
@@ -9,7 +9,7 @@ The player interface uses a compact, persistent left sidebar with four main cate
 - Rooms, Defenses and Spells share selected and unavailable states. Icon actions remain keyboard-focusable when unavailable, so their cost and reason appear in the sidebar help card on focus or hover. Enter on an unavailable action does nothing. Ordinary actions keep direct activation; Research/Resume and Pause remain available through the selected spell's information or Library research selector.
 - The current world tool is always named above the lower controls. Its ×, Escape or right-click returns to excavation. Releasing a drag over the sidebar cancels it. Focused buttons, disclosures, inputs and dialogs do not drive the world camera; pointer movement at sidebar edges does not pan it. Closing the full map with Escape preserves the tool that was active before the map opened.
 - Selecting a room opens its room information; fixtures open their inspector; character inspection appears at the top of the scrolling panel with a dismiss control and live identity, health, activity and effects. Changing categories clears that inspection. Dwarf role/activity counts expand into informational resident rows with Locate. Enemy information uses the full registered roster and its real stats. Inspection remains usable after an area ends; the result replaces the inactive tool/status strips so the fixed controls remain reachable at compact sizes.
-- Active Hearth-attack, threat and resident-need icons appear above Help. Only one bounded message card expands at a time; its × hides the card while the warning icon remains available. Real damage to the Hearth opens a priority card with Locate; continuous attacks do not repeatedly reopen a dismissed card, and 15 seconds without a hit clears that warning. Individual need dismissal still follows the morale system, including escalation and recovery. Help includes a bounded, per-area history of up to 40 grouped reports and a link to the Hearth objective. History lives only in the current session and reveals only normally reported threats.
+- Notifications use a vertical rail on the right edge of the left sidebar. Icons slide outward with distinct information, warning and danger marks. Click an icon for one anchored detail card; Go to source locates a known fight, resident or place. Card × collapses details; Dismiss, icon ×, right-click or Delete removes the report from the rail. Help retains a bounded per-area history and can reopen details. New reports never steal the camera, focus or an open card. See the notification rules below.
 - The Hearth panel owns campaign briefings and activation. A persistent result card offers travel, restart or the campaign endpoint action supplied by the campaign state. Debug has a separate footer icon; room layouts, test residents/enemies, configuration and harness controls stay there or in an active test world.
 
 `node scripts/interface-browser.mjs` covers the M20 player flows; `scripts/campaign-browser.mjs` verifies real campaign activation, travel and endpoint controls. Before/after and compact-layout captures are kept in ignored `test-results/m20/`.
@@ -166,22 +166,27 @@ Activity and stored-gold visuals must reflect the simulation. Food tables, beds 
 
 ## Messages and the question-mark button
 
-Place the question-mark button at the lower sidebar edge beside the gameplay view. Message icons collect directly above it. A selected or newly raised message opens a dismissible card anchored above the button, beside its icon. Proposed layout: the card may extend a limited distance into the lower-left edge of the gameplay view, following the second reference, while the rest of the world stays clear.
+The question-mark tab sits just outside the lower-right edge of the sidebar. A vertical, scrollable rail of notification icons collects above it. New icons slide out from behind the panel; reduced-motion preferences disable that animation. Reports sort by urgency, then newest first. Unread reports have a small illuminated edge; distinct icons and punctuation distinguish urgency without relying only on color.
 
 This card is a temporary interface overlay, fixed to the screen. It is the explicit place for necessary message text over the gameplay area; it never follows a room or dwarf. Closing it restores the unobstructed view. Sidebar labels and statistics remain separate from these messages.
 
-Each card contains a recognizable category icon, a short explanation, and an obvious dismiss control. Provide an optional locate action when the message concerns a known place. The question-mark button opens help and the message history, including dismissed guidance.
+Click an icon to open its card beside the rail. Each card contains a recognizable icon, short title, explanation and any source or follow-up actions. The question-mark button and Help open the area's history, including dismissed and resolved reports. Selecting a history row reopens its details and still-valid actions. Restart/travel starts a new area's reports; returning from a test world restores the retained stronghold's reports.
 
-Proposed message behavior:
+Current notification behavior:
 
-- Show one expanded card at a time. Keep additional messages as a compact, bounded set of icons or in the history.
+- Show one expanded card at a time. Keep additional messages in the scrollable icon rail or history. Both remain usable at compact desktop sizes. Pointer, keyboard and wheel interaction does not affect the world beneath them; a world drag released on a notification is cancelled.
 - Group repeated instances of the same problem instead of adding a new card for every affected dwarf or simulation update.
 - Use an icon and visual treatment to distinguish information, need problems, and urgent danger; do not rely on color or sound alone.
 - Messages are non-modal and do not steal the camera. Jump to a location only when the player chooses the locate action.
-- Critical events such as an attack on the Hearthstone can open the priority card. Dismissing its text leaves a compact warning icon while the condition remains active, without repeatedly reopening the same card.
-- Dismissing a message acknowledges it; it does not mark its underlying problem as solved. Resolve its active warning when the simulation reports that the condition has cleared.
-- Filling accessible accommodation opens **Dormitory is full**, explaining that expansion is needed for further arrivals, including newly unlocked units. **Build Dormitory** opens Rooms and selects its construction tool. The card is dismissible and its icon remains available during that full episode. Freeing space clears it; filling again opens a fresh message. Reports also appear in message history.
+- New events never automatically open a card or take focus. Danger reports sort first and scroll into view when the player is not interacting with the rail. **Close details** (card × or Escape while focused in the notification) collapses the card and keeps its icon. **Dismiss** (card action, icon ×, right-click on the icon or Delete while focused on it) removes the icon and acknowledges that episode.
+- Dismissing a message does not change the gameplay problem. Continuous attacks and repeated shortage updates stay grouped within an episode, with dismissal preserved. Recovery clears a condition; recurrence or escalation raises a fresh report. Workforce can restore dismissed need icons without changing the residents' support or morale.
+- Filling accessible accommodation raises **Dormitory is full**. **Build Dormitory** opens Rooms and selects its construction tool. Freeing space clears it; filling again starts a fresh episode.
+- First natural recruitment of each resident type in an area produces an arrival report with its type icon, resident name and **Meet new arrival** action. Starting residents and debug spawns do not announce recruitment; later recruits of the same type do not repeat the introduction. This includes Cave Hounds and newly supported specialist dwarfs.
+- **Go to source** resolves resident/enemy targets live and opens inspection. Unknown origins have no coordinates; lost, departed, dead or hidden unit targets disable Locate with a short explanation. Camera location never reveals terrain.
+- Current conditions cover fighting, Hearth damage, warned/active/cleared encounter sources, sustained needs by cause, and full Dormitory accommodation. Combat and Hearth warnings resolve after the quiet intervals in [notificationSettings](src/game/notifications.ts); these do not alter combat or enemy awareness. The same settings own the history limit.
 - Brief ordinary queues should not produce alerts. Notify for meaningful, persistent problems using the thresholds eventually defined by the needs and production systems.
+
+All notification types use the same model, rail, card, dismissal, history and source resolution. Conditions are registered in [notification definitions](src/content/notifications.ts); one-time events call the shared service. Neither path requires a UI branch for the new type. See [Adding notifications](content-playbook.md#add-a-notification). `npm run verify -- notifications --browser=notifications` checks these flows; captures are in ignored `test-results/notifications/`.
 
 Example message wording below illustrates placement and clarity; it does not define new thresholds or mechanics:
 
@@ -200,7 +205,7 @@ Objective briefings, discovered-area explanations, and tutorial guidance use the
 
 The **Hearth** button beneath the gold/population totals opens starting-core health, the onward objective and current campaign briefing. The sidebar distinguishes undiscovered, unreachable, contested, awaiting an available resident, approaching, activating and complete. The stone has no mesh or location disclosure before normal discovery. After discovery, **Activate onward Hearthstone** requests an autonomous physical visit; interruptions reset work and retry the request. Local completion or core defeat shows a persistent sidebar result and **Restart area**, freezing ordinary gameplay while allowing inspection and camera movement. In a development scenario, restart reloads that same scenario. A completed campaign area offers travel to its named next area; the final area shows the resolved journey and **Begin a new journey**.
 
-**Resident needs** groups shortage warnings by cause near the sidebar footer, with an individual Dismiss action per group. Escalation reopens a warning; restoring its support clears it. The Workforce panel shows wellbeing counts, each resident’s cause/status and a control to reopen dismissed warnings. Blocked departures explain the missing Hearth route. All text remains in the sidebar.
+**Resident needs** groups shortage warnings by cause in the notification rail, with an individual Dismiss action per group. Escalation reopens a warning; restoring its support clears it. The Workforce panel shows wellbeing counts, each resident's cause/status and a control to reopen dismissed warnings. Blocked departures explain the missing Hearth route. Details remain in the sidebar or its anchored card.
 
 ## Readability and future content
 

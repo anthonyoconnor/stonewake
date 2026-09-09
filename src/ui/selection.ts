@@ -28,7 +28,7 @@ export class Selection {
     canvas.addEventListener('pointerdown',e=>{if(e.button===2){this.setTool('dig');return;}if(e.button!==0)return;this.start=pick(e);const tile=this.start&&tileAt(view.world,this.start.x,this.start.z);this.dragAdds=this.start&&['dig','erase','wall'].includes(this.tool)?this.tool==='wall'?!tile?.wallPlanned:this.tool==='dig'&&!tile?.designated:undefined;this.hover=this.start;this.draw();canvas.setPointerCapture(e.pointerId);});
     canvas.addEventListener('pointermove',e=>{this.hover=pick(e);this.draw();});
     canvas.addEventListener('pointerup',e=>{
-      if(e.button!==0)return;const bounds=canvas.getBoundingClientRect();const end=e.clientX>=bounds.left&&e.clientX<bounds.right&&e.clientY>=bounds.top&&e.clientY<bounds.bottom?pick(e):undefined;
+      if(e.button!==0)return;const end=document.elementFromPoint(e.clientX,e.clientY)===canvas?pick(e):undefined;
       if(this.start&&end){const points=this.rectangle(this.start,end);
         if(view.world.outcome){const unit=targetAt(view.world,'dwarf-haste',end)??targetAt(view.world,'enemy-slow',end);if(unit)this.onUnitInspect(unit);else if(tileAt(view.world,end.x,end.z)?.known)this.inspect(end);}
         else if(spellById(this.tool)){

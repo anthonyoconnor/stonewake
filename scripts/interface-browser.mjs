@@ -118,17 +118,7 @@ try {
   await page.locator('.resident-row summary').first().click(); await page.locator('[data-locate-dwarf]').first().click();
   assert(await page.locator('#unit-inspection').isVisible()); await snap('residents');
 
-  // Warnings are bounded, dismissible and retrievable through Help.
-  await load('morale'); await advance(265);
-  assert(await page.locator('[data-message="morale-alerts"]').isVisible());
-  await page.locator('#morale-alerts .close-message').click();
-  assert(!(await page.locator('#morale-alerts').isVisible()));
-  await page.locator('[data-message="morale-alerts"]').click(); assert(await page.locator('#morale-alerts').isVisible());
-  await snap('warning');
-  await page.locator('[data-dismiss-morale]').first().click();
-  await panel('Help');
-  assert((await page.locator('#message-history').textContent()).includes('Need'));
-  if(await page.locator('#morale-alerts').isVisible())await page.locator('#morale-alerts .close-message').click();
+  // Notification actions, history and overflow are covered by notifications-browser.mjs.
 
   // At small desktop viewports the fixed essentials remain onscreen and panel actions scroll into view.
   for (const viewport of [{ width: 1024, height: 768 }, { width: 800, height: 600 }]) {
@@ -138,7 +128,7 @@ try {
       const layout = await page.evaluate(() => {
         const side = document.querySelector('#sidebar'), panel = document.querySelector('#panel');
         const controls = [document.querySelector('.categories'), document.querySelector('.camera-tools'), document.querySelector('footer'), document.querySelector('#open-hearth')];
-        return { overflow: side.scrollWidth > side.clientWidth, panelHeight: panel.clientHeight, reachable: controls.every(e => { const r = e.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; }) };
+        return { overflow: panel.scrollWidth > panel.clientWidth, panelHeight: panel.clientHeight, reachable: controls.every(e => { const r = e.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; }) };
       });
       assert(!layout.overflow && layout.reachable && layout.panelHeight >= 90, `${category} ${JSON.stringify(viewport)} ${JSON.stringify(layout)}`);
       const final = page.locator('#panel button:visible').last();
@@ -154,10 +144,11 @@ try {
   let warned = false;
   for(let i=0;i<24 && !(await state()).outcome;i++){
     await advance(10);
-    if(await page.locator('#hearth-alerts').isVisible()){
+    if(await page.locator('.notification-entry[data-key=hearth]').count()){
       warned = true;
-      assert((await page.locator('#hearth-alert-text').textContent()).includes('under attack'));
-      await page.locator('#hearth-alerts .close-message').click();
+      await page.locator('.notification-entry[data-key=hearth] .notification-open').click();
+      assert((await page.locator('#notification-text').textContent()).includes('under attack'));
+      await page.locator('#notification-dismiss').click();
     }
   }
   w = await state(); assert.equal(w.outcome, 'defeat'); assert(warned, 'Real Hearth damage produces a priority message');

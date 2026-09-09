@@ -34,17 +34,20 @@ try {
   assert.equal(result.state.roomServices.filter((s) => s.service === 'dining').length, 0);
   await page.evaluate(() => window.strongholdDev.advance(35));
   assert.equal((await page.evaluate(() => window.strongholdDev.state())).agents.length, 4);
-  const warning = page.locator('#dormitory-alerts');
+  const dormitoryIcon = page.locator('.notification-entry[data-key=dormitory] .notification-open');
+  await dormitoryIcon.click();
+  const warning = page.locator('#notification-card');
   await warning.waitFor({ state: 'visible' });
-  assert.equal(await warning.getAttribute('open'), '');
+  assert(await warning.isVisible());
   assert.match(await warning.textContent(), /Dormitory is full.*Expand/);
-  const icon = await page.locator('[data-message="dormitory-alerts"] .action-icon').boundingBox();
-  assert(icon.width <= 24 && icon.height <= 24, 'Message icon stays inside the compact dock');
+  const icon = await dormitoryIcon.locator('.action-icon').boundingBox();
+  assert(icon.width <= 36 && icon.height <= 36, 'Message icon stays inside the compact dock');
   await page.screenshot({ path: 'test-results/recruitment-dormitory-full.png' });
-  await warning.getByRole('button', { name: 'Dismiss dormitory is full card' }).click();
+  await page.locator('#notification-dismiss').click();
   await page.evaluate(() => window.strongholdDev.advance(2));
-  assert.equal(await warning.getAttribute('open'), null, 'Dismissal persists during the same full episode');
-  await page.locator('[data-message="dormitory-alerts"]').click();
+  assert.equal(await dormitoryIcon.count(), 0, 'Dismissal persists during the same full episode');
+  await page.locator('#notification-history').click();
+  await page.locator('.history-report[data-key=dormitory]').click();
   await warning.getByRole('button', { name: 'Build Dormitory', exact: true }).click();
   assert.match(await page.locator('#active-tool').textContent(), /Dormitory/);
   await page.evaluate(async () => {
@@ -67,8 +70,9 @@ try {
   assert.equal(expanded.roomServices.filter((s) => s.service === 'rest').length, 8);
   assert.equal(expanded.agents.length, 8);
   assert.equal(expanded.recruitment.fullEpisode, 2);
-  assert.equal(await warning.getAttribute('open'), '', 'Filling again opens a fresh warning');
-  await warning.getByRole('button', { name: 'Dismiss dormitory is full card' }).click();
+  await dormitoryIcon.click();
+  assert(await warning.isVisible(), 'Filling again creates a fresh warning');
+  await page.locator('#notification-dismiss').click();
   assert(expanded.agents.every((a) => a.pay.due.length === 0 && a.pay.collections === 0 && a.level === 1));
   await page.getByRole('button', { name: 'Workforce', exact: true }).click();
   await page.locator('[data-dwarf-role="cave-hound"]').click();
@@ -119,7 +123,7 @@ try {
     'New beds go to supported Warriors',
   );
   assert(progressed.recruitment.dormitoryFull);
-  await warning.getByRole('button', { name: 'Dismiss dormitory is full card' }).click();
+  await page.locator('#notification-dismiss').click();
   await page.getByRole('button', { name: 'Help', exact: true }).click();
   assert.match(await page.locator('#message-history').textContent(), /Dormitory is full/);
   assert.deepEqual(errors, []);

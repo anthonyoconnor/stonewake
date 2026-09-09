@@ -4,6 +4,7 @@ import { tuning } from '../content/tuning.ts';
 import { canStand, reachable } from './navigation.ts';
 import { alive } from './spell-effects.ts';
 import { goldTotal, spendGold } from './rooms.ts';
+import { notify } from './notifications.ts';
 export function hearthArrival(w: World): Point | undefined {
   const chest = w.roomServices.find((f) => f.id === 'hearth-treasury');
   const approaches = chest
@@ -80,6 +81,7 @@ export function enableRecruitment(w: World, enabled = true) {
     fullEpisode: 0,
   };
   w.recruitment.enabled = enabled;
+  w.recruitment.seenTypes ??= [...new Set(w.agents.map(a => a.type))];
   w.recruitment.nextAt = w.elapsed;
 }
 export const dormitoryFullMessage =
@@ -151,7 +153,19 @@ export function recruitSpecialist(w: World, spawn: (type: string, origin: Point)
     w.elapsed < (state.lastArrivalAt ?? -Infinity) + tuning.arrivalSpacingSeconds
   )
     return;
+  state.seenTypes ??= [...new Set(w.agents.map(a => a.type))];
   if (spawn(next.def.id, support.start!)) {
+    if (!state.seenTypes.includes(next.def.id)) {
+      state.seenTypes.push(next.def.id);
+      const resident = w.agents.find(a => a.type === next.def.id && alive(a));
+      if (resident) notify(w, {
+        key: `arrival:${next.def.id}`, category: 'Arrival', icon: next.def.id,
+        title: `${next.def.name} joined your stronghold`, priority: 'info', event: true,
+        message: `${resident.name} is your first ${next.def.name} in this area. Your stronghold now attracts this type of resident.`,
+        sources: [{ kind: 'resident', id: resident.id }], locateLabel: 'Meet new arrival',
+        action: { kind: 'panel', value: 'dwarfs', label: 'View workforce' },
+      });
+    }
     state.readyAt[next.def.id] = w.elapsed + next.def.recruitment!.seconds;
     state.lastArrivalAt = w.elapsed;
     state.cursor = (next.index + 1) % candidates.length;

@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export const groups: Record<string, string[]> = {
+  notifications: ['notifications', 'recruitment', 'morale'],
   pricing: ['stonehands', 'settings'],
   workforce: ['stonehands', 'cave-hounds', 'recruitment'],
   security: ['security', 'cave-hounds', 'miner-work-pool', 'movement', 'defenses', 'spells'],
@@ -15,6 +16,7 @@ export const groups: Record<string, string[]> = {
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  notifications: [['scripts/notifications-browser.mjs']],
   pricing: [['scripts/workforce-browser.mjs', 'pricing']],
   workforce: [['scripts/workforce-browser.mjs', 'overview']],
   characters: [['scripts/workforce-browser.mjs', 'stats']],
@@ -24,7 +26,7 @@ export const browserChecks: Record<string, string[][]> = {
   security: [['scripts/security-browser.mjs']],
   campaign: [['scripts/campaign-browser.mjs']], interface: [['scripts/interface-browser.mjs']],
   smoke: [['scripts/browser-smoke.mjs']],
-  integration: [['scripts/browser-smoke.mjs'], ['scripts/interface-browser.mjs'], ['scripts/campaign-browser.mjs']],
+  integration: [['scripts/browser-smoke.mjs'], ['scripts/interface-browser.mjs'], ['scripts/notifications-browser.mjs'], ['scripts/campaign-browser.mjs']],
 };
 
 function dependencies(file: string, seen = new Set<string>()): Set<string> {

@@ -1,159 +1,255 @@
 import type { Sidebar } from './sidebar';
 import type { World } from '../game/types';
-import { encounterSummary } from '../game/encounters';
-import { moraleAlerts } from '../game/morale';
-import { dormitoryFullMessage } from '../game/recruitment';
+import { refreshNotifications } from '../content/notifications';
+import {
+  activeNotifications,
+  dismissNotification,
+  notificationHistory,
+  notificationLocation,
+  type Notification,
+} from '../game/notifications';
 import { actionIcon } from './icons';
+import './notifications.css';
 
-type Report = { id: string; kind: string; message: string };
-const histories = new WeakMap<World, Map<string, Report>>();
-
-/** One bounded card above the footer; warnings retain their simulation-owned dismissal rules. */
+/** One renderer for every report. Content owns wording, icons, priority and actions. */
 export class MessageCenter {
-  private dock = document.createElement('div');
-  private cards = document.createElement('section');
-  private hearthEpisodes = new WeakMap<World, boolean>();
-  private dormitoryEpisodes = new WeakMap<World, number>();
-  private endedWorlds = new WeakSet<World>();
+  private rail = document.createElement('section');
+  private list = document.createElement('div');
+  private card = document.createElement('section');
+  private announcer = document.createElement('div');
+  private buttons = new Map<number, HTMLElement>();
+  private world?: World;
+  private selected?: Notification;
+  private announced = 0;
   constructor(private sidebar: Sidebar) {
-    this.dock.className = 'message-dock';
-    this.dock.setAttribute('aria-label', 'Stronghold messages');
-    this.cards.id = 'sidebar-messages';
-    const hearth = document.createElement('details');
-    hearth.id = 'hearth-alerts';
-    hearth.className = 'threat-reports';
-    hearth.hidden = true;
-    hearth.innerHTML =
-      '<summary>Hearth under attack</summary><div><p id="hearth-alert-text" role="status"></p><button class="wide" id="locate-attacked-hearth">Locate Hearthstone</button></div>';
-    hearth.querySelector<HTMLButtonElement>('button')!.onclick = () => sidebar.controls.home();
-    sidebar.root.append(hearth);
-    const dormitory = document.createElement('details');
-    dormitory.id = 'dormitory-alerts';
-    dormitory.className = 'threat-reports';
-    dormitory.hidden = true;
-    dormitory.innerHTML = `<summary>Dormitory is full</summary><div><p role="status">${dormitoryFullMessage}</p><button class="wide" id="expand-dormitory">Build Dormitory</button></div>`;
-    dormitory.querySelector<HTMLButtonElement>('button')!.onclick = () => {
-      sidebar.show('rooms');
-      sidebar.selection.setTool('dormitory');
-      dormitory.open = false;
-      this.syncCards(dormitory);
+    this.rail.id = 'notification-rail';
+    this.rail.setAttribute('aria-label', 'Stronghold notifications');
+    this.list.className = 'notification-list';
+    this.list.setAttribute('aria-label', 'Active reports');
+    const history = document.createElement('button');
+    history.id = 'notification-history';
+    history.textContent = '?';
+    history.title = 'Help and notification history';
+    history.setAttribute('aria-label', history.title);
+    history.onclick = () => {
+      this.close();
+      sidebar.show('help');
     };
-    sidebar.root.append(dormitory);
-    for (const [id, label, icon] of [
-      ['hearth-alerts', 'Hearth under attack', '◇'],
-      ['encounter-alerts', 'Threat reports', '⚔'],
-      ['morale-alerts', 'Resident needs', '♟'],
-      ['dormitory-alerts', 'Dormitory is full', ''],
-    ]) {
-      const card = sidebar.root.querySelector<HTMLDetailsElement>(`#${id}`)!;
-      const button = document.createElement('button');
-      button.dataset.message = id;
-      button.title = label;
-      button.setAttribute('aria-label', label);
-      button.setAttribute('aria-controls', id);
-      button.textContent = icon;
-      if (id === 'dormitory-alerts') button.innerHTML = actionIcon('dormitory');
-      button.onclick = () => {
-        card.open = !card.open;
-        this.syncCards(card);
-      };
-      this.dock.append(button);
-      this.cards.append(card);
-      const close = document.createElement('button');
-      close.className = 'close-message';
-      close.textContent = '×';
-      close.title = `Dismiss ${label.toLowerCase()} card`;
-      close.setAttribute('aria-label', close.title);
-      close.onclick = () => {
-        card.open = false;
-        this.syncCards(card);
-      };
-      card.append(close);
-      card.addEventListener('toggle', () => this.syncCards(card));
-    }
-    sidebar.root.querySelector('footer')!.before(this.dock, this.cards);
-  }
-  private syncCards(changed?: HTMLDetailsElement) {
-    const cards = this.cards.querySelectorAll<HTMLDetailsElement>('details');
-    if (changed?.open)
-      cards.forEach((c) => {
-        if (c !== changed) c.open = false;
+    this.rail.append(this.list, history);
+    this.card.id = 'notification-card';
+    this.card.hidden = true;
+    this.card.setAttribute('aria-labelledby', 'notification-title');
+    this.card.innerHTML =
+      '<header><span class="notification-card-icon" aria-hidden="true"></span><div><small id="notification-category"></small><h2 id="notification-title"></h2></div><button id="close-notification" aria-label="Close notification details" title="Close details (Escape)">×</button></header><p id="notification-text"></p><p id="notification-source-status" class="muted"></p><div class="notification-actions"><button id="notification-locate"></button><button id="notification-action"></button><button id="notification-dismiss">Dismiss</button></div>';
+    this.card.querySelector<HTMLButtonElement>('#close-notification')!.onclick = () => this.close(true);
+    this.card.querySelector<HTMLButtonElement>('#notification-dismiss')!.onclick = () =>
+      this.dismiss(this.selected!);
+    this.card.querySelector<HTMLButtonElement>('#notification-locate')!.onclick = () => {
+      const w = sidebar.view.world,
+        source = this.selected?.sources?.find((s) => notificationLocation(w, s));
+      const point = source && notificationLocation(w, source);
+      if (!source || !point) {
+        this.renderCard();
+        return;
+      }
+      sidebar.controls.center(point.x, point.z);
+      if (source.kind !== 'point')
+        sidebar.inspectedUnit = { kind: source.kind === 'resident' ? 'dwarf' : 'enemy', id: source.id };
+      this.close();
+      sidebar.update();
+    };
+    this.card.querySelector<HTMLButtonElement>('#notification-action')!.onclick = () => {
+      const action = this.selected?.action;
+      if (!action || (action.kind === 'tool' && sidebar.view.world.outcome)) return;
+      this.close();
+      sidebar.show(action.kind === 'panel' ? action.value : 'rooms');
+      if (action.kind === 'tool') sidebar.selection.setTool(action.value);
+    };
+    this.announcer.className = 'sr-only';
+    this.announcer.setAttribute('role', 'status');
+    this.announcer.setAttribute('aria-live', 'polite');
+    sidebar.root.append(this.rail, this.card, this.announcer);
+    for (const element of [this.rail, this.card]) {
+      element.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
       });
-    cards.forEach((c) => {
-      const button = this.dock.querySelector<HTMLButtonElement>(`[data-message="${c.id}"]`)!;
-      button.hidden = c.hidden;
-      button.setAttribute('aria-expanded', String(c.open && !c.hidden));
-      button.classList.toggle('active', c.open && !c.hidden);
-    });
-    this.dock.hidden = Array.from(cards).every((c) => c.hidden);
+      element.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.selected) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.close(true);
+        }
+      });
+    }
+  }
+  private close(returnFocus = false) {
+    const selected = this.selected;
+    this.selected = undefined;
+    this.card.hidden = true;
+    if (returnFocus && selected)
+      (
+        this.buttons.get(selected.id)?.querySelector('button') ??
+        this.rail.querySelector<HTMLButtonElement>('#notification-history')
+      )?.focus();
+    this.syncSelection();
+  }
+  private open(report: Notification) {
+    if (this.selected?.id === report.id) {
+      this.close();
+      return;
+    }
+    this.selected = report;
+    report.read = true;
+    this.renderCard();
+    this.syncSelection();
+  }
+  private dismiss(report: Notification) {
+    const focused =
+      this.buttons.get(report.id)?.contains(document.activeElement) ||
+      this.card.contains(document.activeElement);
+    dismissNotification(this.sidebar.view.world, report.id);
+    if (this.selected?.id === report.id) this.close();
+    this.update();
+    if (focused)
+      (this.list.querySelector<HTMLButtonElement>('.notification-open') ??
+        this.rail.querySelector<HTMLButtonElement>('#notification-history'))!.focus();
+  }
+  private syncSelection() {
+    const reports = activeNotifications(this.sidebar.view.world);
+    for (const [id, entry] of this.buttons) {
+      entry
+        .querySelector('.notification-open')!
+        .setAttribute('aria-expanded', String(this.selected?.id === id));
+      entry.classList.toggle('selected', this.selected?.id === id);
+      entry.classList.toggle('unread', !reports.find((n) => n.id === id)?.read);
+    }
+  }
+  private renderCard() {
+    const report = this.selected;
+    if (!report) return;
+    const w = this.sidebar.view.world;
+    this.card.hidden = false;
+    this.card.dataset.key = report.key;
+    this.card.dataset.priority = report.priority;
+    const icon = this.card.querySelector<HTMLElement>('.notification-card-icon')!;
+    if (icon.dataset.icon !== report.icon) {
+      icon.dataset.icon = report.icon;
+      icon.innerHTML = actionIcon(report.icon);
+    }
+    this.card.querySelector('#notification-category')!.textContent =
+      `${report.category} · ${report.priority === 'danger' ? 'Urgent' : report.priority === 'warning' ? 'Attention' : 'Information'}${!report.active ? ' · Archived' : report.dismissed ? ' · Dismissed' : ''}`;
+    this.card.querySelector('#notification-title')!.textContent = report.title;
+    this.card.querySelector('#notification-text')!.textContent = report.message;
+    const available = report.sources?.some((s) => notificationLocation(w, s));
+    const locate = this.card.querySelector<HTMLButtonElement>('#notification-locate')!;
+    locate.hidden = report.sources === undefined;
+    locate.textContent = report.locateLabel ?? 'Go to source';
+    locate.disabled = !available;
+    const status = this.card.querySelector<HTMLElement>('#notification-source-status')!;
+    status.hidden = report.sources === undefined || !!available;
+    status.textContent = report.sources?.length
+      ? 'Source is no longer available or visible.'
+      : 'Source location has not been discovered.';
+    const action = this.card.querySelector<HTMLButtonElement>('#notification-action')!;
+    action.hidden = !report.action;
+    action.textContent = report.action?.label ?? '';
+    action.disabled = !!w.outcome && report.action?.kind === 'tool';
+    this.card.querySelector<HTMLButtonElement>('#notification-dismiss')!.hidden =
+      !report.active || report.dismissed;
   }
   update() {
     const w = this.sidebar.view.world;
-    if (w.outcome && !this.endedWorlds.has(w)) {
-      this.cards.querySelectorAll<HTMLDetailsElement>('details').forEach((card) => (card.open = false));
-      this.endedWorlds.add(w);
+    if (w !== this.world) {
+      this.world = w;
+      this.close();
+      this.buttons.clear();
+      this.list.replaceChildren();
+      this.announced = 0;
     }
-    const anchor = this.sidebar.root.querySelector<HTMLElement>(
-      w.outcome ? '#level-outcome' : '.camera-tools',
-    )!;
-    this.cards.style.bottom = `${this.sidebar.root.getBoundingClientRect().bottom - anchor.getBoundingClientRect().top + 6}px`;
-    if (!histories.has(w)) histories.set(w, new Map());
-    const history = histories.get(w)!;
-    const dormitory = this.cards.querySelector<HTMLDetailsElement>('#dormitory-alerts')!;
-    dormitory.hidden = !!w.outcome || !w.recruitment?.enabled || !w.recruitment.dormitoryFull;
-    if (!dormitory.hidden) {
-      const episode = w.recruitment!.fullEpisode;
-      history.set(`dormitory:${episode}`, {
-        id: `dormitory:${episode}`,
-        kind: 'Arrival',
-        message: dormitoryFullMessage,
-      });
-      if (this.dormitoryEpisodes.get(w) !== episode) {
-        dormitory.open = true;
-        this.syncCards(dormitory);
-        this.dormitoryEpisodes.set(w, episode);
+    refreshNotifications(w);
+    const reports = activeNotifications(w),
+      ids = new Set(reports.map((n) => n.id));
+    for (const [id, entry] of this.buttons)
+      if (!ids.has(id)) {
+        entry.remove();
+        this.buttons.delete(id);
       }
-    } else dormitory.open = false;
-    const attacked = !w.outcome && w.hearthState?.hitAt !== undefined && w.elapsed - w.hearthState.hitAt < 15;
-    const hearth = this.cards.querySelector<HTMLDetailsElement>('#hearth-alerts')!;
-    hearth.hidden = !attacked;
-    if (attacked) {
-      const message = `The Stone Hearth is under attack. ${Math.ceil(w.hearthState!.health)} / ${w.hearthState!.maxHealth} health. Defend it to keep the passage alive.`;
-      const text = hearth.querySelector('#hearth-alert-text')!;
-      if (text.textContent !== message) text.textContent = message;
-      history.set('hearth-attack', { id: 'hearth-attack', kind: 'Hearth', message });
-      if (!this.hearthEpisodes.get(w)) {
-        hearth.open = true;
-        this.syncCards(hearth);
+    for (const report of reports) {
+      let entry = this.buttons.get(report.id);
+      if (!entry) {
+        entry = document.createElement('div');
+        entry.className = 'notification-entry';
+        entry.dataset.key = report.key;
+        const open = document.createElement('button');
+        open.className = 'notification-open';
+        open.innerHTML = `${actionIcon(report.icon)}<span class="notification-priority" aria-hidden="true"></span>`;
+        open.setAttribute('aria-controls', this.card.id);
+        open.onclick = () => this.open(report);
+        open.oncontextmenu = (e) => {
+          e.preventDefault();
+          this.dismiss(report);
+        };
+        open.onkeydown = (e) => {
+          if (e.key === 'Delete') {
+            e.preventDefault();
+            this.dismiss(report);
+          }
+        };
+        const dismiss = document.createElement('button');
+        dismiss.className = 'notification-remove';
+        dismiss.textContent = '×';
+        dismiss.onclick = () => this.dismiss(report);
+        entry.append(open, dismiss);
+        this.buttons.set(report.id, entry);
       }
+      entry.dataset.priority = report.priority;
+      const open = entry.querySelector<HTMLButtonElement>('.notification-open')!;
+      if (open.dataset.icon !== report.icon) {
+        open.dataset.icon = report.icon;
+        open.querySelector('.action-icon')?.remove();
+        open.insertAdjacentHTML('afterbegin', actionIcon(report.icon));
+      }
+      open.title = `${report.title} · ${report.priority === 'danger' ? 'Urgent' : report.category}. Click for details; right-click or Delete to dismiss.`;
+      open.setAttribute('aria-label', report.title);
+      entry.querySelector('.notification-priority')!.textContent =
+        report.priority === 'danger' ? '!' : report.priority === 'warning' ? '·' : '+';
+      entry.querySelector('.notification-remove')!.setAttribute('aria-label', `Dismiss ${report.title}`);
     }
-    this.hearthEpisodes.set(w, attacked);
-    this.syncCards();
-    for (const report of encounterSummary(w)) {
-      const id = `threat:${report.id}:${report.phase}:${report.waves}`;
-      history.set(id, { id, kind: 'Threat', message: `${report.name} · ${report.status}` });
-    }
-    for (const report of moraleAlerts(w)) {
-      const id = `need:${report.id}:${report.severity}`;
-      history.set(id, {
-        id,
-        kind: 'Need',
-        message: `${report.title} · ${report.count} residents. ${report.message}`,
-      });
-    }
-    while (history.size > 40) history.delete(history.keys().next().value!);
-    const list = this.sidebar.panel.querySelector('#message-history');
+    // Preserve elements: live updates must not restart animation or lose focus.
+    reports.forEach((report, index) => {
+      const entry = this.buttons.get(report.id)!;
+      if (this.list.children[index] !== entry)
+        this.list.insertBefore(entry, this.list.children[index] ?? null);
+    });
+    const fresh = reports.filter((n) => n.id > this.announced),
+      history = notificationHistory(w);
+    this.announced = Math.max(this.announced, ...history.map((n) => n.id));
+    if (fresh.length) this.announcer.textContent = fresh.map((n) => n.title).join('. ');
+    if (fresh.some((n) => n.priority === 'danger') && !this.rail.contains(document.activeElement))
+      this.list.scrollTop = 0;
+    if (this.selected && !this.selected.active && !history.includes(this.selected)) this.close();
+    this.syncSelection();
+    this.renderCard();
+    const list = this.sidebar.panel.querySelector<HTMLElement>('#message-history');
     if (list) {
-      const reports = Array.from(history.values()).reverse();
-      const signature = JSON.stringify(reports);
-      if ((list as HTMLElement).dataset.reports !== signature) {
-        (list as HTMLElement).dataset.reports = signature;
+      const signature = JSON.stringify(history.map((n) => [n.id, n.title, n.active, n.dismissed]));
+      if (list.dataset.reports !== signature) {
+        list.dataset.reports = signature;
         list.replaceChildren();
-        if (!reports.length) list.textContent = 'No reports in this area yet.';
-        for (const report of reports) {
-          const item = document.createElement('p');
-          item.textContent = `${report.kind} · ${report.message}`;
-          list.append(item);
+        if (!history.length) list.textContent = 'No reports in this area yet.';
+        for (const report of history) {
+          const button = document.createElement('button');
+          button.className = 'history-report';
+          button.dataset.key = report.key;
+          const title = document.createElement('strong');
+          title.textContent = report.title;
+          const detail = document.createElement('small'),
+            seconds = Math.floor(report.at);
+          detail.textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')} · ${report.category} · ${report.dismissed ? 'Dismissed' : report.active ? 'Active' : 'Archived'}`;
+          button.append(title, detail);
+          button.onclick = () => this.open(report);
+          list.append(button);
         }
       }
     }
@@ -162,7 +258,7 @@ export class MessageCenter {
     const section = document.createElement('details');
     section.className = 'production';
     section.open = true;
-    section.innerHTML = '<summary>Message history</summary><div id="message-history"></div>';
+    section.innerHTML = '<summary>Notification history</summary><div id="message-history"></div>';
     panel.append(section);
     const objective = document.createElement('button');
     objective.className = 'wide';

@@ -233,7 +233,7 @@ try {
     assert.equal(w.agents.length, 4);
     assert(w.agents.every((a) => !a.morale.leaving && a.morale.active.includes('food')));
     assert.equal(
-      await page.locator('[data-morale-cause]').count(),
+      await page.locator('.notification-entry[data-key^="need:"]').count(),
       0,
       'Brief shortages do not produce warnings or immediate departure',
     );
@@ -253,7 +253,7 @@ try {
       2,
     );
     assert.equal(w.departures?.length ?? 0, 0);
-    assert.equal(await page.locator('[data-morale-cause]').count(), 0);
+    assert.equal(await page.locator('.notification-entry[data-key^="need:"]').count(), 0);
     await screenshot('m14-support-restored', page.locator('#morale-summary'));
     console.log('M14: temporary shortages recover without warnings or resident loss.');
 
@@ -273,7 +273,7 @@ try {
       'Reachable funded wages cancel the departure before any dwarf exits',
     );
     assert.equal(
-      await page.locator('[data-morale-cause="pay"]').count(),
+      await page.locator('.notification-entry[data-key="need:pay"]').count(),
       0,
       'Resolved wage warning clears immediately',
     );
@@ -295,22 +295,25 @@ try {
     w = await state();
     assert.equal(w.agents.length, 4);
     assert(w.agents.every((a) => !a.morale.leaving));
-    const foodAlert = page.locator('[data-morale-cause="food"]');
-    const payAlert = page.locator('[data-morale-cause="pay"]');
+    const foodAlert = page.locator('.notification-entry[data-key="need:food"]');
+    const payAlert = page.locator('.notification-entry[data-key="need:pay"]');
     assert.equal(await foodAlert.count(), 1);
     assert.equal(await payAlert.count(), 1);
-    assert.match(await foodAlert.textContent(), /4/);
-    assert.match(await payAlert.textContent(), /4/);
+    await foodAlert.locator('.notification-open').click();
+    assert.match(await page.locator('#notification-text').textContent(), /4 residents/);
+    await payAlert.locator('.notification-open').click();
+    assert.match(await page.locator('#notification-text').textContent(), /4 residents/);
+    await page.locator('#close-notification').click();
     await screenshot('m14-grouped-need-warnings');
     await page.setViewportSize({ width: 1440, height: 768 });
-    await screenshot('m14-need-warnings-compact', page.locator('[data-dismiss-morale="pay"]'));
-    const dismissBox = await page.locator('[data-dismiss-morale="pay"]').boundingBox();
+    await screenshot('m14-need-warnings-compact', page.locator('.notification-entry[data-key="need:pay"] .notification-remove'));
+    const dismissBox = await page.locator('.notification-entry[data-key="need:pay"] .notification-remove').boundingBox();
     assert(
       dismissBox.y >= 0 && dismissBox.y + dismissBox.height <= 768,
       'Need warning controls remain reachable within a smaller viewport',
     );
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.locator('[data-dismiss-morale="food"]').click();
+    await page.locator('.notification-entry[data-key="need:food"] .notification-remove').click();
     assert.equal(await foodAlert.count(), 0);
     assert.equal(await payAlert.count(), 1, 'Dismissing one cause preserves the other warning');
     await advance(2);
@@ -318,7 +321,7 @@ try {
     await page.locator('.population-details').evaluate(e => { e.open = true; });
     await page.locator('#reopen-morale').click();
     assert.equal(await foodAlert.count(), 1, 'The Dwarfs panel can reopen dismissed need warnings');
-    await page.locator('[data-dismiss-morale="food"]').click();
+    await page.locator('.notification-entry[data-key="need:food"] .notification-remove').click();
 
     await advance(126);
     w = await state();

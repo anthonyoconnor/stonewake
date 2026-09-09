@@ -41,7 +41,7 @@ export interface World {
   barrier?:Point&{health:number;maxHealth:number;until:number};
   rally?:Point&{until:number;radius:number};
   spellBursts?:Array<Point&{id:string;at:number;radius:number}>;
-  recruitment?:{enabled:boolean;nextAt:number;cursor:number;readyAt:Record<string,number>;lastArrivalAt?:number;preferred?:string;dormitoryFull:boolean;fullEpisode:number};
+  recruitment?:{enabled:boolean;nextAt:number;cursor:number;readyAt:Record<string,number>;lastArrivalAt?:number;preferred?:string;dormitoryFull:boolean;fullEpisode:number;seenTypes?:string[]};
   encounters?:EncounterState[];
   outcome?:'defeat'|'victory';
   hearthState?:HearthState;
