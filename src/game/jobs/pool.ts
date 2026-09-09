@@ -182,7 +182,9 @@ export function choosePoolJob(w: World, a: Resident, pool: WorkPool) {
     if (fullLoads.length && chooseGroup(w, a, fullLoads, 'haul', a.workAssignment?.group === 'resource'))
       return true;
   }
-  if (a.workAssignment && a.workAssignment.remaining > 0 && chooseGroup(w, a, pool, a.workAssignment.group))
+  // Reinforcement is background work: finish its current tile, then reconsider
+  // the whole pool even when the productive assignment still has time left.
+  if (a.workAssignment && a.workAssignment.group !== 'reinforce' && a.workAssignment.remaining > 0 && chooseGroup(w, a, pool, a.workAssignment.group))
     return true;
   // No reachable work in that role, or the productive stint has ended. Choose
   // a fresh assignment normally; never abandon an unfinished task to do this.

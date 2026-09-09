@@ -47,7 +47,7 @@ try {
   assert.equal(await page.locator('#active-tool').textContent(), 'Excavate');
   const beforeCamera = await camera();
   await page.keyboard.down('w'); await page.waitForTimeout(150); await page.keyboard.up('w');
-  await page.mouse.move(2, 450); await page.waitForTimeout(150);
+  await page.mouse.move(120, 450); await page.waitForTimeout(150);
   await page.mouse.wheel(0, 600); await page.waitForTimeout(100);
   assert.deepEqual(await camera(), beforeCamera, 'Focused/sidebar input does not move or zoom camera');
 

@@ -186,3 +186,47 @@ test('three miners complete excavation and both walls without abandoning unfinis
   assert.equal(w.tiles.filter((t) => t.x === 9 && t.z >= 3 && t.z <= 10 && t.terrain === 'floor').length, 8);
   for (const x of [11, 12]) assert(tileAt(w, x, 13)!.reinforced, 'Both planned walls finish');
 });
+
+function backgroundYard() {
+  const w = createMinerWorkLab(false, 'stonehand');
+  w.agents = w.agents.slice(0, 1);
+  for (const t of w.tiles) { t.designated = false; t.loose = 0; t.wallPlanned = false; }
+  return w;
+}
+
+test('reinforcement finishes one tile then yields its remaining stint to new excavation or claiming', () => {
+  for (const kind of ['mine', 'claim'] as const) {
+    const w = backgroundYard(), a = w.agents[0];
+    until(w, () => a.job?.kind === 'reinforce' && a.job.progress > .1, 10);
+    const job = a.job!, wall = tileAt(w, job.target.x, job.target.z)!;
+    const target = tileAt(w, 9, 5)!;
+    if (kind === 'mine') designate(w, [target]);
+    else { target.terrain = 'floor'; target.claimed = false; }
+    tick(w, .05);
+    assert.equal(a.job, job, 'Finish the in-progress tile without switching repeatedly');
+    until(w, () => a.job?.kind === kind, 15);
+    assert(wall.reinforced, 'Complete the old reservation before yielding');
+    assert.deepEqual(a.job!.target, { x: target.x, z: target.z });
+    assert.notEqual(a.workAssignment?.group, 'reinforce');
+    until(w, () => target.claimed, 20);
+    until(w, () => a.job?.kind === 'reinforce', 15);
+  }
+});
+
+test('blocked dig and claim targets permit background work and opening access overrides its stint', () => {
+  const w = backgroundYard(), a = w.agents[0], target = tileAt(w, 14, 8)!;
+  for (const kind of ['mine', 'claim'] as const) {
+    releaseJob(w, a);
+    target.terrain = kind === 'mine' ? 'dirt' : 'floor';
+    target.claimed = false; target.designated = kind === 'mine';
+    for (const n of neighbors(w, target)) n.terrain = 'bedrock';
+    a.workAssignment = { group: 'reinforce', target: { x: 9, z: 5 }, remaining: 19 };
+    chooseJob(w, a);
+    assert.equal(a.job?.kind, 'reinforce', 'Unreachable orders must not idle a worker');
+    releaseJob(w, a);
+    tileAt(w, 13, 8)!.terrain = 'floor';
+    chooseJob(w, a);
+    assert.equal(a.job?.kind, kind, 'Newly reachable work beats the old background stint');
+    target.designated = false; target.claimed = true;
+  }
+});

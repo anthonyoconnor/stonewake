@@ -723,3 +723,32 @@ Reduced the starting cavern to a walking ring around the Hearth, requiring excav
 ### 2026-09-08 — Main-view resource visibility
 
 Gold seams and gem columns now render through unexplored terrain in the main play area, including when panning, rotating and zooming. Resource visibility does not discover tiles or change mining access, and surrounding terrain remains fogged. Updated the visibility references. Verified source/test typecheck and four world/discovery tests with npm run verify -- world. The focused resource-visibility browser check passed resource materials, surrounding fog and unchanged discovery after camera navigation; visually inspected test-results/resources/main-view.png. No browser runtime errors.
+
+## 2026-09-08 — M23 and M34 complete
+
+M23: the work-pool assignment fast path previously reused reinforcement for its whole productive stint, even after new excavation/claiming became reachable. Reinforcement now finishes one tile and then takes the normal full-pool allocation path. Real job reservations release at completion; unsafe/unreachable or already staffed work does not idle spare workers. Resource delivery, explicit construction and immediate retreat remain unchanged. Owning rules: characters.md, Miner work allocation.
+
+M34: reproduced the left-edge failure by restoring canvas-only pointer filtering in the browser. Sidebar overlap discarded the pointer before edge calculation. Mouse movement in the outer left viewport band now reaches camera controls; the internal sidebar boundary does not. Sidebar clicking/scrolling, leave/blur and open dialogs suppress movement as appropriate. Rotated view directions and zoom remain stable. Starting-menu suppression will be integrated when M25 adds that menu.
+
+Verification: `npm run verify -- work --browser=camera` passed source/test typecheck, 37 focused work/resource/movement/security simulations and camera browser checks at 1440×900 and 800×600, with all four directions at two angles, stop-on-move-away, ordinary panel input, leave/blur and full map. `node scripts/work-priorities-browser.mjs` observed the normal three-Stonehand crew already reinforcing, then clearing/claiming a newly marked 4×5 area by 40 game seconds with no free construction or supplied resources. The two renewable gem tiles correctly stayed intact and productive; an initial assertion expecting those to become claimed floor was corrected to match the existing gem rules. Captures are in ignored test-results/m23 and test-results/m34. No campaign playthrough or production build was needed for these focused milestones.
+
+### Archived milestone specifications
+### M23 — Stonehand work priorities
+
+- Investigate the reported preference for wall reinforcement while digging and claiming remain available, including work-pool allocation and the existing productive-assignment window.
+- Make reachable player-designated excavation and reachable floor claiming take precedence over automatic reinforcement. Reinforcement is background work when higher-priority terrain work is unavailable; unreachable or unsafe marks must not stall all useful work.
+- Preserve resource collection, deliveries, explicit construction and threat escape. Define how an existing reinforcement assignment yields without repeated job switching or abandoned reservations in characters.md.
+
+Complete when ordinary crews expand and claim a marked area before spending spare capacity reinforcing it, including newly added dig orders, mixed resource work, blocked routes and work resumption after danger. Verify focused job simulations and one ordinary browser observation.
+
+### M34 — Left-edge camera panning across the sidebar
+
+Early bug fix; independent of campaign expansion.
+
+- Reproduce the reported failure to pan left when the pointer reaches the far-left game viewport edge. Right, top and bottom edges reportedly work; inspect sidebar/input suppression before asserting the cause.
+- Allow camera panning at the outer left viewport edge even where the sidebar occupies that edge. This user decision supersedes the previous blanket rule that sidebar-edge pointer movement never pans.
+- Keep ordinary sidebar hovering, clicks and scrolling from moving the camera; use the outer viewport edge, not the internal sidebar/world boundary, as the trigger. Preserve view-relative direction after camera rotation.
+- Stop edge movement when the pointer leaves the viewport or the window loses focus. Preserve intentional camera suppression for the starting menu, full map and modal dialogs.
+- Update the interface rules and add a focused browser regression for the actual viewport edge, including sidebar overlap, all four directions, rotated view and compact layouts.
+
+Complete when reaching the far-left edge pans the view left as reliably as the other edges, moving away stops it, and normal sidebar use remains stable. Run a source/test typecheck and the focused camera/input browser check; no campaign playthrough is required for this isolated fix.

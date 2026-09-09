@@ -75,6 +75,8 @@ Use the smallest check that covers the change. A test script is not a prerequisi
 npm test                              # Same focused default as npm run verify
 npm run verify -- pricing             # Pricing/construct + settings tests; one typecheck
 npm run verify -- miner-work-pool      # One regression file; one typecheck
+npm run verify -- work --browser=work  # Terrain priorities, resources, escape and normal starting crew
+node scripts/camera-browser.mjs       # Focused viewport-edge input regression
 npm run verify -- pricing --browser   # Add only the pricing UI check
 npm run verify -- workforce --browser=workforce
 npm run verify -- verification --list # Preview without running anything
@@ -84,9 +86,9 @@ npm run verify -- all --browser=integration --production
 
 The default `changed` scope considers uncommitted changes. Clean trees and documentation-only changes do nothing. Changed test files select themselves; other TypeScript edits follow local test imports. If shared dependencies select more than six files, or a change is outside that graph, the runner prints the candidates and asks the developer/agent to choose a focused scope or explicitly choose `all`. It never silently falls back to the full suite. Resolve that choice from task context without asking the user. Changed JavaScript tools receive syntax checks. New behavior still needs relevant tests or a targeted manual check; an empty automatic selection is not evidence that it works.
 
-Scopes live in [verification.ts](scripts/verification.ts): pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
+Scopes live in [verification.ts](scripts/verification.ts): work, pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
 
-Browser checks are opt-in and independently selectable with `--browser=<name>`. Names: pricing, workforce, characters, models, rooms, movement, hounds, defenses, campaign, interface, smoke, integration. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface and campaign checks sequentially. Other subsystem browser scripts remain explicit tools for their owning changes.
+Browser checks are opt-in and independently selectable with `--browser=<name>`. Names: camera, work, pricing, workforce, characters, models, rooms, movement, hounds, defenses, campaign, interface, smoke, integration. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface and campaign checks sequentially. Other subsystem browser scripts remain explicit tools for their owning changes.
 
 The consolidated workforce browser script replaces the old dwarfs, characters, Stonehands and summon-miner scripts:
 

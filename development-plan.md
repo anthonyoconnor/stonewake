@@ -1,6 +1,6 @@
 # Browser game development plan
 
-Status: **M1–M11, M13–M14, M16–M18 and M20–M22 complete, including M5.1. M19 and M23–M34 remain planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
+Status: **M1–M11, M13–M14, M16–M18, M20–M23 and M34 complete, including M5.1. M19 and M24–M33 remain planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
 
 Completed milestones and verification records are in [development-history.md](development-history.md). **Read that archive only if past context is required; it is not part of routine startup reading.** This file contains the current baseline, unfinished work and dependencies.
 
@@ -42,7 +42,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-The remaining active milestones are M23–M34 below, followed by M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
+The remaining active milestones are M24–M33 below, followed by M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight worker seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 
@@ -50,7 +50,11 @@ The remaining active milestones are M23–M34 below, followed by M19: integrated
 
 **Workforce overview:** role/activity icon counts open filtered resident lists with expandable stats and camera location. Wages, wellbeing and attraction details are expandable below the grid. Create Stonehand in Spells costs 50 gold + 25 per living Stonehand and checks funds/arrival space; Stonehands need no food or bed support. Spell icons activate directly and are disabled while unusable; research remains accessible through the Library research selector.
 
+**Worker priorities:** reinforcement finishes its current tile, then re-evaluates the full pool regardless of its remaining assignment time. Reachable, safe and unreserved excavation/claiming and other useful work take precedence; blocked or already staffed targets permit background reinforcement. Resource stints, delivery, construction and immediate threat escape retain their existing rules. See [work allocation](characters.md#miner-work-allocation).
+
 **Input controls:** defense icons require a built Workshop and finished stock, then activate placement directly. Bridge and Wall use icons in the fixed bottom row of Rooms, with Sell in its lower-right corner. The excavation toolbar is removed. Sell handles rooms, bridges/plans and defenses with existing refund/safe-removal rules. Left-sidebar in-game controls use text sparingly; tooltips and expandable details carry explanations.
+
+**Camera edges:** the far-left viewport edge pans across sidebar overlap; ordinary panel interaction and the internal sidebar boundary stay stationary. All directions remain view-relative, with pointer-leave/blur and open-dialog suppression.
 
 **Map navigation:** M or the expand icon beside the minimap opens a full-level map with the same terrain colors and fog of war. The main view and both maps show every gold seam and gem deposit through fog to guide exploration; other unknown terrain and inhabitants remain hidden. They omit the camera overlay; the full map supports click-to-center and M/Escape/close dismissal.
 
@@ -82,7 +86,6 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 
 | Milestone | Outcome | Status |
 |---|---|---|
-| M23 | Stonehand work priorities | Planned |
 | M24 | Cave Hound and specialist combat balance | Planned |
 | M25 | Starting menu and free-play level selection | Planned |
 | M26 | Campaign structure and gradual content unlocks | Planned |
@@ -93,7 +96,6 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 | M31 | Environment and room graphics refinement | Planned |
 | M32 | Character animation and combat readability refinement | Planned |
 | M33 | Underground lighting, source glows and pointer illumination | Planned |
-| M34 | Left-edge camera panning across the sidebar | Planned; early bug fix |
 | M19 | Integrated gameplay balance and full-level playtesting | Planned; final pass after M23–M34 |
 
 M12 (Guard Posts, guard duty and retreat) and M15 (door repairs and upgrades in place) are removed from the active roadmap. Their features are deferred for possible reconsideration. Existing milestone IDs are retained; the playtest follow-on milestones use M23–M34.
@@ -104,13 +106,13 @@ Existing combat, spells, specialist arrivals and room services are extended rath
 
 **Agreed level objective:** every level contains another Hearthstone, distinct from the starting base core. The player must discover it and overcome a difficult approach, usually an enemy base or hostile region, lava, or another terrain obstacle. This Hearthstone opens progression to the next area through the ancient runic network. Merely surviving or clearing an arbitrary enemy count is not the primary objective. Discovery must respect fog; seeing a crystal across an impassable gap must not count as reaching it. Detailed activation conditions are provisional and owned by [Levels](levels.md#onward-hearthstone-objective).
 
-For every implementation milestone, update the inventory and owning design documents, expose tunable values in existing definitions/configuration, run the full simulation suite and relevant integration/browser/build checks, review `git diff --check`, and commit the completed chunk. New rooms follow the full room checklist. Keep status, health, warnings and objective text in the sidebar/message system.
+For every implementation milestone, update the inventory and owning design documents, expose tunable values in existing definitions/configuration, follow AGENTS.md verification scope: focused simulations and one typecheck, relevant browser checks for UI, and broader suites/builds for major integrations, review `git diff --check`, and commit the completed chunk. New rooms follow the full room checklist. Keep status, health, warnings and objective text in the sidebar/message system.
 
 ### Work and integration order
 
-The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. All remain planned until separately authorized for implementation.
+The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. M23 and M34 are complete. Remaining milestones stay planned until separately authorized for implementation.
 
-Address M34 alongside M23 and M24 first for immediate playability. M25 establishes the entry flow; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M33 owns underground lighting and should be developed alongside M31, then checked with M32 character readability. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
+M23 and M34 resolve the immediate work-priority and left-edge camera issues; M24 is next for early combat balance. M25 establishes the entry flow; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M33 owns underground lighting and should be developed alongside M31, then checked with M32 character readability. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
 
 Exact campaign length, level dimensions, unlock sequence, gem counts, raid timings and audio/art asset choices remain provisional. M26 establishes the campaign brief and M29 owns concrete layouts; do not invent fixed numerical design rules in several documents. Preserve the single terrain layer, shared gold currency, autonomous movement, fog rules and sidebar-only information. This roadmap adds no saves, accounts, multiplayer or production release infrastructure and does not reinstate M12 or M15.
 
@@ -123,14 +125,6 @@ Dependencies: completed gameplay foundations and integrated M23–M34. M12 and M
 - Check multiple layouts/approaches, escalating threats, recovery from losses and the Library's continuing usefulness. Correct gameplay blockers and visual/sidebar readability problems found during those runs.
 
 Complete when the authored campaign can be played from fresh start through its endpoint using normal rules, defeat is demonstrable, and focused regressions plus browser playtests cover the discovered issues. Record tested routes, timings, provisional values and remaining content/visual limitations. This is a prototype balance pass, not production release machinery or a requirement for final art assets.
-
-### M23 — Stonehand work priorities
-
-- Investigate the reported preference for wall reinforcement while digging and claiming remain available, including work-pool allocation and the existing productive-assignment window.
-- Make reachable player-designated excavation and reachable floor claiming take precedence over automatic reinforcement. Reinforcement is background work when higher-priority terrain work is unavailable; unreachable or unsafe marks must not stall all useful work.
-- Preserve resource collection, deliveries, explicit construction and threat escape. Define how an existing reinforcement assignment yields without repeated job switching or abandoned reservations in characters.md.
-
-Complete when ordinary crews expand and claim a marked area before spending spare capacity reinforcing it, including newly added dig orders, mixed resource work, blocked routes and work resumption after danger. Verify focused job simulations and one ordinary browser observation.
 
 ### M24 — Cave Hound and specialist combat balance
 
@@ -248,15 +242,3 @@ Coordinate with M31's environment materials and M32's character readability; use
 - Keep light settings in shared editable definitions, bound the cost of many sources and clean up lights on restart/travel. Document the visual direction and pointer behavior in the owning graphics/interface documentation during implementation.
 
 Complete when ordinary play shows clear source glows, illuminated surroundings and a coherent underground mood across representative biomes, with a useful pointer light. Compare before/after captures at normal zoom and multiple angles; browser-check pointer tracking, UI suppression, fog boundaries, reduced motion and responsiveness in a furnished settlement.
-
-### M34 — Left-edge camera panning across the sidebar
-
-Early bug fix; independent of campaign expansion.
-
-- Reproduce the reported failure to pan left when the pointer reaches the far-left game viewport edge. Right, top and bottom edges reportedly work; inspect sidebar/input suppression before asserting the cause.
-- Allow camera panning at the outer left viewport edge even where the sidebar occupies that edge. This user decision supersedes the previous blanket rule that sidebar-edge pointer movement never pans.
-- Keep ordinary sidebar hovering, clicks and scrolling from moving the camera; use the outer viewport edge, not the internal sidebar/world boundary, as the trigger. Preserve view-relative direction after camera rotation.
-- Stop edge movement when the pointer leaves the viewport or the window loses focus. Preserve intentional camera suppression for the starting menu, full map and modal dialogs.
-- Update the interface rules and add a focused browser regression for the actual viewport edge, including sidebar overlap, all four directions, rotated view and compact layouts.
-
-Complete when reaching the far-left edge pans the view left as reliably as the other edges, moving away stops it, and normal sidebar use remains stable. Run a source/test typecheck and the focused camera/input browser check; no campaign playthrough is required for this isolated fix.

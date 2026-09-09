@@ -19,7 +19,12 @@ export class CameraControls {
     const clear=()=>{this.keys.clear();this.drag=undefined;this.pointer=undefined;};
     window.addEventListener('blur',clear);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)clear();});
-    window.addEventListener('pointermove',e=>{this.pointer=e.pointerType==='mouse'&&e.target===canvas?{x:e.clientX,y:e.clientY}:undefined;});
+    window.addEventListener('pointermove',e=>{
+      const leftEdge=e.clientX<tuning.edgePixels&&e.target instanceof Element&&!!e.target.closest('#sidebar');
+      this.pointer=e.pointerType==='mouse'&&!e.buttons&&(e.target===canvas||leftEdge)?{x:e.clientX,y:e.clientY}:undefined;
+    });
+    window.addEventListener('pointerdown',()=>this.pointer=undefined);
+    window.addEventListener('wheel',e=>{if(e.target!==canvas)this.pointer=undefined;});
     document.addEventListener('focusin',e=>{if(e.target instanceof Element&&e.target.closest('#sidebar,dialog'))clear();});
     document.addEventListener('pointerleave',()=>this.pointer=undefined);
     canvas.addEventListener('contextmenu',e=>e.preventDefault());
@@ -47,7 +52,7 @@ export class CameraControls {
   zoom(factor:number){this.view.camera.radius=Math.max(tuning.minZoom,Math.min(tuning.maxZoom,this.view.camera.radius*factor));}
   home(){this.center(this.view.world.hearth.x,this.view.world.hearth.z);this.view.camera.radius=tuning.homeZoom;}
   update(dt:number){
-    if(document.querySelector('#full-map-dialog[open]'))return;
+    if(document.querySelector('dialog[open]'))return;
     const speed=this.view.camera.radius*tuning.panSpeed*dt;
     const horizontal=Number(this.keys.has('KeyD'))-Number(this.keys.has('KeyA'));
     const orbit=this.keys.has('ControlLeft');
@@ -55,7 +60,7 @@ export class CameraControls {
     let f=Number(this.keys.has('KeyW'))-Number(this.keys.has('KeyS'));
     if(this.pointer&&!this.drag){
       const {x,y}=this.pointer,edge=tuning.edgePixels;
-      // Use window edges so moving into the sidebar does not trigger leftward pan.
+      // Only outer window edges count; the sidebar/world boundary is not an edge.
       if(x>=0&&x<window.innerWidth&&y>=0&&y<window.innerHeight){
         r+=Number(x>=window.innerWidth-edge)-Number(x<edge);
         f+=Number(y<edge)-Number(y>=window.innerHeight-edge);

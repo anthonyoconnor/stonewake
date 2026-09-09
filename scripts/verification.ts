@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export const groups: Record<string, string[]> = {
+  work: ['miner-work-pool', 'security', 'mining', 'movement', 'gold-bags'],
   notifications: ['notifications', 'recruitment', 'morale'],
   pricing: ['stonehands', 'settings'],
   workforce: ['stonehands', 'cave-hounds', 'recruitment'],
@@ -16,6 +17,8 @@ export const groups: Record<string, string[]> = {
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  camera: [['scripts/camera-browser.mjs']],
+  work: [['scripts/work-priorities-browser.mjs']],
   notifications: [['scripts/notifications-browser.mjs']],
   pricing: [['scripts/workforce-browser.mjs', 'pricing']],
   workforce: [['scripts/workforce-browser.mjs', 'overview']],
