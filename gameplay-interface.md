@@ -158,6 +158,8 @@ Camera rotation preserves the world-grid alignment of selections. Workforce and 
 
 Call to arms uses a recognizable rally marker in the world and an active state on its sidebar button. The player can place or cancel the rally from these controls; responders move and fight autonomously. The proposed one-active-rally model remains in [Game rules](game-rules.md#2-player-control). Response rules, costs, and range remain open.
 
+Camera zoom has no minimum inspection distance: the wheel and sidebar buttons continue moving closer, including in the comparison studios. The far limit still applies. In the character gallery, Starting/Refined centers an individual model and Focus selected pair restores both. Its animation selector, play/pause, restart, frame-step and speed controls preview the original and revised rigs together without advancing gameplay.
+
 ## A clear gameplay view
 
 Do not display room nameplates, capacity badges, dwarf names, health bars, need meters, level numbers, damage numbers, resource totals, progress bars, countdowns, or floating explanatory tooltips over rooms, characters, terrain, or fixtures. Selecting or hovering over something does not switch these overlays on. Exact information belongs in the sidebar.

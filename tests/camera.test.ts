@@ -2,6 +2,8 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {NullEngine,Scene,ArcRotateCamera,Vector3} from '@babylonjs/core';
 import {CameraControls} from '../src/view/controls.ts';
+import {zoomedRadius} from '../src/view/camera-zoom.ts';
+import {tuning} from '../src/content/tuning.ts';
 class TestElement extends EventTarget { closest(){return null;} }
 
 test('camera inputs preserve pan orientation and orbit around a fixed target',()=>{
@@ -44,5 +46,23 @@ test('camera inputs preserve pan orientation and orbit around a fixed target',()
     emit(canvas,'pointerup',{button:1,pointerId:1});emit(canvas,'pointermove',{buttons:0,pointerId:1,clientX:750});near(camera.alpha,after.alpha);
     emit(win,'keydown',{code:'KeyW'});emit(win,'pointermove',{clientX:1,clientY:1,pointerType:'mouse'});emit(win,'blur');before=pose();controls.update(.1);assert(camera.target.equals(before.target));
     controls.center(-100,100);after=pose();near(after.target.x,1);near(after.target.z,46);near(after.alpha,before.alpha);near(after.beta,before.beta);near(after.radius,before.radius);
+    before=pose();
+    for(let step=0;step<18;step++)controls.zoom(.5);
+    assert(camera.radius<.0001,'Repeated zoom-in controls reach close inspection without a gameplay distance floor');
+    const closeRadius=camera.radius;
+    emit(canvas,'wheel',{deltaY:-500});
+    assert(camera.radius<closeRadius,'The wheel continues zooming inward at an already close distance');
+    after=pose();assert(after.target.equals(before.target));near(after.alpha,before.alpha);near(after.beta,before.beta);
+    controls.zoom(2);assert(camera.radius>after.radius,'Zoom-out responds immediately after close inspection');
+    controls.zoom(Number.POSITIVE_INFINITY);near(camera.radius,tuning.maxZoom);
   }finally{scene.dispose();engine.dispose();for(const k of ['window','document','Element'])Reflect.deleteProperty(globalThis,k);}
+});
+
+test('extreme zoom inputs keep a positive finite orbit and permit zooming back out',()=>{
+  const close=zoomedRadius(1,Math.exp(-10000),40);
+  assert(Number.isFinite(close)&&close>0&&close<1e-12);
+  assert(zoomedRadius(close,2,40)>close);
+  assert.equal(zoomedRadius(close,Math.exp(10000),40),40);
+  assert.equal(zoomedRadius(2,NaN,40),2);
+  assert.equal(zoomedRadius(2,-1,40),2);
 });

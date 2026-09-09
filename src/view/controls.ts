@@ -1,6 +1,7 @@
 import {tuning} from '../content/tuning.ts';
 import { presentation } from '../content/presentation.ts';
 import type { GameScene } from './scene';
+import { zoomedRadius } from './camera-zoom.ts';
 export class CameraControls {
   keys=new Set<string>(); drag?: {x:number;pointerId:number};
   pointer?: {x:number;y:number};
@@ -51,7 +52,7 @@ export class CameraControls {
     const w=this.view.world;this.view.camera.target.set(Math.max(1,Math.min(w.width-2,x)),0,Math.max(1,Math.min(w.height-2,z)));
   }
   rotate(amount:number){this.view.camera.alpha+=amount;}
-  zoom(factor:number){this.view.camera.radius=Math.max(tuning.minZoom,Math.min(tuning.maxZoom,this.view.camera.radius*factor));}
+  zoom(factor:number){this.view.camera.radius=zoomedRadius(this.view.camera.radius,factor,tuning.maxZoom);}
   home(){this.center(this.view.world.hearth.x,this.view.world.hearth.z);this.view.camera.radius=tuning.homeZoom;}
   update(dt:number){
     if(document.querySelector('dialog[open]'))return;

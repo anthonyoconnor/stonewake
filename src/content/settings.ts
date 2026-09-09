@@ -46,6 +46,6 @@ export function applySettings(values:Record<string,number>){
  for(const s of settings){const v=values[s.id];if(!Number.isFinite(v)||v<s.min||v>s.max||(s.step===1&&!Number.isInteger(v)))return `${s.label}: enter ${s.min}–${s.max}${s.step===1?' (whole numbers)':''}.`;}
  const n=(key:TuningKey)=>values[`tuning.${key}`];
  if(n('wallBuildSeconds')<=Math.max(n('mineSeconds'),n('rockSeconds'))+n('reinforceSeconds'))return 'Wall construction must take longer than excavation plus reinforcement.';
- if(n('minZoom')>n('maxZoom')||n('homeZoom')<n('minZoom')||n('homeZoom')>n('maxZoom'))return 'Home distance must sit between the minimum and maximum camera distances.';
+ if(n('homeZoom')>n('maxZoom'))return 'Home distance must not exceed the maximum camera distance.';
  for(const s of settings)s.set(values[s.id]);return '';
 }

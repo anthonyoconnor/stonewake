@@ -17,6 +17,8 @@ import { EnemyView } from './enemies';
 import { EnemyView as OriginalEnemies } from './enemies-baseline';
 import { GameScene as OriginalScene } from './scene-baseline';
 import type { GameScene } from './scene';
+import { GalleryPlayback, galleryClips, type GalleryClip } from './gallery-playback';
+import { zoomedRadius } from './camera-zoom';
 
 /** A separate cache prevents a changed live material from repainting the original models. */
 function baselineView(view: GameScene) {
@@ -37,19 +39,31 @@ export class GraphicsGallery {
   selected = 'stonehand';
   turn = 0;
   overview = false;
+  clip: GalleryClip = 'idle';
+  playing = false;
+  time = 0;
+  speed = 1;
+  private playback?: GalleryPlayback;
   private world?: World;
   private baseline?: GameScene;
   private fill?: DirectionalLight;
   private lightingObserver?: Observer<Scene>;
   private ground?: Color3;
   constructor(public view: GameScene) {}
-  update() {
-    if (this.world === this.view.world) return;
+  update(dt = 0) {
+    if (this.world === this.view.world) {
+      if (this.playback && this.playing && dt > 0) {
+        this.time += Math.min(0.1, dt) * this.speed;
+        this.playback.pose(this.time, this.clip);
+      }
+      return;
+    }
     this.reset();
     this.world = this.view.world;
     if (!isGraphicsGallery(this.world)) return;
     const view = this.view;
     this.baseline = baselineView(view);
+    this.playback = new GalleryPlayback(view, this.baseline);
     const originalResidents = new OriginalResidents(this.baseline),
       currentResidents = new ResidentView(view);
     const originalEnemies = new OriginalEnemies(this.baseline),
@@ -63,6 +77,9 @@ export class GraphicsGallery {
       const pair = new TransformNode(`gallery pair ${entry.id}`, view.scene);
       pair.position.set(entry.x, 0, entry.z);
       const roots: TransformNode[] = [];
+      const id = 20000 + i;
+      let residentBefore: ReturnType<OriginalResidents['create']> | undefined;
+      let enemyBefore: ReturnType<OriginalEnemies['build']> | undefined;
       for (const variant of [0, 1]) {
         const display = new TransformNode(`gallery ${variant ? 'after' : 'before'} ${entry.id}`, view.scene);
         // Front-facing models look toward +Z, so screen-left is the positive-X pedestal.
@@ -86,7 +103,6 @@ export class GraphicsGallery {
         band.position.y = 0.097;
         band.material = bands[variant];
         band.isPickable = false;
-        const id = 20000 + i * 2 + variant;
         let root: TransformNode;
         if (entry.kind === 'resident') {
           const model = (variant ? currentResidents : originalResidents).create(id, entry.id);
@@ -97,6 +113,8 @@ export class GraphicsGallery {
           root = model.root;
           model.shadow.parent = display;
           model.shadow.position.set(0, 0.113, 0);
+          if (variant) this.playback.addResident(id, entry.id, residentBefore!, model);
+          else residentBefore = model;
         } else {
           const actor: Enemy = {
             id,
@@ -115,6 +133,8 @@ export class GraphicsGallery {
           root = model.root;
           model.cloud?.setEnabled(false);
           model.projectile.setEnabled(false);
+          if (variant) this.playback.addEnemy(id, entry.id, enemyBefore!, model);
+          else enemyBefore = model;
         }
         root.parent = display;
         root.position.set(0, 0.1, 0);
@@ -135,11 +155,16 @@ export class GraphicsGallery {
       view.scene.getLightByName('warm rim')!.diffuse = Color3.FromHexString('#ffe6c9');
     });
     this.focus(this.selected);
+    this.playback.pose(this.time, this.clip);
   }
   focus(id = this.selected) {
     const entry = graphicsGalleryEntries.find((e) => e.id === id);
     if (!entry) return;
     this.selected = id;
+    if (!this.clips.some((option) => option.id === this.clip)) {
+      this.clip = 'idle';
+      this.restart();
+    }
     this.overview = false;
     for (const pair of this.pairs) pair.root.setEnabled(pair.id === id);
     this.view.camera.target.set(entry.x, entry.targetHeight, entry.z);
@@ -158,12 +183,47 @@ export class GraphicsGallery {
   }
   rotate(angle: number, absolute = false) {
     this.turn = absolute ? angle : this.turn + angle;
-    for (const pair of this.pairs) for (const root of [pair.before, pair.after]) root.rotation.y = this.turn;
+    for (const pair of this.pairs)
+      for (const root of [pair.before, pair.after]) (root.parent as TransformNode).rotation.y = this.turn;
   }
   zoom(factor: number) {
-    this.view.camera.radius = Math.max(2.8, Math.min(40, this.view.camera.radius * factor));
+    this.view.camera.radius = zoomedRadius(this.view.camera.radius, factor, 40);
+  }
+  focusModel(variant: 'before' | 'after') {
+    this.focus();
+    const entry = graphicsGalleryEntries.find((e) => e.id === this.selected)!;
+    this.view.camera.target.x += variant === 'before' ? entry.spacing : -entry.spacing;
+    this.view.camera.radius = entry.radius * 0.5;
+  }
+  get clips() {
+    const entry = graphicsGalleryEntries.find((e) => e.id === this.selected)!;
+    return galleryClips(entry.id, entry.kind);
+  }
+  setClip(clip: GalleryClip) {
+    if (!this.clips.some((option) => option.id === clip)) return;
+    this.clip = clip;
+    this.restart();
+    this.playing = true;
+  }
+  setPlaying(playing: boolean) {
+    this.playing = playing;
+  }
+  restart() {
+    this.time = 0;
+    this.playback?.resetPose();
+    this.playback?.pose(0, this.clip);
+  }
+  step() {
+    this.playing = false;
+    this.time += 1 / 30;
+    this.playback?.pose(this.time, this.clip);
   }
   reset() {
+    this.playback?.dispose();
+    this.playback = undefined;
+    this.playing = false;
+    this.time = 0;
+    this.clip = 'idle';
     for (const pair of this.pairs) pair.root.dispose();
     this.pairs = [];
     if (this.lightingObserver) this.view.scene.onBeforeRenderObservable.remove(this.lightingObserver);

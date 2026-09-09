@@ -8,6 +8,15 @@ import {addMiners,designate,tick} from '../src/game/simulation.ts';
 import {tileAt} from '../src/game/types.ts';
 import {characterLevel} from '../src/content/characters.ts';
 import {syncCharacterHealth} from '../src/game/progression.ts';
+test('camera settings retain the far limit without offering a zoom-in floor',()=>{
+ const original=settingValues();try{
+  assert(!settings.some(s=>s.id==='tuning.minZoom'));
+  assert(applySettings({...original,'tuning.maxZoom':4,'tuning.homeZoom':5}));
+  assert.equal(tuning.maxZoom,original['tuning.maxZoom']);
+  assert.equal(applySettings({...original,'tuning.maxZoom':4,'tuning.homeZoom':4}),'');
+ }finally{assert.equal(applySettings(original),'');}
+});
+
 test('settings validate atomically and drive new-world economy and live mining',()=>{
  const original=settingValues();try{
   const changes={...original,'tuning.startingGold':17,'tuning.mineSeconds':.1,'room.treasure.cost':20};

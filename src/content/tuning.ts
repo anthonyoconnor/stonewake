@@ -61,7 +61,6 @@ export const tuningSpec={
  edgePixels:value(18,'Edge scrolling band · pixels','Camera',0,100,1),
  dragSensitivity:value(.006,'Middle drag sensitivity','Camera',.001,.03,.001),
  wheelSensitivity:value(.0015,'Wheel zoom sensitivity','Camera',.0001,.01,.0001),
- minZoom:value(9,'Minimum camera distance','Camera',4,100,1),
  maxZoom:value(58,'Maximum camera distance','Camera',4,100,1),
  homeZoom:value(23,'Home camera distance','Camera',4,100,1),
  initialZoom:value(25,'Initial camera distance','Camera',4,100,1,'New page only.'),

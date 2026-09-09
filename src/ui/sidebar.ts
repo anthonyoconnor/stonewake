@@ -4,7 +4,7 @@ import { showDwarfs, updateDwarfs } from './dwarfs';
 import { showCombatLab, updateCombatLab } from './combat-lab';
 import { defaultCombatSetup, type CombatSetup } from '../content/combat-lab';
 import { showLightingLab } from './lighting-lab';
-import { showGraphicsGallery } from './graphics-gallery';
+import { showGraphicsGallery, updateGraphicsGallery } from './graphics-gallery';
 import { isGraphicsGallery } from '../content/graphics-gallery';
 import type { GraphicsGallery } from '../view/graphics-gallery';
 import { isTerrainComparison } from '../content/terrain-comparison';
@@ -197,8 +197,8 @@ export class Sidebar {
     if(category==='harnesses')this.onDevelopmentPanel();
     if(this.lab||category==='debug'||category==='harnesses'){
       const context=document.createElement('section');context.className='spell-card';
-      context.innerHTML=`<strong>${this.lab?'Test world':'Stronghold'} · ${this.view.world.name}</strong><p id="simulation-state" class="muted"></p><button id="toggle-simulation" class="wide"></button>${this.lab?'<button id="return-stronghold" class="wide">Return to stronghold</button>':''}`;
-      context.querySelector<HTMLButtonElement>('#toggle-simulation')!.onclick=()=>{this.onPause(!this.isPaused());this.update();};
+      context.innerHTML=`<strong>${this.lab?'Test world':'Stronghold'} · ${this.view.world.name}</strong>${isGraphicsGallery(this.view.world)?'':'<p id="simulation-state" class="muted"></p><button id="toggle-simulation" class="wide"></button>'}${this.lab?'<button id="return-stronghold" class="wide">Return to stronghold</button>':''}`;
+      const pause=context.querySelector<HTMLButtonElement>('#toggle-simulation');if(pause)pause.onclick=()=>{this.onPause(!this.isPaused());this.update();};
       const back=context.querySelector<HTMLButtonElement>('#return-stronghold');if(back)back.onclick=()=>this.onLab(false);
       if(this.lab&&category!=='harnesses'&&category!=='debug'){const choose=document.createElement('button');choose.className='wide';choose.textContent='Test harnesses';choose.onclick=()=>this.show('harnesses');context.append(choose);}
       this.panel.prepend(context);
@@ -228,6 +228,7 @@ export class Sidebar {
   update(){
     const lighting=this.panel.querySelector('#lighting-status');if(lighting)lighting.textContent=`${this.view.labLighting?.activeSources??0} active sources (maximum 6) · Pointer ${this.view.labLighting?.pointerActive?'on':'off'} · Test settings only`;
     updateCombatLab(this);
+    updateGraphicsGallery(this);
     const pause=this.panel.querySelector<HTMLButtonElement>('#toggle-simulation');if(pause)pause.textContent=this.isPaused()?'Resume simulation':'Pause simulation';
     const state=this.panel.querySelector('#simulation-state');if(state)state.textContent=this.isPaused()?'Paused · setup actions work; resume to observe behavior.':'Running';
     updateDefenses(this);

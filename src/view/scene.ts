@@ -719,6 +719,7 @@ export class GameScene {
     this.crystal(x + 0.4, 0.65, z - 0.15, 0.8, '#86e5d7');
   }
   render() {
+    this.camera.minZ = Math.max(Number.EPSILON, Math.min(0.1, this.camera.radius * 0.01));
     this.refresh();
     this.effects.update();
     this.labLighting ??= new LabLighting(this);

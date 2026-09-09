@@ -4,6 +4,14 @@ Read this file only when past context, original milestone requirements, verifica
 
 This archive preserves completed milestone specifications and dated development records, including M5.1. Historical requirements and provisional values may have been superseded; current design documents and the user's latest decisions take precedence. Remaining limitations belong in the active plan so they do not require loading this archive.
 
+## 2026-09-09 — Animated character comparison and close zoom
+
+Added synchronized animation previews to the retained character comparison room. All sixteen original/refined pairs can idle and walk; fighting characters can attack, residents can preview their role activity, and the Tunnel Burrower can excavate. Both versions use their existing animation update code with identical private preview actors and timing. Walking stays on the plinth, and playback does not advance the game simulation. Sidebar controls provide play/pause, restart, 1/30-second frame stepping, four playback speeds and individual Starting/Refined focus. Reduced-motion preferences remain active.
+
+Removed the minimum camera distance from ordinary wheel/footer zoom and the character gallery controls, with adaptive near clipping for close inspection. The existing far limits and a machine-precision positive-radius guard remain. The obsolete minimum-zoom setting was removed.
+
+Verification: all **five focused camera/settings tests passed**, and source/test typechecking passed. `node scripts/graphics-gallery-browser.mjs --animation-only` passed all **sixteen pairs and 38 walking, activity and attack clips**, synchronized pose checks, deterministic restart, pause/frame stepping/speed, reduced motion, individual focus, wheel/footer/gallery zoom down to approximately 0.01, unchanged game state and return/reopen cleanup. No browser errors or duplicated geometry were found. Normal, reversed, reduced-motion and compact-sidebar captures were visually reviewed. Evidence is retained in ignored `test-results/graphics-gallery-animation/`.
+
 ## 2026-09-09 — Character and terrain graphics overhaul
 
 Completed the user's request to revisit every character individually, keep each starting model for comparison, then generate new environment direction and iterate terrain and whole-level appearance. The [overhaul record](graphics-overhaul.md) links all sixteen reviewed concept sheets and describes the character-specific changes and remaining procedural limitations.

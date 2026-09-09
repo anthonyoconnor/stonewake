@@ -347,7 +347,7 @@ export async function initializeGame(loading: LoadingScreen) {
         accumulator -= 0.05;
       }
     } else accumulator = 0;
-    gallery.update();
+    gallery.update(!menuBlocked && !sidebar.tuningDialog.open ? dt : 0);
     residents.update();
     defenses.update();
     magic.update();
