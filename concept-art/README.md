@@ -12,6 +12,10 @@ All project concept art is stored in this folder, grouped by subject. Keep the c
 
 The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel art. Stylized 3D was selected, with an overhead camera that supports rotation and zoom. This early comparison establishes appearance; the current room roster and functions are defined in [Rooms](../rooms.md).
 
+## Menus
+
+[View the M25 menu concepts](menus/README.md): a themed starting menu and an extensible Free Play level selector, with carved stone, bronze, warm lantern light and a blue Hearthstone glow. Proposed concepts awaiting review; menus remain planned. [Generation prompts](menus/prompts-v1.md).
+
 ## Dwarf characters
 
 [Dwarf attraction infographic](infographics/dwarf-attraction-v1.png) shows the shared support requirements, specialist room mappings and paid Miner exception using current prototype defaults. Its [generation prompt and rule sources](infographics/prompts.md) are saved alongside it.

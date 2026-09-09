@@ -144,6 +144,8 @@ Complete when hounds handle suitable early threats but hound-only settlements ha
 
 ### M25 — Starting menu and free-play level selection
 
+Proposed [main-menu and Free Play concept art](concept-art/menus/README.md) is available for review, with saved generation prompts. These are visual references, not approved production assets or implemented menus.
+
 - Launch into a starting menu with Campaign and Free Play. Campaign begins the authored journey; Free Play opens a list of playable levels with a short description and explicit start/back controls.
 - Populate the list from stable level metadata so adding a playable level does not require another menu implementation. Keep debug harnesses separate.
 - Give each standalone level an explicit starting content/knowledge set and normal economy, sufficient for its intended challenges, independent of campaign progress.
