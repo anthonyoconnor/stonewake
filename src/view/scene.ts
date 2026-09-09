@@ -23,6 +23,8 @@ import { type World, type Tile, neighbors, key } from '../game/types';
 import { roomTiles } from '../game/rooms';
 import { roomById, roomLook } from '../content/rooms';
 import { surfaceTexture } from './surfaces';
+import { environmentPalette } from '../content/environment-visuals';
+
 import { SceneEffects } from './effects';
 import {
   dressedBlock,
@@ -32,6 +34,7 @@ import {
   crystalMesh,
   mergeEnvironment,
   goldSeams,
+  biomeDetails,
 } from './environment';
 const colors: Record<string, string> = {
   dirt: '#96744f',
@@ -43,13 +46,14 @@ const colors: Record<string, string> = {
   unknown: '#101820',
 };
 export class GameScene {
-  labLighting?:LabLighting;
+  labLighting?: LabLighting;
   engine: Engine;
   scene: Scene;
   camera: ArcRotateCamera;
   materials = new Map<string, StandardMaterial>();
   terrainRoot: TransformNode;
   lastRevision = -1;
+  geometryRevision = 0;
   tileNodes = new Map<string, { signature: string; node: TransformNode }>();
   furnitureRoot?: TransformNode;
   furnitureNodes = new Map<string, { signature: string; node: TransformNode }>();
@@ -103,7 +107,7 @@ export class GameScene {
     m.emissiveColor = Color3.FromHexString(color).scale(emissive);
     if (texture) m.diffuseTexture = surfaceTexture(this.scene, name);
     if (name === 'lava') m.emissiveTexture = m.diffuseTexture;
-    if (texture && name.startsWith('floor-')) m.diffuseColor = Color3.White();
+    if (texture && /^(ruin-)?floor-/.test(name)) m.diffuseColor = Color3.White();
     if (/metal|iron|brass|gold|steel/.test(name)) {
       m.specularColor = new Color3(0.42, 0.35, 0.23);
       m.specularPower = 48;
@@ -188,6 +192,8 @@ export class GameScene {
           t.reinforced,
           t.wallPlanned,
           t.room,
+          t.ruin?.id,
+          t.ruin?.room,
           t.loose,
           t.designated,
           t.known || t.terrain === 'gold' || t.terrain === 'gem'
@@ -205,6 +211,7 @@ export class GameScene {
       this.drawTile(t);
       mergeEnvironment(this, node);
       this.tileNodes.set(id, { signature, node });
+      this.geometryRevision++;
     }
     this.terrainRoot = root;
     this.drawFurniture();
@@ -264,50 +271,51 @@ export class GameScene {
     }
     const type = t.terrain,
       solid = type !== 'floor';
-    const room = t.known && t.room ? roomById(t.room) : undefined;
+    const room =
+      t.known && (t.room || (type === 'floor' && t.ruin?.room))
+        ? roomById(t.room ?? t.ruin!.room)
+        : undefined;
+    const ruin = !!room && !t.room;
+    const palette = environmentPalette(this.world);
     const rawGround = type === 'floor' && !t.claimed && !room && !t.core;
     const mat = this.material(
       room
-        ? `floor-${room.id}`
+        ? `${ruin ? 'ruin-' : ''}floor-${room.id}`
         : rawGround
-          ? 'raw ground'
+          ? `biome-${this.world.biome ?? 'upper'}-raw ground`
           : t.known && t.reinforced
             ? 'reinforced wall'
-            : type,
+            : ['dirt', 'rock'].includes(type)
+              ? `biome-${this.world.biome ?? 'upper'}-${type}`
+              : type,
       room
         ? (roomLook(room.id).floor ?? room.color)
         : rawGround
-          ? '#99784f'
+          ? palette.ground
           : t.known && t.reinforced
             ? '#8c9187'
-            : colors[type],
+            : type === 'dirt'
+              ? palette.earth
+              : type === 'rock'
+                ? palette.rock
+                : colors[type],
       true,
     );
-    const mesh =
-      solid
-        ? dressedBlock(
-            this,
-            `tile-${t.x}-${t.z}`,
-            t.x,
-            0.68,
-            t.z,
-            0.997,
-            1.6,
-            0.997,
-            mat,
-            this.terrainRoot,
-            0.025,
-          )
-        : this.box(
-            `tile-${t.x}-${t.z}`,
-            t.x,
-            solid ? 0.68 : -0.12,
-            t.z,
-            0.997,
-            solid ? 1.6 : 0.24,
-            0.997,
-            mat,
-          );
+    const mesh = solid
+      ? dressedBlock(
+          this,
+          `tile-${t.x}-${t.z}`,
+          t.x,
+          0.68,
+          t.z,
+          0.997,
+          1.6,
+          0.997,
+          mat,
+          this.terrainRoot,
+          0.025,
+        )
+      : this.box(`tile-${t.x}-${t.z}`, t.x, solid ? 0.68 : -0.12, t.z, 0.997, solid ? 1.6 : 0.24, 0.997, mat);
     mesh.metadata = { tile: { x: t.x, z: t.z } };
     if (t.designated) {
       const m = this.box(
@@ -324,7 +332,10 @@ export class GameScene {
       m.isPickable = false;
     }
     if (solid) terrainRelief(this, t, mat);
-    else floorTransitions(this, t);
+    else {
+      floorTransitions(this, t);
+      biomeDetails(this, t);
+    }
     if (t.wallPlanned) {
       const m = this.box(
         'wall plan',
@@ -594,6 +605,7 @@ export class GameScene {
       const node = new TransformNode(`furnishing ${f.id}`, this.scene);
       node.parent = furnitureParent;
       this.furnitureNodes.set(f.id, { signature, node });
+      this.geometryRevision++;
       this.furnitureRoot = node;
       if (f.id === 'hearth-treasury') node.position.y = 0.3;
       drawFurnishingModel(this, f, node, display);
@@ -700,12 +712,18 @@ export class GameScene {
   render() {
     this.refresh();
     this.effects.update();
-    if(this.world.lightingTest){this.labLighting??=new LabLighting(this);this.labLighting.update(this.world.lightingTest);}
+    if (this.world.lightingTest) {
+      this.labLighting ??= new LabLighting(this);
+      this.labLighting.update(this.world.lightingTest);
+    }
     this.scene.render();
   }
-  ready() { return this.scene.whenReadyAsync(); }
+  ready() {
+    return this.scene.whenReadyAsync();
+  }
   setWorld(world: World) {
-    this.labLighting?.dispose();this.labLighting=undefined;
+    this.labLighting?.dispose();
+    this.labLighting = undefined;
     this.world = world;
     this.effects.reset();
     this.terrainRoot.dispose();

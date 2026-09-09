@@ -4,6 +4,8 @@ import { DynamicTexture, type Scene } from '@babylonjs/core';
 // Small generated material sheets keep visual iteration independent of an asset pipeline.
 export function surfaceTexture(scene: Scene, name: string) {
   const tex = new DynamicTexture(`${name}-surface`, { width: 256, height: 256 }, scene, false);
+  const ruined = name.startsWith('ruin-');
+  name = name.replace(/^biome-[^-]+-/, '').replace(/^ruin-/, '');
   const c = tex.getContext() as CanvasRenderingContext2D;
   let seed = 31;
   const random = () => {
@@ -50,7 +52,7 @@ export function surfaceTexture(scene: Scene, name: string) {
     // Weathered clods/strata remain distinct from deliberately fitted masonry.
     const ground = name === 'raw ground',
       rock = ['rock', 'bedrock', 'gem'].includes(name),
-      size = ground ? 28 : rock ? 64 : 43;
+      size = ground ? 36 : rock ? 64 : 52;
     c.fillStyle = ground ? '#8d8272' : '#514e49';
     c.fillRect(0, 0, 256, 256);
     for (let row = -1; row < 256 / size + 1; row++)
@@ -171,7 +173,7 @@ export function surfaceTexture(scene: Scene, name: string) {
     c.lineWidth = 5;
     c.lineWidth = 2;
     c.globalAlpha = 0.5;
-    c.strokeRect(5, 5, 246, 246);
+    // Perimeter geometry supplies the outline; avoid a bright box around every floor tile.
     c.globalAlpha = 1;
     c.lineWidth = 4;
     for (const x of [8, 248])
@@ -244,6 +246,23 @@ export function surfaceTexture(scene: Scene, name: string) {
       c.arc(128, 128, 11, 0, Math.PI * 2);
     }
     c.stroke();
+    if (ruined) {
+      c.fillStyle = '#423f4659';
+      c.fillRect(0, 0, 256, 256);
+      c.strokeStyle = '#262b2a';
+      c.lineWidth = 5;
+      c.beginPath();
+      c.moveTo(0, 48);
+      c.lineTo(68, 69);
+      c.lineTo(92, 114);
+      c.lineTo(154, 134);
+      c.lineTo(181, 211);
+      c.lineTo(256, 238);
+      c.moveTo(92, 114);
+      c.lineTo(66, 169);
+      c.lineTo(12, 202);
+      c.stroke();
+    }
   }
   tex.update();
   return tex;

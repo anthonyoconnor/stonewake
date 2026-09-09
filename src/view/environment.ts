@@ -10,6 +10,7 @@ import type { GameScene } from './scene';
 import { neighbors, type Tile } from '../game/types';
 import { isHazard } from '../game/terrain';
 import { roomLook } from '../content/rooms';
+import { environmentPalette, environmentDetail, hasBiomeGrowth } from '../content/environment-visuals';
 
 /** Small chamfers catch the light without moving the square gameplay footprint or top plane. */
 export function dressedBlock(
@@ -73,31 +74,52 @@ export function dressedBlock(
 
 export function terrainRelief(view: GameScene, t: Tile, material: StandardMaterial) {
   const parent = view.terrainRoot;
-  const relief = view.material(`relief ${material.name}`, material.diffuseColor.scale(0.94).toHexString());
+  const relief = view.material(`relief ${material.name}`, material.diffuseColor.scale(0.8).toHexString());
   // Exposed banks get a shallow broken stone face; occupied tops retain one common height.
   for (const n of neighbors(view.world, t))
     if (n.known && (n.terrain === 'floor' || isHazard(n))) {
       const dx = n.x - t.x,
         dz = n.z - t.z;
-      for (let row = 0; row < 3; row++)
-        for (let col = 0; col < 3; col++) {
-          const offset = (col - 1) * 0.32 + (row % 2 ? 0.025 : 0),
-            depth = 0.045 + ((t.x + t.z + row + col) % 3) * 0.015;
-          const m = dressedBlock(
-            view,
-            'bank strata',
-            t.x + dx * 0.475 + dz * offset,
-            0.25 + row * 0.43,
-            t.z + dz * 0.475 + dx * offset,
-            dx ? depth : 0.305,
-            0.35,
-            dz ? depth : 0.305,
-            relief,
-            parent,
-            0.022,
+      if (!t.reinforced) {
+        // Broken shallow strata give natural banks an excavated face instead of oversized bricks.
+        for (let row = 0; row < 4; row++) {
+          const offset = Math.sin(t.x * 13 + t.z * 7 + row * 4) * 0.08;
+          const stone = MeshBuilder.CreateIcoSphere(
+            'natural bank stratum',
+            { radius: 1, subdivisions: 1, flat: true },
+            view.scene,
           );
-          m.isPickable = false;
+          stone.position.set(
+            t.x + dx * 0.479 + dz * offset,
+            0.17 + row * 0.35,
+            t.z + dz * 0.479 + dx * offset,
+          );
+          stone.scaling.set(dx ? 0.041 : 0.47, 0.15 + (row % 2) * 0.025, dz ? 0.041 : 0.47);
+          stone.material = relief;
+          stone.parent = parent;
+          stone.isPickable = false;
         }
+      } else {
+        for (let row = 0; row < 3; row++)
+          for (let col = 0; col < 3; col++) {
+            const offset = (col - 1) * 0.32 + (row % 2 ? 0.025 : 0),
+              depth = 0.045 + ((t.x + t.z + row + col) % 3) * 0.015;
+            const m = dressedBlock(
+              view,
+              'bank strata',
+              t.x + dx * 0.475 + dz * offset,
+              0.25 + row * 0.43,
+              t.z + dz * 0.475 + dx * offset,
+              dx ? depth : 0.305,
+              0.35,
+              dz ? depth : 0.305,
+              relief,
+              parent,
+              0.022,
+            );
+            m.isPickable = false;
+          }
+      }
       // A darker foot gives excavation depth without adding boulders into usable floor.
       view.box(
         'bank foot',
@@ -114,12 +136,16 @@ export function terrainRelief(view: GameScene, t: Tile, material: StandardMateri
 }
 
 export function floorTransitions(view: GameScene, t: Tile) {
+  const room = t.room ?? t.ruin?.room;
   for (const n of neighbors(view.world, t)) {
     if (!n.known) continue;
     const dx = n.x - t.x,
       dz = n.z - t.z;
-    if (t.room && n.room !== t.room) {
-      const trim = view.material(`boundary-${t.room}`, roomLook(t.room).trim ?? '#baa06d');
+    if (room && (n.room ?? n.ruin?.room) !== room) {
+      const trim = view.material(
+        `boundary-${room}${t.room ? '' : '-ruin'}`,
+        t.room ? (roomLook(room).trim ?? '#baa06d') : '#77766e',
+      );
       for (const offset of [0.433, 0.476])
         view.box(
           'room boundary inlay',
@@ -131,6 +157,26 @@ export function floorTransitions(view: GameScene, t: Tile) {
           dz ? 0.018 : 0.99,
           trim,
         ).isPickable = false;
+    }
+    if (
+      !t.claimed &&
+      !room &&
+      n.terrain !== 'floor' &&
+      !isHazard(n) &&
+      (t.x * 3 + t.z) % environmentDetail.floorDebrisModulo === 0
+    ) {
+      for (const offset of [-0.19, 0.18]) {
+        const m = MeshBuilder.CreateIcoSphere(
+          'excavated bank chips',
+          { radius: 1, subdivisions: 1, flat: true },
+          view.scene,
+        );
+        m.position.set(t.x + dx * 0.4 + dz * offset, 0.035, t.z + dz * 0.4 + dx * offset);
+        m.scaling.set(0.065, 0.04, 0.085);
+        m.material = view.material('bank chips', '#746b58');
+        m.parent = view.terrainRoot;
+        m.isPickable = false;
+      }
     }
     if (isHazard(n) && !n.bridge) {
       const stone = view.material('cut shore', '#64665f', true);
@@ -149,6 +195,68 @@ export function floorTransitions(view: GameScene, t: Tile) {
           view.terrainRoot,
           0.018,
         ).isPickable = false;
+    }
+  }
+}
+
+/** Sparse cosmetic habitat growth and broken ruin trim; never adds occupancy or service slots. */
+export function biomeDetails(view: GameScene, t: Tile) {
+  if (!t.known) return;
+  const palette = environmentPalette(view.world);
+  const wall = neighbors(view.world, t).find(
+    (n) => n.known && !['floor', 'water', 'lava', 'chasm'].includes(n.terrain),
+  );
+  if (hasBiomeGrowth(view.world, t) && wall) {
+    const dx = wall.x - t.x,
+      dz = wall.z - t.z;
+    for (let i = 0; i < 3; i++) {
+      const offset = (i - 1) * 0.16;
+      const x = t.x + dx * 0.36 + dz * offset,
+        z = t.z + dz * 0.36 + dx * offset;
+      if (view.world.biome === 'fungal') {
+        view.box(
+          'cave fungus stem',
+          x,
+          0.13,
+          z,
+          0.04,
+          0.26,
+          0.04,
+          view.material('cave fungus stem', '#aaa293'),
+        ).isPickable = false;
+        const cap = MeshBuilder.CreateSphere(
+          'cave fungus cap',
+          { diameter: 0.22 + (i % 2) * 0.1, segments: 5 },
+          view.scene,
+        );
+        cap.position.set(x, 0.26, z);
+        cap.scaling.y = 0.45;
+        cap.material = view.material('cave fungus cap', palette.growth, false, 0.22);
+        cap.parent = view.terrainRoot;
+        cap.isPickable = false;
+        view.includeGlow(cap);
+      } else view.crystal(x, 0.13, z, 0.28 + (i % 2) * 0.13, palette.growth);
+    }
+  }
+  if (t.ruin && (t.x + t.z) % environmentDetail.ruinDebrisModulo === 0) {
+    const mat = view.material('ruin broken masonry', '#737d80', true);
+    // The fragments sit flush at floor edges, so the walkway remains legible after reclamation.
+    for (const offset of [-0.29, 0.3]) {
+      const m = dressedBlock(
+        view,
+        'ruin fallen trim',
+        t.x + offset,
+        0.027,
+        t.z + 0.4,
+        0.17,
+        0.055,
+        0.1,
+        mat,
+        view.terrainRoot,
+        0.015,
+      );
+      m.rotation.y = offset;
+      m.isPickable = false;
     }
   }
 }

@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 
 const phase = process.argv.includes('--before') ? 'before' : 'after';
-const folder = `test-results/m21-${phase}`;
+const folder = process.env.VISUAL_FOLDER ?? `test-results/m31-${phase}`;
 mkdirSync(folder, { recursive: true });
 const browser = await chromium.launch({
   headless: true,
@@ -59,7 +59,8 @@ try {
     );
   };
   if (!resumeRooms) {
-    await capture('stronghold', 23, 24, 22);
+    const hearth = await page.evaluate(() => window.strongholdDev.state().hearth);
+    await capture('stronghold', hearth.x, hearth.z, 22);
     if (phase === 'after') {
       const fogPick = await page.evaluate(() => {
         const w = window.strongholdDev.state(),
@@ -74,7 +75,7 @@ try {
       assert.deepEqual(fogPick.picked, fogPick.expected, 'Instanced fog remains pickable by tile');
       report.checks.push('Instanced unknown terrain preserves exact tile picking without revealing contents');
     }
-    await capture('hearth-close', 23, 24, 11, Math.PI / 4);
+    await capture('hearth-close', hearth.x, hearth.z, 11, Math.PI / 4);
     await page.evaluate(() => window.strongholdDev.load('showcase'));
     await capture('showcase', 11, 11, 29);
     await capture('kitchen-workshop', 11, 13, 17, Math.PI / 4);
@@ -221,10 +222,11 @@ try {
   if (process.argv.includes('--profile') || process.argv.includes('--profile-only')) {
     for (const scenario of ['stronghold', 'showcase']) {
       await page.evaluate((id) => window.strongholdDev.load(id), scenario);
+      const hearth = await page.evaluate(() => window.strongholdDev.state().hearth);
       await capture(
         'profile-' + scenario,
-        scenario === 'stronghold' ? 23 : 11,
-        scenario === 'stronghold' ? 24 : 11,
+        scenario === 'stronghold' ? hearth.x : 11,
+        scenario === 'stronghold' ? hearth.z : 11,
         scenario === 'stronghold' ? 22 : 29,
       );
       report.profiles.push(
