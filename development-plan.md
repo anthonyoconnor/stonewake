@@ -4,6 +4,8 @@ Status: **M1–M11, M13–M14, M16–M18, M20–M25 and M34 complete, including 
 
 Completed milestones and verification records are in [development-history.md](development-history.md). **Read that archive only if past context is required; it is not part of routine startup reading.** This file contains the current baseline, unfinished work and dependencies.
 
+**Current authorization:** all remaining active milestones M26–M33 and M19 are authorized for implementation. Campaign progression, biomes/ruins, environment/lighting and audio/animation are being developed in coordinated parallel work; completion still requires the checks below.
+
 Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [Rooms](rooms.md), [Levels](levels.md), and [Gameplay interface](gameplay-interface.md). This plan defines development order; systems outside the listed milestones remain part of the broader design where documented, without becoming requirements for these milestones. Every new room follows the [room development checklist](room-development-checklist.md).
 
 ## Current implementation status
