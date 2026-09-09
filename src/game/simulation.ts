@@ -4,7 +4,9 @@ import { reveal } from './world.ts';
 import { tuning } from '../content/tuning.ts';
 import { assignRoomSupport } from './food.ts';
 import { characterById, characterLevel, isConstruct } from '../content/characters.ts';
-import { sightRadius } from './scouting.ts';
+import { sightRadius, reviewPatrol } from './scouting.ts';
+import { tickSecurity } from './security.ts';
+import { tickWorkerRetreat } from './retreat.ts';
 import { recruitSpecialist } from './recruitment.ts';
 import { tickDefenses } from './defenses.ts';
 import { alive, tickSpellEffects } from './spell-effects.ts';
@@ -112,18 +114,21 @@ export function tick(w: World, dt: number) {
   if (supportChanged) assignRoomSupport(w);
   tickMorale(w,dt);
   tickHearth(w);
+  tickSecurity(w);
   const workPool = createWorkPool(w);
   for (const a of [...w.agents]) {
     if (isConstruct(a.type)) { a.energy = 1; a.hunger = 1; }
     if (!isConstruct(a.type) && a.job?.kind !== 'sleep') a.energy = Math.max(0, a.energy - dt / tuning.restInterval);
     if (!isConstruct(a.type) && a.job?.kind !== 'eat') a.hunger = Math.max(0, a.hunger - dt / tuning.hungerInterval);
     if (tickDeparture(w,a,dt)) continue;
+    if (tickWorkerRetreat(w,a,dt)) continue;
     if (tickFighter(w, a, dt, releaseJob, moveResident)) continue;
+    reviewPatrol(w,a);
     if (shouldSeekPay(w,a)) releaseJob(w,a,'Collecting due wages');
     if (shouldSeekHearth(w,a)) releaseJob(w,a,'Answering the onward Hearthstone');
     if (a.job && !validJob(w, a)) releaseJob(w, a, 'Target, facility, order or access is no longer valid');
     if (
-      (a.job?.kind === 'train' || a.job?.kind === 'research') &&
+      (a.job?.kind === 'train' || a.job?.kind === 'research' || a.job?.kind === 'scout') &&
       (a.energy < tuning.restThreshold || a.hunger < tuning.hungerThreshold)
     )
       releaseJob(w, a, 'Food or rest takes priority');

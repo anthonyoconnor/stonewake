@@ -6,10 +6,12 @@ import { actionIcon } from './icons';
 export const activities = [
   { id: 'idle', name: 'Idle', icon: 'activity-idle', help: 'Idle or waiting for reachable work' },
   { id: 'work', name: 'Working', icon: 'dig', help: 'Work, hauling, training or securing a Hearthstone' },
-  { id: 'needs', name: 'Needs', icon: 'kitchen', help: 'Eating, resting, collecting pay or leaving' },
+  { id: 'needs', name: 'Needs', icon: 'kitchen', help: 'Eating, resting, collecting pay, fleeing or leaving' },
   { id: 'combat', name: 'Combat', icon: 'training', help: 'Fighting, pursuing enemies or answering a rally' },
 ] as const;
 export function dwarfActivity(a: Resident): string {
+  if(a.fleeing)return 'needs';
+  if(a.responding)return 'combat';
   if (a.morale?.leaving) return 'needs';
   if (a.combatTarget !== undefined || a.rallying) return 'combat';
   if (a.job && ['eat', 'sleep', 'pay'].includes(a.job.kind)) return 'needs';

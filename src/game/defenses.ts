@@ -6,6 +6,7 @@ import {enemyWalker,tickEnemies} from './enemy-ai.ts';
 import {defenseAt,doorAt,isDoor,doorIsOpen,doorOccupied} from './doors.ts';
 import {blocked} from './navigation.ts';
 import {damageEnemy} from './spell-effects.ts';
+import {reportAttack} from './security.ts';
 
 
 // Player tool availability, also checked when confirming an already-selected tool.
@@ -53,6 +54,7 @@ export function removeDefense(w:World,id:number){
   return 'Defense dismantled · no refund.';
 }
 export function damageDoor(w:World,d:Defense,damage:number){
+  if(damage>0)reportAttack(w,`door:${d.id}`,d);
   d.health=Math.max(0,d.health-damage);
   if(!d.health){w.defenses=w.defenses!.filter(o=>o!==d);w.routesChanged=true;}
   w.revision++;

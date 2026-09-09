@@ -5,6 +5,7 @@ import {tuning} from '../content/tuning.ts';
 import {characterLevel} from '../content/characters.ts';
 import {sightRadius} from './scouting.ts';
 import {enemyById} from '../content/enemies.ts';
+import {reportAttack} from './security.ts';
 export const alive=(a:Resident)=>health(a)>0;
 export const maxHealth=(a:Resident)=>a.maxHealth??characterLevel(a.type,a.level).health;
 export const health=(a:Resident)=>a.health??maxHealth(a);
@@ -33,6 +34,7 @@ export function damageEnemy(w:World,e:Enemy,amount:number,source:'dwarf'|'spell'
 }
 export function damageResident(w:World,a:Resident,amount:number){
   if(!alive(a))return;
+  if(amount>0)reportAttack(w,`resident:${a.id}`,a);
   a.hitAt=w.elapsed;const shield=effect(w,a,'shield');
   if(shield){const absorbed=Math.min(amount,shield.remaining??0);shield.remaining!-=absorbed;amount-=absorbed;if(!shield.remaining)shield.until=w.elapsed;}
   a.health=Math.max(0,health(a)-amount);w.revision++;

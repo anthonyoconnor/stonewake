@@ -6,6 +6,7 @@ import { alive, slowRate, spellLine } from './spell-effects.ts';
 import { canStand, findPath } from './navigation.ts';
 import { nearest, releaseJob, take } from './jobs/common.ts';
 import { wageStatus } from './wages.ts';
+import { reportAttack } from './security.ts';
 
 export interface HearthState {
   health: number;
@@ -40,6 +41,7 @@ export function damageHearth(w: World, amount: number) {
   if (w.outcome || !hearth || hearth.health <= 0 || amount <= 0) return;
   hearth.health = Math.max(0, hearth.health - amount);
   hearth.hitAt = w.elapsed;
+  reportAttack(w,'hearth',w.hearth);
   w.revision++;
   if (hearth.health > 0) return;
   w.outcome = 'defeat';

@@ -99,21 +99,18 @@ test('hounds eat and rest at their den, never train or collect wages, and lose s
   assert(a.morale!.active.includes('accommodation'));
 });
 
-test('hound scouting reveals reachable tunnels, stops at solid rock and returns home without claiming or mining', () => {
+test('hound patrol reveals reachable tunnels without claiming or mining and stops at solid rock', () => {
   const w = createHoundLab();
   arrivals(w, 1);
   const a = w.agents[0],
     known = w.tiles.filter((t) => t.known).length;
-  let scouted = false,
-    watched = false;
+  let scouted = false;
   const claims = w.tiles.filter((t) => t.claimed).length;
   for (let i = 0; i < 1200; i++) {
     tick(w, 0.05);
-    scouted ||= a.job?.kind === 'scout' && a.job.furnishing !== 'home-watch';
-    watched ||= a.activity === 'Watching the Hearth';
+    scouted ||= a.job?.kind === 'scout';
   }
   assert(scouted);
-  assert(watched);
   assert(w.tiles.filter((t) => t.known).length > known);
   assert.equal(w.tiles.filter((t) => t.claimed).length, claims);
   assert(w.agents.every((a) => a.type === 'cave-hound'));

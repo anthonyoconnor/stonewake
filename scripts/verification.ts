@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 export const groups: Record<string, string[]> = {
   pricing: ['stonehands', 'settings'],
   workforce: ['stonehands', 'cave-hounds', 'recruitment'],
+  security: ['security', 'cave-hounds', 'miner-work-pool', 'movement', 'defenses', 'spells'],
   characters: ['character-levels', 'settings'],
   economy: ['economy', 'recruitment', 'stonehands'],
   movement: ['movement', 'mining', 'gold-bags'],
@@ -20,6 +21,7 @@ export const browserChecks: Record<string, string[][]> = {
   models: [['scripts/workforce-browser.mjs', 'models']],
   rooms: [['scripts/rooms-browser.mjs']], movement: [['scripts/miners-browser.mjs', '--stonehands']],
   hounds: [['scripts/hounds-browser.mjs']], defenses: [['scripts/defense-tools-browser.mjs']],
+  security: [['scripts/security-browser.mjs']],
   campaign: [['scripts/campaign-browser.mjs']], interface: [['scripts/interface-browser.mjs']],
   smoke: [['scripts/browser-smoke.mjs']],
   integration: [['scripts/browser-smoke.mjs'], ['scripts/interface-browser.mjs'], ['scripts/campaign-browser.mjs']],

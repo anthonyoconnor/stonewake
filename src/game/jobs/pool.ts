@@ -101,6 +101,7 @@ const availableMiner = (a: Resident) =>
   !a.carrying &&
   a.combatTarget === undefined &&
   !a.rallying &&
+  !a.fleeing &&
   !a.morale?.leaving &&
   (isConstruct(a.type) || a.energy >= tuning.restThreshold) &&
   (isConstruct(a.type) || a.hunger >= tuning.hungerThreshold) &&

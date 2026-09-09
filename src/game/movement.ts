@@ -11,7 +11,8 @@ export function moveResident(w: World, a: Resident, dt: number) {
   const dx = target.x - a.x,
     dz = target.z - a.z,
     d = Math.hypot(dx, dz),
-    step = Math.min(d, tuning.speed * (characterById(a.type)?.speedMultiplier ?? 1) * hasteRate(w, a) * dt);
+    step = Math.min(d, tuning.speed * (characterById(a.type)?.speedMultiplier ?? 1) * hasteRate(w, a) *
+      (a.fleeing||a.responding?tuning.securityRunMultiplier:1) * dt);
   if (d < tuning.arrivalDistance) {
     a.path.shift();
     if (a.job) {
@@ -66,6 +67,6 @@ export function moveResident(w: World, a: Resident, dt: number) {
   a.z = next.z;
   a.facing = Math.atan2(vx, vz);
   a.retry = 0;
-  a.activity = a.carrying ? 'Carrying gold' : 'Walking to work';
+  a.activity = a.job?.kind==='scout'?'Patrolling the stronghold':a.carrying ? 'Carrying gold' : 'Walking to work';
   return false;
 }

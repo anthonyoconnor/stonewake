@@ -37,6 +37,7 @@ export interface World {
   agents: Resident[]; furnishings: Furnishing[]; roomServices: RoomService[]; elapsed: number; nextPaydayAt:number; allowance: number; spent: number; freeRoomBuilding:boolean;
   craftOrders:CraftOrder[];outputs:Record<string,number>;
   researchOrders?:ResearchOrder[];
+  security?:{alerts:SecurityAlert[];nextScanAt:number;patrolled:Record<string,number>};
   barrier?:Point&{health:number;maxHealth:number;until:number};
   rally?:Point&{until:number;radius:number};
   spellBursts?:Array<Point&{id:string;at:number;radius:number}>;
@@ -67,6 +68,7 @@ export interface Enemy extends Point {
   sourceId?:string; dormant?:boolean;
 }
 export interface SpellEffect {id:string;kind:'haste'|'slow'|'shield'|'mend'|'reckoning';until:number;strength:number;remaining?:number;rate?:number;pauseSeconds?:number;startedAt:number}
+export interface SecurityAlert extends Point {id:string;at:number;enemy?:number}
 export interface Furnishing extends Point {
   id:string; room:string; kind:string; model?:string; rotation:number; cells:Point[]; access:Point;
 }
@@ -84,7 +86,10 @@ export interface Resident extends Point {
   cargoOrigin?:Point; resumeMine?:Point;
   workAssignment?:{group:WorkGroup;target:Point;remaining:number};
   energy:number;rested:number;hunger:number;meals:number;
-  scout?:{until:number;homeUntil:number;returning:boolean;visits:Record<string,number>};
+  scout?:{reviewAt:number};
+  guard?:{checked:Record<string,number>;repathAt:number;alert?:string};
+  responding?:boolean;
+  fleeing?:{until:number;repathAt:number;danger:Point[]};
   avoidFacility?:string;avoidUntil?:number;
   crafted:number;
   level?:number;experience?:number;nextTrainingAt?:number;

@@ -2,6 +2,7 @@ import { type World, type Resident, type Job, type Point, key } from '../types.t
 import { findPath } from '../navigation.ts';
 import { recordJob } from '../diagnostics.ts';
 import { cancelHearthWork } from '../hearth.ts';
+import { workerRouteSafe } from '../security.ts';
 export function reserved(w: World, kind: Job['kind'], p: Point) {
   return w.agents.some((a) => a.job?.kind === kind && key(a.job.target) === key(p));
 }
@@ -17,7 +18,7 @@ export function take(
   furnishing?: string,
 ) {
   const path = findPath(w, a, work);
-  if (!path) {
+  if (!path || !workerRouteSafe(w,a,path)) {
     recordJob(w, a, 'rejected', 'No route to work square', target, furnishing, kind);
     return false;
   }

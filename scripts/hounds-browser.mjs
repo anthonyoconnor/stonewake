@@ -17,18 +17,18 @@ try {
     await api.advance(31);
     const arrival = api.state();
     let explored = false,
-      watched = false;
+      patrolled = false;
     for (let i = 0; i < 60; i++) {
       await api.advance(1);
       const a = api.state().agents[0];
-      explored ||= a.job?.kind === 'scout' && a.job.furnishing !== 'home-watch';
-      watched ||= a.activity === 'Watching the Hearth';
+      explored ||= a.job?.kind === 'scout';
+      patrolled ||= a.activity === 'Patrolling the stronghold';
     }
-    return { arrival, explored, watched, state: api.state() };
+    return { arrival, explored, patrolled, state: api.state() };
   });
   assert.equal(result.arrival.agents[0].type, 'cave-hound');
   assert(result.state.agents.length >= 2 && result.state.agents.length <= 3);
-  assert(result.explored && result.watched);
+  assert(result.explored && result.patrolled);
   assert(result.state.tiles.filter((t) => t.known).length > initial.tiles.filter((t) => t.known).length);
   assert.equal(result.state.spent, initial.spent);
   assert.equal(result.state.roomServices.filter((s) => s.service === 'dining').length, 0);
@@ -124,7 +124,7 @@ try {
   assert.match(await page.locator('#message-history').textContent(), /Dormitory is full/);
   assert.deepEqual(errors, []);
   console.log(
-    'PASS: regular paid Dormitory-only arrivals, full warning/dismissal/build action/clear/reopen/history, later Warrior priority after paid expansion, scouting and home watch, no hound wages/training, compact icon and four-legged model, no runtime errors.',
+    'PASS: regular paid Dormitory-only arrivals, full warning/dismissal/build action/clear/reopen/history, later Warrior priority after paid expansion, continuous patrol, no hound wages/training, compact icon and four-legged model, no runtime errors.',
   );
 } finally {
   await browser.close();

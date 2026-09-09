@@ -1,6 +1,6 @@
 # Game rules
 
-Roadmap scope: Guard Posts, guard duty, emergency retreat and door repairs/upgrades in place are deferred outside the active roadmap following removal of M12 and M15. Any descriptions below of those features remain proposals; they are not requirements for enemy, campaign or balance milestones.
+Roadmap scope: Guard Posts, assigned guard duties, general specialist retreat and door repairs/upgrades in place are deferred outside the active roadmap following removal of M12 and M15. Any descriptions below of those features remain proposals; they are not requirements for enemy, campaign or balance milestones.
 
 Working design for a level-based dwarven stronghold management game inspired by Dungeon Keeper.
 
@@ -137,9 +137,11 @@ Exact extraction rates, carrying capacity, storage density, and spending costs r
 
 ## 8. Stonehand creation
 
-Stonehands are the normal terrain workers: three start each area, and Create Stonehand assembles another at the Hearth for 50 gold + 25 per living Stonehand without research or preparation. Creation requires shared gold and a free, reachable claimed arrival square; failed attempts spend nothing. These small mechanical constructs have 30 health, no attacks, no food, beds, wages, morale, training or XP. They work whenever reachable tasks exist, use the shared work pool and keep each assignment for 20 productive seconds, including resource ownership across delivery trips. About one worker per three available workers stays assigned to marked, reachable gold or gems (minimum one). Destruction drops carried gold and releases the job. Prices and health are provisional editable values. The original dwarf Miner and its model remain available in debug scenarios for a possible future basic fighter; that repurposing is not implemented.
+Stonehands are the normal terrain workers: three start each area, and Create Stonehand assembles another at the Hearth for 50 gold + 25 per living Stonehand without research or preparation. Creation requires shared gold and a free, reachable claimed arrival square; failed attempts spend nothing. These small mechanical constructs have 30 health, no attacks, no food, beds, wages, morale, training or XP. They work whenever safe, reachable tasks exist, use the shared work pool and keep each assignment for 20 productive seconds, including resource ownership across delivery trips. About one worker per three available workers stays assigned to marked, reachable gold or gems (minimum one). Destruction drops carried gold and releases the job. Prices and health are provisional editable values. The original dwarf Miner and its model remain available in debug scenarios for a possible future basic fighter; that repurposing is not implemented.
 
 ## 9. Attraction and arrival
+
+Cave Hounds patrol continuously, explore newly opened passages and respond to shared sightings and attacks. Mining workers flee nearby enemies or damage and resume only when safe. [Characters](characters.md#cave-hounds-and-population-balance) owns patrol, threat memory, running and escape values. These behaviours supersede their earlier deferral; Guard Posts and general specialist retreat remain outside the current scope.
 
 Cave Hounds arrive regularly through the Hearth while spare reachable Dormitory places exist. A den supplies their food and rest without a Kitchen, wages, training or XP. There is no animal cap: early settlements can house several hounds. As more types become supportable, soft defense shares favour Warriors and support staffing follows useful queued work. See [current cooldowns, staffing and selection rules](characters.md#cave-hounds-and-population-balance).
 
@@ -212,7 +214,7 @@ Opening an unknown area can expose a new front. A shortcut that helps workers ca
 
 The current [door and trap rules](rooms.md#doors-and-traps) implement three increasing door tiers, Open/Closed/Locked access, a spike trap with damage and temporary pinning, and a directional bolt trap. Both traps reset automatically after cooldown and ignore friendly dwarfs. Shut doors block sight and delay enemies until broken; locked doors also block dwarf routes. Workshop manufacturing supplies player-placed fixtures.
 
-Defense, targeted spells, autonomous Warrior combat and worker self-defense face all ten implemented enemy types through authored encounters. Border Foothold contains a concealed camp and an eastern raid entrance. [Levels](levels.md#attacks) owns activation, warning, repeat and source-clearing rules. Enemies navigate actual terrain independently of player discovery; this does not reveal their locations. They can break doors/barriers, attack dwarfs and destroy the starting Hearth using their defined melee or ranged attacks with clear sight. All ten enemy types and tunneling are implemented; [Enemies](enemies.md) specifies their behavior and terrain/control interactions. Guard duty, retreat and repairs remain deferred.
+Defense, targeted spells, autonomous Warrior combat and worker self-defense face all ten implemented enemy types through authored encounters. Border Foothold contains a concealed camp and an eastern raid entrance. [Levels](levels.md#attacks) owns activation, warning, repeat and source-clearing rules. Enemies navigate actual terrain independently of player discovery; this does not reveal their locations. They can break doors/barriers, attack dwarfs and destroy the starting Hearth using their defined melee or ranged attacks with clear sight. All ten enemy types and tunneling are implemented; [Enemies](enemies.md) specifies their behavior and terrain/control interactions. Assigned guard duties, specialist retreat and repairs remain deferred.
 
 ## 13. Layout consequences to preserve
 

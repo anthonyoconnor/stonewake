@@ -90,6 +90,8 @@ Runesmiths research spells in the Library. The current [training, research and a
 
 Cave Hound details show bite strength, health and den food/rest, with no wage or training requirements. Expand population details to see the preferred next arrival, its countdown, each type's cooldown and support eligibility. Early hounds arrive regularly; later supported defenders and queued specialist work guide the next arrival.
 
+Hound activity identifies patrols, running to defend, investigating reports and fighting. Shared sightings and attacks trigger autonomous response without selecting a dog. Mining-worker escape appears under Needs, with running/waiting activity and retained cargo shown in its details. These behaviours add no world labels or individual movement controls.
+
 Stonehand details show health, cargo and current work, with a short note that they need no food, beds, wages or training. Dwarf details retain their living needs and progression.
 
 The Workforce tab opens with a compact icon matrix: Cave Hound, Stonehand, retained Miner, Engineer, Warrior and Runesmith role icons down the side, and Idle, Working, Needs and Combat icons across the top. Each cell shows its live population count; zero counts are muted. Hover labels and accessible names explain the icons. Click a count to list matching residents, or a role icon to show that whole type. Expand a resident for work, needs, pay, training and condition details, with a Locate worker button. Pay, wellbeing and specialist attraction details are grouped in an expandable section below the matrix.
