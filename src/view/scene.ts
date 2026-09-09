@@ -1,3 +1,4 @@
+import { createStoneHearthModel, updateStoneHearthModel } from './hearth-models';
 import { isHazard, hazardDefinitions } from '../game/terrain';
 import { LabLighting } from './lighting-lab';
 import { drawFurnishingModel, type FurnishingDisplay } from './furnishing-models';
@@ -51,6 +52,7 @@ const colors: Record<string, string> = {
 };
 export class GameScene {
   labLighting?: LabLighting;
+  mainHearth?: ReturnType<typeof createStoneHearthModel>;
   engine: Engine;
   scene: Scene;
   camera: ArcRotateCamera;
@@ -645,83 +647,21 @@ export class GameScene {
     }
   }
   drawHearth() {
-    const { x, z } = this.world.hearth;
-    const base = MeshBuilder.CreateCylinder(
-      'hearth dais',
-      { height: 0.3, diameter: 2.7, tessellation: 8 },
-      this.scene,
-    );
-    base.position.set(x, 0.15, z);
-    base.material = this.material('hearth stone', '#647680', true);
-    base.parent = this.terrainRoot;
-    this.shadow(x, z, 3.7, 3.7, this.terrainRoot);
-    for (const diameter of [2.2, 2.48]) {
-      const ring = MeshBuilder.CreateTorus(
-        'runic circle',
-        { diameter, thickness: 0.025, tessellation: 48 },
-        this.scene,
-      );
-      ring.position.set(x, 0.32, z);
-      ring.material = this.material('hearth brass', '#c2a668', false, 0.2);
-      ring.parent = this.terrainRoot;
-      ring.isPickable = false;
-    }
-    for (let i = 0; i < 12; i++) {
-      const a = (i * Math.PI) / 6;
-      const block = dressedBlock(
-        this,
-        'crystal cradle',
-        x + Math.cos(a) * 0.67,
-        0.39,
-        z + Math.sin(a) * 0.67,
-        0.36,
-        0.25,
-        0.3,
-        this.material('hearth stone', '#647680', true),
-        this.terrainRoot,
-        0.04,
-      );
-      block.rotation.y = -a;
-      block.isPickable = false;
-      const rune = new TransformNode('hearth glyph', this.scene);
-      rune.parent = this.terrainRoot;
-      rune.position.set(x + Math.cos(a) * 1.04, 0.32, z + Math.sin(a) * 1.04);
-      rune.rotation.y = -a;
-      for (const offset of [-0.035, 0.035]) {
-        const m = this.box(
-          'rune',
-          offset,
-          0.006,
-          0,
-          0.024,
-          0.016,
-          0.17,
-          this.material('rune', '#86ebf5', false, 0.8),
-          rune,
-        );
-        m.rotation.y = offset < 0 ? 0.35 : -0.35;
-        m.isPickable = false;
-      }
-      this.box(
-        'rune crossstroke',
-        0,
-        0.009,
-        0.01,
-        0.13,
-        0.015,
-        0.02,
-        this.material('rune', '#86ebf5'),
-        rune,
-      ).isPickable = false;
-    }
-    this.crystal(x, 1.25, z, 1.75, '#7fdef0');
-    this.crystal(x - 0.5, 0.72, z + 0.2, 0.7, '#579bd0');
-    this.crystal(x + 0.4, 0.65, z - 0.15, 0.8, '#86e5d7');
+    this.mainHearth = createStoneHearthModel(this, this.terrainRoot);
+    this.mainHearth.root.position.set(this.world.hearth.x, 0, this.world.hearth.z);
   }
   render() {
     this.camera.minZ = Math.max(Number.EPSILON, Math.min(0.1, this.camera.radius * 0.01));
     this.refresh();
     this.effects.update();
+    if (this.mainHearth)
+      updateStoneHearthModel(this.mainHearth, {
+        elapsed: this.world.elapsed,
+        integrity: this.world.hearthState
+          ? this.world.hearthState.health / this.world.hearthState.maxHealth
+          : 1,
+        reduced: this.effects.reduced,
+      });
     this.labLighting ??= new LabLighting(this);
     this.labLighting.update(this.world.lightingTest ?? gameplayLighting(this.world));
     this.scene.render();
@@ -737,6 +677,7 @@ export class GameScene {
     this.world = world;
     this.effects.reset();
     this.terrainRoot.dispose();
+    this.mainHearth = undefined;
     this.unknownBlock?.dispose();
     this.unknownBlock = undefined;
     this.terrainRoot = new TransformNode('terrain', this.scene);

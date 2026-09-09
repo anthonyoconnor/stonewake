@@ -46,6 +46,7 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `spells` | Existing prepared-spell and Warrior combat yard |
 | `combat` | Selectable hound/specialist matchups, regional enemy groups and optional supplied support |
 | `lighting` | M33 furnished lighting experiment, pointer/source controls, comparison and sealed fog boundary |
+| `arcana-gallery` | Thirteen starting/refined spell, trap and Hearthstone pairs; state playback, close inspection and saved concept art |
 | `crowded-kitchen` | Six hungry miners sharing food and accommodation |
 | `research-interruption` | Runesmith, queued research, food and beds; interrupt via needs or research pause |
 | `stonehands` | Three mechanical workers using the same terrain work yard; no living support requirements |

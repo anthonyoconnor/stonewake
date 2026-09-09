@@ -57,6 +57,8 @@ These response priorities, radius and timing are provisional. The agreed behavio
 
 ## Controls, verification and remaining work
 
+All nine player spells now have individual [concept sheets and model notes](concept-art/spells/README.md). The [spell/trap/Hearthstone comparison room](arcana-overhaul.md#permanent-comparison-room) retains their original effects beside the current models with synchronized preview states. Create Stonehand's assembly effect runs only after a successful purchase at the actual arrival square; spell costs and lifetimes remain as defined above.
+
 Use the existing left-sidebar Spells panel for research, costs, readiness and targeting, with right-click or Escape cancelling target selection. Selected-unit details show health, shield amount and effect time remaining in the sidebar. Use restrained physical effects such as stone armor, rune glows and thunder impacts in the world; do not add floating text, numbers, health bars or timers.
 
 Open **Spells → Library research**, choose a spell and Research. Once ready and affordable, click its enabled icon, then click a valid dwarf, enemy or floor point. Create Stonehand activates immediately on its icon. Casting returns to excavation after success; right-click or Escape cancels targeting without charge. Unit selection and successful targeted casts show level, health, combat/work statistics and effects in the sidebar. Spell targeting and enemy visibility require current line of sight within the normal sight radius of a living dwarf or the Hearth; camera movement does not grant sight. Haste multiplies the target's level-defined work rate and accelerates attacks and active training practice; it does not accelerate personal training cooldown, effect timers or needs.

@@ -1,5 +1,7 @@
 # Graphics overhaul: characters, terrain and comparison studios
 
+The subsequent [spells, traps and Hearthstones overhaul](arcana-overhaul.md) extends the comparison studios with thirteen more pairs. Its archives capture the later starting state and preserve this pass's existing `*-baseline.ts` files.
+
 This pass follows the user's 2026-09-09 request to revisit every character against its concept sheet, preserve the starting models, then refine terrain and the appearance of the whole stronghold. All six residents and ten enemies have been rebuilt and reviewed individually. Terrain now combines authored surface textures, continuous geological geometry, revised resources and warmer room lighting. Simulation, character activities, both comparison studios, final environment captures, typechecks, build and production smoke verification have passed. The completed verification record is in [development-history.md](development-history.md); current project status belongs in [development-plan.md](development-plan.md).
 
 ## Character references and implementation

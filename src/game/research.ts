@@ -60,7 +60,14 @@ export function spellTargetError(w:World,id:string,target?:SpellTarget):string {
 }
 export function castSpell(w:World,id:string,target?:SpellTarget){
   if(!spellAllowed(w,id))return availabilityReason(w,'spells',id);
-  if(id===summonStonehandSpell.id) return purchaseStonehand(w,(type,origin)=>addResidents(w,type,1,origin)>0).message;
+  if(id===summonStonehandSpell.id) {
+    const result=purchaseStonehand(w,(type,origin)=>addResidents(w,type,1,origin)>0);
+    if(result.ok){
+      const created=w.agents.at(-1)!;
+      (w.spellBursts??=[]).push({x:created.x,z:created.z,id,at:w.elapsed,radius:.5});
+    }
+    return result.message;
+  }
   if(id===summonMinerSpell.id){
     const result=purchaseMiner(w,(type,origin)=>addResidents(w,type,1,origin)>0);
     return result.ok ? `Summon Miner cast. Miner arrived for ${result.price} gold.` : result.message;

@@ -2,6 +2,7 @@ import { createHoundLab } from './hound-lab.ts';
 import { createCombatLab } from './combat-lab.ts';
 import { createLightingLab } from './lighting-lab.ts';
 import { createGraphicsGallery } from './graphics-gallery.ts';
+import { createArcanaGallery } from './arcana-gallery.ts';
 import { createTerrainComparison } from './terrain-comparison.ts';
 import { createCrossingScenario } from './crossings.ts';
 import { startCampaign } from '../game/campaign.ts';
@@ -71,6 +72,7 @@ export const scenarioFactories = {
   combat: createCombatLab,
   lighting: createLightingLab,
   'graphics-gallery': createGraphicsGallery,
+  'arcana-gallery': createArcanaGallery,
   'terrain-comparison': createTerrainComparison,
   spells: createSpellLab,
   encounters: createEncounterLab,

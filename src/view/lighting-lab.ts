@@ -172,8 +172,12 @@ export class LabLighting {
           const p = mesh.getBoundingInfo().boundingBox.centerWorld;
           this.geometry.push({ mesh, x: p.x, z: p.z });
         }
-      // Hearth geometry is parented directly to the terrain root.
-      for (const mesh of v.terrainRoot.getChildMeshes(true)) {
+      // The refined Hearth has one model root; legacy terrain still has direct core meshes.
+      for (const mesh of [
+        ...v.terrainRoot.getChildMeshes(true),
+        ...(v.mainHearth?.root.getChildMeshes() ?? []),
+      ]) {
+        mesh.computeWorldMatrix(true);
         const p = mesh.getAbsolutePosition();
         if (tileAt(w, Math.round(p.x), Math.round(p.z))?.core) this.geometry.push({ mesh, x: p.x, z: p.z });
       }

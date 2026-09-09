@@ -8,6 +8,8 @@ import './style.css';
 import { startCampaign, restartCampaignArea, travelOnward } from './game/campaign';
 import { GameScene } from './view/scene';
 import { GraphicsGallery } from './view/graphics-gallery';
+import { ArcanaGallery } from './view/arcana-gallery';
+import { isArcanaGallery } from './content/arcana-gallery';
 import { isGraphicsGallery } from './content/graphics-gallery';
 import { isTerrainComparison } from './content/terrain-comparison';
 import { focusTerrainComparison } from './ui/terrain-comparison';
@@ -49,6 +51,8 @@ export async function initializeGame(loading: LoadingScreen) {
   const sidebar = new Sidebar(view, controls, selection);
   const gallery = new GraphicsGallery(view);
   sidebar.graphicsGallery = gallery;
+  const arcana = new ArcanaGallery(view);
+  sidebar.arcanaGallery = arcana;
   const audio = new GameAudio();
   const unlockAudio = () => { void audio.unlock(); };
   document.addEventListener('pointerdown', unlockAudio);
@@ -82,6 +86,7 @@ export async function initializeGame(loading: LoadingScreen) {
   let accumulator = 0;
   const refresh = () => {
     gallery.update();
+    arcana.update();
     residents.update();
     defenses.update();
     magic.update();
@@ -138,6 +143,7 @@ export async function initializeGame(loading: LoadingScreen) {
     }
     residents.reset();
     gallery.reset();
+    arcana.reset();
     defenses.reset();
     magic.reset();
     hearth.reset();
@@ -280,12 +286,14 @@ export async function initializeGame(loading: LoadingScreen) {
           selection.hover = undefined;
           residents.reset();
           gallery.reset();
+          arcana.reset();
           defenses.reset();
           magic.reset();
           hearth.reset();
           furnish(next);
           view.setWorld(next);
           gallery.update();
+          arcana.update();
           controls.center(
             id === 'stronghold' ? next.hearth.x : id === 'defenses' || id === 'locked-door-hauling' ? 18 : 12,
             id === 'stronghold' ? next.hearth.z : 12,
@@ -294,7 +302,7 @@ export async function initializeGame(loading: LoadingScreen) {
           view.camera.beta = id === 'defenses' || id === 'locked-door-hauling' ? 0.35 : tuning.initialTilt;
           selection.setTool('dig');
           sidebar.show('debug');
-          if (next.lightingTest && !isGraphicsGallery(next) && !isTerrainComparison(next)) {
+          if (next.lightingTest && !isGraphicsGallery(next) && !isTerrainComparison(next) && !isArcanaGallery(next)) {
             controls.center(8, 14);
             view.camera.radius = 24;
             sidebar.show('lighting');
@@ -307,6 +315,11 @@ export async function initializeGame(loading: LoadingScreen) {
             gallery.focus();
             selection.setTool('inspect');
             sidebar.show('graphics-gallery');
+          }
+          if (isArcanaGallery(next)) {
+            arcana.focus();
+            selection.setTool('inspect');
+            sidebar.show('arcana-gallery');
           }
           if (isTerrainComparison(next)) {
             focusTerrainComparison(sidebar);
@@ -348,6 +361,7 @@ export async function initializeGame(loading: LoadingScreen) {
       }
     } else accumulator = 0;
     gallery.update(!menuBlocked && !sidebar.tuningDialog.open ? dt : 0);
+    arcana.update(!menuBlocked && !sidebar.tuningDialog.open ? dt : 0);
     residents.update();
     defenses.update();
     magic.update();

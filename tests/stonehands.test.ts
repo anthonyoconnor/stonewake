@@ -32,6 +32,7 @@ test('Hearth creation charges an increasing population price without support or 
     const before=goldTotal(w);
     assert.match(castSpell(w,'summon-stonehand'),/assembled/);
     assert.equal(goldTotal(w),before-(tuning.minerMinimumCost+tuning.minerCostStep*i));
+    assert.deepEqual(w.spellBursts?.at(-1),{id:'summon-stonehand',x:w.agents.at(-1)!.x,z:w.agents.at(-1)!.z,at:w.elapsed,radius:.5});
   }
   assert(w.agents.every(a=>a.type==='stonehand'));
   const before=goldTotal(w);
@@ -40,7 +41,9 @@ test('Hearth creation charges an increasing population price without support or 
   const approach=tileAt(w,hearthArrival(w)!.x,hearthArrival(w)!.z)!;
   approach.terrain='rock';
   assert.equal(stonehandPurchaseStatus(w).eligible,false);
+  const bursts=w.spellBursts?.length;
   assert.doesNotMatch(castSpell(w,'summon-stonehand'),/assembled/);
+  assert.equal(w.spellBursts?.length,bursts,'Failed creation emits no assembly effect');
   assert.equal(goldTotal(w),before);
   const poor=createRoomLab();poor.allowance=0;
   assert.equal(stonehandPurchaseStatus(poor).eligible,false);
