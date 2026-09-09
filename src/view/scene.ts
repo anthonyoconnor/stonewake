@@ -24,7 +24,7 @@ import { roomTiles } from '../game/rooms';
 import { roomById, roomLook } from '../content/rooms';
 import { surfaceTexture } from './surfaces';
 import { environmentPalette } from '../content/environment-visuals';
-
+import { gameplayLighting } from '../content/lighting';
 import { SceneEffects } from './effects';
 import {
   dressedBlock,
@@ -712,10 +712,8 @@ export class GameScene {
   render() {
     this.refresh();
     this.effects.update();
-    if (this.world.lightingTest) {
-      this.labLighting ??= new LabLighting(this);
-      this.labLighting.update(this.world.lightingTest);
-    }
+    this.labLighting ??= new LabLighting(this);
+    this.labLighting.update(this.world.lightingTest ?? gameplayLighting(this.world));
     this.scene.render();
   }
   ready() {

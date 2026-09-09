@@ -41,6 +41,13 @@ try {
   await page.evaluate(()=>window.lightingView.camera.alpha+=.45);
   await page.waitForFunction(p=>JSON.stringify(window.lightingView.labLighting.pointer.position.asArray())!==JSON.stringify(p),first.position);
   await page.screenshot({path:'test-results/m33/pointer-reverse.png'});
+  const orbited=await snapshot();
+  await page.evaluate(()=>{window.lightingView.camera.target.x+=.5;window.lightingView.camera.radius*=.95;});
+  await page.waitForFunction(p=>JSON.stringify(window.lightingView.labLighting.pointer.position.asArray())!==JSON.stringify(p),orbited.position);
+  // Modal suppression must also hold when the pointer is still positioned above game canvas.
+  await page.evaluate(()=>document.querySelector('.audio-dialog').showModal());
+  await page.waitForFunction(()=>!window.lightingView.labLighting.pointerActive);
+  await page.evaluate(()=>document.querySelector('.audio-dialog').close());
   await page.mouse.move(100,350);
   await page.waitForFunction(()=>!window.lightingView.labLighting.pointerActive);
   await page.locator('#lighting-view').selectOption('crossing');await page.locator('#lighting-locate').click();
@@ -50,6 +57,7 @@ try {
   const fog=await snapshot();assert.deepEqual(fog.known,initial.known);assert.equal(fog.elapsed,0);
   assert(fog.masks.every(m=>!(m.position[0]>=22&&m.position[2]<=5)),'Hidden light sources remain excluded');
   await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:800,height:600});
+  await page.screenshot({path:'test-results/m33/compact-controls.png'});
   await page.locator('[data-light=ambient]').fill('0.4');
   await page.waitForFunction(()=>window.lightingView.scene.getLightByName('cavern light').intensity===.4);
   await page.locator('#lighting-defaults').click();
@@ -57,11 +65,11 @@ try {
   await page.locator('#lighting-reset').click();await page.locator('#loading-screen').waitFor({state:'hidden'});
   assert.equal((await snapshot()).lights.filter(n=>n.startsWith('M33')).length,7,'Reset replaces the bounded light pool');
   await page.locator('#return-stronghold').click();await page.locator('#loading-screen').waitFor({state:'hidden'});
-  const returned=await snapshot();assert.equal(returned.ambient,.62);assert.equal(returned.rim,.96);
-  assert(!returned.lights.some(n=>n.startsWith('M33')));assert.equal(returned.settings,undefined);
+  const returned=await snapshot();assert.equal(returned.ambient,.38);assert.equal(returned.rim,.34);
+  assert.equal(returned.lights.filter(n=>n.startsWith('M33')).length,7);assert.equal(returned.settings,undefined);
   assert.deepEqual(await page.evaluate(()=>window.strongholdDev.state()),retained);
   assert.equal(await page.evaluate(()=>window.strongholdDev.status().paused),true);
   assert.deepEqual(errors,[]);
   writeFileSync('test-results/m33/report.json',JSON.stringify({initial,fog,returned,errors},null,2));
-  console.log('M33 room: source/pointer lighting, camera tracking, UI suppression, fog preservation, compact controls, reset and baseline restoration passed.');
+  console.log('M33: source/pointer lighting, camera tracking, UI suppression, fog preservation, compact controls, reset and ordinary lighting restoration passed.');
 }finally{await browser.close();}

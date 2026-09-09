@@ -1,5 +1,35 @@
 # Graphics and animation notes
 
+## M31 environment refinement and M33 gameplay lighting
+
+The terrain, all six implemented room sheets, Bridge, Fungal Caves and Volcanic Depths reference sheets were compared with ordinary-zoom, close and reversed-camera gameplay captures. The existing timber furniture, fitted room paving, embedded gold, persistent crystal columns and square terrain footprints remain the shared visual language.
+
+| Visible issue in the audit | Refinement or retained limit |
+|---|---|
+| Natural banks looked like oversized masonry bricks | Shallow irregular strata now distinguish natural excavation from the regular courses of reinforced walls; bank chips stay at the floor edge. |
+| Strong square outlines repeated across every room tile | Floor textures keep room motifs and restrained corner fittings; the actual irregular room perimeter supplies the continuous inlay. |
+| Regions shared the same earth, rock and ambient color | Editable upper, fungal, ancient, crystal and volcanic palettes tint natural ground and walls. Sparse fungal caps and crystal growth occupy visible, unclaimed wall edges. |
+| Neutral ruins had no recognizable room identity | Discovered prelaid floors show their faded room motif, broken perimeter and shallow masonry chips. Claimed floors regain normal materials and automatic furnishings. Buried and undiscovered remnants stay concealed. |
+| Bright emissive objects supplied little sense of local illumination | Shared local light pools illuminate visible nearby terrain, furnishing surfaces and residents; neutral global light is subdued enough to preserve warm lamps and cool Hearths. |
+| Furnishing lighting missed merged furniture located away from the origin | Light masks now use each merged furnishing mesh's actual world bounding-box center. |
+| Narrow rooms, hazard edges and wall occlusion | Existing bridge pavers/corbels, below-floor shores, common wall height and automatic furniture footprints were retained after irregular-room and reverse-angle checks. Tall banks can still occlude a narrow passage from one side; camera rotation provides the alternate view. |
+
+Palette, decoration density and growth eligibility live in [environment-visuals.ts](src/content/environment-visuals.ts). Local light intensity, radius, glow, pointer behavior and budgets live in [lighting.ts](src/content/lighting.ts). These remain presentation settings and never alter room capacity, discovery, terrain movement or combat ranges.
+
+Ordinary worlds use the shared M33 lighting service. Six reusable source slots select nearby discovered wall lamps, Hearths, lava, gems and appropriate biome growth. A separate prioritized pointer light follows the actual hovered surface as the camera moves, rotates or zooms. It disappears over UI, dialogs, menus, unknown tiles and outside the game. Resources retain their existing visibility through fog, but concealed resources and ruins do not create illuminating light pools. Tile-based terrain rays stop light after the first wall; this is occlusion for presentation, not a new sight or discovery system. Lights have no flicker, work with reduced motion, and are disposed and replaced during world transitions. The adjustable test harness retains its baseline comparison controls.
+
+The pass remains procedural prototype art. Shallow strata, sparse habitat growth and repeatable cracked ruin tiles are deliberate reusable approximations. There are no imported sculpted assets, detailed shadows, normal-map pipeline, reflections or second terrain layer. Light selection can change pools when the camera moves far enough to select different nearby sources.
+
+### M31/M33 verification and performance
+
+`npm run verify -- lighting` passed the source/test typecheck and all 12 focused lighting/room checks. `node scripts/environment-browser.mjs --profile` passed all six room visual cases, narrow/irregular footprints, retained earth/bedrock, paid/free expansion, reinforcement, water/lava bridge plans and completed decks, chasm edges, exact fog picking and live reduced motion. `node scripts/lighting-browser.mjs` passed stationary-pointer orbit/pan/zoom tracking, sidebar and modal suppression, the sealed fog pocket, 800×600 controls, reduced motion, source limits, reset and restoration of the ordinary world's lighting. All reported no runtime errors.
+
+`node scripts/biome-graphics-browser.mjs` captured arrival, local ruin detail and reverse angles in all five authored campaign worlds. Each normal arrival retained exactly its original discovery state and had no hidden tile in a local light mask. Ruin detail views deliberately disclose a local area for visual inspection; they are presentation fixtures, not evidence of completed gameplay routes. Normal reclaiming and full routes are checked separately by M28/M19.
+
+The initial source-pool integration exposed a performance defect in the experimental harness: Babylon's `Light.setEnabled` resynchronizes scene meshes even when its value does not change. The shared service now changes enabled states only when necessary, caches visible source/geometry masks, and avoids repeating unchanged pointer picks. The final isolated 1440×1000 Intel Iris Plus/ANGLE D3D11 samples, following 30 warm-up frames and sampling 60 frames, measured **59.0 FPS** in the authored starting stronghold (16.96 ms mean, 16.8 ms p95) and **36.0 FPS** in the full furnished showcase (27.8 ms mean, 33.4 ms p95). These are machine-specific paused-rendering samples; active large battles and world setup can be slower.
+
+Ignored artifacts are retained in `test-results/m31-before/`, `test-results/m31-after/` (`full-checks.json` preserves the complete room run), `test-results/m31-biomes/`, `test-results/m31-final-profile/` and `test-results/m33/`. Before/after showcase and detail views share their framing; the ordinary campaign map changed during M29, so its final capture and profile target the new actual Hearth rather than the previous prototype coordinates.
+
 [M21 terrain and environments](development-history.md#m21--terrain-and-environment-graphics-update) and [M22 character models and animations](development-history.md#m22--character-models-and-animations-update) extend the procedural M9 baseline. The notes below distinguish the new work from the earlier pass.
 
 ## M21 environment update
@@ -103,10 +133,10 @@ The saved [Cave Hound concept](concept-art/cave-hounds/README.md) guides a separ
 
 ## M33 lighting test room
 
-The implemented experiment uses subdued ambient and directional illumination, warm wall-lamp pools, a cool Hearth, orange lava and blue gem light. Existing emissive geometry supplies the restrained glow layer. Source, ambient, glow and pointer defaults live in [lighting-lab.ts](src/content/lighting-lab.ts); the sidebar changes only the current test world's settings. The Experimental lighting toggle compares the existing renderer, and leaving the harness restores its lights, materials and glow.
+The implemented experiment uses subdued ambient and directional illumination, warm wall-lamp pools, a cool Hearth, orange lava and blue gem light. Existing emissive geometry supplies the restrained glow layer. Source, ambient, glow and pointer defaults live in [lighting.ts](src/content/lighting.ts); the sidebar changes only the current test world's settings. The Experimental lighting toggle compares the original brighter renderer, and leaving the harness restores the retained world's normal biome lighting.
 
 The fixture contains ordinary paid/free room construction, automatic cosmetic furnishings, single-tile and irregular rooms, a narrow Library, a Kitchen with retained bedrock, working crafting/research queues, sample residents and dormant enemies. Water/lava crossings are explicit completed bridge fixtures. Preset camera views cover inhabited rooms, reinforced-wall lamps, the crossings and a concealed northern pocket. Resume uses the normal simulation; resetting reconstructs the paused fixture.
 
 [LabLighting](src/view/lighting-lab.ts) reuses six point-light slots for the nearest eligible visible sources and a separate pointer light. The pointer follows the actual hovered terrain surface, including when a stationary pointer's camera pans, rotates or zooms. Sidebar/UI hover, open dialogs, leaving the viewport and blur suppress it. Tile visibility and terrain rays restrict illuminated meshes; hidden lava/gems supply no lights, while gold/gem geometry retains its ordinary through-fog visibility. Lighting never changes discovery, routes or targeting. Settings have no flicker and work with reduced motion.
 
-This is a test-room prototype. Occlusion uses tile-based mesh inclusion rather than detailed shadows, and selecting nearby sources can change visible pools when the camera moves. Full M33 still needs representative M27–M29 biomes/ruins, material and character-readability tuning with M31/M32, and normal campaign integration. Test-room comparisons and verification are recorded in [development history](development-history.md).
+The same service now runs in ordinary campaign and Free Play worlds, with biome palettes and sparse local growth. Occlusion uses tile-based mesh inclusion rather than detailed shadows, and selecting nearby sources can change visible pools when the camera moves. The comparison harness remains available for later tuning. Full gameplay comparisons and verification are recorded above and in [development history](development-history.md).
