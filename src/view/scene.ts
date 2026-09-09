@@ -1,4 +1,5 @@
 import { isHazard, hazardDefinitions } from '../game/terrain';
+import { LabLighting } from './lighting-lab';
 import { drawFurnishingModel, type FurnishingDisplay } from './furnishing-models';
 import { tuning } from '../content/tuning';
 import {
@@ -42,6 +43,7 @@ const colors: Record<string, string> = {
   unknown: '#101820',
 };
 export class GameScene {
+  labLighting?:LabLighting;
   engine: Engine;
   scene: Scene;
   camera: ArcRotateCamera;
@@ -698,10 +700,12 @@ export class GameScene {
   render() {
     this.refresh();
     this.effects.update();
+    if(this.world.lightingTest){this.labLighting??=new LabLighting(this);this.labLighting.update(this.world.lightingTest);}
     this.scene.render();
   }
   ready() { return this.scene.whenReadyAsync(); }
   setWorld(world: World) {
+    this.labLighting?.dispose();this.labLighting=undefined;
     this.world = world;
     this.effects.reset();
     this.terrainRoot.dispose();

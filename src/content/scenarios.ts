@@ -1,5 +1,6 @@
 import {createHoundLab} from './hound-lab.ts';
 import { createCombatLab } from './combat-lab.ts';
+import { createLightingLab } from './lighting-lab.ts';
 import { createCrossingScenario } from './crossings.ts';
 import { startCampaign } from '../game/campaign.ts';
 import { createEnemyLab } from './enemy-lab.ts';
@@ -66,6 +67,7 @@ export const scenarioFactories = {
   },
   defenses: createDefenseLab,
   combat: createCombatLab,
+  lighting: createLightingLab,
   spells: createSpellLab,
   encounters: createEncounterLab,
   'enemy-roster': createEnemyLab,

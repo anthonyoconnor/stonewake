@@ -32,6 +32,7 @@ export interface LevelDefinition {
   onwardHearth?: OnwardHearthDefinition;
 }
 export interface World {
+  lightingTest?: import('../content/lighting-lab.ts').LightingSettings;
   freePlay?: { levelId: string; buildings: string[]; knownSpells: string[] };
   combatTest?: { team: string; opponent: string; support: 'none' | 'traps' | 'spells'; initialResidents: number; initialEnemies: number };
   campaign?: CampaignState;

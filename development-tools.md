@@ -44,6 +44,8 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `showcase` | Room geometry, residents, needs, crafting and research |
 | `defenses` | Existing manufactured defenses and raider yard |
 | `spells` | Existing prepared-spell and Warrior combat yard |
+| `combat` | Selectable hound/specialist matchups, regional enemy groups and optional supplied support |
+| `lighting` | M33 furnished lighting experiment, pointer/source controls, comparison and sealed fog boundary |
 | `crowded-kitchen` | Six hungry miners sharing food and accommodation |
 | `research-interruption` | Runesmith, queued research, food and beds; interrupt via needs or research pause |
 | `stonehands` | Three mechanical workers using the same terrain work yard; no living support requirements |
@@ -155,3 +157,5 @@ The `cave-hounds` scenario uses a normally priced four-place Dormitory, automati
 Notification changes use `npm run verify -- notifications --browser=notifications`. The focused browser flow covers real first arrivals, combat and Hearth warnings, dismissal/history/source actions, hidden origins, content-only extensions, overlay input isolation and compact rail overflow. Captures are in ignored `test-results/notifications/`; existing interface, hound and morale flows use the same notification controls.
 
 The **Combat test room** is directly available in Test harnesses. Select defenders, a species or mixed regional group, and optional supplied traps/prepared spells; Load / reset matchup rebuilds it paused. Rooms returns to its matchup controls after inspecting units or casting spells. Results and normal costs are in the sidebar. Run `npm run verify -- combat --browser=combat`. Shared factory: `combat`.
+
+The **M33 lighting test room** opens directly from Test harnesses or `?scenario=lighting&paused=1`. Its ordinary room construction respects the free-building flag; the test allowance, sample residents/enemies and completed crossing decks are explicit fixtures. Use the sidebar comparison, light sliders and preset views without advancing simulation, or resume to observe actual work. Reset restores the lighting defaults, and Return to stronghold disposes experimental lights and restores the previous renderer. Run `npm run verify -- lighting --browser=lighting` for room capacity/access/furnishing checks and pointer tracking, UI suppression, fog preservation, compact controls and reset/return. Captures and reports go to ignored `test-results/m33/`.

@@ -93,7 +93,7 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 | M30 | Sound and music foundation | Planned |
 | M31 | Environment and room graphics refinement | Planned |
 | M32 | Character animation and combat readability refinement | Planned |
-| M33 | Underground lighting, source glows and pointer illumination | Planned |
+| M33 | Underground lighting, source glows and pointer illumination | Planned; test room implemented |
 | M19 | Integrated gameplay balance and full-level playtesting | Planned; final pass after M23–M34, including M25.1 |
 
 M12 (Guard Posts, guard duty and retreat) and M15 (door repairs and upgrades in place) are removed from the active roadmap. Their features are deferred for possible reconsideration. Existing milestone IDs are retained; the playtest follow-on milestones use M23–M34.
@@ -108,7 +108,7 @@ For every implementation milestone, update the inventory and owning design docum
 
 ### Work and integration order
 
-The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. M23, M24 and M34 are complete. M25 and M25.1 are complete. An M33 lighting test harness is authorized next; full M33 remains planned.
+The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. M23, M24 and M34 are complete. M25 and M25.1 are complete. The M33 lighting test room is implemented; full M33 remains planned.
 
 M23 and M34 resolve the immediate work-priority and left-edge camera issues; M24 combat balance and its test harness are complete. M25/M25.1 supply the approved entry and loading flows; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M33 owns underground lighting and should be developed alongside M31, then checked with M32 character readability. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
 
@@ -209,6 +209,8 @@ Complete when representative work loops, group travel and mixed-species combat r
 ### M33 — Underground lighting, source glows and pointer illumination
 
 Coordinate with M31's environment materials and M32's character readability; use representative rooms, caverns and ruins from M27–M29.
+
+**Current test room:** Debug → Test harnesses → M33 lighting test room opens a paused furnished settlement with lamps, Hearth, gems, lava/water bridges and a sealed fog pocket. Sidebar controls adjust ambient/directional light, source intensity/radius, glow and pointer illumination; a comparison toggle restores the current renderer. Reset and Return to stronghold preserve the existing harness rules. See [graphics direction and limits](graphics-pass.md#m33-lighting-test-room). This experiment is confined to the test world; biome palettes, campaign integration and the completion checks below remain unfinished.
 
 - Establish an underground mood with subdued, tunable ambient illumination and localized pools of light. Keep terrain, units, tools and routes readable at normal play distance without flattening the scene into uniform brightness.
 - Give lamps, the Hearth, lava and other appropriate emissive features a visible glow and illumination on nearby surfaces. Tune source color, intensity, radius, falloff and restrained bloom together; bright materials alone should not substitute for lighting their surroundings.

@@ -1,6 +1,7 @@
 import { showDwarfs, updateDwarfs } from './dwarfs';
 import { showCombatLab, updateCombatLab } from './combat-lab';
 import { defaultCombatSetup, type CombatSetup } from '../content/combat-lab';
+import { showLightingLab } from './lighting-lab';
 import { bridgeSettings } from '../game/terrain.ts';
 import {showSpells,updateSpells} from './spells';
 import {characterDefinitions,maxCharacterLevel,isConstruct,isAnimal} from '../content/characters';
@@ -107,6 +108,7 @@ export class Sidebar {
     this.show('rooms');view.engine.resize();
   }
   show(category:string){
+    if(category==='rooms'&&this.view.world.lightingTest)category='lighting';
     if(category==='rooms'&&this.view.world.combatTest)category='combat';
     if(category==='rooms'&&this.lab)category='lab';
     this.category=category;this.panel.scrollTop=0;this.inspectedUnit=undefined;this.unitInspection.hidden=true;
@@ -141,6 +143,7 @@ export class Sidebar {
     else if(category==='spells')showSpells(this);
     else if(category==='hearth')showHearth(this);
     else if(category==='combat')showCombatLab(this);
+    else if(category==='lighting'&&this.view.world.lightingTest)showLightingLab(this,this.view.world.lightingTest);
     else this.panel.innerHTML=`<p class="eyebrow">${category.toUpperCase()}</p><h2>${category[0].toUpperCase()+category.slice(1)}</h2><p class="muted">No ${category} available yet.</p>`;
     this.panel.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>b.onclick=()=>this.selection.setTool(b.dataset.tool!));
     if(category==='dwarfs'){mountEconomy(this);mountMoralePanel(this);}
@@ -149,6 +152,7 @@ export class Sidebar {
     if(category==='debug'&&this.view.world.encounters?.length)mountEncounterPanel(this,true);
     if(category==='harnesses'){
       const combat=document.createElement('button');combat.className='wide';combat.textContent='Combat test room';combat.onclick=()=>this.onLab(true,'combat');this.panel.append(combat);
+      const lighting=document.createElement('button');lighting.className='wide';lighting.textContent='M33 lighting test room';lighting.onclick=()=>this.onLab(true,'lighting');this.panel.append(lighting);
       const spells=document.createElement('button');spells.className='wide';spells.textContent='Spell test yard';spells.onclick=()=>this.onLab(true,'spells');this.panel.append(spells);
       const yard=document.createElement('button');yard.className='wide';yard.textContent='Defense test yard';yard.onclick=()=>this.onLab(true,'defenses');this.panel.append(yard);
       const showcase=document.createElement('button');showcase.className='wide';showcase.textContent='Load visual showcase';showcase.onclick=()=>this.onLab(true,'showcase');this.panel.append(showcase);
@@ -209,6 +213,7 @@ export class Sidebar {
     this.fullMap.update();
   }
   update(){
+    const lighting=this.panel.querySelector('#lighting-status');if(lighting)lighting.textContent=`${this.view.labLighting?.activeSources??0} active sources (maximum 6) · Pointer ${this.view.labLighting?.pointerActive?'on':'off'} · Test settings only`;
     updateCombatLab(this);
     const pause=this.panel.querySelector<HTMLButtonElement>('#toggle-simulation');if(pause)pause.textContent=this.isPaused()?'Resume simulation':'Pause simulation';
     const state=this.panel.querySelector('#simulation-state');if(state)state.textContent=this.isPaused()?'Paused · setup actions work; resume to observe behavior.':'Running';

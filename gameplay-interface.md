@@ -30,6 +30,8 @@ M25.1 adds a lightweight themed loading shell before expensive game initializati
 
 [M33](development-plan.md#m33--underground-lighting-source-glows-and-pointer-illumination) adds moody ambient lighting, visible source glows with nearby surface illumination, and a soft light beneath the world pointer. Pointer light follows the hovered world surface and is hidden over UI or outside the viewport. It does not reveal unexplored terrain or hidden inhabitants, and must preserve tool/selection readability.
 
+Its test room is available under **Debug → Test harnesses → M33 lighting test room**. The sidebar provides a current-renderer comparison toggle, camera views, ambient/directional/source/glow controls, pointer controls, defaults and reset. It starts paused and uses the shared Pause/Resume and Return to stronghold controls; Rooms reopens these controls after inspection. Settings affect only this test world, and return restores the retained game and prior pause state. Full campaign/biome lighting remains planned; see [the experiment and limits](graphics-pass.md#m33-lighting-test-room).
+
 ## Agreed direction
 
 Controls occupy a persistent sidebar on the left. The stylized 3D gameplay view fills the remaining space on the right. A minimap sits at the top of the sidebar, with icon controls below it for building rooms, defenses, spells, and dwarf information.

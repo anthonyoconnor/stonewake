@@ -100,3 +100,13 @@ The approved [Stonehands v2 sheet](concept-art/stonehands/README.md) now guides 
 ## Cave Hound companion
 
 The saved [Cave Hound concept](concept-art/cave-hounds/README.md) guides a separate quadruped model: stocky charcoal coat, sandy muzzle and brows, pointed ears, leather collar/harness, rune tag and small amber lamp. Four legs trot in diagonal pairs; the head dips for scouting/feeding, the jaw animates bites, the tail moves and the body settles for sleep. It uses actual movement, job and combat state, supports reduced motion, and shares the existing hit/death cleanup without world labels.
+
+## M33 lighting test room
+
+The implemented experiment uses subdued ambient and directional illumination, warm wall-lamp pools, a cool Hearth, orange lava and blue gem light. Existing emissive geometry supplies the restrained glow layer. Source, ambient, glow and pointer defaults live in [lighting-lab.ts](src/content/lighting-lab.ts); the sidebar changes only the current test world's settings. The Experimental lighting toggle compares the existing renderer, and leaving the harness restores its lights, materials and glow.
+
+The fixture contains ordinary paid/free room construction, automatic cosmetic furnishings, single-tile and irregular rooms, a narrow Library, a Kitchen with retained bedrock, working crafting/research queues, sample residents and dormant enemies. Water/lava crossings are explicit completed bridge fixtures. Preset camera views cover inhabited rooms, reinforced-wall lamps, the crossings and a concealed northern pocket. Resume uses the normal simulation; resetting reconstructs the paused fixture.
+
+[LabLighting](src/view/lighting-lab.ts) reuses six point-light slots for the nearest eligible visible sources and a separate pointer light. The pointer follows the actual hovered terrain surface, including when a stationary pointer's camera pans, rotates or zooms. Sidebar/UI hover, open dialogs, leaving the viewport and blur suppress it. Tile visibility and terrain rays restrict illuminated meshes; hidden lava/gems supply no lights, while gold/gem geometry retains its ordinary through-fog visibility. Lighting never changes discovery, routes or targeting. Settings have no flicker and work with reduced motion.
+
+This is a test-room prototype. Occlusion uses tile-based mesh inclusion rather than detailed shadows, and selecting nearby sources can change visible pools when the camera moves. Full M33 still needs representative M27–M29 biomes/ruins, material and character-readability tuning with M31/M32, and normal campaign integration. Test-room comparisons and verification are recorded in [development history](development-history.md).
