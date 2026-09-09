@@ -26,11 +26,11 @@ Spell prompts and provenance: [primary set](concept-art/spells/prompts-primary.m
 
 ## Permanent comparison room
 
-With the local development server running, open **Debug → Test harnesses → Additional test scenarios**, choose `arcana-gallery`, and load it paused. The direct development URL is [the comparison room](http://127.0.0.1:5173/?scenario=arcana-gallery&paused=1); use the port printed by Vite.
+With the local development server running, open **Debug → Before & after → Spells, traps & Hearthstones**. The room also remains available as `arcana-gallery` in the grouped **Test harnesses → Additional test scenarios** selector. The direct development URL is [the comparison room](http://127.0.0.1:5173/?scenario=arcana-gallery&paused=1); use the port printed by Vite.
 
 The room contains thirteen starting/refined pairs. Amber identifies starting models; teal identifies refined models. The sidebar selects each item, front/back/quarter turns, a pair or individual model, and the whole room. Zoom controls support close inspection. Each item has three clearly named states: before/active/expired magic, armed/triggered/resetting traps, intact/damaged/destroyed main Hearth, and dormant/awakening/ready onward Hearth. Play, pause, restart, frame stepping and playback speed operate independently of the simulation pause. Reduced motion follows the normal Settings preference. No labels or progress bars are placed over the world.
 
-Spell subjects provide identical scale context on both sides. They are display models outside gameplay: they cannot fight, work or spend gold. Create Stonehand originally had no cast effect, so its starting exhibit shows the unchanged worker without assembly magic. Returning to the stronghold restores the retained game in memory; reset/reopen rebuilds the exhibits from the archived and current factories.
+Spell subjects provide identical scale context on both sides. They are display models outside gameplay: they cannot fight, work or spend gold. Create Stonehand originally had no cast effect, so its starting exhibit shows the unchanged worker without assembly magic. **Back to comparison** restores the controls after opening another panel without resetting the exhibit, camera or preview. **Return to stronghold** restores the retained game in memory; reset/reopen rebuilds the exhibits from the archived and current factories. Simulation advancement, resident diagnostics and test-actor setup are omitted from this display room.
 
 The chamber uses ordinary claimed floor and introduces no buildable room type, service or capacity rule. Its free-construction flag follows the shared scenario setting. The existing working spell and defense yards remain available for actual casting, production, placement and combat checks.
 

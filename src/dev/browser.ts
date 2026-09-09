@@ -58,7 +58,7 @@ export function installDevelopment(
       checked(() => {
         controller.paused = paused;
         sidebar.onPause(paused);
-        if(getWorld().spellTest)getWorld().spellTest!.paused=false;
+        if (getWorld().spellTest) getWorld().spellTest!.paused = false;
       }),
     command: (command) =>
       checked(() => {
@@ -125,6 +125,39 @@ export function installDevelopment(
 }
 
 function mountDevelopmentPanel(sidebar: Sidebar, api: BrowserDevelopment) {
+  const comparisons = [
+    ['graphics-gallery', 'Characters', 'Sixteen starting and refined character pairs.'],
+    ['terrain-comparison', 'Terrain & rooms', 'Matching terrain, furnished rooms and regional palettes.'],
+    [
+      'arcana-gallery',
+      'Spells, traps & Hearthstones',
+      'Thirteen starting and refined effects and structures.',
+    ],
+  ] as const;
+  if (sidebar.category === 'debug') {
+    const links = sidebar.panel.querySelector<HTMLElement>('#debug-comparisons')!;
+    links.hidden = false;
+    links.innerHTML = '<h3>Before &amp; after</h3>';
+    const feedback = document.createElement('p');
+    feedback.className = 'muted';
+    feedback.setAttribute('role', 'status');
+    for (const [id, label, description] of comparisons) {
+      const button = document.createElement('button');
+      button.className = 'wide';
+      button.textContent = label;
+      button.title = description;
+      button.onclick = () => {
+        try {
+          api.load(id);
+        } catch (error) {
+          feedback.textContent = String(error);
+        }
+      };
+      links.append(button);
+    }
+    links.append(feedback);
+    return;
+  }
   const panel = document.createElement('section');
   panel.className = 'development-panel';
   const title = document.createElement('h3');
@@ -132,13 +165,72 @@ function mountDevelopmentPanel(sidebar: Sidebar, api: BrowserDevelopment) {
   panel.append(title);
   const scenario = document.createElement('select');
   scenario.setAttribute('aria-label', 'Development scenario');
-  for (const id of scenarioIds.filter(id=>!['stronghold','room-lab','showcase','defenses','spells'].includes(id))) {
-    const option = document.createElement('option');
-    option.value = id;
-    option.textContent = id;
-    scenario.append(option);
+  const groups: Array<{ label: string; items: Array<readonly [ScenarioId, string]> }> = [
+    { label: 'Before & after', items: comparisons.map(([id, label]) => [id, label]) },
+    {
+      label: 'Characters & enemies',
+      items: [
+        ['character-models', 'Character model showcase'],
+        ['enemy-roster', 'Enemy roster'],
+        ['cave-hounds', 'Cave Hound patrols'],
+      ],
+    },
+    {
+      label: 'Rooms & work',
+      items: [
+        ['lighting', 'Lighting studio'],
+        ['stonehands', 'Stonehand work yard'],
+        ['miner-work', 'Miner work yard'],
+        ['crowded-kitchen', 'Crowded Kitchen'],
+        ['research-interruption', 'Research interruptions'],
+        ['locked-door-hauling', 'Hauling through a locked door'],
+        ['economy', 'Economy and wages'],
+        ['morale', 'Needs and morale'],
+      ],
+    },
+    {
+      label: 'Combat & objectives',
+      items: [
+        ['combat', 'Combat matchups'],
+        ['encounters', 'Camps and raids'],
+        ['hearth', 'Onward Hearthstone activation'],
+        ['hearth-defeat', 'Stone Hearth defeat'],
+        ['crossings', 'Water and lava crossings'],
+      ],
+    },
+    {
+      label: 'Regional scenes',
+      items: [
+        ['region-upper', 'Upper caverns'],
+        ['region-fungal', 'Fungal caves'],
+        ['region-ancient', 'Ancient ruins'],
+        ['region-crystal', 'Crystal caverns'],
+        ['region-volcanic', 'Volcanic depths'],
+      ],
+    },
+  ];
+  const listed = new Set(groups.flatMap((group) => group.items.map(([id]) => id)));
+  groups.push({
+    label: 'Other scenarios',
+    items: scenarioIds
+      .filter(
+        (id) => !listed.has(id) && !['stronghold', 'room-lab', 'showcase', 'defenses', 'spells'].includes(id),
+      )
+      .map((id) => [id, id.replaceAll('-', ' ')]),
+  });
+  for (const group of groups.filter((group) => group.items.length)) {
+    const options = document.createElement('optgroup');
+    options.label = group.label;
+    for (const [id, label] of group.items) {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = label;
+      options.append(option);
+    }
+    scenario.append(options);
   }
-  if ([...scenario.options].some(o=>o.value===api.status().scenario)) scenario.value = api.status().scenario;
+  if ([...scenario.options].some((o) => o.value === api.status().scenario))
+    scenario.value = api.status().scenario;
   panel.append(scenario);
   const feedback = document.createElement('p');
   feedback.className = 'muted';
@@ -158,9 +250,17 @@ function mountDevelopmentPanel(sidebar: Sidebar, api: BrowserDevelopment) {
     panel.append(b);
   };
   button('Load scenario paused', () => api.load(scenario.value as ScenarioId));
+  panel.append(feedback);
 
-  if(!sidebar.lab){sidebar.panel.append(panel);return;}
-  const help=document.createElement('p');help.className='muted';help.textContent='Time controls affect this test world and leave it paused. Resume above for continuous play.';panel.append(help);
+  if (!sidebar.lab || comparisons.some(([id]) => id === api.status().scenario)) {
+    sidebar.panel.append(panel);
+    return;
+  }
+  const help = document.createElement('p');
+  help.className = 'muted';
+  help.textContent =
+    'Time controls affect this test world and leave it paused. Resume above for continuous play.';
+  panel.append(help);
   button('Step 0.05 seconds', () => api.advance(0.05));
   button('Advance 10 seconds', () => api.advance(10));
   const resident = document.createElement('select');

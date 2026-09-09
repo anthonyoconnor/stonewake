@@ -1003,3 +1003,9 @@ Verification completed:
 - `node scripts/hearth-morale-browser.mjs m11`: normal hidden discovery, contested activation request, physical activation and local victory; natural main-Hearth attacks/destruction, frozen terminal actions and purchases, and real area restart all passed with no browser console/runtime errors.
 
 M30 listening review remains pending; this pass adds no unrelated gameplay scope.
+
+## 2026-09-09 — Clearer Debug comparison navigation
+
+Moved the three comparison studios into direct **Debug → Before & after** buttons: **Characters**, **Terrain & rooms**, and **Spells, traps & Hearthstones**. Additional scenarios now have readable names grouped by purpose, preserving their existing IDs and loading action. Debug keeps gameplay testing and session settings separate. **Back to comparison** restores the current controls without reloading; the terrain View selector now retains its non-default selection. Comparison panels highlight Debug and omit unrelated simulation advancement, empty resident diagnostics and test-actor creation. First-launch errors remain visible.
+
+`npm run verify -- development --browser=debug` passed source/test typechecking, all 10 development/verification tests, direct launches of all three comparisons, retained stronghold and preview state, existing paused/resumed gameplay harnesses, cross-panel return, stepping and needs setup. After the terrain selector correction, source/test typechecking and `node scripts/debug-browser.mjs --comparisons` passed again with non-default character/terrain selections. No browser errors. Menu captures are in ignored `test-results/debug-before-after-menu.png` and `test-results/debug-in-game.png`. No gameplay/model changes or production build were required.

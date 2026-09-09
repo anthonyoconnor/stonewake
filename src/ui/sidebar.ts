@@ -120,6 +120,7 @@ export class Sidebar {
     this.show('rooms');view.engine.resize();
   }
   show(category:string){
+    const comparison=isGraphicsGallery(this.view.world)||isArcanaGallery(this.view.world)||isTerrainComparison(this.view.world);
     if(category==='rooms'&&isGraphicsGallery(this.view.world))category='graphics-gallery';
     if(category==='rooms'&&isArcanaGallery(this.view.world))category='arcana-gallery';
     if(category==='rooms'&&isTerrainComparison(this.view.world))category='terrain-comparison';
@@ -128,10 +129,10 @@ export class Sidebar {
     if(category==='rooms'&&this.lab)category='lab';
     this.category=category;this.panel.scrollTop=0;this.inspectedUnit=undefined;this.unitInspection.hidden=true;
     this.panel.setAttribute('aria-label',category==='lab'?'Room layout studio':category[0].toUpperCase()+category.slice(1));
-    this.root.querySelectorAll('[data-category]').forEach(b=>{const active=(b as HTMLElement).dataset.category===(category==='lab'?'rooms':category==='harnesses'?'debug':category);b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+    this.root.querySelectorAll('[data-category]').forEach(b=>{const active=(b as HTMLElement).dataset.category===(category==='lab'?'rooms':category==='harnesses'||['graphics-gallery','arcana-gallery','terrain-comparison'].includes(category)?'debug':category);b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
     if(category==='help')this.panel.innerHTML='<p class="eyebrow">FIELD GUIDE</p><h2>Find your foothold.</h2><p>Explore the stone halls around your Hearthstone.</p><dl><dt>Cursor icon</dt><dd>Pickaxe: dig · minus: clear · pointer: inspect · room icon: build</dd><dt>Right click / Esc</dt><dd>Return to excavation</dd><dt>W A S D / edges</dt><dd>Pan camera</dd><dt>Left Ctrl + A/D</dt><dd>Orbit viewed point (also Q/E)</dd><dt>Mouse wheel</dt><dd>Zoom</dd><dt>Middle drag</dt><dd>Orbit viewed point horizontally</dd><dt>Home</dt><dd>Return to hearth</dd><dt>M</dt><dd>Show / close full map</dd></dl>';
     else if(category==='debug'){
-      this.panel.innerHTML=`<p class="eyebrow">${this.lab?'TEST WORLD DEBUG':'IN-GAME DEBUG'}</p><p class="muted">Actions here affect the current world.</p><button id="open-harnesses" class="wide">Test harnesses</button><h3>Shared session settings</h3><p class="muted">These settings also affect your retained stronghold.</p><label class="toggle"><input id="free-rooms" type="checkbox" ${this.view.world.freeRoomBuilding?'checked':''}/> Free room construction</label><p class="muted">${this.view.world.freeRoomBuilding?'Room construction and expansion cost no gold.':'Normal room costs are active.'} Placement and access rules still apply.</p><button id="open-tuning" class="wide">Game configuration</button>${this.lab?'':'<h3>Reset game</h3><p class="muted">Discards the stronghold and starts a fresh game.</p><button id="restart" class="wide">Restart stronghold</button>'}`;
+      this.panel.innerHTML=`<p class="eyebrow">DEBUG</p><section id="debug-comparisons" class="spell-card" hidden></section><h3>Gameplay testing</h3><button id="open-harnesses" class="wide" title="Room layouts, combat, spells and other paused test worlds">Test harnesses</button><h3>Session settings</h3><label class="toggle" title="Affects the current world and retained stronghold. Placement and access rules still apply."><input id="free-rooms" type="checkbox" ${this.view.world.freeRoomBuilding?'checked':''}/> Free room construction</label><button id="open-tuning" class="wide" title="Shared tunable rules for the whole session">Game configuration</button>${this.lab?'':'<h3>Reset game</h3><button id="restart" class="wide" title="Discard the current stronghold and start a fresh game">Restart stronghold</button>'}`;
       this.panel.querySelector<HTMLInputElement>('#free-rooms')!.onchange=e=>{const value=(e.target as HTMLInputElement).checked;this.onFreeBuild(value);this.selection.draw();this.show('debug');};
       this.panel.querySelector<HTMLButtonElement>('#open-tuning')!.onclick=()=>this.tuningDialog.show();
       this.panel.querySelector<HTMLButtonElement>('#open-harnesses')!.onclick=()=>this.show('harnesses');
@@ -180,7 +181,7 @@ export class Sidebar {
       const production=document.createElement('details');production.className='production';production.innerHTML=`<summary>Workshop production</summary><div class="room-grid" role="group" aria-label="Production recipes">${recipes.map(r=>`<button class="room-choice recipe-choice" data-recipe="${r.id}" aria-label="Queue ${r.name.toLowerCase()} · ${r.cost} gold" title="Queue ${r.name.toLowerCase()} · ${r.cost} gold · ${r.seconds}s Engineer work">${actionIcon(r.id)}<small>${r.cost} ◆</small></button>`).join('')}</div><div id="craft-orders"></div><div id="craft-outputs"></div><details><summary>Workers &amp; access</summary><div id="craft-status" class="muted"></div></details>`;this.panel.append(production);
       production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.root.querySelector('#feedback')!.textContent=recipeAllowed(this.view.world,b.dataset.recipe!)?`${recipeById(b.dataset.recipe!)!.name} queued for an Engineer.`:availabilityReason(this.view.world,'recipes',b.dataset.recipe!);this.update();});
     }
-    if(['lab','debug'].includes(category)){
+    if(['lab','debug'].includes(category)&&!comparison){
             const catalog=document.createElement('div');catalog.innerHTML=`<h3>Current world: test residents</h3><p class="muted">Adds a dwarf here for free, bypassing arrival requirements. Needs a clear claimed spawn square. Requirements below describe natural arrivals only.</p><label>Test dwarf type<select id="debug-dwarf-type">${characterDefinitions.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select></label><button id="add-test-dwarf" class="wide">Add test dwarf</button><p id="debug-attraction" class="muted"></p>`;this.panel.append(catalog);
       catalog.querySelector<HTMLButtonElement>('#add-test-dwarf')!.onclick=()=>{const added=addResidents(this.view.world,catalog.querySelector<HTMLSelectElement>('select')!.value);this.root.querySelector('#feedback')!.textContent=added?'Test dwarf added.':'Cannot add dwarf: no clear claimed spawn square.';this.update();};
       if(this.lab){
@@ -200,12 +201,13 @@ export class Sidebar {
       button('Reset spell yard',()=>this.onLab(true,'spells'));
       this.panel.prepend(controls);
     }
-    if(category==='harnesses')this.onDevelopmentPanel();
+    if(category==='harnesses'||category==='debug')this.onDevelopmentPanel();
     if(this.lab||category==='debug'||category==='harnesses'){
       const context=document.createElement('section');context.className='spell-card';
-      context.innerHTML=isArcanaGallery(this.view.world)?`<button id="return-stronghold" class="wide">Return to stronghold</button>`:`<strong>${this.lab?'Test world':'Stronghold'} · ${this.view.world.name}</strong>${isGraphicsGallery(this.view.world)?'':'<p id="simulation-state" class="muted"></p><button id="toggle-simulation" class="wide"></button>'}${this.lab?'<button id="return-stronghold" class="wide">Return to stronghold</button>':''}`;
+      context.innerHTML=comparison?`${['graphics-gallery','arcana-gallery','terrain-comparison'].includes(category)?'':'<button id="back-to-comparison" class="wide">Back to comparison</button>'}<button id="return-stronghold" class="wide">Return to stronghold</button>`:`<strong>${this.lab?'Test world':'Stronghold'} · ${this.view.world.name}</strong><p id="simulation-state" class="muted"></p><button id="toggle-simulation" class="wide"></button>${this.lab?'<button id="return-stronghold" class="wide">Return to stronghold</button>':''}`;
       const pause=context.querySelector<HTMLButtonElement>('#toggle-simulation');if(pause)pause.onclick=()=>{this.onPause(!this.isPaused());this.update();};
       const back=context.querySelector<HTMLButtonElement>('#return-stronghold');if(back)back.onclick=()=>this.onLab(false);
+      const controls=context.querySelector<HTMLButtonElement>('#back-to-comparison');if(controls)controls.onclick=()=>this.show('rooms');
       if(this.lab&&category!=='harnesses'&&category!=='debug'){const choose=document.createElement('button');choose.className='wide';choose.textContent='Test harnesses';choose.onclick=()=>this.show('harnesses');context.append(choose);}
       this.panel.prepend(context);
     }

@@ -1,6 +1,9 @@
 import { terrainComparisonViews } from '../content/terrain-comparison';
 import { environmentPalettes } from '../content/environment-visuals';
 import type { Sidebar } from './sidebar';
+import type { World } from '../game/types';
+
+const selectedViews = new WeakMap<World, string>();
 
 export function focusTerrainComparison(
   sidebar: Sidebar,
@@ -8,6 +11,7 @@ export function focusTerrainComparison(
   side: 'both' | 'starting' | 'refined' = 'both',
 ) {
   const target = terrainComparisonViews.find((v) => v.id === id)!;
+  selectedViews.set(sidebar.view.world, id);
   sidebar.controls.center(side === 'both' ? target.x : side === 'starting' ? 8.5 : 26.5, target.z);
   sidebar.view.camera.radius = target.radius * (side === 'both' ? 1 : 0.5);
   // Looking from negative Z keeps the archived west half on the left of the image.
@@ -17,7 +21,7 @@ export function focusTerrainComparison(
 export function showTerrainComparison(sidebar: Sidebar) {
   sidebar.panel.innerHTML = `<p class="eyebrow">ENVIRONMENT ARCHIVE</p><h2>Terrain &amp; rooms</h2>
     <p class="muted">Left: Starting · Right: Refined</p>
-    <label>View<select id="terrain-comparison-view">${terrainComparisonViews.map((v) => `<option value="${v.id}">${v.name}</option>`).join('')}</select></label>
+    <label>View<select id="terrain-comparison-view">${terrainComparisonViews.map((v) => `<option value="${v.id}" ${v.id === (selectedViews.get(sidebar.view.world) ?? 'overview') ? 'selected' : ''}>${v.name}</option>`).join('')}</select></label>
     <button id="terrain-comparison-focus" class="wide">Focus comparison</button>
     <div class="lab-actions"><button id="terrain-comparison-starting" title="Close view of the original half">Starting</button><button id="terrain-comparison-refined" title="Same close view of the refined half">Refined</button></div>
     <label>Region<select id="terrain-comparison-biome">${Object.keys(environmentPalettes)
