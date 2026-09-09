@@ -96,7 +96,8 @@ royal.ruins=[placeRuin(ruinTemplates.foundry,{x:22,z:20},'royal-foundry'),placeR
 royal.encounters=[
   camp('royal-watch','Royal volcanic watch','volcanic',[{x:29,z:7},{x:34,z:10}],['cinderling','deepmaw'],'raid'),
   camp('molten-gem-lair','Molten gem lair','volcanic',[{x:34,z:25}],['cinderling']),
-  entrance('royal-raids','volcanic',{x:37,z:24},['cinderling'],660),
+  // Lava walkers can raid either opened bank; suppressing this source needs a deliberate bridge.
+  entrance('royal-raids','volcanic',{x:21,z:16},['cinderling'],660),
 ];
 
 export const authoredCampaignLevels = [border,fungal,ancient,crystal,royal];
