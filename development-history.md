@@ -810,3 +810,148 @@ The campaign browser route was updated for the current excavated starting ring, 
 Added the directly accessible paused lighting test room with ordinary paid/free rooms, automatic furnishings and floor capacity, irregular/narrow footprints, retained bedrock, sample units, real crafting/research queues, completed bridge fixtures and a sealed fog pocket. Adjustable ambient/directional light, bounded local sources, glow and a surface-tracking pointer light are confined to this experiment. The comparison toggle restores the existing renderer; reset and return clean up lights and preserve the retained stronghold and pause state. See graphics-pass.md for source definitions and remaining tile-occlusion/source-selection limits. Biome palettes, representative new levels and ordinary campaign lighting are still M33 work.
 
 Verification: focused lighting/room checks and browser flow passed. Final integration passed all 232 simulation tests, source/test typecheck, the lighting browser flow, production build and production isolation. Browser checks covered actual pointer placement and camera tracking, UI suppression, unchanged fog/discovery, reduced motion, compact controls, comparison/defaults, reset without accumulating lights and exact return-state restoration. Visually reviewed baseline/experimental rooms and lava/water captures; screenshots and reports are in ignored test-results/m33/. Earlier M24 combat, M25 menu, M25.1 fault-injected loading and normal-cost two-area campaign checks are recorded above. The existing large Babylon bundle warning remains; no production splitting or release infrastructure was added.
+
+
+## Remaining roadmap implementation — 2026-09-09
+
+M26–M29, M31 and M33 are implemented and individually verified. The original accepted scope is retained below; descriptions of dependencies or the earlier test-only lighting refer to the pre-implementation specification. M19/M32 final integration and M30 listening review remain tracked in the current plan.
+
+### M26 — Campaign structure and gradual content unlocks
+
+- Write a campaign brief with a proposed level count/order, regional journey, learning goal, introduced rooms/characters/tools, revisited mechanics and endpoint for each level. The existing two levels are proof-of-concept content, not the required final campaign structure.
+- Begin with Stonehands, Cave Hounds and the basic settlement rooms; introduce Warriors, Engineers and Runesmiths gradually across subsequent levels with their supporting rooms, defenses and spells.
+- Allow enough development time and suitable challenges after each introduction for the new role to matter. Reuse earlier roles in later levels rather than replacing them.
+- Implement declarative per-level availability and campaign unlock transitions using existing content IDs. Apply restrictions consistently to menus, room construction, recruitment, production and research; keep intentional debug access separate.
+- Specify carried knowledge, fresh local state and standalone starting unlocks in levels.md, with supporting character/room/spell rules in their owning documents.
+
+Complete when the campaign brief covers a coherent beginning-to-end progression and checks show early levels cannot acquire later roles/tools, travel unlocks the intended content, restarts restore arrival knowledge, and free play starts with its authored availability.
+
+### M27 — Living biomes and recurring enemy pressure
+
+Dependencies: M26's progression brief for threat pacing; extend the existing enemy and encounter systems.
+
+- Define recognizable upper-workings, fungal, ancient, crystal and volcanic habitats using the existing roster. Give authored territories natural caverns, branching tunnels, nests or halls that fit their inhabitants.
+- Add autonomous local movement before combat: suitable roaming, patrol, nesting or deliberate sentry behavior by species/group. Idle enemies should appear intentionally dormant or guarding rather than all waiting motionless in rooms.
+- Separate habitat activity from attacks on the settlement. Configure which species/groups raid, what activates them, their warning/cadence, group makeup and recovery intervals by level/source; not every creature should launch scheduled attacks.
+- Build distinct challenges from existing abilities: organized goblin groups, burrowing flanks, fungal control, armored guardians, crystal ranged pressure and volcanic terrain access. Define readable cues and available counters.
+- Preserve physical routes, fog, bedrock and resource protections, blocked-wave handling and source suppression. Pressure must offer respite and a way to secure territory rather than accumulate unseen attackers indefinitely.
+- Keep habitat, movement and pressure parameters editable and document behavior in enemies.md and levels.md.
+
+Complete when normal levels show natural movement before contact and several distinct, recurring attacks through real routes, with visible warnings, meaningful counters, source clearing and recovery opportunities. Verify hidden activity does not disclose enemies and blocked routes do not cause teleporting or wave buildup.
+
+### M28 — Discoverable and reclaimable dwarven ruins
+
+Dependencies: M26's availability rules; coordinate inhabitants with M27.
+
+- Author lost dwarven sites with coherent room arrangements, corridors, collapsed approaches and recognizable remnants, concealed by normal discovery.
+- Support neutral pre-laid room areas that players can reach, secure, claim and take over through actual gameplay systems. Define claiming costs/time, ownership conversion and when service capacity becomes usable in rooms.md and levels.md.
+- Reclaimed facilities use ordinary room capacity, automatic cosmetic furnishings, recruitment and access rules. Define how locked campaign room types are handled so ruins cannot accidentally bypass progression.
+- Keep ruin repair chains, door maintenance and new relic currencies outside this milestone. Decorative damage does not imply a new repair system.
+- Make reusable ruin definitions available to level authors, including irregular and partially obstructed sites.
+
+Complete when a player discovers an occupied ruin, clears its approach, claims its rooms and uses their normal services. Follow the room checklist for access, irregular layouts, capacity, automatic furnishings and free construction behavior; verify claiming cannot grant inaccessible or locked services.
+
+### M29 — Authored campaign levels and resource-led exploration
+
+Dependencies: M25–M28; use M24's provisional role balance.
+
+- Build the sequence established by M26, expanding or replacing prototype layouts as needed. Set each map's playable space and pacing around actual settlement growth, specialist use and its primary challenge, rather than increasing dimensions alone.
+- Place gold seams deliberately to suggest routes, stage expansion and draw players toward discoveries. Provide a viable finite-gold opening and choices between safer income and exposed rewards.
+- Make renewable gems rare strategic destinations, not a routine deposit beside every start. Allow gem-free levels; each placed gem needs an authored reason, access challenge and economic consequence.
+- Combine themed natural caverns/tunnels, reclaimed ruins, bedrock barriers, alternate routes and biome pressure. Give maps distinct layouts instead of rectangular monster rooms appended to a main corridor.
+- Keep resource visibility as currently agreed: gold/gems guide exploration through fog without revealing surrounding terrain, inhabitants or the onward stone.
+- Document each level's purpose, availability, resource rationale, threats and intended/alternate routes in levels.md. Keep existing prototype levels in free play only if deliberately retained as playable content.
+
+Complete when the authored campaign has a clear endpoint and each level is playable from normal starting conditions with its permitted roster, introduces or meaningfully reuses a specialist/tool, and has deliberate resource destinations. Check at least an intended route and an alternate approach per level; confirm no mandatory objective depends on unavailable tools or inaccessible income.
+
+### M31 — Environment and room graphics refinement
+
+Dependencies: representative M27–M29 content.
+
+- Audit actual gameplay against approved concept art at ordinary zoom and multiple camera angles; turn the reported clunkiness into an explicit list of visible problems with before/after captures.
+- Refine terrain joins, exposed wall faces, material scale, excavation transitions, resource silhouettes, water/lava/bridge edges, room floors and furnishing placement.
+- Give biomes and ruins a coherent visual identity through geometry, materials and restrained atmosphere, coordinating lighting with M33, while keeping gameplay tiles, diggable terrain, bedrock and resources easy to distinguish.
+- Check single-tile, narrow and irregular rooms, camera occlusion and fog boundaries. Decorations remain cosmetic and the single terrain layer remains unchanged.
+- Prioritize the largest visible improvements using editable shared assets/materials; do not require final production art or replace the renderer.
+
+Complete when the recorded environment issues are resolved or explicitly retained as limitations, representative new levels read clearly at play distance, room-checklist visual cases pass, and targeted browser checks show acceptable responsiveness and no discovery leaks.
+
+### M33 — Underground lighting, source glows and pointer illumination
+
+Coordinate with M31's environment materials and M32's character readability; use representative rooms, caverns and ruins from M27–M29.
+
+**Original test-room baseline:** Debug → Test harnesses → M33 lighting test room opens a paused furnished settlement with lamps, Hearth, gems, lava/water bridges and a sealed fog pocket. Sidebar controls adjust ambient/directional light, source intensity/radius, glow and pointer illumination; a comparison toggle restores the current renderer. Reset and Return to stronghold preserve the existing harness rules. See [graphics direction and limits](graphics-pass.md#m33-lighting-test-room). At the time this scope was planned, the experiment was confined to the test world; biome palettes, campaign integration and the completion checks below were still unfinished. They are now implemented and verified as recorded below.
+
+- Establish an underground mood with subdued, tunable ambient illumination and localized pools of light. Keep terrain, units, tools and routes readable at normal play distance without flattening the scene into uniform brightness.
+- Give lamps, the Hearth, lava and other appropriate emissive features a visible glow and illumination on nearby surfaces. Tune source color, intensity, radius, falloff and restrained bloom together; bright materials alone should not substitute for lighting their surroundings.
+- Use biome-specific ambient palettes and light sources to distinguish warm inhabited rooms, cold ruins, fungal caves and volcanic depths. Avoid distracting flicker and respect reduced-motion settings.
+- Add a soft light around the pointer's world position to illuminate the area beneath it. Follow the actual hovered surface as the camera pans, rotates and zooms; hide it over the sidebar, menus or when the pointer leaves the game. Keep the current tool icon and tile preview clear.
+- Lighting is presentation only: neither pointer illumination nor source glow discovers tiles, exposes concealed rooms/enemies or changes targeting. Preserve the existing exception that gold/gems remain visible through fog; prevent glow spilling through fog or walls from disclosing hidden sources.
+- Keep light settings in shared editable definitions, bound the cost of many sources and clean up lights on restart/travel. Document the visual direction and pointer behavior in the owning graphics/interface documentation during implementation.
+
+Complete when ordinary play shows clear source glows, illuminated surroundings and a coherent underground mood across representative biomes, with a useful pointer light. Compare before/after captures at normal zoom and multiple angles; browser-check pointer tracking, UI suppression, fog boundaries, reduced motion and responsiveness in a furnished settlement.
+
+### Implementation and focused verification
+
+- M26 (`df70360`): five-stage cumulative availability guards room/building construction, recruitment, production, defense placement, research and casting. Twelve standalone Free Play entries have explicit arrival plans; legacy Miner remains debug-only. Campaign/bridge checks and all standalone arrival/restart tests passed. Sidebar integration uses those same availability queries.
+- M27 (`6f4df72`): editable species/local habitat motion, territorial vs raiding groups, physical routes, blocked-wave handling and source suppression. Five habitat regressions plus encounter/enemy tests passed. Warned inhabitants now defend locally when struck without prematurely launching a group raid (`03d4e38`).
+- M28 (`cc42121`): concealed neutral room remnants convert through timed real worker claiming after access/security checks, respect locked plans, gain ordinary services/furnishings, and sell for no windfall. All six room types were checked as single/strip/irregular layouts with free construction on/off; occupied, buried, blocked and unavailable examples passed.
+- M29 (`dea5cc5`, pressure follow-up `1889bed`): five authored maps, alternate excavation approaches, deliberate finite gold routes, three gem-free openings and remote crystal/volcanic gem destinations. Structural checks and all ten normal paid campaign routes passed. Royal volcanic pressure recurred twice through lava before two paid bridge squares let workers physically suppress the source; a full subsequent recurrence window remained quiet. Exact routes and timings are recorded in the M19 integration record.
+- M31 (`53ff892`) and M33 (`ca2d94b`): reference-led bank/room/biome/ruin refinement and ordinary source/pointer illumination. Source/test typecheck, 12 lighting/room checks, full environment browser cases and all five biome comparison views passed with no runtime errors. Pointer orbit/pan/zoom, sidebar/dialog suppression, fog masks, compact controls, reduced motion, reset/return passed. Fixed redundant Babylon light synchronization. Final settled 1440×1000 Intel Iris Plus samples: 59 FPS at the authored starting Hearth and 36 FPS in the full furnished showcase; active battles/setup may be slower. Audit, artifacts and procedural-art/occlusion limitations are in graphics-pass.md.
+
+### M19 and M32 accepted scope
+
+### M19 — Integrated balance and complete-level playtesting
+
+Dependencies: completed gameplay foundations and integrated M23–M34, including M25.1. M12 and M15 are excluded.
+
+- Tune starting economy, Stonehand creation cost, dwarf wages, support capacity, specialist arrivals, training/combat XP, spells, bridges and enemy pressure together.
+- Play complete levels from ordinary starting conditions without free construction, supplied stocks, spawned defenders or shortened debug timers. Ensure the onward Hearthstone is challenging but reachable with the tools/resources available on that level.
+- Check multiple layouts/approaches, escalating threats, recovery from losses and the Library's continuing usefulness. Correct gameplay blockers and visual/sidebar readability problems found during those runs.
+
+Complete when the authored campaign can be played from fresh start through its endpoint using normal rules, defeat is demonstrable, and focused regressions plus browser playtests cover the discovered issues. Record tested routes, timings, provisional values and remaining content/visual limitations. This is a prototype balance pass, not production release machinery or a requirement for final art assets.
+
+### M32 — Character animation and combat readability refinement
+
+Dependencies: M24 balance and M27 behavior; coordinate presentation with M31.
+
+- Audit Stonehands, hounds, specialists and the ten enemies in real movement/work/combat scenes against their approved references.
+- Fix conspicuous sliding, abrupt turns, intersections, awkward proportions, repeated poses and disconnected attack/hit timing. Preserve recognizable silhouettes at normal camera distance.
+- Make digging, reinforcing, hauling, crafting, research, rest, patrol and each enemy's distinctive attacks readable through poses and restrained effects. Integrate M30 sound cues with visible action timing.
+- Preserve simulation authority, continuous movement, reduced-motion support and sidebar-only health/status information; visual refinement must not silently change hit ranges or terrain access.
+
+Complete when representative work loops, group travel and mixed-species combat read clearly at ordinary zoom and reverse angles, attack feedback matches actual outcomes, and the recorded animation defects are resolved or documented. Check large-group responsiveness without running unrelated gameplay suites for cosmetic edits.
+
+### M19 integrated verification — 2026-09-09
+
+The pure player-action route driver in scripts/helpers/campaign-route.ts starts with the ordinary three Stonehands and 400 gold, excavates and earns finite resources, pays for support rooms, attracts and trains real defenders, manufactures and places traps, researches and prepares repeated spells, and builds the mandatory two-square Royal crossing. No free construction, supplied stocks, spawned defenders, revealed terrain or shortened simulation timers are used. The browser advances ordinary ticks between player actions and uses real sidebar travel.
+
+| Area | Intended simulation | Alternate simulation | Browser journey |
+|---|---:|---:|---:|
+| Border Foothold | 241s | 304s | 241s |
+| Fungal Hollows | 353s | 400s | 356s |
+| Fallen City | 490s | 525s | 489s |
+| Crystal Divide | 525s | 589s | 500s |
+| Royal Deep | 477s | 513s | 477s |
+
+Times are elapsed game seconds. Alternate routes include 45 seconds of consolidation before final activation. Both Crystal and Royal alternate runs suffered a real combat loss and attracted a replacement; their routes reclaimed eight and ten ruin squares respectively. Intended Royal also recovered a loss. Both final areas prepared/cast Haste at least twice and Slow at least once. Research knowledge carried into Royal, while charges, queues, residents, rooms and funds reset normally. An unprepared Border approach produced actual Hearth destruction at 122.1 seconds without purchased defenses. All successful recorded runs preserved the 400-health Hearth. These authored successful strategies are reproducible prototype balance evidence, not a guarantee for arbitrary play.
+
+Royal's delayed lava entrance generated two real recurring waves at approximately 691 and 968 seconds. Normal workers could not suppress its lava source until two paid bridge squares provided physical access; it was claimed around 1015 seconds and remained suppressed through 1291 seconds. The extended test ended with 408 gold and 15 residents. Warned inhabitants now defend locally when attacked while preserving the scheduled group warning.
+
+The browser campaign passed all five areas, staged construction/research availability, knowledge carry, fresh-area resets, desktop and 800×600 outcomes, and the endpoint with no runtime errors. Captures/report are under ignored test-results/campaign/. A focused canvas check also verified neutral ruin inspection from Spells, Workforce and Defenses opens Rooms, explains locked plans and grants no discovery or service capacity.
+
+Final integrated simulation/tooling verification: npm run verify -- all passed all **246 tests**, with no failures, skips or cancellations, plus one source/test typecheck (log: test-results/final-simulation.log). Later presentation/sidebar-only fixes passed focused browser checks and source/test typecheck. The final verification-runner scope check also passed all four tests after registering the new selectable browser checks. A direct Vite production bundle and production browser smoke passed; normal startup ignores debug scenario parameters and exposes no development API/test-scenario panel. The bundle retains the existing large-chunk warning; no deployment or release infrastructure was added.
+
+### M32 completion — 2026-09-09
+
+Committed as `82fa236`; final campaign availability, ruin inspection and journey checks are in `a040d11`.
+
+Actual work loops for mining, reinforcement, claiming, wall construction, hauling, eating, rest, training, crafting and research passed the character browser check, alongside six model front/back views. A real hound bite shared the victim's damage timestamp, enemy models stayed at simulation positions, paused combat poses stayed frozen and resident/enemy defeat geometry was released. The ten-enemy gallery, regional/reverse views, mixed natural combat, burrower tunneling strokes/excavation and reduced-motion checks passed with no browser errors. The enemy anatomy check now runs before combat because expired bodies are correctly disposed. Representative captures were visually reviewed; evidence is in test-results/m32-after/ and test-results/m17-enemies/.
+
+The recorded audit and retained procedural rig/crowd/furniture-contact limitations are in graphics-pass.md. No combat range, movement authority, terrain access or statistical balance was changed by the presentation pass.
+
+### M30 implementation and automated verification — 2026-09-09
+
+Original procedural ambience, restrained exploration/combat score, work/movement/material/species cues, spell/warning/outcome sounds and session volume/mute settings are implemented (5394dff); audio-design.md owns the direction and asset provenance. Three audio simulation tests and the browser playback/control/cleanup check passed, including actual Web Audio activation, bounded voices/beds, pause, settings, mute, restart and world replacement. Crowded work played 33 cues with two sampled short voices/two beds; combat reached 45 cues with one sampled short voice/two beds. The browser reported no runtime errors and recorded test-results/m30/work-combat.webm. Muting preserves existing visible notifications and combat/sidebar feedback.
+
+**Listening review remains pending.** Available tools can record and inspect playback state but cannot listen to the recording. A work/combat sample and optional listening-feedback question were provided to the user; no listening result is asserted. M30 remains the only open milestone review in development-plan.md.

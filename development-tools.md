@@ -39,7 +39,7 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 
 | Scenario | Purpose |
 |---|---|
-| `stronghold` | First area of the two-area campaign, with normal crew/economy and onward travel |
+| `stronghold` | First area of the five-area authored campaign, with normal crew/economy and onward travel |
 | `room-lab` | Empty claimed room studio; construct through normal commands |
 | `showcase` | Room geometry, residents, needs, crafting and research |
 | `defenses` | Existing manufactured defenses and raider yard |
@@ -88,9 +88,9 @@ npm run verify -- all --browser=integration --production
 
 The default `changed` scope considers uncommitted changes. Clean trees and documentation-only changes do nothing. Changed test files select themselves; other TypeScript edits follow local test imports. If shared dependencies select more than six files, or a change is outside that graph, the runner prints the candidates and asks the developer/agent to choose a focused scope or explicitly choose `all`. It never silently falls back to the full suite. Resolve that choice from task context without asking the user. Changed JavaScript tools receive syntax checks. New behavior still needs relevant tests or a targeted manual check; an empty automatic selection is not evidence that it works.
 
-Scopes live in [verification.ts](scripts/verification.ts): work, pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
+Scopes live in [verification.ts](scripts/verification.ts): audio, habitats, ruins, balance (full paid campaign routes and recurring-pressure recovery), work, pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
 
-Browser checks are opt-in and independently selectable with `--browser=<name>`. Names: camera, work, pricing, workforce, characters, models, rooms, movement, hounds, defenses, campaign, interface, smoke, integration. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface and campaign checks sequentially. Other subsystem browser scripts remain explicit tools for their owning changes.
+Browser checks are opt-in and independently selectable with `--browser=<name>`. Names: ruins, audio, animation, lighting, loading, menus, combat, camera, work, notifications, pricing, workforce, characters, models, rooms, movement, hounds, defenses, security, campaign, interface, smoke, integration. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface, notifications and campaign checks sequentially. The `ruins` browser check covers real canvas inspection and locked-plan details; `animation` covers real work/contact, enemy cleanup and reduced motion. Other subsystem browser scripts remain explicit tools for their owning changes.
 
 The consolidated workforce browser script replaces the old dwarfs, characters, Stonehands and summon-miner scripts:
 
@@ -159,3 +159,9 @@ Notification changes use `npm run verify -- notifications --browser=notification
 The **Combat test room** is directly available in Test harnesses. Select defenders, a species or mixed regional group, and optional supplied traps/prepared spells; Load / reset matchup rebuilds it paused. Rooms returns to its matchup controls after inspecting units or casting spells. Results and normal costs are in the sidebar. Run `npm run verify -- combat --browser=combat`. Shared factory: `combat`.
 
 The **M33 lighting test room** opens directly from Test harnesses or `?scenario=lighting&paused=1`. Its ordinary room construction respects the free-building flag; the test allowance, sample residents/enemies and completed crossing decks are explicit fixtures. Use the sidebar comparison, light sliders and preset views without advancing simulation, or resume to observe actual work. Reset restores the lighting defaults, and Return to stronghold disposes experimental lights and restores the previous renderer. Run `npm run verify -- lighting --browser=lighting` for room capacity/access/furnishing checks and pointer tracking, UI suppression, fog preservation, compact controls and reset/return. Captures and reports go to ignored `test-results/m33/`.
+
+## Campaign and presentation integration
+
+`npm run verify -- campaign` checks availability, authored layouts and bridges. `npm run verify -- balance` runs the full intended/alternate paid campaign, normal loss recovery, Library reuse, natural defeat and prolonged volcanic raids with paid source suppression. The shared player-action driver is `scripts/helpers/campaign-route.ts`; it grants no gold, units, discoveries, prepared charges or timer shortcuts. The browser campaign check uses that driver and the normal sidebar travel actions through all five stages.
+
+`npm run verify -- audio --browser=audio` checks original procedural cues, activation, volume/mute and restart/pause cleanup; recordings go to ignored `test-results/m30/`. `--browser=animation` selects character work/contact/pausing and ten-enemy gallery checks. M31/M33 artifact paths and current performance samples live in graphics-pass.md. Browser workloads are serial; freeze every imported TypeScript file, including the shared route helper, while they run.
