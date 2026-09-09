@@ -14,7 +14,7 @@ The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel 
 
 ## Menus
 
-[View the M25 menu concepts](menus/README.md): a themed starting menu and an extensible Free Play level selector, with carved stone, bronze, warm lantern light and a blue Hearthstone glow. Proposed concepts awaiting review; menus remain planned. [Generation prompts](menus/prompts-v1.md).
+[View the M25 menu concepts](menus/README.md): a themed starting menu and an extensible Free Play level selector, with carved stone, bronze, warm lantern light and a blue Hearthstone glow. User-approved designs to use for M25; implementation remains planned. M25.1 loading screens share their theme. [Generation prompts](menus/prompts-v1.md).
 
 ## Dwarf characters
 

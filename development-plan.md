@@ -1,6 +1,6 @@
 # Browser game development plan
 
-Status: **M1–M11, M13–M14, M16–M18, M20–M23 and M34 complete, including M5.1. M19 and M24–M33 remain planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
+Status: **M1–M11, M13–M14, M16–M18, M20–M23 and M34 complete, including M5.1. M19 and M24–M33, including M25.1, remain planned. M12 and M15 are removed from the active roadmap.** TypeScript and Babylon.js are confirmed. Completed scope and verification are archived in development-history.md.
 
 Completed milestones and verification records are in [development-history.md](development-history.md). **Read that archive only if past context is required; it is not part of routine startup reading.** This file contains the current baseline, unfinished work and dependencies.
 
@@ -42,7 +42,7 @@ Last checked: **2026-09-08** against the room and character definitions and the 
 
 **Deferred or removed, not unfinished core content:** Ranger is deferred. Separate Smith, Priest and expedition leader roles are removed. Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are not separate rooms in the current design.
 
-The remaining active milestones are M24–M33 below, followed by M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
+The remaining active milestones are M24–M33, including M25.1, below, followed by M19: integrated balance and broader full-level playtesting. The complete enemy roster, two-area campaign, player interface and environment/character graphics are implemented. Guard Posts, assigned guard duties, general specialist retreat, door repairs and upgrades in place are deferred outside the active roadmap following removal of M12 and M15; retained design proposals and catalog placeholders do not make them required work. Dwarfs and Cave Hounds share sustained-need dissatisfaction, grouped warnings, recovery and physical departure. Core defeat and onward activation set the terminal state consumed by simulation and ordinary actions. Current provisional objective, encounter, morale and wage rules live in levels.md, game-rules.md and characters.md. Detailed behavior and unresolved choices remain there; completed checks are preserved in the optional development history.
 
 **M16 baseline:** `crossings` / Emberwater Crossing supplies a normal-economy water/lava approach and an unbridgeable chasm pocket. Bridge tools are available in the shared construction UI; Border Foothold remains the default land-route level. Bridges cost 20 gold and eight worker seconds per square, with the free-room flag waiving gold only. See [bridge rules](rooms.md#bridges-and-hazardous-crossings).
 
@@ -87,7 +87,8 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 | Milestone | Outcome | Status |
 |---|---|---|
 | M24 | Cave Hound and specialist combat balance | Planned |
-| M25 | Starting menu and free-play level selection | Planned |
+| M25 | Starting menu and free-play level selection | Planned; menu concepts approved |
+| M25.1 | Themed startup and level loading screens | Planned |
 | M26 | Campaign structure and gradual content unlocks | Planned |
 | M27 | Living biomes and recurring enemy pressure | Planned |
 | M28 | Discoverable and reclaimable dwarven ruins | Planned |
@@ -96,7 +97,7 @@ Update this inventory in the same completed chunk as any room, structure, dwarf 
 | M31 | Environment and room graphics refinement | Planned |
 | M32 | Character animation and combat readability refinement | Planned |
 | M33 | Underground lighting, source glows and pointer illumination | Planned |
-| M19 | Integrated gameplay balance and full-level playtesting | Planned; final pass after M23–M34 |
+| M19 | Integrated gameplay balance and full-level playtesting | Planned; final pass after M23–M34, including M25.1 |
 
 M12 (Guard Posts, guard duty and retreat) and M15 (door repairs and upgrades in place) are removed from the active roadmap. Their features are deferred for possible reconsideration. Existing milestone IDs are retained; the playtest follow-on milestones use M23–M34.
 
@@ -112,13 +113,13 @@ For every implementation milestone, update the inventory and owning design docum
 
 The user reports completing the two-level campaign. This establishes a successful player route through the prototype, but does not by itself complete M19's alternate-route, recovery, defeat and regression requirements. The following milestones address that playtest feedback. M23 and M34 are complete. Remaining milestones stay planned until separately authorized for implementation.
 
-M23 and M34 resolve the immediate work-priority and left-edge camera issues; M24 is next for early combat balance. M25 establishes the entry flow; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M33 owns underground lighting and should be developed alongside M31, then checked with M32 character readability. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
+M23 and M34 resolve the immediate work-priority and left-edge camera issues; M24 is next for early combat balance. M25 establishes the entry flow using the approved menu concepts, followed by M25.1 for startup and level loading; M26 defines the larger campaign and unlock rules. M27 and M28 provide world systems for M29's authored levels. M30 can proceed independently once its event/asset design is defined. M31 and M32 use representative M27–M29 content so visual work can be assessed in actual levels. M33 owns underground lighting and should be developed alongside M31, then checked with M32 character readability. M19 follows their integration, with balance checks during each milestone rather than postponed until the end.
 
 Exact campaign length, level dimensions, unlock sequence, gem counts, raid timings and audio/art asset choices remain provisional. M26 establishes the campaign brief and M29 owns concrete layouts; do not invent fixed numerical design rules in several documents. Preserve the single terrain layer, shared gold currency, autonomous movement, fog rules and sidebar-only information. This roadmap adds no saves, accounts, multiplayer or production release infrastructure and does not reinstate M12 or M15.
 
 ### M19 — Integrated balance and complete-level playtesting
 
-Dependencies: completed gameplay foundations and integrated M23–M34. M12 and M15 are excluded.
+Dependencies: completed gameplay foundations and integrated M23–M34, including M25.1. M12 and M15 are excluded.
 
 - Tune starting economy, Stonehand creation cost, dwarf wages, support capacity, specialist arrivals, training/combat XP, spells, bridges and enemy pressure together.
 - Play complete levels from ordinary starting conditions without free construction, supplied stocks, spawned defenders or shortened debug timers. Ensure the onward Hearthstone is challenging but reachable with the tools/resources available on that level.
@@ -138,7 +139,7 @@ Complete when hounds handle suitable early threats but hound-only settlements ha
 
 ### M25 — Starting menu and free-play level selection
 
-Proposed [main-menu and Free Play concept art](concept-art/menus/README.md) is available for review, with saved generation prompts. These are visual references, not approved production assets or implemented menus.
+The user approved the [main-menu and Free Play concepts](concept-art/menus/README.md) as the menus to use for M25. Match their composition, carved stone/bronze controls, typography, warm lantern light and blue Hearthstone atmosphere; preserve Campaign/Free Play/Settings and the illustrated level-list/preview layout. Build responsive interactive controls and prepare background assets from this approved direction rather than substituting a different menu design. The menus are not yet implemented.
 
 - Launch into a starting menu with Campaign and Free Play. Campaign begins the authored journey; Free Play opens a list of playable levels with a short description and explicit start/back controls.
 - Populate the list from stable level metadata so adding a playable level does not require another menu implementation. Keep debug harnesses separate.
@@ -147,6 +148,19 @@ Proposed [main-menu and Free Play concept art](concept-art/menus/README.md) is a
 - Document entry and navigation rules in gameplay-interface.md and levels.md.
 
 Complete when every listed level starts and restarts correctly, campaign travel still works, and a player can return to the menu and switch modes without leaked units, gold, unlocks or objectives. Check keyboard and compact-window navigation.
+
+### M25.1 — Themed startup and level loading screens
+
+Dependencies: M25's approved visual direction and entry/travel flows.
+
+- Replace the reported several-second blank startup with a lightweight loading shell visible as soon as the initial HTML can paint, before the game bundle, Babylon scene and large art assets finish loading. Its initial appearance must not depend on those same expensive assets.
+- Match the approved menus with a dark stone palette, bronze framing, a restrained Hearthstone/rune motif and concise Loading text. Enhance with themed artwork once available; keep a usable styled fallback while artwork loads.
+- Cover initial application startup, campaign/free-play level entry, campaign travel and area restart when they require loading. Keep the loading screen in place until the destination has a usable rendered frame and ready controls; avoid flashes of a blank canvas or partially built world.
+- Show an indeterminate activity indicator or truthful loading stages. Display percentages only if measurable; never add artificial waits to make loading noticeable. Let the browser paint the shell before heavy initialization and keep feedback responsive.
+- Suppress world input and unintended simulation while transitioning, prevent duplicate starts, and remove the overlay cleanly after success. Provide a concise visible error and retry/reload action if initialization fails rather than leaving an endless loading screen.
+- Respect reduced motion, readable contrast and compact windows. Loading status belongs to the screen overlay, not floating text in the game world. Document the loading flow in gameplay-interface.md.
+
+Complete when cold startup with throttled loading shows the themed shell during the previously blank period, and level entry/travel/restart stay visually covered until ready. Browser-check slow asset loading, failed loading/retry, repeat transitions, compact layout and reduced motion; confirm normal fast loads are not artificially delayed.
 
 ### M26 — Campaign structure and gradual content unlocks
 

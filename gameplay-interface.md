@@ -20,6 +20,12 @@ Working interface design for the dwarven stronghold game. Companion documents: [
 
 The left-edge panning fix is implemented. Direction stays relative to the rotated view. `node scripts/camera-browser.mjs` checks actual outer edges, sidebar overlap, rotation, compact layouts, ordinary panel interaction, pointer leave, blur and full-map suppression. Future starting menus must retain the same camera suppression as dialogs.
 
+## Approved menu direction and planned loading screens
+
+M25 uses the user-approved [main menu and Free Play designs](concept-art/menus/README.md): carved stone and bronze controls, warm lamps and the blue Hearthstone, with Campaign/Free Play/Settings on the main screen and a level list beside an illustrated preview in Free Play. Implement their appearance with responsive, accessible controls.
+
+M25.1 adds a lightweight themed loading shell before expensive game initialization to cover the reported blank startup, then consistent loading screens for level entry, travel and restart. Show truthful activity, retain the screen until the destination is rendered and usable, and provide a visible retry/reload path on failure. The initial shell must paint without waiting for the game bundle or large background images. These menu/loading changes remain planned.
+
 ## Planned lighting
 
 [M33](development-plan.md#m33--underground-lighting-source-glows-and-pointer-illumination) adds moody ambient lighting, visible source glows with nearby surface illumination, and a soft light beneath the world pointer. Pointer light follows the hovered world surface and is hidden over UI or outside the viewport. It does not reveal unexplored terrain or hidden inhabitants, and must preserve tool/selection readability.

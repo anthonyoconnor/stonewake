@@ -1,6 +1,6 @@
 # M25 menu concepts
 
-Proposed visual direction for the starting menu and Free Play selector, generated with the built-in image generation tool. These concepts are awaiting user review; M25 implementation remains planned. [Generation prompts](prompts-v1.md).
+User-approved designs for the M25 starting menu and Free Play selector, generated with the built-in image generation tool. Use these menus for M25; implementation remains planned. M25.1 loading screens should share this visual language. [Generation prompts](prompts-v1.md).
 
 Return to [all concept art](../README.md). Scope: [M25](../../development-plan.md#m25--starting-menu-and-free-play-level-selection) and [interface rules](../../gameplay-interface.md).
 
@@ -18,4 +18,4 @@ A scrollable list with thumbnails supports additional levels. The selected row u
 
 ## Implementation interpretation
 
-Use these as composition, material and lighting references, not flattened production UI assets. Build actual accessible controls and responsive text during M25. The scenic backgrounds are illustrative: elevated halls, stairs, waterfalls and the outdoor thumbnail do not change the single-layer underground gameplay or prescribe real map geometry. In-game hidden objectives still obey fog; menu illustrations are not live map previews. M33 owns the gameplay lighting implementation. Asset/settings details remain provisional.
+Implement these approved compositions, materials and lighting with actual accessible controls and responsive text during M25. Prepare matching background assets and interactive UI layers; preserve the approved designs. The scenic backgrounds are illustrative: elevated halls, stairs, waterfalls and the outdoor thumbnail do not change the single-layer underground gameplay or prescribe real map geometry. In-game hidden objectives still obey fog; menu illustrations are not live map previews. M33 owns the gameplay lighting implementation. Asset/settings details remain provisional.
