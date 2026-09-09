@@ -784,3 +784,23 @@ Complete when every listed level starts and restarts correctly, campaign travel 
 #### M25 completion — 2026-09-09
 
 Implemented the approved main menu and Free Play compositions with actual responsive HTML controls and two prepared background assets. Seven deliberately retained normal-economy levels have stable metadata and independent starting plans/knowledge; all start with Stonehands. Added session motion/edge-scrolling settings, confirmation/cancel before discarding active play, standalone restarts, campaign and terminal navigation. Browser checks passed all seven start/restart flows, mode isolation, cancel preservation, keyboard/settings and 800/390px layouts. Production build and production isolation passed. Full simulation run exposed a missing .ts import plus obsolete input-document mocks; focused reruns pass after correcting them. The known optional-chamber fixture now isolates its source so an unrelated sentry cannot kill the teleported worker; all campaign tests pass. These fixture fixes do not certify complete campaign balance.
+
+### M25.1 — Themed startup and level loading screens
+
+Dependencies: M25's approved visual direction and entry/travel flows.
+
+- Replace the reported several-second blank startup with a lightweight loading shell visible as soon as the initial HTML can paint, before the game bundle, Babylon scene and large art assets finish loading. Its initial appearance must not depend on those same expensive assets.
+- Match the approved menus with a dark stone palette, bronze framing, a restrained Hearthstone/rune motif and concise Loading text. Enhance with themed artwork once available; keep a usable styled fallback while artwork loads.
+- Cover initial application startup, campaign/free-play level entry, campaign travel and area restart when they require loading. Keep the loading screen in place until the destination has a usable rendered frame and ready controls; avoid flashes of a blank canvas or partially built world.
+- Show an indeterminate activity indicator or truthful loading stages. Display percentages only if measurable; never add artificial waits to make loading noticeable. Let the browser paint the shell before heavy initialization and keep feedback responsive.
+- Suppress world input and unintended simulation while transitioning, prevent duplicate starts, and remove the overlay cleanly after success. Provide a concise visible error and retry/reload action if initialization fails rather than leaving an endless loading screen.
+- Respect reduced motion, readable contrast and compact windows. Loading status belongs to the screen overlay, not floating text in the game world. Document the loading flow in gameplay-interface.md.
+
+Complete when cold startup with throttled loading shows the themed shell during the previously blank period, and level entry/travel/restart stay visually covered until ready. Browser-check slow asset loading, failed loading/retry, repeat transitions, compact layout and reduced motion; confirm normal fast loads are not artificially delayed.
+
+
+#### M25.1 completion — 2026-09-09
+
+Added an inline styled HTML loading shell before a small bootstrap module dynamically imports the game. Art enhances the fallback asynchronously. Startup, entry, travel, restart and harness switches yield a paint before work, block world input/simulation, wait for renderer readiness and rendered frames, and then release controls. No artificial delay or fictional percentages. Failed transitions offer Retry/Reload; failed startup reloads cleanly without duplicate listeners. Browser fault injection passed stalled module/renderer readiness, missing-art fallback, compact reduced-motion rendering, input/clock freeze, failed restart/retry and startup failure/reload. Seven-level menu and combat-return regressions passed; source/test typecheck, production build and production isolation passed.
+
+The campaign browser route was updated for the current excavated starting ring, Stonehands and specialist research schedule. Both normal-cost areas passed with no free construction, supplied stock or spawned defenders: Border Foothold completed at 460.4 seconds with two researched spells; Emberwater completed at 281.85 seconds with four paid bridge tiles. Travel/carry, final endpoint and same-area restart passed, with no browser errors. M19 still owns alternate routes, loss recovery and broader balance.

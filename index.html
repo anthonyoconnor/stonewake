@@ -1,5 +1,41 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="icon" href="data:,"/><title>Stonewake · Dwarven Stronghold</title></head>
-  <body><div id="app"><main id="viewport"><canvas id="world" aria-label="Dwarven stronghold game view" tabindex="0"></canvas></main></div><script type="module" src="/src/main.ts"></script></body>
+  <head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link rel="icon" href="data:,"/><title>Stonewake · Dwarven Stronghold</title>
+    <style>
+      html,body{margin:0;background:#10171d;color:#efe1c6}
+      #loading-screen{box-sizing:border-box;position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;padding:24px;z-index:99999;color:#efe1c6;background:radial-gradient(ellipse at 50% 45%,#254453 0,#17252e 30%,#0c1219 75%);font-family:Georgia,serif;text-align:center;overflow:auto}
+      #loading-screen[open]{display:grid;place-items:center}#loading-screen::backdrop{background:#0c1219}
+      #loading-screen:before{content:'';position:absolute;inset:14px;border:1px solid #8c7653;box-shadow:0 0 0 6px #161f23,inset 0 0 0 3px #303639;pointer-events:none}
+      .loading-card{box-sizing:border-box;position:relative;width:min(490px,100%);padding:45px 28px;background:#101a22e8;border:1px solid #8b7755;box-shadow:0 20px 90px #0008}
+      .loading-rune{width:54px;height:76px;margin:0 auto 36px;clip-path:polygon(50% 0,100% 45%,65% 100%,30% 85%,0 45%);background:linear-gradient(115deg,#c4f6ff,#66c6ed 40%,#297aa1 41%,#81e6fa 70%,#184b65);filter:drop-shadow(0 0 20px #67cce9)}
+      #loading-screen h1{font-weight:normal;font-variant:small-caps;font-size:clamp(32px,6vw,52px);margin:0 0 24px;letter-spacing:.04em;color:#f0ddba}
+      #loading-status{line-height:1.6;color:#d5c9b4;margin:12px 0;font:16px/1.6 system-ui,sans-serif;overflow-wrap:anywhere}
+      .loading-activity{width:90px;height:3px;background:#415665;margin:24px auto 0;overflow:hidden}.loading-activity:after{content:'';display:block;width:32px;height:3px;background:#83def0;animation:loading-travel 1.4s ease-in-out infinite alternate}
+      @keyframes loading-travel{to{transform:translateX(58px)}}
+      #loading-screen button{padding:12px 22px;margin:12px 5px 0;border:1px solid #b99a62;color:#f5e5c4;background:#3b3428;font:17px Georgia,serif;cursor:pointer}#loading-screen button:focus-visible{outline:3px solid #85dded;outline-offset:3px}
+      #loading-screen [hidden]{display:none!important}#loading-screen[data-phase=error] .loading-activity{display:none}
+      @media(prefers-reduced-motion:reduce){.loading-activity:after{animation:none;transform:translateX(29px)}}
+      html[data-motion=reduce] .loading-activity:after{animation:none;transform:translateX(29px)}
+      @media(max-height:450px){.loading-card{padding:24px}.loading-rune{height:40px;width:30px;margin-bottom:15px}#loading-screen h1{margin-bottom:10px}}
+    </style>
+  </head>
+  <body>
+    <dialog id="loading-screen" open aria-label="Loading Stonewake" aria-describedby="loading-status" data-phase="loading">
+      <div class="loading-card"><div class="loading-rune" aria-hidden="true"></div><h1>Stonewake</h1><p id="loading-status" role="status" aria-live="polite">Loading the ancient halls…</p><div class="loading-activity" aria-hidden="true"></div><button id="loading-retry" hidden>Retry</button><button id="loading-reload" hidden onclick="location.reload()">Reload</button></div>
+    </dialog>
+    <div id="app"><main id="viewport"><canvas id="world" aria-label="Dwarven stronghold game view" tabindex="0"></canvas></main></div>
+    <noscript><p>Stonewake needs JavaScript to run. Enable JavaScript and reload.</p></noscript>
+    <script>
+      window.stonewakeStartupError = function () {
+        document.querySelector('#loading-screen').dataset.phase='error';
+        document.querySelector('#loading-status').textContent='The halls could not load. Check your connection and reload to try again.';
+        document.querySelector('#loading-reload').hidden=false;
+      };
+    </script>
+    <script type="module">
+      import('/src/bootstrap.ts').then(module => module.boot()).catch(window.stonewakeStartupError);
+    </script>
+  </body>
 </html>

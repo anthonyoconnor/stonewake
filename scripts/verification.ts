@@ -19,6 +19,7 @@ export const groups: Record<string, string[]> = {
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  loading: [['scripts/loading-browser.mjs']],
   menus: [['scripts/menu-browser.mjs']],
   combat: [['scripts/combat-browser.mjs']],
   camera: [['scripts/camera-browser.mjs']],

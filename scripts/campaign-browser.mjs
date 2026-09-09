@@ -17,6 +17,7 @@ try {
     timeout: 90000,
   });
   await page.waitForFunction(() => window.strongholdDev?.version === 1);
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   const state = () => page.evaluate(() => window.strongholdDev.state());
   const command = (c) => page.evaluate((c) => window.strongholdDev.command(c), c);
   const advance = async (seconds) => {
@@ -41,8 +42,17 @@ try {
   };
   const rect = (x, z, width, depth) =>
     Array.from({ length: width * depth }, (_, i) => ({ x: x + (i % width), z: z + Math.floor(i / width) }));
-  const build = async (room, x, z, width, depth) =>
-    assert.match(await command({ kind: 'build', room, points: rect(x, z, width, depth) }), /built/);
+  const build = async (room, x, z, width, depth) => {
+    const cells = rect(x, z, width, depth), current = await state();
+    if (!cells.every(p => { const t = current.tiles[p.z * current.width + p.x]; return t.known && t.claimed && t.terrain === 'floor'; })) {
+      // Current Border Foothold starts with only a walking ring: earn room space.
+      const h = current.hearth;
+      const approach = [...rect(Math.min(x, h.x), h.z, Math.abs(x - h.x) + 1, 1), ...rect(x, Math.min(z, h.z), 1, Math.abs(z - h.z) + 1)];
+      await command({ kind: 'dig', points: [...approach, ...cells] });
+      await until(w => cells.every(p => { const t = w.tiles[p.z * w.width + p.x]; return t.known && t.claimed && t.terrain === 'floor'; }), 120, `Excavate ${room} room space`);
+    }
+    assert.match(await command({ kind: 'build', room, points: cells }), /built/);
+  };
   const capture = async (name) => {
     const image = await page.locator('#world').evaluate((c) => c.toDataURL('image/png').split(',')[1]);
     writeFileSync(`test-results/m18/${name}.png`, Buffer.from(image, 'base64'));
@@ -72,7 +82,7 @@ try {
   await build('treasure', 19, 25, 3, 3);
   await build('kitchen', 25, 25, 3, 2);
   await build('dormitory', 25, 20, 3, 2);
-  await command({ kind: 'dig', points: rect(20, 18, 6, 1) });
+  await command({ kind: 'dig', points: [...rect(20, 18, 6, 1), ...rect(23, 19, 1, 4)] });
   await advance(60);
   await build('training', 19, 23, 2, 1);
   await build('library', 26, 24, 1, 1);
@@ -90,7 +100,7 @@ try {
   );
   await until(
     (w) => w.researchOrders.some((o) => o.spell === 'dwarf-haste' && o.unlocked),
-    90,
+    240,
     'Finish transferable research',
   );
   await page.locator('#activate-hearth').click();
@@ -102,11 +112,12 @@ try {
   await compactResult('first-gate');
   console.log('First area complete; choosing onward travel.');
   await page.locator('#travel-onward').click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   await page.evaluate(() => window.strongholdDev.pause());
   w = await state();
   assert.equal(w.campaign.stageId, 'emberwater-crossing');
   assert.equal(w.agents.length, 3);
-  assert(w.agents.every((a) => a.type === 'miner' && a.level === 1 && !a.pay.due.length));
+  assert(w.agents.every((a) => a.type === 'stonehand' && a.level === 1 && !a.pay.due.length));
   assert(w.elapsed < 1);
   assert.deepEqual(w.campaign.knownSpells, known);
   assert(
@@ -167,6 +178,7 @@ try {
   await capture('campaign-complete');
   await compactResult('campaign-complete');
   await page.locator('#restart-area').click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   await page.evaluate(() => window.strongholdDev.pause());
   w = await state();
   assert.equal(w.campaign.stageId, 'emberwater-crossing');

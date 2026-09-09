@@ -700,6 +700,7 @@ export class GameScene {
     this.effects.update();
     this.scene.render();
   }
+  ready() { return this.scene.whenReadyAsync(); }
   setWorld(world: World) {
     this.world = world;
     this.effects.reset();

@@ -11,16 +11,19 @@ try {
   await page.getByRole('button', { name: 'Debug', exact: true }).click();
   await page.getByRole('button', { name: 'Test harnesses', exact: true }).click();
   await page.getByRole('button', { name: 'Combat test room', exact: true }).click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   assert(await page.getByRole('button', { name: 'Resume simulation' }).isVisible());
   await page.locator('#combat-team').selectOption('pack');
   await page.locator('#combat-opponent').selectOption('volcanic-lair');
   await page.locator('#combat-reset').click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   assert.equal((await page.evaluate(() => window.strongholdDev.state())).agents.length, 6);
   await page.evaluate(() => window.strongholdDev.advance(14));
   assert.match(await page.locator('#combat-results').textContent(), /Defenders defeated/);
   await page.locator('#combat-team').selectOption('squad');
   await page.locator('#combat-support').selectOption('traps');
   await page.locator('#combat-reset').click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   await page.getByRole('button', { name: 'Resume simulation' }).click();
   await page.waitForFunction(() => window.strongholdDev.state().elapsed > .1);
   await page.getByRole('button', { name: 'Pause simulation' }).click();
@@ -29,6 +32,7 @@ try {
   mkdirSync('test-results', { recursive: true });
   await page.screenshot({ path: 'test-results/m24-combat.png' });
   await page.locator('#return-stronghold').click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   assert.equal(await page.evaluate(() => window.strongholdDev.status().paused), true);
   assert.deepEqual(await page.evaluate(() => window.strongholdDev.state()), before);
   // A running stronghold also returns to its prior running state.
@@ -36,7 +40,9 @@ try {
   await page.getByRole('button', { name: 'Debug', exact: true }).click();
   await page.getByRole('button', { name: 'Test harnesses', exact: true }).click();
   await page.getByRole('button', { name: 'Combat test room', exact: true }).click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   await page.locator('#return-stronghold').click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
   assert.equal(await page.evaluate(() => window.strongholdDev.status().paused), false);
   assert.deepEqual(errors, []);
   console.log('Combat matchups, reset, pause/resume and stronghold preservation passed.');

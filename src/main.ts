@@ -1,3 +1,4 @@
+import { paintedFrame, type LoadingScreen } from './ui/loading';
 import { tuning } from './content/tuning';
 import { MainMenu, confirmDiscard } from './ui/menu';
 import { startFreePlay, restartSession } from './game/session';
@@ -21,10 +22,11 @@ import { HearthView } from './view/hearth';
 import { createSpellLab } from './content/spell-lab';
 import { populateShowcase } from './content/scenarios';
 import type { DevelopmentController } from './dev/controller';
+export async function initializeGame(loading: LoadingScreen) {
 let world = startCampaign(import.meta.env.VITE_FREE_ROOM_BUILDING === 'true');
 const menu = new MainMenu();
 let activeRun = import.meta.env.DEV && (new URLSearchParams(location.search).has('scenario') || new URLSearchParams(location.search).has('paused'));
-if (!activeRun) menu.show();
+
 const view = new GameScene(document.querySelector<HTMLCanvasElement>('#world')!, world);
 const controls = new CameraControls(view);
 // A browser owns Ctrl+W; protect the in-memory session at the point of leaving.
@@ -64,7 +66,7 @@ const refresh = () => {
   sidebar.update();
 };
 let loadingStudio = false;
-sidebar.onLab = async (open, shape, type) => {
+const openLab = async (open: boolean, shape?: string, type?: string) => {
   if (loadingStudio) return;
   if (open && shape === 'showcase') {
     loadingStudio = true;
@@ -136,50 +138,66 @@ sidebar.onLab = async (open, shape, type) => {
   );
   loadingStudio = false;
 };
+const readyWorld = async () => {
+  loading.stage('Lighting the halls…');
+  refresh();
+  await view.ready();
+  refresh();
+  await paintedFrame();
+};
+sidebar.onLab = (open, shape, type) => {
+  void loading.run(open ? 'Preparing the test room…' : 'Returning to the stronghold…', async () => {
+    try { await openLab(open, shape, type); await readyWorld(); }
+    finally { loadingStudio = false; }
+  });
+};
 sidebar.onFreeBuild = (value) => {
   if(view.world.outcome)return;
   world.freeRoomBuilding = value;
   view.world.freeRoomBuilding = value;
 };
-sidebar.onRestart = () => {
-  void restartRun(true);
-};
+sidebar.onRestart = () => { void restartRun(true); };
 async function restartRun(newJourney = false) {
+  if (loading.busy) return;
+  const source = world;
   if (!view.world.outcome && !(await confirmDiscard('Restart area'))) return;
-  world = newJourney && world.campaign && world.outcome === 'victory' ? startCampaign(world.freeRoomBuilding) : restartSession(world);
-  await sidebar.onLab(false); sidebar.onPause(false); sidebar.show('hearth'); refresh();
+  await loading.run('Rebuilding the stronghold…', async () => {
+    world = newJourney && source.campaign && source.outcome === 'victory' ? startCampaign(source.freeRoomBuilding) : restartSession(source);
+    await openLab(false); sidebar.onPause(false); sidebar.show('hearth'); await readyWorld();
+  });
 }
 sidebar.onRestartArea = () => {
   if (!sidebar.lab) { void restartRun(); return; }
-  const restarted = restartCampaignArea(view.world);
-  if (restarted) { world = restarted; sidebar.onLab(false); sidebar.onPause(false); sidebar.show('hearth'); refresh(); }
-  else if (development && development.scenario !== 'custom' && development.scenario !== 'stronghold') { development.load(development.scenario); refresh(); }
-  else { sidebar.onRestart(); sidebar.onPause(false); }
+  if (development && development.scenario !== 'custom' && development.scenario !== 'stronghold') {
+    const id = development.scenario;
+    void loading.run('Resetting the test world…', async () => { development!.load(id); await readyWorld(); });
+  } else sidebar.onLab(true);
 };
 sidebar.onTravel = () => {
-  const next = travelOnward(view.world);
-  if (!next) return;
-  world = next;
-  sidebar.onLab(false);
-  sidebar.onPause(false);
-  sidebar.show('hearth');
-  refresh();
+  if (loading.busy) return;
+  const source = view.world;
+  void loading.run('Following the runic network…', async () => {
+    const next = travelOnward(source); if (!next) return;
+    world = next; await openLab(false); sidebar.onPause(false); sidebar.show('hearth'); await readyWorld();
+  });
 };
 sidebar.onMenu = async () => {
-  if (!(await confirmDiscard('Return to menu'))) return;
+  if (loading.busy || !(await confirmDiscard('Return to menu'))) return;
   activeRun = false; controls.keys.clear(); controls.pointer = undefined; controls.drag = undefined;
   selection.setTool('dig'); menu.show();
 };
 menu.onStart = async (mode, id) => {
   const free = world.freeRoomBuilding;
-  world = mode === 'campaign' ? startCampaign(free) : startFreePlay(id!, free);
-  sidebar.fullMap.element.close(); sidebar.tuningDialog.element?.close?.();
-  await sidebar.onLab(false); sidebar.onPause(false); selection.setTool('dig');
-  activeRun = true; view.engine.resize(); refresh();
+  await loading.run('Preparing a new stronghold…', async () => {
+    world = mode === 'campaign' ? startCampaign(free) : startFreePlay(id!, free);
+    sidebar.fullMap.element.close(); sidebar.tuningDialog.element.close();
+    await openLab(false); sidebar.onPause(false); selection.setTool('dig');
+    activeRun = true; view.engine.resize(); await readyWorld();
+  });
 };
 let uiTime = 0;
 if (import.meta.env.DEV)
-  import('./dev/browser').then(({ installDevelopment }) => {
+  await import('./dev/browser').then(({ installDevelopment }) => {
     development = installDevelopment(
       () => view.world,
       (next, id) => {
@@ -212,8 +230,11 @@ if (import.meta.env.DEV)
     );
   });
 view.engine.runRenderLoop(() => {
+  if ((menu.open || document.hidden) && !loading.busy) {
+    accumulator = 0; controls.keys.clear(); controls.pointer = undefined; return;
+  }
   const dt = Math.min(0.25, view.engine.getDeltaTime() / 1000);
-  const menuBlocked = menu.open || !!document.querySelector('.discard-dialog[open]');
+  const menuBlocked = loading.busy || menu.open || !!document.querySelector('.discard-dialog[open]');
   if (!sidebar.tuningDialog.open && !menuBlocked) controls.update(Math.min(0.05, dt));
   else {
     controls.keys.clear();
@@ -243,3 +264,7 @@ view.engine.runRenderLoop(() => {
     uiTime = 0;
   }
 });
+
+await readyWorld();
+return () => { if (!activeRun) menu.show(); };
+}
