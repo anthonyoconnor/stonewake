@@ -20,7 +20,7 @@ test('lighting harness uses ordinary paid/free irregular rooms, automatic props,
         .filter((s) => s.room === room.id)
         .reduce((sum, s) => sum + s.capacity, 0);
       assert.equal(capacity, tiles.length * room.capacityPerTile);
-      assert(w.furnishings.some((f) => f.room === room.id));
+      if(!['treasure','dormitory'].includes(room.id))assert(w.furnishings.some((f) => f.room === room.id));
     }
     assert.equal(tileAt(w, 10, 23)!.terrain, 'bedrock');
     assert.equal(tileAt(w, 10, 23)!.room, undefined);

@@ -1,5 +1,6 @@
 import { createWorld } from '../game/world.ts';
 import { buildRoom } from '../game/rooms.ts';
+import { decorateStartingRooms } from '../game/room-decoration-baseline.ts';
 import { planBridges, finishBridge } from '../game/bridges.ts';
 import { bridgeSettings } from '../game/terrain.ts';
 import { lightingDefaults } from './lighting.ts';
@@ -58,6 +59,10 @@ export function createTerrainComparison(free = false) {
       }
     }
   }
+  const refined = world.furnishings.filter(f=>f.x>=terrainComparisonSplit||f.id==='hearth-treasury');
+  world.furnishings=world.furnishings.filter(f=>f.id==='hearth-treasury');
+  decorateStartingRooms(world);
+  world.furnishings=[...world.furnishings.filter(f=>f.x<terrainComparisonSplit&&f.id!=='hearth-treasury'),...refined];
   world.lightingTest = {
     ...lightingDefaults,
     ambient: 0.58,

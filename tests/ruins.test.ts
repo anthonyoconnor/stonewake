@@ -37,7 +37,7 @@ test('ordinary workers discover a collapsed occupied ruin, clear its approach, r
   assert.equal(ruin.roomPaid, 0);
   assert.equal(goldTotal(w), before);
   until(w, () => w.roomServices.filter(s => s.room === 'dormitory').length === 3, 40, 'All three irregular room tiles supply their normal capacity');
-  assert(w.furnishings.some(f => f.room === 'dormitory'));
+  assert(!w.furnishings.some(f => f.room === 'dormitory'),'Unassigned reclaimed accommodation starts empty');
   addResidents(w, 'cave-hound');
   const hound = w.agents.find(a => a.type === 'cave-hound')!;
   hound.energy = 0.1;

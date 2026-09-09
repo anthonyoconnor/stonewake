@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export const groups: Record<string, string[]> = {
+  'room-overhaul': ['room-decoration', 'rooms', 'food', 'reclaim', 'learning-rooms', 'lighting-lab', 'ruins', 'content-extension'],
   arcana: ['spells', 'stonehands', 'defenses', 'hearth', 'development'],
   audio: ['audio'],
   habitats: ['habitats', 'enemies', 'encounters'],
@@ -25,6 +26,7 @@ export const groups: Record<string, string[]> = {
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  'room-overhaul': [['scripts/room-overhaul-browser.mjs']],
   debug: [['scripts/debug-browser.mjs']],
   arcana: [['scripts/arcana-gallery-browser.mjs']],
   'graphics-gallery': [['scripts/graphics-gallery-browser.mjs']],

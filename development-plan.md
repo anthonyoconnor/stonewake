@@ -10,6 +10,8 @@ Gameplay references: [Game rules](game-rules.md), [Characters](characters.md), [
 
 ## Current implementation status
 
+**Room presentation:** the user-authorized [room overhaul](room-overhaul.md) adds six individual concepts, distinctive per-room floor textures and sparse equipment sets. Treasure Rooms show sequential tile-sized piles from their actual stored wealth; Dormitories show only assigned residents' role-specific bedding. Kitchen and Workshop use coherent small equipment sets, Training has upright targets, and Library uses long shelves. Original room rendering/layout remains in the terrain reference studio. Floor-area prices, capacity and services are unchanged.
+
 **Graphics inspection:** the character gallery previews the original and revised rigs together with idle/walk/role-activity/attack selection, pause, restart, frame stepping and speed controls. Starting/Refined focuses one model. Wheel and button zoom no longer have a minimum viewing distance, including in ordinary play; the far limit remains. Preview actors are isolated from gameplay and original model sources remain archived. Controls and scope are documented in [the overhaul record](graphics-overhaul.md).
 
 **Debug navigation:** **Before & after** directly opens **Characters**, **Terrain & rooms**, and **Spells, traps & Hearthstones**. **Back to comparison** restores the current studio controls without reloading or changing its camera and preview. **Test harnesses** retains gameplay launchers and additional scenarios grouped by purpose; display rooms omit simulation advancement, resident diagnostics and test-actor setup. Shared session settings remain distinct from current-world tools.
@@ -24,8 +26,8 @@ Last checked: **2026-09-09** against the current definitions, full simulation su
 
 | Room or structure | Current status | Remaining integration |
 |---|---|---|
-| Treasure Room | Implemented: floor-area gold capacity, hauling and physical wage collection; decorative chests | — |
-| Dormitory | Implemented: floor-area accommodation and autonomous rest; decorative beds | — |
+| Treasure Room | Implemented: floor-area gold capacity, hauling and physical wage collection; sequential visible gold piles | — |
+| Dormitory | Implemented: floor-area accommodation and autonomous rest; bedding appears for assigned residents with role-specific shapes | — |
 | Kitchen | Implemented: floor-area population support and autonomous meals; food props are decorative, with no ingredient or food inventories | — |
 | Workshop | Implemented: floor-area concurrent Engineer capacity, attraction, staffed production of all three door tiers and both traps, shared finished stock for placement | Repairs and future fixture upkeep deferred |
 | Training Room | Implemented: floor-area concurrent trainee capacity, specialist levels 1–5 with defined practice requirements and health/combat/work values, one level per visit followed by a personal cooldown, and Warrior attraction | — |

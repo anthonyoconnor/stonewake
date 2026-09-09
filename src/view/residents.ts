@@ -144,15 +144,12 @@ export class ResidentView {
           m.arm.rotation.x = -0.9;
           m.leftArm.rotation.x = -0.6;
         } else if (j.kind === 'train') {
-          const lift = a.id % 2 === 0,
-            cycle = Math.sin(j.progress * 4);
-          for (const weight of m.trainingWeights) weight.setEnabled(lift);
-          m.arm.rotation.x = lift ? -0.9 - cycle * 0.65 : -0.8 + cycle * 0.7;
-          m.leftArm.rotation.x = lift ? m.arm.rotation.x : -0.8 - cycle * 0.7;
-          m.arm.rotation.z = lift ? 0.28 : 0.08;
-          m.leftArm.rotation.z = lift ? -0.28 : -0.08;
-          m.root.position.y = lift ? -0.025 * (1 + cycle) : 0;
-          m.root.rotation.x = lift ? 0.06 : 0.1;
+          const cycle = Math.sin(j.progress * 4);
+          m.arm.rotation.x = -0.8 + cycle * 0.7;
+          m.leftArm.rotation.x = -0.8 - cycle * 0.7;
+          m.arm.rotation.z = 0.08;
+          m.leftArm.rotation.z = -0.08;
+          m.root.rotation.x = 0.1;
         } else if (j.kind === 'research') {
           m.arm.rotation.x = -0.88 - Math.sin(j.progress * 2) * 0.12;
           m.leftArm.rotation.x = -0.75;
@@ -162,8 +159,9 @@ export class ResidentView {
           m.arm.rotation.x = -0.9 - Math.sin(j.progress * 4) * 0.35;
           m.leftArm.rotation.x = -0.7;
         } else if (j.kind === 'sleep') {
-          m.root.position.y = 0.22;
-          m.root.rotation.set(-Math.PI / 2, a.facing, 0);
+          m.root.position.y = 0.29;
+          m.root.position.z += 0.32;
+          m.root.rotation.set(-Math.PI / 2, 0, 0);
           m.arm.rotation.x = 0.1;
           m.leftArm.rotation.x = 0.1;
         }

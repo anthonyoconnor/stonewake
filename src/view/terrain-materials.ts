@@ -7,6 +7,8 @@ const assets = new WeakMap<
 >();
 export function terrainMaterialAsset(name: string) {
   const id = name.replace(/^biome-[^-]+-/, '').replace(/^ruin-/, '');
+  // Room patterns carry gameplay identity and must not be replaced by the terrain sheet.
+  if(id.startsWith('floor-'))return undefined;
   if (['dirt', 'gold', 'raw ground'].includes(id)) return 'fractured-earth';
   if (['rock', 'bedrock', 'gem'].includes(id)) return 'slate';
   if (

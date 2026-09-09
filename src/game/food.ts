@@ -5,9 +5,11 @@ import { reachable } from './navigation.ts';
 // Food and accommodation support residents continuously, rather than letting
 // one square support an unlimited population through successive visits.
 export function assignRoomSupport(w: World) {
+  const residents=w.agents.filter(a=>!isConstruct(a.type)&&(a.health??1)>0);
+  const before=w.roomServices.filter(s=>s.service==='rest').map(s=>s.assigned).join(',');
   const routes = new Map<number, Set<string>>();
   const components: Set<string>[] = [];
-  for (const a of w.agents.filter(a => !isConstruct(a.type))) {
+  for (const a of residents) {
     const position = key({ x: Math.round(a.x), z: Math.round(a.z) });
     let component = components.find((cells) => cells.has(position));
     if (!component) {
@@ -25,7 +27,7 @@ export function assignRoomSupport(w: World) {
         slot.assigned = undefined;
       else assigned.add(slot.assigned);
     }
-    for (const a of w.agents.filter(a => !isConstruct(a.type))) {
+    for (const a of residents) {
       if (assigned.has(a.id) || (service === 'dining' && isAnimal(a.type))) continue;
       const slot = slots
         .filter((f) => f.assigned === undefined && routes.get(a.id)?.has(key(f.access)))
@@ -33,6 +35,7 @@ export function assignRoomSupport(w: World) {
       if (slot) slot.assigned = a.id;
     }
   }
+  if(before!==w.roomServices.filter(s=>s.service==='rest').map(s=>s.assigned).join(','))w.revision++;
 }
 
 export function foodSupport(w: World, resident: Resident) {

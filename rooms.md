@@ -22,6 +22,8 @@ See the [current implementation inventory](development-plan.md#current-implement
 
 ## Design status
 
+**Current visual direction:** the [room overhaul](room-overhaul.md) supersedes the earlier dense furnishing proposals below. All six rooms have distinctive patterned floors and sparse adaptive furnishing. Treasure Rooms show sequential loose coin piles from actual stored wealth. Dormitories show bedding only for assigned residents, including distinct role beds and Hound dens. Kitchen, Workshop, Training Room and Library use small equipment sets with open floor. Their [six concepts and prompts](concept-art/rooms/overhaul/prompts.md) guide ongoing refinement.
+
 The grid, adaptable room shapes, distinctive floors and walls, fixed Hearthstone, treasure storage, shared food and accommodation, doors, traps, and spell research are established parts of the design. Room capacity is floor area multiplied by a tunable value per tile. Furniture is entirely cosmetic: it never supplies capacity, blocks movement or sight, or makes a room unusable. The Workshop attracts Engineers and makes doors and traps; the Library attracts Runesmiths and researches spells; the Training Room attracts Warriors and lets specialists train. The Kitchen supports residents without food inventories or processing chains. Exact prices, rates, capacities and art arrangements remain balance and visual choices.
 
 ## Dormitory companion support
@@ -87,7 +89,7 @@ Every room uses three visual layers:
 
 Rooms in open caverns or directly beside another room may have few walls. Their floor patterns and boundary treatments must still identify them. Adjacent room types can share an open edge without automatically adding a dividing wall. Wall treatments must preserve the visible distinction between ordinary earth, reinforced walls, and bedrock.
 
-Each room type uses compact furnishings and larger arrangements rather than one complete room model scaled to fit. Furniture keeps a consistent visual size. A Library can show short shelves in a narrow wing and larger tables in a wider area. Beds, practice equipment and other props make rooms recognizable; their number does not represent a count of gameplay slots.
+Each room type uses compact furnishings and larger arrangements rather than one complete room model scaled to fit. Furniture keeps a consistent visual size. A Library fits long shelves and a few lecterns where space permits. Workroom equipment counts do not represent gameplay slots. Dormitory bedding is the exception in its information: one visible bed or den represents one actual resident assignment, so unused floor communicates spare accommodation at the default capacity.
 
 ### Placement and circulation rules
 
@@ -96,7 +98,7 @@ Each room type uses compact furnishings and larger arrangements rather than one 
 - Prefer arrangements that leave entrances, door movement and common routes visually clear. A prop cannot seal a passage or remove a service slot.
 - Open space can remain empty when no suitable object looks good; the room still provides its full capacity.
 - Judge each part of an irregular room locally. A narrow arm must not prevent a spacious part of the same room from receiving larger furnishings.
-- Add more objects or larger arrangements as suitable space becomes available. Do not require the whole room to become a particular rectangle or purchase a room upgrade.
+- Fit a small equipment set as space becomes available, promoting compact fallbacks when larger variants fit. Expansion need not add more objects: the Workshop keeps one main bench, anvil and rack. Do not require the whole room to become a particular rectangle or purchase a room upgrade.
 - Retain suitable furnishings when expanding where practical. Avoid unnecessary visual rearrangement on every added tile.
 - Recalculate visuals after floor changes or new openings. Gameplay slots and stored gold belong to the room service, independently of decorative objects.
 
@@ -119,12 +121,12 @@ The [room concept gallery](concept-art/rooms/README.md) illustrates each growabl
 | Room or structure | Floor identity | Available wall faces | Furnishings or details added where space permits |
 |---|---|---|---|
 | Stone Hearth | Radial rune markings around the fixed core | Carved stone and runic accents where walls already exist | The core keeps its fixed footprint and statistics; expanding the surrounding cavern creates space for other rooms, with no Hearth upgrades |
-| Treasure Room | Geometric vault tiles with gold-colored inlays | Vault bands and embossed coin motifs | Small storage positions, then larger groups of chests and gold-storage bays with clear collection access; visible gold reflects actual stored wealth |
-| Dormitory | Warm stone with woven floor borders | Timber trim and simple personal-storage fittings | Individual beds, then repeated bed arrangements and small lockers wherever access remains clear |
-| Kitchen | Earthy food-service tiles with mushroom and tankard motifs | Cookware, timber trim, and barrel-end signs | Mushroom beds, stoves, tables, benches and casks as visual food-service details; no ingredient, meal or ale stocks |
-| Workshop | Fitted dark stone with brass geometric markings | Tool boards, metal braces, and mechanical fittings | Compact craft benches and anvils, then larger assembly tables, mechanism racks, and repair positions for doors and traps |
-| Training Room | Marked practice lanes and clear training emblems on flagstones | Practice equipment, banners, and target motifs | Compact practice stations, then dummies, targets, weights, and larger exercise areas with safe clearance; Engineers, Warriors and Runesmiths can use the room |
-| Library | Blue rune-inlaid stone with book or script motifs | Short bookshelves, carved script, and reading lights | Compact shelves and lecterns, then research tables and rows of free-standing shelves only where aisles fit |
+| Treasure Room | Charcoal vault slabs, brass corners and diamonds | Vault bands and embossed coin motifs | Consecutive tile-sized coin heaps reflect actual stored wealth; no room chests |
+| Dormitory | Warm brown stone with woven bands | Timber trim | Resident-specific compact beds and Hound dens appear only for assigned occupants; spare floor stays empty |
+| Kitchen | Terracotta and cream paving | Cookware and timber trim | One stove and one communal table with benches; compact table fallback; no food inventory |
+| Workshop | Teal stone with brass guides | Tool boards and metal braces | One main assembly bench, one anvil and one upright rack; expansion leaves more work space |
+| Training Room | Red stone with circular practice marks | Banners and target motifs | Straw dummy, shield dummy, upright target post and padded striking pillar; no horizontal exercise machinery |
+| Library | Blue slate with silver borders and stars | Carved script and reading lights | A few long freestanding bookcases and separate lecterns with open aisles |
 | Guard Post | Clearly marked defensive floor emblem | Guard insignia where walls are present | Standing guard positions first, then a signal fitting or equipment rack if circulation allows |
 | Bridge | Repeating deck tiles and visible edges | No room wall treatment required | Edges and supports adapt to connected bridge tiles; doors or other permitted fixtures must preserve a usable crossing |
 
@@ -181,13 +183,13 @@ Miners extract gold from finite gold deposits and renewable gem deposits, then c
 
 If neither a Treasure Room nor the Stone Hearth treasury has reachable free capacity, mined gold or gem yields remain on the ground where they were extracted. Miners collect and deliver them once reachable storage with free capacity exists. Full or unreachable storage also leaves resources waiting; undelivered resources do not disappear or become spendable.
 
-Each Treasure Room square provisionally stores 50 gold. Chests and gold piles should reflect actual stored wealth, but their count and placement never affect capacity or delivery access. Undelivered gold is not yet part of the spendable treasury. Construction and recruitment use stored funds; dwarfs now physically visit reachable treasury service slots to collect wages.
+Each Treasure Room square provisionally stores 50 gold. Visible coin heaps fill consecutive floor squares up to this configured per-square capacity before starting the next heap. Empty rooms have no gold props, and room chests are removed. Piles summarize real stored wealth within that connected room, independently of which service receives a delivery; they never transfer currency or change delivery access. Undelivered gold and the starting allowance are not shown in these piles. Construction and recruitment use stored funds; dwarfs physically visit reachable treasury service slots to collect wages.
 
 Storage and route problems need clear feedback: no free capacity, no reachable room, or insufficient stored gold. Treasure Rooms near mines reduce hauling distance; rooms near residents make wage collection more convenient. Wages draw from the shared allowance and storage reachable from the collecting dwarf; disconnected storage cannot pay them remotely. Each collection reserves an available service slot and rechecks funding at completion.
 
 ## Accommodation and food
 
-Dormitories provide accommodation for every dwarf type, including Warriors, provisionally one resident per square. Each resident claims one accommodation slot, counted only once. Residents visit reachable room space to rest even if there is no visible bed there. The Training Room provides no accommodation.
+Dormitories provide accommodation for living resident types, including Warriors, provisionally one resident per square. Each resident claims one accommodation slot, counted only once. Its bed or den appears when assigned and stays while that resident is elsewhere. Death, departure, lost access and reclaim release or relocate bedding through the support assignment rules. Role-specific bed shapes and colors distinguish Warriors, Engineers, Runesmiths, retained Miners and Cave Hounds; Stonehands require no bedding. Residents still use reachable floor services independently of decoration. The Training Room provides no accommodation.
 
 All dwarfs get food from the Kitchen. Its floor area supplies ongoing resident support, provisionally one dwarf per square. One large Kitchen or several reachable Kitchens can support the population. Existing residents consume that support before the settlement qualifies for more arrivals.
 

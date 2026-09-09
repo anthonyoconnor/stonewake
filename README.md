@@ -24,6 +24,8 @@ For agent-driven iteration, see [Development tools](development-tools.md): share
 
 ## Graphics comparison studios
 
+The [room overhaul](room-overhaul.md) gives all six rooms distinctive floors and sparse furnishing: real gold piles, resident-assigned bedding, communal dining, one Workshop equipment set, upright training targets and long Library bookcases. [Six new concepts](concept-art/rooms/overhaul/prompts.md) and a repeatable 5×5 screenshot gallery support iteration. Run `npm run verify -- room-overhaul --browser=room-overhaul` with the local server running to regenerate that gallery.
+
 The [graphics overhaul](graphics-overhaul.md) includes permanent comparison studios directly under **Debug → Before & after**. Choose **Characters** for all sixteen starting/refined character pairs, with synchronized front/back/turn and zoom controls. Choose **Terrain & rooms** for matching original/refined terrain, six furnished rooms, hazards and bridges across all five regional palettes. Original renderers are retained in source. The [new stronghold concept](concept-art/terrain/stronghold-cohesion-v2.png) and [generated surface assets](public/art/terrain/README.md) record the visual target and material provenance.
 
 In the character comparison room, choose an **Animation** to play both versions in sync. Playback has pause, restart, frame stepping and speed controls. **Starting** and **Refined** focus one model for detail inspection. The mouse wheel and zoom buttons can move as close as needed; only the zoom-out limit remains.

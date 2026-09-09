@@ -31,7 +31,7 @@ test('free build waives creation and expansion costs but preserves placement rul
  const w=createRoomLab();w.allowance=0;
  assert.equal(roomQuote(w,'treasure',labLayout(w,'Compact')).valid,false);
  w.freeRoomBuilding=true;assert.equal(roomQuote(w,'treasure',labLayout(w,'Compact')).cost,0);
- buildRoom(w,'treasure',labLayout(w,'Compact'));buildRoom(w,'treasure',labLayout(w,'Large hall'));assert(w.furnishings.filter(f=>f.room!=='hearth').length>0);assert.equal(goldTotal(w),0);assert.equal(w.spent,0);
+ buildRoom(w,'treasure',labLayout(w,'Compact'));buildRoom(w,'treasure',labLayout(w,'Large hall'));assert(!w.furnishings.some(f=>f.room==='treasure'),'An empty treasury has no containers');assert.equal(goldTotal(w),0);assert.equal(w.spent,0);
  assert.equal(roomQuote(w,'treasure',[{x:12,z:12}]).valid,false);
  w.freeRoomBuilding=false;assert.equal(roomQuote(w,'treasure',[{x:19,z:19}]).valid,false);
  w.allowance=20;buildRoom(w,'treasure',[{x:19,z:19}]);assert.equal(goldTotal(w),8);
@@ -65,7 +65,7 @@ test('all rooms skip invalid cells and charge only eligible new floor',()=>{
   for(const p of points.slice(6))assert.equal(tileAt(w,p.x,p.z)!.room,room.id);
   assert(invalid.slice(0,5).every(t=>!t.room));assert.notEqual(invalid[5].room,room.id);
   const access=reachable(w,{x:2,z:2});for(const f of w.furnishings)assert(access.has(key(f.access)));
-  assert(w.furnishings.some(f=>f.room===room.id));
+  if(!['treasure','dormitory'].includes(room.id))assert(w.furnishings.some(f=>f.room===room.id));
   const total=goldTotal(w);buildRoom(w,room.id,points);assert.equal(goldTotal(w),total);
   assert.equal(roomQuote(w,room.id,points.slice(0,5)).valid,false);
   const expansion={x:10,z:5};const cost=roomQuote(w,room.id,[points[10],expansion,points[0]]).cost;

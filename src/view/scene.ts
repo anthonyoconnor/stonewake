@@ -2,6 +2,8 @@ import { createStoneHearthModel, updateStoneHearthModel } from './hearth-models'
 import { isHazard, hazardDefinitions } from '../game/terrain';
 import { LabLighting } from './lighting-lab';
 import { drawFurnishingModel, type FurnishingDisplay } from './furnishing-models';
+import { drawRoomFurnishing } from './room-furnishing-models';
+import { liveRoomDecorations, type LiveRoomDecoration } from '../game/room-decoration';
 import { tuning } from '../content/tuning';
 import {
   Engine,
@@ -334,7 +336,7 @@ export class GameScene {
               0.025,
             )
           : this.box(`tile-${t.x}-${t.z}`, t.x, -0.12, t.z, 1, 0.24, 1, mat);
-    if (!solid || t.reinforced) alignStoneSurface(mesh, t, isTerrainComparison(this.world));
+    if ((!solid || t.reinforced) && !room) alignStoneSurface(mesh, t, isTerrainComparison(this.world));
     mesh.metadata = { tile: { x: t.x, z: t.z } };
     if (t.designated) {
       const m = this.box(
@@ -562,16 +564,17 @@ export class GameScene {
   }
   drawFurniture() {
     this.furnitureRoot ??= new TransformNode('furnishings', this.scene);
+    const decorations: LiveRoomDecoration[] = [...this.world.furnishings,...liveRoomDecorations(this.world).filter(f=>!isTerrainComparison(this.world)||f.x>=terrainComparisonSplit)];
     const furnitureParent = this.furnitureRoot,
-      ids = new Set(this.world.furnishings.map((f) => f.id));
+      ids = new Set(decorations.map((f) => f.id));
     for (const [id, old] of this.furnitureNodes)
       if (!ids.has(id)) {
         old.node.dispose();
         this.furnitureNodes.delete(id);
       }
-    for (const f of this.world.furnishings) {
+    for (const f of decorations) {
       const model = f.model ?? f.kind;
-      const display: FurnishingDisplay = {};
+      const display: FurnishingDisplay & Partial<LiveRoomDecoration> = {storedGold:f.storedGold,goldCapacity:f.goldCapacity,residentType:f.residentType,residentId:f.residentId,scale:f.scale};
       if (model === 'chest') {
         if (f.id === 'hearth-treasury')
           display.storedGold = this.world.roomServices.find((s) => s.id === f.id)?.stored ?? 0;
@@ -604,6 +607,7 @@ export class GameScene {
         display.output,
         display.outputCount,
         display.eating,
+        f.x,f.z,f.residentType,f.residentId,f.scale,f.goldCapacity,
       ].join(':');
       const old = this.furnitureNodes.get(f.id);
       if (old?.signature === signature) continue;
@@ -614,7 +618,7 @@ export class GameScene {
       this.geometryRevision++;
       this.furnitureRoot = node;
       if (f.id === 'hearth-treasury') node.position.y = 0.3;
-      drawFurnishingModel(
+      (isTerrainComparison(this.world) && f.x < terrainComparisonSplit ? drawFurnishingModel : drawRoomFurnishing)(
         isTerrainComparison(this.world) && f.x < terrainComparisonSplit ? startingTerrainView(this) : this,
         f,
         node,

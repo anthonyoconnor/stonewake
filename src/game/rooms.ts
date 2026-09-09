@@ -5,6 +5,7 @@ import {reachable} from './navigation.ts';
 import {tuning} from '../content/tuning.ts';
 import {defenseAt} from './doors.ts';
 import {roomAllowed,availabilityReason} from './availability.ts';
+import {decorateRoom} from './room-decoration.ts';
 export const goldTotal=(w:World)=>w.allowance+w.roomServices.filter(f=>f.service==='storage').reduce((sum,f)=>sum+f.stored,0);
 export function spendGold(w:World,amount:number) {
   if(w.outcome)return false;
@@ -61,12 +62,23 @@ export function reclaimRoom(w:World,points:Point[]){
 }
 export function furnish(w:World) {
   syncRoomServices(w);
+  const decorated = new Set<string>();
+  for(const t of w.tiles){
+    if(!t.room||t.terrain!=='floor'||t.core||decorated.has(key(t)))continue;
+    const tiles=roomTiles(w,t),ids=new Set(tiles.map(key));
+    const next=decorateRoom(w,t.room,tiles,w.furnishings.filter(f=>ids.has(key(f))));
+    if(next){
+      tiles.forEach(p=>decorated.add(key(p)));
+      w.furnishings=w.furnishings.filter(f=>!ids.has(key(f))||f.id==='hearth-treasury');
+      w.furnishings.push(...next);
+    }
+  }
   // Decoration layout never supplies capacity or changes navigation.
   w.furnishings=w.furnishings.filter(f=>f.id==='hearth-treasury'||f.cells.every(p=>tileAt(w,p.x,p.z)?.room===f.room&&tileAt(w,p.x,p.z)?.terrain==='floor')&&tileAt(w,f.access.x,f.access.z)?.room===f.room);
   const occupied=new Set(w.furnishings.flatMap(f=>f.cells.map(key)));
   const approaches=new Set(w.furnishings.map(f=>key(f.access)));
   for(const t of w.tiles){
-    if(!t.room||t.terrain!=='floor'||t.core||occupied.has(key(t))||approaches.has(key(t)))continue;
+    if(!t.room||t.terrain!=='floor'||t.core||decorated.has(key(t))||occupied.has(key(t))||approaches.has(key(t)))continue;
     const def=roomById(t.room);if(!def?.implemented)continue;
     const component=roomTiles(w,t),ids=new Set(component.map(key));
     const variants=[...def.furnishings].sort((a,b)=>w.furnishings.filter(f=>ids.has(key(f))&&f.kind===a.kind).length-w.furnishings.filter(f=>ids.has(key(f))&&f.kind===b.kind).length);
