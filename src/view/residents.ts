@@ -1,9 +1,8 @@
 import { reducedMotion } from '../content/presentation';
-import {hasteRate} from '../game/spell-effects';
+import { animationTuning, strikeEnvelope } from '../content/animation';
 import {MeshBuilder,TransformNode,Vector3,Mesh} from '@babylonjs/core';
 import type {GameScene} from './scene';
 import {characterById} from '../content/characters';
-import {characterStats} from '../game/progression';
 import type {Resident} from '../game/types';
 import {residentSurface,costumeDetails} from './resident-detail';
 import {createStonehandModel} from './stonehands';
@@ -128,7 +127,7 @@ export class ResidentView {
       const dt=Math.max(0,Math.min(.15,time-(m.lastTime??time))),distance=Math.hypot(a.x-(m.lastX??a.x),a.z-(m.lastZ??a.z));
       if(dt>0){m.walking=distance>.0005;m.stride+=distance*9;}
       m.lastTime=time;m.lastX=a.x;m.lastZ=a.z;m.actor=a;
-      if(m.hound){animateHound({...m,hound:m.hound},a,time,reducedMotion());continue;}
+      if(m.hound){animateHound({...m,hound:m.hound},a,time,reducedMotion(),dt);continue;}
       const walking=m.walking,j=a.job,working=!!j&&!a.path.length&&!walking,phase=m.stride,reduced=reducedMotion();
       m.root.position.set(a.x,walking?Math.abs(Math.sin(phase))*.025:0,a.z);m.root.rotation.set(0,a.facing,0);
       m.root.scaling.y=1+(reduced||characterById(a.type)?.construct?0:Math.sin(time*2+a.id)*.008);m.shadow.position.set(a.x,.025,a.z);
@@ -148,7 +147,9 @@ export class ResidentView {
         }
         if(j.target.x!==j.work.x||j.target.z!==j.work.z)m.root.rotation.y=Math.atan2(j.target.x-j.work.x,j.target.z-j.work.z);
         if(j.kind==='mine'||j.kind==='craft'||j.kind==='reinforce'||j.kind==='buildWall'||j.kind==='buildBridge'){
-          const swing=Math.sin(j.progress*Math.PI*4);m.arm.rotation.x=-.75+swing*.95;m.leftArm.rotation.x=-.15;m.root.rotation.x=.06+Math.max(0,swing)*.1;
+          const cycle=(j.progress%animationTuning.workBeat)/animationTuning.workBeat;
+          const swing=cycle<.25?1-cycle*8:-1+(cycle-.25)/.75*2;
+          m.arm.rotation.x=-.75+swing*.95;m.leftArm.rotation.x=-.25;m.root.rotation.x=.06+Math.max(0,swing)*.1;
         }else if(j.kind==='claim'){m.root.position.y=characterById(a.type)?.construct?-.035:-.09;m.root.rotation.x=.35;m.arm.rotation.x=-.9;m.leftArm.rotation.x=-.6;}
         else if(j.kind==='train'){
           const lift=a.id%2===0,cycle=Math.sin(j.progress*4);
@@ -164,8 +165,7 @@ export class ResidentView {
       }
       if(j?.kind==='activate'&&working){m.tool.setEnabled(false);m.shield?.setEnabled(false);m.arm.rotation.x=-1.15;m.leftArm.rotation.x=-1.15;m.root.rotation.x=.08;}
       if(a.activity==='Fighting'){
-        const interval=characterStats(a).attackSeconds/hasteRate(v.world,a),age=Math.max(0,time-((a.nextAttackAt??time)-interval));
-        const strike=Math.max(0,1-age/.35);m.arm.rotation.x=-.45-strike*1.5;m.leftArm.rotation.x=-.9;m.root.rotation.y+=strike*.12;
+        const strike=strikeEnvelope(time,a.attackedAt);m.arm.rotation.x=-.45-strike*1.5;m.leftArm.rotation.x=-.9;m.root.rotation.y+=strike*.12;
       }
       const recoil=a.hitAt===undefined?0:Math.max(0,1-(time-a.hitAt)/.25);
       if(recoil&&!reduced){m.root.rotation.x-=recoil*.16;m.root.rotation.z+=recoil*.07;}
@@ -175,9 +175,9 @@ export class ResidentView {
       // Ease changes between jobs and shortest-path turns, without moving feet away from simulation positions.
       const target:Pose={rotation:[m.root.rotation.x,m.root.rotation.y,m.root.rotation.z],arms:[m.arm.rotation.x,m.arm.rotation.z,m.leftArm.rotation.x,m.leftArm.rotation.z],legs:m.legs.map(l=>l.rotation.x),y:m.root.position.y};
       if(m.pose){
-        const blend=1-Math.exp(-dt*16),mix=(before:number,after:number)=>before+(after-before)*blend;
+        const blend=1-Math.exp(-dt*animationTuning.settleRate),mix=(before:number,after:number)=>before+(after-before)*blend;
         target.rotation=target.rotation.map((n,i)=>m.pose!.rotation[i]+Math.atan2(Math.sin(n-m.pose!.rotation[i]),Math.cos(n-m.pose!.rotation[i]))*blend);
-        target.arms=target.arms.map((n,i)=>mix(m.pose!.arms[i],n));target.legs=target.legs.map((n,i)=>mix(m.pose!.legs[i],n));target.y=mix(m.pose.y,target.y);
+        if(time-(a.attackedAt??-Infinity)>.06)target.arms=target.arms.map((n,i)=>mix(m.pose!.arms[i],n));target.legs=target.legs.map((n,i)=>mix(m.pose!.legs[i],n));target.y=mix(m.pose.y,target.y);
       }
       m.pose=target;m.root.rotation.set(target.rotation[0],target.rotation[1],target.rotation[2]);m.root.position.y=target.y;
       m.arm.rotation.x=target.arms[0];m.arm.rotation.z=target.arms[1];m.leftArm.rotation.x=target.arms[2];m.leftArm.rotation.z=target.arms[3];m.legs.forEach((l,i)=>l.rotation.x=target.legs[i]);

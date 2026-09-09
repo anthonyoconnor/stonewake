@@ -3,7 +3,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 const phase = process.argv.includes('--before') ? 'before' : 'after';
 const haulOnly = process.argv.includes('--haul-only');
-const folder = `test-results/m22-${phase}`;
+const folder = `test-results/m32-${phase}`;
 mkdirSync(folder, { recursive: true });
 const browser = await chromium.launch({
   headless: true,
@@ -165,22 +165,11 @@ try {
     await capture('reduced-motion', 1);
   }
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.evaluate(() => {
-    const api = window.strongholdDev;
-    api.load('stronghold');
-    api.command({
-      kind: 'build',
-      room: 'treasure',
-      points: Array.from({ length: 9 }, (_, i) => ({ x: 19 + (i % 3), z: 25 + Math.floor(i / 3) })),
-    });
-    api.command({
-      kind: 'dig',
-      points: [
-        { x: 20, z: 18 },
-        { x: 21, z: 18 },
-        { x: 22, z: 18 },
-      ],
-    });
+  await page.evaluate(async () => {
+    const api = window.strongholdDev; api.load('stronghold');
+    const w = api.state(), { settlementPlan } = await import('/src/content/campaign-levels.ts');
+    const plan = settlementPlan({hearth:w.hearth});
+    api.command({kind:'dig',points:[...plan.development,...plan.gold]});
   });
   let hauling = false;
   for (let i = 0; i < 120; i++) {
@@ -207,6 +196,25 @@ try {
     }
   }
   assert(hauling, 'Actual hauling exposes the moving cargo pose');
+  await page.evaluate(() => window.strongholdDev.load('combat'));
+  let contact = false;
+  for (let i = 0; i < 160; i++) {
+    await page.evaluate(() => window.strongholdDev.advance(.05));
+    const result = await page.evaluate(() => {
+      const w = window.strongholdDev.state(), scene = window.visualBabylon.EngineStore.LastCreatedScene;
+      const enemy = w.enemies.find(e => e.health > 0), hound = w.agents.find(a => a.type === 'cave-hound' && a.attackedAt === w.elapsed);
+      const model = enemy && scene.getTransformNodeByName(enemy.type + ' ' + enemy.id);
+      if (model && (Math.abs(model.position.x - enemy.x) > .001 || Math.abs(model.position.z - enemy.z) > .001)) throw Error('Enemy presentation trails its real position');
+      if (!hound) return;
+      const root = scene.getTransformNodeByName('hound-' + hound.id), jaw = root.getDescendants().find(n => n.name === 'hound jaw');
+      return { hound: hound.id, hit: enemy?.hitAt, time: w.elapsed, jaw: jaw?.rotation.x };
+    });
+    if (result) { assert.equal(result.hit,result.time); assert(result.jaw > 0); contact = true; break; }
+  }
+  assert(contact, 'Hound bite and enemy damage share one simulation instant');
+  const enemyPose = () => page.evaluate(() => window.visualBabylon.EngineStore.LastCreatedScene.transformNodes.filter(n => /hound-|goblin-raider /.test(n.name)).map(n => [...n.position.asArray(), ...n.rotation.asArray()]));
+  const frozen = await enemyPose(); await page.waitForTimeout(200); assert.deepEqual(await enemyPose(), frozen, 'Paused combat models remain frozen');
+  await page.screenshot({path:folder+'/hound-contact.png'});
   assert.deepEqual(report.errors, []);
   console.log(JSON.stringify(report));
 } finally {

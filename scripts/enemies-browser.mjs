@@ -79,19 +79,6 @@ try {
     await page.screenshot({ path: `${output}/${region}-models.png` });
   }
   await camera(19, 11, 27);
-  await advance(8.5);
-  const active = await state();
-  assert(active.encounters.every((e) => e.phase === 'active'));
-  assert(active.enemies.filter((e) => e.health > 0).every((e) => !e.dormant));
-  await page.screenshot({ path: `${output}/mixed-combat.png` });
-  await advance(8);
-  const battle = await state();
-  assert(battle.enemies.some((e) => e.health < e.maxHealth));
-  assert(
-    battle.agents.some((a) => (a.health ?? a.maxHealth) < a.maxHealth) ||
-      battle.agents.length < initial.agents.length,
-  );
-  assert(battle.enemies.some((e) => e.attackedAt !== undefined));
   const anatomy = await page.evaluate(async () => {
     const source = await (await fetch('/src/view/scene.ts')).text();
     const { EngineStore } = await import(source.match(/from ["']([^"']*@babylonjs_core[^"']*)["']/)[1]);
@@ -105,6 +92,23 @@ try {
     };
   });
   assert.deepEqual(anatomy, { spiderLegs: 8, burrowerLegs: 4 });
+  await advance(8.5);
+  const active = await state();
+  assert(active.encounters.every((e) => e.phase === 'active'));
+  assert(active.enemies.filter((e) => e.health > 0).every((e) => !e.dormant));
+  await page.screenshot({ path: `${output}/mixed-combat.png` });
+  await advance(8);
+  const battle = await state();
+  assert(battle.enemies.some((e) => e.health < e.maxHealth));
+  assert(
+    battle.agents.some((a) => (a.health ?? a.maxHealth) < a.maxHealth) ||
+      battle.agents.length < initial.agents.length,
+  );
+  assert(battle.enemies.some((e) => e.attackedAt !== undefined));
+  const expired = battle.enemies.filter(e => e.health <= 0 && battle.elapsed - e.diedAt >= 3);
+  const retainedModels = await camera(19, 11, 27);
+  assert(expired.length > 0, 'Mixed combat exercises enemy defeat cleanup');
+  assert(expired.every(e => !retainedModels.some(m => m.name === e.type + ' ' + e.id)), 'Expired enemy geometry is released');
   await page.evaluate(() => window.strongholdDev.load('enemy-roster'));
   await camera(20, 11, 11, Math.PI / 2, 0.8);
   await page.screenshot({ path: `${output}/reverse-view.png` });

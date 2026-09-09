@@ -1,3 +1,4 @@
+import { strikeEnvelope, turnToward } from '../content/animation';
 import { MeshBuilder, TransformNode, type Mesh } from '@babylonjs/core';
 import type { GameScene } from './scene';
 import type { Resident } from '../game/types';
@@ -175,6 +176,7 @@ export function animateHound(
   a: Resident,
   time: number,
   reduced: boolean,
+  dt = 0.05,
 ) {
   const sleeping = a.job?.kind === 'sleep' && !a.path.length,
     eating = a.job?.kind === 'eat' && !a.path.length,
@@ -184,7 +186,7 @@ export function animateHound(
     sleeping ? -0.09 : m.walking && !reduced ? Math.abs(Math.sin(m.stride)) * 0.018 : 0,
     a.z,
   );
-  m.root.rotation.set(0, a.facing, sleeping ? 0.22 : 0);
+  m.root.rotation.set(0, turnToward(m.root.rotation.y, a.facing, dt), sleeping ? 0.22 : 0);
   m.root.scaling.set(1, sleeping ? 0.75 : 1, 1);
   m.legs.forEach(
     (leg, i) =>
@@ -198,8 +200,7 @@ export function animateHound(
   );
   m.hound.head.rotation.x = sleeping ? 0.28 : eating || scouting ? 0.38 + Math.sin(time * 5) * 0.06 : 0;
   m.hound.tail.rotation.y = reduced || sleeping ? 0 : Math.sin(time * (m.walking ? 6 : 3)) * 0.2;
-  const biting =
-    a.activity === 'Fighting' ? Math.max(0, 1 - (time - ((a.nextAttackAt ?? time) - 1)) / 0.35) : 0;
+  const biting = a.activity === 'Fighting' ? strikeEnvelope(time, a.attackedAt) : 0;
   m.hound.jaw.rotation.x = biting * 0.55 + (eating ? Math.abs(Math.sin(time * 6)) * 0.2 : 0);
   if (biting) {
     m.hound.head.rotation.x = -biting * 0.15;

@@ -11,6 +11,7 @@ import { type Enemy } from '../game/types';
 import { enemyById } from '../content/enemies';
 import { visible, slowRate } from '../game/spell-effects';
 import { dressedBlock } from './environment';
+import { strikeEnvelope, turnToward } from '../content/animation';
 
 interface EnemyModel {
   root: TransformNode;
@@ -606,6 +607,10 @@ export class EnemyView {
       reduced = this.view.effects.reduced;
     for (const e of w.enemies ?? []) {
       let m = this.models.get(e.id);
+      if (e.health <= 0 && w.elapsed - (e.diedAt ?? w.elapsed) >= 3) {
+        m?.root.dispose(); this.models.delete(e.id); continue;
+      }
+      if (!m && !visible(w, e)) continue;
       if (!m) {
         m = this.build(e);
         this.models.set(e.id, m);
@@ -622,20 +627,19 @@ export class EnemyView {
         m.phase += moved * (definition.id === 'cave-spider' ? 12 : 9);
         m.x = e.x;
         m.z = e.z;
-        m.elapsed = w.elapsed;
       }
       const walking = m.moving,
-        blend = 1 - Math.exp(-Math.min(0.1, vDelta(this.view)) * 18);
-      let angle = e.facing - m.facing;
-      angle = Math.atan2(Math.sin(angle), Math.cos(angle));
-      m.facing += angle * blend;
-      m.root.position.x += (e.x - m.root.position.x) * blend;
-      m.root.position.z += (e.z - m.root.position.z) * blend;
+        dt = m.elapsed < 0 ? .05 : Math.max(0, Math.min(.15, w.elapsed - m.elapsed)),
+        blend = 1 - Math.exp(-dt * 18);
+      m.elapsed = w.elapsed;
+      m.facing = turnToward(m.facing, e.facing, dt);
+      m.root.position.x = e.x;
+      m.root.position.z = e.z;
       m.root.position.y = 0;
       m.root.rotation.set(0, m.facing, 0);
       const active = !dead && !pinned,
         work = /Tunneling|Excavating/.test(e.activity),
-        strike = active && age >= 0 && age < 0.45 ? Math.sin((age / 0.45) * Math.PI) : 0;
+        strike = active ? strikeEnvelope(w.elapsed, e.attackedAt) : 0;
       m.body.position.y =
         active && !reduced
           ? walking
@@ -674,24 +678,26 @@ export class EnemyView {
           : pinned
             ? -0.6
             : 0;
-        arm.rotation.x += (pose - arm.rotation.x) * blend;
+        arm.rotation.x += (pose - arm.rotation.x) * (active && age >= 0 && age < 0.06 ? 1 : blend);
       });
-      if (m.tail) m.tail.rotation.y = active ? Math.sin(m.phase * 0.6) * 0.17 : 0;
+      if (m.tail) m.tail.rotation.y = active && !reduced ? Math.sin(m.phase * 0.6) * 0.17 : 0;
       if (m.crest) m.crest.scaling.y = reduced ? 1 : 1 + Math.sin(w.elapsed * 11) * 0.13;
       if (m.cloud) {
-        m.cloud.setEnabled(active && !reduced && e.activity === 'Releasing spores' && age < 0.65);
-        m.cloud.scaling.setAll(1 + Math.max(0, age) * 2);
+        const sporeAge = w.elapsed - ((e.abilityReadyAt ?? -Infinity) - (definition.abilitySeconds ?? 0));
+        m.cloud.setEnabled(active && !reduced && sporeAge >= 0 && sporeAge < 0.65);
+        m.cloud.scaling.setAll(1 + Math.min(0.65, Math.max(0, sporeAge)) * 2);
         m.cloud.rotation.y = w.elapsed * 0.3;
       }
       const projectile =
-        (!!definition.range || definition.ability === 'web') && !!e.shotEnd && age >= 0 && age < 0.3;
+        (!!definition.range || definition.ability === 'web') && !!e.shotEnd && age >= 0 && age < 0.14;
       m.projectile.setEnabled(active && projectile && !reduced);
       if (projectile) {
-        // World-space projectile parent remains the source root but is counter-rotated.
+        // These attacks resolve immediately in simulation: show a contact shard at the hit,
+        // rather than a flight arriving after the victim has already recoiled.
         const target = new Vector3(e.shotEnd!.x - e.x, 0, e.shotEnd!.z - e.z);
         const c = Math.cos(-m.facing),
           s = Math.sin(-m.facing),
-          t = age / 0.3 / definition.scale;
+          t = 1 / definition.scale;
         m.projectile.position.set(
           ((target.x * c + target.z * s) * t) / 0.72,
           0.58,
@@ -706,4 +712,3 @@ export class EnemyView {
     }
   }
 }
-const vDelta = (view: GameScene) => view.engine.getDeltaTime() / 1000;

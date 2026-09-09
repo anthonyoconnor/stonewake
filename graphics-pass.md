@@ -97,7 +97,7 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 
 Use **Debug → Load visual showcase** for a repeatable scene containing example rooms, test residents, stored and loose gold, excavation marks, production orders and queued spell research. The [configuration guide](configuration.md) identifies the source of the showcase contents. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
 
-The result is a stylized procedural prototype, not a reproduction of the concept sheets' illustration detail. Sculpted meshes, authored texture sets, skeletal animation, audio, advanced shadows and cinematic effects remain optional future art work. They are not prerequisites for rapid gameplay iteration.
+The result is a stylized procedural prototype, not a reproduction of the concept sheets' illustration detail. Sculpted meshes, authored texture sets, skeletal animation, recorded audio assets, advanced shadows and cinematic effects remain optional future art work. They are not prerequisites for rapid gameplay iteration.
 
 ## Verification
 
@@ -140,3 +140,11 @@ The fixture contains ordinary paid/free room construction, automatic cosmetic fu
 [LabLighting](src/view/lighting-lab.ts) reuses six point-light slots for the nearest eligible visible sources and a separate pointer light. The pointer follows the actual hovered terrain surface, including when a stationary pointer's camera pans, rotates or zooms. Sidebar/UI hover, open dialogs, leaving the viewport and blur suppress it. Tile visibility and terrain rays restrict illuminated meshes; hidden lava/gems supply no lights, while gold/gem geometry retains its ordinary through-fog visibility. Lighting never changes discovery, routes or targeting. Settings have no flicker and work with reduced motion.
 
 The same service now runs in ordinary campaign and Free Play worlds, with biome palettes and sparse local growth. Occlusion uses tile-based mesh inclusion rather than detailed shadows, and selecting nearby sources can change visible pools when the camera moves. The comparison harness remains available for later tuning. Full gameplay comparisons and verification are recorded above and in [development history](development-history.md).
+
+## M32 action and contact refinement
+
+The current Stonehand, Cave Hound, dwarf and enemy sheets remain the silhouette reference. The audit identified hounds snapping through turns, hound bites deriving time from a fixed one-second cooldown, enemy bodies trailing their authoritative positions, eased swings landing after actual damage, uniform tool swings, enemy movement easing while paused, and expired enemy models retaining geometry.
+
+Hound turns now follow the shortest angular path using simulation time. Residents record actual attack timestamps; dwarf swings, hound jaws and M30 sounds share those timestamps, independent of level or Haste. Enemy bodies stay at their real continuous positions; their strides still follow traveled distance and turns/limb transitions stop with paused simulation. Tool loops use an asymmetric stroke on the same half-second beat as work sounds. Instant-hit ranged abilities show a brief shard at contact rather than a projectile arriving after damage. Enemy striking arms reach contact immediately, and spore pulses retain their short visible lifetime after an activity change. Hidden enemies are modeled on discovery, and defeated enemy geometry is disposed after its short fall. Reduced motion suppresses decorative tail motion and keeps existing motion controls.
+
+No hit range, navigation, tile access, capacity or combat statistics change in this pass. Foot/hand articulation, exact furniture contact, cloth deformation and occasional close crowd/equipment intersections remain prototype limitations; the procedural silhouettes are retained. Character checks use actual work jobs, real contact and death, paused poses and reduced motion; current captures are written under ignored `test-results/m32-after/`.
