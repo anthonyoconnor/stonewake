@@ -63,9 +63,15 @@ function missingSupport(w: World) {
     routes.set(a.id, component);
   }
   const result = new Map<number, MoraleCause[]>();
+  // Routes and room access remain unchanged throughout this support decision.
+  const usableByComponent = new Map<Set<string>, World['roomServices']>();
   for (const a of residents) {
     const route = routes.get(a.id)!;
-    const usable = w.roomServices.filter((s) => route.has(key(s.access)) && canStand(w, s.access));
+    let usable = usableByComponent.get(route);
+    if (!usable) {
+      usable = w.roomServices.filter((s) => route.has(key(s.access)) && canStand(w, s.access));
+      usableByComponent.set(route, usable);
+    }
     const active: MoraleCause[] = [];
     if (!isAnimal(a.type) && !usable.some((s) => s.service === 'dining' && s.assigned === a.id)) active.push('food');
     if (!usable.some((s) => s.service === 'rest' && s.assigned === a.id)) active.push('accommodation');

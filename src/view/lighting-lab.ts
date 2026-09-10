@@ -23,6 +23,12 @@ function enableLight(light: Light, enabled: boolean) {
   if (light.isEnabled() !== enabled) light.setEnabled(enabled);
 }
 
+interface LightMeshGroup {
+  x: number;
+  z: number;
+  meshes: AbstractMesh[];
+}
+
 /** Shared bounded illumination for normal play and the adjustable M33 comparison harness. */
 export class LabLighting {
   sources: PointLight[] = [];
@@ -36,7 +42,8 @@ export class LabLighting {
   private original;
   private materials = new Map<StandardMaterial, number>();
   private maskRevision = -1;
-  private geometry: Array<{ mesh: AbstractMesh; x: number; z: number }> = [];
+  private geometry: LightMeshGroup[] = [];
+  private staticMasks = new Map<PointLight, { key: string; meshes: AbstractMesh[] }>();
   private lastMasks = -Infinity;
   private maskKey = '';
   private sourceRevision = -1;
@@ -105,7 +112,7 @@ export class LabLighting {
       )
       .sort((a, b) => Math.hypot(a.x - target.x, a.z - target.z) - Math.hypot(b.x - target.x, b.z - target.z))
       .slice(0, lightingBudget.sources);
-    const sourceKey = candidates.map((s) => s.id).join('|') + ':' + settings.sourceRadius;
+    const sourceKey = candidates.map((s) => `${s.id}:${s.x},${s.z}`).join('|') + ':' + settings.sourceRadius;
     this.activeSources = settings.sourceStrength > 0 ? candidates.length : 0;
     for (let i = 0; i < this.sources.length; i++) {
       const light = this.sources[i],
@@ -161,16 +168,18 @@ export class LabLighting {
     const revisionChanged = this.maskRevision !== v.geometryRevision;
     if (revisionChanged) {
       this.geometry = [];
+      this.staticMasks.clear();
       for (const [key, entry] of v.tileNodes) {
         const [x, z] = key.split(',').map(Number);
         if (!tileAt(w, x, z)?.known) continue;
-        for (const mesh of entry.node.getChildMeshes()) this.geometry.push({ mesh, x, z });
+        // All pieces of this tile have always shared the same occlusion sample.
+        this.geometry.push({ meshes: entry.node.getChildMeshes(), x, z });
       }
       for (const entry of v.furnitureNodes.values())
         for (const mesh of entry.node.getChildMeshes()) {
           mesh.computeWorldMatrix(true);
           const p = mesh.getBoundingInfo().boundingBox.centerWorld;
-          this.geometry.push({ mesh, x: p.x, z: p.z });
+          this.geometry.push({ meshes: [mesh], x: p.x, z: p.z });
         }
       // The refined Hearth has one model root; legacy terrain still has direct core meshes.
       for (const mesh of [
@@ -179,7 +188,7 @@ export class LabLighting {
       ]) {
         mesh.computeWorldMatrix(true);
         const p = mesh.getAbsolutePosition();
-        if (tileAt(w, Math.round(p.x), Math.round(p.z))?.core) this.geometry.push({ mesh, x: p.x, z: p.z });
+        if (tileAt(w, Math.round(p.x), Math.round(p.z))?.core) this.geometry.push({ meshes: [mesh], x: p.x, z: p.z });
       }
       this.maskRevision = v.geometryRevision;
     }
@@ -194,7 +203,7 @@ export class LabLighting {
     ) {
       this.maskKey = sourceKey + pointerKey;
       this.lastMasks = now;
-      const actors: Array<{ mesh: AbstractMesh; x: number; z: number }> = [];
+      const actors: LightMeshGroup[] = [];
       const actorNames = new Set([
         ...w.agents.flatMap((a) => [`dwarf-${a.id}`, `hound-${a.id}`, `stonehand-${a.id}`]),
         ...(w.enemies ?? []).map((e) => `${e.type ?? 'goblin-raider'} ${e.id}`),
@@ -202,9 +211,8 @@ export class LabLighting {
       for (const root of v.scene.transformNodes)
         if (actorNames.has(root.name) && root.parent === null) {
           const p = root.getAbsolutePosition();
-          for (const mesh of root.getChildMeshes()) actors.push({ mesh, x: p.x, z: p.z });
+          actors.push({ meshes: root.getChildMeshes(), x: p.x, z: p.z });
         }
-      const meshes = [...this.geometry, ...actors].filter((e) => !e.mesh.isDisposed());
       for (const [index, light] of [...this.sources, this.pointer].entries()) {
         const wanted =
           index === this.sources.length
@@ -214,10 +222,18 @@ export class LabLighting {
           enableLight(light, false);
           continue;
         }
-        const from = { x: light.position.x, z: light.position.z };
-        const included = meshes
-          .filter((e) => Math.hypot(e.x - from.x, e.z - from.z) <= light.range && lightReaches(w, from, e))
-          .map((e) => e.mesh);
+        const staticKey = `${light.position.x},${light.position.z}:${light.range}`;
+        let fixed = this.staticMasks.get(light);
+        if (fixed?.key !== staticKey) {
+          fixed = { key: staticKey, meshes: this.visibleMeshes(this.geometry, light) };
+          this.staticMasks.set(light, fixed);
+        }
+        // Moving actors refresh at the existing cadence. Fixed terrain/props
+        // only cast their visibility rays again when geometry or the light changes.
+        const included = [
+          ...fixed.meshes.filter((mesh) => !mesh.isDisposed()),
+          ...this.visibleMeshes(actors, light),
+        ];
         if (
           included.length !== light.includedOnlyMeshes.length ||
           included.some((mesh, i) => mesh !== light.includedOnlyMeshes[i])
@@ -229,6 +245,15 @@ export class LabLighting {
     }
     this.activeSources = this.sources.filter((light) => light.isEnabled()).length;
     this.pointerActive = this.pointer.isEnabled();
+  }
+  private visibleMeshes(groups: LightMeshGroup[], light: PointLight) {
+    const w = this.view.world, from = { x: light.position.x, z: light.position.z };
+    const included: AbstractMesh[] = [];
+    for (const group of groups) {
+      if (Math.hypot(group.x - from.x, group.z - from.z) > light.range || !lightReaches(w, from, group)) continue;
+      for (const mesh of group.meshes) if (!mesh.isDisposed()) included.push(mesh);
+    }
+    return included;
   }
   private restore() {
     this.sky.intensity = this.original.ambient;
@@ -244,6 +269,8 @@ export class LabLighting {
   dispose() {
     this.restore();
     for (const light of [...this.sources, this.pointer]) light.dispose();
+    this.staticMasks.clear();
+    this.geometry = [];
     for (const [material, count] of this.materials) material.maxSimultaneousLights = count;
     window.removeEventListener('pointermove', this.move);
     window.removeEventListener('blur', this.leave);

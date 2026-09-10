@@ -27,6 +27,47 @@ try {
       elapsed:v.world.elapsed,fps:v.engine.getFps(),masks:l?.sources.filter(s=>s.isEnabled()).map(s=>({position:s.position.asArray(),count:s.includedOnlyMeshes.length}))};
   });
   const initial=await snapshot();assert.equal(initial.ambient,.22);assert(initial.sources>0&&initial.sources<=6);
+  await page.evaluate(()=>{
+    const v=window.lightingView,l=v.labLighting,w=v.world,settings=w.lightingTest;
+    const ensure=(condition,message)=>{if(!condition)throw Error(message);};
+    const update=()=>{l.lastMasks=-Infinity;l.update(settings);};
+    const camera=v.camera.target.clone();
+    const meshesAt=(x,z)=>v.tileNodes.get(`${x},${z}`).node.getChildMeshes();
+    try{
+      v.camera.target.set(17,0,7);update();
+      const light=l.sources.find(light=>Math.abs(light.position.x-17.36)<.001&&light.position.z===7);
+      ensure(light?.isEnabled(),'The fixture lamp beside the bedrock seam is active');
+      ensure(meshesAt(18,7).every(mesh=>light.includedOnlyMeshes.includes(mesh)),'The first wall face receives light');
+      ensure(meshesAt(20,7).every(mesh=>!light.includedOnlyMeshes.includes(mesh)),'Known floor behind bedrock stays unlit');
+      const fixed=l.staticMasks.get(light);update();
+      ensure(l.staticMasks.get(light)===fixed,'Stationary geometry reuses its cached visibility');
+      const actor=v.scene.transformNodes.find(root=>!root.parent&&/^(dwarf-|hound-|stonehand-)/.test(root.name)&&root.getChildMeshes().length);
+      ensure(actor,'The actor fixture exists');
+      const position=actor.position.clone(),body=actor.getChildMeshes();
+      try{
+        // Presentation-only relocation in this paused harness, restored before rendering.
+        actor.position.set(17,position.y,7);actor.computeWorldMatrix(true);update();
+        ensure(body.every(mesh=>light.includedOnlyMeshes.includes(mesh)),'All parts of an actor enter the visible light pool together');
+        actor.position.set(20,position.y,7);actor.computeWorldMatrix(true);update();
+        ensure(body.every(mesh=>!light.includedOnlyMeshes.includes(mesh)),'A moving actor loses illumination behind the wall');
+        ensure(l.staticMasks.get(light)===fixed,'Actor movement does not recompute static visibility');
+      }finally{actor.position.copyFrom(position);actor.computeWorldMatrix(true);update();}
+      const tile=w.tiles[6*w.width+17],oldMeshes=meshesAt(17,6);
+      ensure(tile.known&&oldMeshes.some(mesh=>light.includedOnlyMeshes.includes(mesh)),'The nearby floor fixture starts lit');
+      try{
+        tile.known=false;w.revision++;v.refresh();update();
+        ensure(oldMeshes.every(mesh=>mesh.isDisposed()),'Terrain replacement disposes its old geometry');
+        ensure(l.sources.every(light=>light.includedOnlyMeshes.every(mesh=>!mesh.isDisposed())),'Cached masks discard disposed geometry');
+        ensure(meshesAt(17,6).every(mesh=>l.sources.every(light=>!light.includedOnlyMeshes.includes(mesh))),'New fog geometry is excluded from local lights');
+      }finally{tile.known=true;w.revision++;v.refresh();update();}
+      const beforeRadius=l.staticMasks.get(light),radius=settings.sourceRadius;
+      try{
+        settings.sourceRadius=radius*.6;update();
+        ensure(l.staticMasks.get(light)!==beforeRadius,'Changing source radius invalidates its cached mask');
+        ensure(meshesAt(18,7).every(mesh=>light.includedOnlyMeshes.includes(mesh)),'Radius changes retain first-wall illumination');
+      }finally{settings.sourceRadius=radius;update();}
+    }finally{v.camera.target.copyFrom(camera);update();}
+  });
   mkdirSync('test-results/m33',{recursive:true});
   await page.screenshot({path:'test-results/m33/experimental.png'});
   await page.locator('#lab-lighting-enabled').uncheck();
