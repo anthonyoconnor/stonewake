@@ -2,6 +2,8 @@ import { paintedFrame, type LoadingScreen } from './ui/loading';
 import { tuning } from './content/tuning';
 import { MainMenu, confirmDiscard } from './ui/menu';
 import { startFreePlay, restartSession } from './game/session';
+import { createLevelPreviewWorld } from './content/level-preview';
+import type { World } from './game/types';
 import { createCombatLab } from './content/combat-lab';
 import { createLightingLab } from './content/lighting-lab';
 import './style.css';
@@ -95,7 +97,8 @@ export async function initializeGame(loading: LoadingScreen) {
     sidebar.update();
   };
   let loadingStudio = false;
-  const openLab = async (open: boolean, shape?: string, type?: string) => {
+  let loadedLevelPreview: World | undefined;
+  const openLab = async (open: boolean, shape?: string, type?: string, preview?: World) => {
     if (loadingStudio) return;
     if (open && shape === 'showcase') {
       loadingStudio = true;
@@ -103,12 +106,13 @@ export async function initializeGame(loading: LoadingScreen) {
       await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
     }
     if (open && !sidebar.lab) retainedPaused = sidebar.isPaused();
+    loadedLevelPreview = preview ? structuredClone(preview) : undefined;
     sidebar.lab = open;
     selection.selected = undefined;
     selection.start = undefined;
     selection.hover = undefined;
     const next = open
-      ? shape === 'lighting'
+      ? preview ?? (shape === 'lighting'
         ? createLightingLab(world.freeRoomBuilding)
         : shape === 'combat'
           ? createCombatLab(world.freeRoomBuilding, sidebar.combatSetup)
@@ -116,7 +120,7 @@ export async function initializeGame(loading: LoadingScreen) {
             ? createSpellLab(world.freeRoomBuilding)
             : shape === 'defenses'
               ? createDefenseLab(world.freeRoomBuilding)
-              : createRoomLab()
+              : createRoomLab())
       : world;
     next.freeRoomBuilding = world.freeRoomBuilding;
     if (open && shape === 'showcase') {
@@ -132,7 +136,7 @@ export async function initializeGame(loading: LoadingScreen) {
         await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       }
       populateShowcase(next);
-    } else if (open && shape && !['empty', 'defenses', 'spells', 'combat', 'lighting'].includes(shape)) {
+    } else if (open && !preview && shape && !['empty', 'defenses', 'spells', 'combat', 'lighting'].includes(shape)) {
       buildRoom(next, type ?? sidebar.labType, labLayout(next, shape));
       if (shape === 'Adjacent rooms')
         buildRoom(
@@ -150,10 +154,12 @@ export async function initializeGame(loading: LoadingScreen) {
     sidebar.inspectedUnit = undefined;
     furnish(next);
     view.setWorld(next);
+    view.showAllEnemies = !!preview;
     sidebar.onPause(open ? true : retainedPaused);
     controls.center(open ? (shape === 'defenses' ? 18 : 12) : world.hearth.x, open ? 12 : world.hearth.z);
     view.camera.radius = open ? 26 : tuning.homeZoom;
     view.camera.beta = shape === 'defenses' ? 0.35 : tuning.initialTilt;
+    view.camera.maxZ = 150;
     selection.setTool(shape === 'defenses' ? 'inspect' : open ? (type ?? sidebar.labType) : 'dig');
     sidebar.show(shape === 'defenses' ? 'defenses' : open ? 'lab' : 'rooms');
     if (shape === 'spells') {
@@ -170,6 +176,16 @@ export async function initializeGame(loading: LoadingScreen) {
       view.camera.radius = 24;
       selection.setTool('inspect');
       sidebar.show('lighting');
+    }
+    if (preview) {
+      controls.center((next.width - 1) / 2, (next.height - 1) / 2);
+      view.camera.alpha = tuning.initialAngle;
+      const aspect = view.engine.getRenderWidth() / view.engine.getRenderHeight();
+      const halfFov = Math.min(view.camera.fov / 2, Math.atan(Math.tan(view.camera.fov / 2) * aspect));
+      view.camera.radius = Math.hypot(next.width, next.height) * .55 / Math.sin(halfFov);
+      view.camera.maxZ = Math.max(150, view.camera.radius + Math.hypot(next.width, next.height));
+      selection.setTool('inspect');
+      sidebar.show('debug');
     }
     accumulator = 0;
     development?.worldChanged(
@@ -188,6 +204,15 @@ export async function initializeGame(loading: LoadingScreen) {
     refresh();
     await paintedFrame();
   };
+  const loadLevelPreview = (next: World) => {
+    if (loading.busy) return;
+    sidebar.levelPreview.element.close();
+    void loading.run('Loading the full level…', async () => {
+      await openLab(true, 'level-preview', undefined, structuredClone(next));
+      await readyWorld();
+    });
+  };
+  sidebar.levelPreview.onLoadLevel = id => loadLevelPreview(createLevelPreviewWorld(id, view.world));
   sidebar.onLab = (open, shape, type) => {
     void loading.run(open ? 'Preparing the test room…' : 'Returning to the stronghold…', async () => {
       try {
@@ -222,6 +247,10 @@ export async function initializeGame(loading: LoadingScreen) {
     });
   }
   sidebar.onRestartArea = () => {
+    if (loadedLevelPreview) {
+      loadLevelPreview(loadedLevelPreview);
+      return;
+    }
     if (!sidebar.lab) {
       void restartRun();
       return;
@@ -277,6 +306,7 @@ export async function initializeGame(loading: LoadingScreen) {
         () => view.world,
         (next, id) => {
           if (loadingStudio) throw new Error('Wait for the room studio to finish loading.');
+          loadedLevelPreview = undefined;
           if (id !== 'stronghold' && !sidebar.lab) retainedPaused = localPaused;
           if (id === 'stronghold') world = next;
           sidebar.lab = id !== 'stronghold';

@@ -10,6 +10,7 @@ import './level-preview.css';
 /** Read-only map inspection. Revealing pixels never discovers gameplay tiles. */
 export class LevelPreview {
   element = document.createElement('dialog');
+  onLoadLevel: (id: string) => void = () => {};
   private canvas = document.createElement('canvas');
   private select: HTMLSelectElement;
   private world?: World;
@@ -22,6 +23,8 @@ export class LevelPreview {
       <div class="level-preview-layout"><section class="level-preview-controls">
         <label>Level<select id="preview-level"><option value="current">Current world</option></select></label>
         <p id="preview-summary"></p>
+        <button id="preview-load-level" class="wide">Load full level</button>
+        <p class="muted">Opens a paused 3D test world with fog off. Your stronghold is retained.</p>
         <p class="muted">Fog off · Simulation paused</p>
         <div class="preview-legend"><span class="preview-enemy">●</span> Enemy<br><span class="preview-source">○</span> Encounter source<br><span class="preview-hearth">◆</span> Hearthstones<br><span class="preview-resident">■</span> Resident</div>
         <p class="muted">Select an enemy or click the map to inspect a position.</p>
@@ -42,6 +45,7 @@ export class LevelPreview {
     this.element.querySelector('.level-preview-map')!.append(this.canvas);
     document.body.append(this.element);
     this.select.onchange = () => this.load();
+    this.element.querySelector('#preview-load-level')!.addEventListener('click', () => this.onLoadLevel(this.select.value));
     this.element.querySelector('header button')!.addEventListener('click', () => this.element.close());
     this.element.addEventListener('keydown', e => e.stopPropagation());
     this.element.addEventListener('close', () => {

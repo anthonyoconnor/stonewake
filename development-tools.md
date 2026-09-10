@@ -35,7 +35,7 @@ Make all dwarfs tired/hungry sets every resident to 10% energy/food (adding Mine
 
 ## Shared scenarios
 
-**Debug → Level preview** inspects the current world and all registered playable starting layouts without loading a test world or revealing gameplay tiles. It shows hidden terrain, living enemies and encounter sources, and pauses play until closed. Run `node scripts/level-preview-browser.mjs` for focused visual/input/state checks, or add `--browser=level-preview` to a verification scope. Captures remain in `test-results/level-preview/`.
+**Debug → Level preview** inspects the current world and all registered playable starting layouts without loading a test world or revealing gameplay tiles. It shows hidden terrain, living enemies and encounter sources, and pauses play until closed. **Load full level** opens a fully revealed playable 3D copy with all enemy models visible, paused simulation and Return to stronghold. Named levels use their normal starting crew/economy; the current-world option copies the current state. Run `npm run verify -- level-preview --browser=level-preview` for focused world-isolation and visual/input/state checks, or add `--browser=level-preview` to a verification scope. Captures remain in `test-results/level-preview/`.
 
 Factories live in [scenarios.ts](src/content/scenarios.ts) and are used by the controller in both Node and the browser. The ordinary visual-showcase button also shares its resident, stock and job setup.
 

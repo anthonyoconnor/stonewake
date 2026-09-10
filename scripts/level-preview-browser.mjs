@@ -76,8 +76,51 @@ try {
     return [...c.getContext('2d').getImageData(Math.floor((t.x + .5) / w.width * c.width), Math.floor((t.z + .5) / w.height * c.height), 1, 1).data];
   });
   assert.deepEqual(concealed, [12, 19, 25, 255]);
+  await page.keyboard.press('Escape');
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const beforeLoading = await page.evaluate(() => window.strongholdDev.state());
+  const campaignSample = catalogIds.filter(id => id.startsWith('campaign-'))[1];
+  for (const id of ['current', 'emberwater-crossing', campaignSample]) {
+    await page.getByRole('button', { name: 'Debug', exact: true }).click();
+    await page.getByRole('button', { name: 'Level preview', exact: true }).click();
+    await page.locator('#preview-level').selectOption(id);
+    await page.getByRole('button', { name: 'Load full level', exact: true }).click();
+    await page.locator('#loading-screen').waitFor({ state: 'hidden', timeout: 60000 });
+    assert.equal(await dialog.isVisible(), false);
+    const loaded = await page.evaluate(() => window.strongholdDev.state());
+    assert(loaded.tiles.every(t => t.known), `${id}: 3D level is fully revealed`);
+    assert.equal(loaded.onwardHearth.discovered, true);
+    assert.equal(await page.evaluate(() => window.strongholdDev.status().paused), true);
+    if (id === 'current') assert.equal(loaded.allowance, beforeLoading.allowance);
+    else assert.equal(loaded.freePlay.levelId, id);
+    const rendered = await page.evaluate(async () => {
+      const source = await (await fetch('/src/view/scene.ts')).text();
+      const { EngineStore } = await import(source.match(/from ["']([^"']*@babylonjs_core[^"']*)["']/)[1]);
+      const scene = EngineStore.LastCreatedScene;
+      const w = window.strongholdDev.state();
+      return {
+        enemies: (w.enemies ?? []).filter(e => e.health > 0).every(e => {
+          const node = scene.getTransformNodeByName(`${e.type ?? 'goblin-raider'} ${e.id}`);
+          return node?.isEnabled() && node.getChildMeshes().some(m => m.isVisible);
+        }),
+        center: [scene.activeCamera.target.x, scene.activeCamera.target.z],
+      };
+    });
+    assert(rendered.enemies, `${id}: actual enemy models are visible`);
+    assert.deepEqual(rendered.center, [(loaded.width - 1) / 2, (loaded.height - 1) / 2]);
+    await page.screenshot({ path: `test-results/level-preview/loaded-${id}.png` });
+    await page.getByRole('button', { name: 'Resume simulation', exact: true }).click();
+    await page.waitForFunction(elapsed => window.strongholdDev.state().elapsed > elapsed, loaded.elapsed);
+    await page.getByRole('button', { name: 'Return to stronghold', exact: true }).click();
+    await page.locator('#loading-screen').waitFor({ state: 'hidden', timeout: 60000 });
+    const returned = await page.evaluate(() => window.strongholdDev.state());
+    // Reattaching any test world refreshes furnishings and invalidates route caches.
+    const { routesChanged: _returnedRoutes, ...returnedState } = returned;
+    const { routesChanged: _originalRoutes, ...originalState } = beforeLoading;
+    assert.deepEqual(returnedState, originalState);
+  }
   assert.deepEqual(errors, []);
-  console.log('PASS: all level previews, hidden terrain/enemy pixels, inspection, compact layout, state preservation and pause/resume.');
+  console.log('PASS: map previews, fully revealed playable 3D levels, visible enemy models, simulation resume and retained stronghold.');
 } finally {
   await browser.close();
 }

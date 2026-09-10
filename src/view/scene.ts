@@ -54,6 +54,8 @@ const colors: Record<string, string> = {
   unknown: '#101820',
 };
 export class GameScene {
+  /** Display-only enemy visibility for fully loaded debug levels. */
+  showAllEnemies?: boolean;
   labLighting?: LabLighting;
   mainHearth?: ReturnType<typeof createStoneHearthModel>;
   engine: Engine;
@@ -698,6 +700,7 @@ export class GameScene {
     await this.scene.whenReadyAsync();
   }
   setWorld(world: World) {
+    this.showAllEnemies = false;
     resetStartingTerrain(this);
     this.labLighting?.dispose();
     this.labLighting = undefined;

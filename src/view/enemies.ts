@@ -44,7 +44,7 @@ export class EnemyView {
         this.models.delete(e.id);
         continue;
       }
-      if (!m && !visible(w, e)) continue;
+      if (!m && !this.view.showAllEnemies && !visible(w, e)) continue;
       if (!m) {
         m = this.build(e);
         this.models.set(e.id, m);
@@ -52,7 +52,7 @@ export class EnemyView {
       const definition = enemyById(e.type),
         dead = e.health <= 0,
         pinned = e.pinnedUntil > w.elapsed,
-        seen = visible(w, e),
+        seen = this.view.showAllEnemies || visible(w, e),
         age = w.elapsed - (e.attackedAt ?? -100);
       m.root.setEnabled(seen && (!dead || w.elapsed - (e.diedAt ?? w.elapsed) < 3));
       if (m.elapsed !== w.elapsed) {
