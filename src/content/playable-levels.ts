@@ -1,9 +1,8 @@
 import { campaignStages, campaignStartingAvailability } from './campaign.ts';
-import { campaignStages as prototypeStages } from './prototype-campaign.ts';
+import { standaloneLevels } from './standalone-levels.ts';
 import { recipes } from './recipes.ts';
 import { spellDefinitions } from './spells.ts';
 import type { ContentAvailability } from '../game/availability.ts';
-import { enemyRegionIds, enemyRegionLevel } from './enemy-regions.ts';
 import type { LevelDefinition } from '../game/types.ts';
 
 export interface PlayableLevel {
@@ -11,37 +10,60 @@ export interface PlayableLevel {
   level: LevelDefinition; starting: ContentAvailability & { knownSpells: string[] };
 }
 const buildings = ['treasure', 'dormitory', 'kitchen', 'workshop', 'training', 'library', 'wall', 'bridge'];
-const prototypeStarting = () => ({ buildings: [...buildings], roles: ['stonehand','cave-hound','warrior','engineer','runesmith'], recipes: recipes.map(r=>r.id), spells: ['summon-stonehand',...spellDefinitions.map(s=>s.id)], knownSpells: [] });
-const art = {
-  upper: new URL('../../concept-art/levels/border-foothold-v1.png', import.meta.url).href,
-  fungal: new URL('../../concept-art/levels/fungal-caves-v1.png', import.meta.url).href,
-  ancient: new URL('../../concept-art/levels/fallen-city-v1.png', import.meta.url).href,
-  crystal: new URL('../../concept-art/levels/crystal-divide-v1.png', import.meta.url).href,
-  volcanic: new URL('../../concept-art/levels/volcanic-depths-v1.png', import.meta.url).href,
+const standaloneStarting = () => ({ buildings: [...buildings], roles: ['stonehand','cave-hound','warrior','engineer','runesmith'], recipes: recipes.map(r=>r.id), spells: ['summon-stonehand',...spellDefinitions.map(s=>s.id)], knownSpells: [] });
+const standalonePresentation: Record<string, { region: string; description: string; image: string }> = {
+  'border-foothold': {
+    region: 'Mining interchange',
+    description: 'Build at a buried junction. Follow the northern workings to the watch or restore a western service loop; the eastern galleries offer a separate mining frontier.',
+    image: new URL('../../concept-art/levels/overhaul/m42-border-interchange-v1.png', import.meta.url).href,
+  },
+  'emberwater-crossing': {
+    region: 'Water & fire',
+    description: 'Cross a winding river and a molten channel. Choose the short northern bridgeheads or reclaim the foundry between the southern crossings.',
+    image: new URL('../../concept-art/levels/overhaul/m42-emberwater-v1.png', import.meta.url).href,
+  },
+  'region-upper': {
+    region: 'Quarry galleries',
+    description: 'Excavate a honeycomb of unequal quarry chambers. Take the direct cut to the northern watch or reconnect old service galleries beneath the ridges.',
+    image: new URL('../../concept-art/levels/overhaul/m42-upper-quarry-v1.png', import.meta.url).href,
+  },
+  'region-fungal': {
+    region: 'Overgrown waterways',
+    description: 'Expand from a dry southern refuge into three wet cavern lobes. Advance along the eastern colonies or recover the waystation and buried civic crossing.',
+    image: new URL('../../concept-art/levels/overhaul/m42-overgrown-confluence-v1.png', import.meta.url).href,
+  },
+  'region-ancient': {
+    region: 'Flooded civic ruins',
+    description: 'Restore watch districts around a flooded basin. Pay for the northern causeway or follow the dry southern shore through useful service rooms and a foundry.',
+    image: new URL('../../concept-art/levels/overhaul/m42-flooded-districts-v1.png', import.meta.url).href,
+  },
+  'region-crystal': {
+    region: 'Mineral wells',
+    description: 'Choose expeditions from a central refuge. Reach the relay through the eastern branch or recover the northern archive; guarded mineral wells remain optional.',
+    image: new URL('../../concept-art/levels/overhaul/m42-prism-wells-v1.png', import.meta.url).href,
+  },
+  'region-volcanic': {
+    region: 'Caldera citadel',
+    description: 'Establish a foothold outside a molten ring. Force the western bridgehead or cross to the southern service court before securing the inner citadel.',
+    image: new URL('../../concept-art/levels/overhaul/m42-ashen-caldera-v1.png', import.meta.url).href,
+  },
 };
-const descriptions = {
-  upper: 'Excavate the upper workings. Prepare for raiders and a burrowing flank beneath the old watch.',
-  fungal: 'Breach the sealed nest. Keep your defenders moving through webs and choking spores.',
-  ancient: 'Reclaim the old watch halls. Bring trained Warriors and runes against the armored guardians.',
-  crystal: 'Break the crystal hunters’ line of sight. Secure the ancient relay beyond their hunting ground.',
-  volcanic: 'Span molten rock and face the Deepmaw. Protect the crossing from ember attacks.',
-};
-/** Deliberately retained playable prototype maps. Harnesses never enter this catalog. */
+const campaignArt = [
+  new URL('../../concept-art/levels/overhaul/m36-border-foothold-v1.png', import.meta.url).href,
+  new URL('../../concept-art/levels/overhaul/m37-fungal-hollows-v1.png', import.meta.url).href,
+  new URL('../../concept-art/levels/overhaul/m38-fallen-city-v1.png', import.meta.url).href,
+  new URL('../../concept-art/levels/overhaul/m39-crystal-divide-v1.png', import.meta.url).href,
+  new URL('../../concept-art/levels/overhaul/m40-royal-deep-v1.png', import.meta.url).href,
+];
+/** Playable content only; independent old-map comparisons stay in level-baselines.ts. */
 export const playableLevels: PlayableLevel[] = [
-  { id: 'border-foothold', name: 'Border Foothold', region: 'Upper workings',
-    description: 'Carve a foothold from the earth. Raise a stronghold and awaken the northern Hearthstone.',
-    image: art.upper, level: prototypeStages[0].level, starting: prototypeStarting() },
-  { id: 'emberwater-crossing', name: 'Emberwater Crossing', region: 'Water & fire',
-    description: 'Build bridges. Secure the crossing. Awaken the Hearthstone beyond water and lava.',
-    image: '/art/emberwater-v1.png', level: prototypeStages[1].level, starting: prototypeStarting() },
-  ...enemyRegionIds.map(region => ({
-    id: `region-${region}`, name: enemyRegionLevel(region).name, region: `${region[0].toUpperCase()}${region.slice(1)} depths`,
-    description: descriptions[region], image: art[region], level: enemyRegionLevel(region),
-    starting: prototypeStarting(),
+  ...standaloneLevels.map(level => ({
+    id: level.id!, name: level.name, ...standalonePresentation[level.id!],
+    level, starting: standaloneStarting(),
   })),
   ...campaignStages.map((stage,index)=>({
     id: `campaign-${stage.id}`, name: `${stage.level.name} · Campaign`, region: ['Upper workings','Fungal caves','Ancient halls','Crystal caverns','Volcanic depths'][index],
-    description: stage.briefing, image: Object.values(art)[index], level: stage.level,
+    description: stage.briefing, image: campaignArt[index], level: stage.level,
     starting: {...campaignStartingAvailability(stage.id),knownSpells:[]},
   })),
 ];
