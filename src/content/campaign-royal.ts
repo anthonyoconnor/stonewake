@@ -34,6 +34,14 @@ const royalBanks = union(
   ellipse(49, 46, 9, 7), path([{ x: 52, z: 44 }, { x: 54, z: 35 }], 3),
   ellipse(62, 48, 6, 5), path([{ x: 58, z: 44 }, { x: 61, z: 47 }], 2),
 );
+// Broken outer walls frame the existing services, with broad open thresholds.
+// The bridgeheads, avenue, relay approach and source spur remain untouched.
+const districtWalls = union(
+  row(47, 45, 2), row(51, 45, 3), col(47, 46, 4), col(53, 46, 2),
+  row(47, 50, 3), row(52, 50, 2),
+  [{ x: 55, z: 32 }, { x: 59, z: 32 }, { x: 60, z: 32 }],
+  col(60, 33, 2), [{ x: 60, z: 37 }], row(55, 37, 5),
+);
 
 /** M40: a river-fed molten basin separates the settlement from three royal peninsulas. */
 export const royalLevel: LevelDefinition = {
@@ -50,7 +58,7 @@ export const royalLevel: LevelDefinition = {
       path([{ x: 61, z: 38 }, { x: 64, z: 41 }, { x: 68, z: 42 }], 2),
     ) },
     { terrain: 'rock', cells: union(
-      ellipse(20, 39, 1, 2), ellipse(46, 34, 2, 2),
+      ellipse(20, 39, 1, 2), ellipse(46, 34, 2, 2), districtWalls,
       [{ x: 48, z: 18 }, { x: 50, z: 19 }, { x: 59, z: 32 }, { x: 46, z: 48 }, { x: 60, z: 49 }],
     ) },
     { terrain: 'gold', cells: union(
@@ -71,6 +79,7 @@ export const royalLevel: LevelDefinition = {
     { id: 'civic-bridgehead', kind: 'masonry', cells: ellipse(43, 16, 10, 7) },
     { id: 'broken-royal-avenue', kind: 'masonry', cells: union(path([{ x: 43, z: 18 }, { x: 54, z: 27 }], 6), rect(50, 26, 9, 12)) },
     { id: 'charred-east-halls', kind: 'scorched', cells: ellipse(61, 28, 7, 6) },
+    { id: 'record-hall-masonry', kind: 'masonry', cells: rect(55, 32, 6, 6) },
     { id: 'ceremonial-relay-court', kind: 'masonry', cells: ellipse(55, 36, 6, 5) },
     { id: 'foundry-peninsula', kind: 'masonry', cells: ellipse(49, 46, 8, 6) },
     { id: 'untouched-gem-recess', kind: 'crystal', cells: ellipse(63, 48, 5, 5) },
