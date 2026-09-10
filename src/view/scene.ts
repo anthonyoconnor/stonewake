@@ -1,6 +1,7 @@
 import { createStoneHearthModel, updateStoneHearthModel } from './hearth-models';
 import { isHazard, hazardDefinitions } from '../game/terrain';
 import { LabLighting } from './lighting-lab';
+import { StaticMeshCandidates } from './static-mesh-candidates';
 import { drawFurnishingModel, type FurnishingDisplay } from './furnishing-models';
 import { drawRoomFurnishing } from './room-furnishing-models';
 import { liveRoomDecorations, type LiveRoomDecoration } from '../game/room-decoration';
@@ -54,6 +55,7 @@ const colors: Record<string, string> = {
   floor: '#817c67',
   unknown: '#101820',
 };
+const staticCandidates = new WeakMap<GameScene, StaticMeshCandidates>();
 export class GameScene {
   /** Display-only enemy visibility for fully loaded debug levels. */
   showAllEnemies?: boolean;
@@ -80,6 +82,9 @@ export class GameScene {
     this.engine = new Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
     this.engine.setHardwareScalingLevel(Math.max(1, window.devicePixelRatio / 1.5));
     this.scene = new Scene(this.engine);
+    const candidates = new StaticMeshCandidates(this.scene);
+    staticCandidates.set(this, candidates);
+    this.scene.getActiveMeshCandidates = candidates.get;
     this.scene.clearColor = Color4.FromHexString('#101821ff');
     this.camera = new ArcRotateCamera(
       'camera',
@@ -231,6 +236,7 @@ export class GameScene {
       this.terrainRoot = node;
       this.drawTile(t);
       mergeEnvironment(this, node);
+      staticCandidates.get(this)!.finalize(node);
       this.tileNodes.set(id, { signature, node });
       this.geometryRevision++;
     }
@@ -676,6 +682,7 @@ export class GameScene {
           }
         }
       node.metadata = { merged: true };
+      staticCandidates.get(this)!.finalize(node);
     }
   }
   drawHearth() {
@@ -703,6 +710,7 @@ export class GameScene {
     await this.scene.whenReadyAsync();
   }
   setWorld(world: World) {
+    staticCandidates.get(this)!.reset();
     this.showAllEnemies = false;
     resetStartingTerrain(this);
     this.labLighting?.dispose();
