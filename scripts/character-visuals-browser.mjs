@@ -167,8 +167,8 @@ try {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.evaluate(async () => {
     const api = window.strongholdDev; api.load('stronghold');
-    const w = api.state(), { settlementPlan } = await import('/src/content/campaign-levels.ts');
-    const plan = settlementPlan({hearth:w.hearth});
+    const w = api.state(), { levelPlayPlan } = await import('/src/content/level-play-plans.ts');
+    const plan = levelPlayPlan(`campaign-${w.campaign.stageId}`).settlement;
     api.command({kind:'dig',points:[...plan.development,...plan.gold]});
   });
   let hauling = false;

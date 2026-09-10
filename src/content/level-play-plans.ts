@@ -1,4 +1,4 @@
-import type { LevelDefinition, Point } from '../game/types.ts';
+import type { Point } from '../game/types.ts';
 import { rect, row, union } from './level-authoring.ts';
 
 export interface SettlementPlan {
@@ -31,14 +31,4 @@ export function settlementBlueprint(hearth: Point, quarterTurns = 0): Settlement
     workshop: transform(rect(5,0,2,2)), library: transform(rect(5,3,2,2)),
     gold: transform(gold), development: transform(union(rect(-4,-7,11,14),gold)),
   };
-}
-
-/** Existing maps retain their example until their individual concept-led replacement lands. */
-export function registerLegacyPlan(level: LevelDefinition, routes: Pick<LevelPlayPlan,'intended'|'alternate'>) {
-  const z = level.hearth.z;
-  levelPlayPlans[level.id] = { ...routes, settlement: {
-    treasure: rect(3,z-5,3,2), dormitory: rect(8,z-2,3,4), kitchen: rect(8,z+3,3,3),
-    training: rect(3,z+3,2,2), workshop: rect(11,z,2,2), library: rect(11,z+3,2,2),
-    gold: union(row(3,z-7,9),row(11,z-6,4),row(3,z+5,8)), development: rect(3,z-7,10,13),
-  }, defenses: rect(11,z-2,3,3) };
 }
