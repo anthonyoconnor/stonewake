@@ -35,7 +35,9 @@ Make all dwarfs tired/hungry sets every resident to 10% energy/food (adding Mine
 
 ## Shared scenarios
 
-**Debug → Level preview** inspects the current world and all registered playable starting layouts without loading a test world or revealing gameplay tiles. It shows hidden terrain, living enemies and encounter sources, and pauses play until closed. **Load full level** opens a fully revealed playable 3D copy with all enemy models visible, paused simulation and Return to stronghold. Named levels use their normal starting crew/economy; the current-world option copies the current state. Run `npm run verify -- level-preview --browser=level-preview` for focused world-isolation and visual/input/state checks, or add `--browser=level-preview` to a verification scope. Captures remain in `test-results/level-preview/`.
+**Debug → Level preview** inspects the current world, registered playable starting layouts, independent pre-overhaul comparisons and the authoring-shapes fixture without revealing gameplay tiles. It shows hidden terrain, living enemies and encounter sources, and pauses play until closed. **Load full level** opens a fully revealed 3D copy with all enemy models visible, paused simulation and Return to stronghold. Named levels use their normal starting crew/economy; the current-world option copies the current state. Run `npm run verify -- level-preview --browser=level-preview` for focused world-isolation and visual/input/state checks, or add `--browser=level-preview` to a verification scope. `node scripts/level-preview-browser.mjs --authoring` selects the authoring fixture's shape, picking and normal/reverse-angle review. Captures remain in `test-results/level-preview/`.
+
+The [preview definitions](src/content/level-preview.ts) and [UI](src/ui/level-preview.ts) share Campaign, Standalone, Before overhaul and Authoring groups. The twelve independent `baseline-<playable-id>` snapshots in [level-baselines.ts](src/content/level-baselines.ts) preserve the original geometry without importing current maps. They and the [authoring-shapes fixture](src/content/level-authoring-fixture.ts) have no campaign/Free Play session identity and cannot enter the ordinary catalog. The fixture uses real mining, construction and ruin reclamation with all six local environment kinds.
 
 Factories live in [scenarios.ts](src/content/scenarios.ts) and are used by the controller in both Node and the browser. The ordinary visual-showcase button also shares its resident, stock and job setup.
 
@@ -95,7 +97,7 @@ npm run verify -- all --browser=integration --production
 
 The default `changed` scope considers uncommitted changes. Clean trees and documentation-only changes do nothing. Changed test files select themselves; other TypeScript edits follow local test imports. If shared dependencies select more than six files, or a change is outside that graph, the runner prints the candidates and asks the developer/agent to choose a focused scope or explicitly choose `all`. It never silently falls back to the full suite. Resolve that choice from task context without asking the user. Changed JavaScript tools receive syntax checks. New behavior still needs relevant tests or a targeted manual check; an empty automatic selection is not evidence that it works.
 
-Scopes live in [verification.ts](scripts/verification.ts): audio, habitats, ruins, balance (full paid campaign routes and recurring-pressure recovery), work, pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
+Scopes live in [verification.ts](scripts/verification.ts): audio, habitats, ruins, balance (full paid campaign routes and recurring-pressure recovery), standalone, level-overhaul, work, pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
 
 Browser checks are opt-in and independently selectable with `--browser=<name>`. The current names are registered in [verification.ts](scripts/verification.ts); they include subsystem checks plus `debug`, `level-preview`, `graphics-gallery`, `terrain-comparison`, `room-overhaul` and `arcana`. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface, notifications and campaign checks sequentially. The `ruins` browser check covers real canvas inspection and locked-plan details; `animation` covers real work/contact, enemy cleanup and reduced motion. Other subsystem browser scripts remain explicit tools for their owning changes.
 
@@ -126,6 +128,11 @@ Tracing is opt-in via `enableDiagnostics(world)`, controller setup or stepping h
 
 | Concern | Owning module |
 |---|---|
+| Campaign order, briefings and cumulative availability | [campaign.ts](src/content/campaign.ts) |
+| Campaign geometry assembly | [campaign-levels.ts](src/content/campaign-levels.ts), with one `campaign-*.ts` definition per area |
+| Free Play metadata and independent starting catalogs | [playable-levels.ts](src/content/playable-levels.ts), with `standalone-*.ts` geometry modules |
+| Shape/ruin transforms and example paid settlement/route plans | [level-authoring.ts](src/content/level-authoring.ts), [level-play-plans.ts](src/content/level-play-plans.ts) |
+| Local presentation regions and palettes | [environment-regions.ts](src/content/environment-regions.ts), [environment-visuals.ts](src/content/environment-visuals.ts) |
 | Simulation ordering, needs and subsystem ticks | [simulation.ts](src/game/simulation.ts) |
 | Character level definitions and provisional statistics | [content/characters.ts](src/content/characters.ts) |
 | Character stats, next level, work rate and health-preserving advancement | [progression.ts](src/game/progression.ts) |
@@ -148,7 +155,7 @@ New job execution must satisfy the exhaustive handler table. Preserve the explic
 
 ## Enemy, campaign and presentation checks
 
-- `enemy-roster` is the supplied five-gallery enemy test yard; `region-upper`, `region-fungal`, `region-ancient`, `region-crystal` and `region-volcanic` are separate normal-rules settlements with hidden regional enemy pairs and onward objectives. They use normal starting crew/gold and no supplied defenders or defenses.
+- `enemy-roster` is the supplied five-gallery enemy test yard. The development scenario selectors `region-upper`, `region-fungal`, `region-ancient`, `region-crystal` and `region-volcanic` retain compact legacy settlements with hidden regional pairs and normal starting crew/gold. Those factories are separate from the redesigned Free Play entries with the same stable catalog IDs; use the ordinary menu or full-level preview to inspect the catalog maps.
 - `character-models` shows the current character roster on clear floor for comparing silhouettes and equipment. Use `showcase` for actual work/needs and `spells` for combat.
 - `npm run verify -- enemies` selects enemy/encounter/combat regression checks; `npm run verify -- campaign` selects campaign, objective and crossing checks.
 - `node scripts/enemies-browser.mjs`, `node scripts/campaign-browser.mjs`, `node scripts/interface-browser.mjs`, `node scripts/environment-browser.mjs --profile` and `node scripts/character-visuals-browser.mjs` cover the new systems. Run browser workloads one at a time and hold source edits during a run to avoid HMR resets. Environment profiling takes settled frame samples after warm-up.
@@ -173,3 +180,28 @@ The **M33 lighting test room** opens directly from Test harnesses or `?scenario=
 `npm run verify -- campaign` checks availability, authored layouts and bridges. `npm run verify -- balance` runs the full intended/alternate paid campaign, normal loss recovery, Library reuse, natural defeat and prolonged volcanic raids with paid source suppression. The shared player-action driver is `scripts/helpers/campaign-route.ts`; it grants no gold, units, discoveries, prepared charges or timer shortcuts. The browser campaign check uses that driver and the normal sidebar travel actions through all five stages.
 
 `npm run verify -- audio --browser=audio` checks original procedural cues, activation, volume/mute and restart/pause cleanup; recordings go to ignored `test-results/m30/`. `--browser=animation` selects character work/contact/pausing and ten-enemy gallery checks. Current rendering rules live in [graphics.md](graphics.md); dated performance samples and artifact records live in the archive. Browser workloads are serial; freeze every imported TypeScript file, including the shared route helper, while they run.
+
+## Level redesign review
+
+`npm run verify -- level-overhaul` adds both paid routes through all seven standalone maps to the campaign integration checks. `npm run verify -- standalone` selects their layout, paid-route and restart checks. Editable settlement footprints, approaches, source-suppression branches and optional route-specific defenses live beside their map definitions. `src/content/level-play-plans.ts` owns the shared plan types, registry and starter blueprint; the campaign and standalone assembly modules register each map's plan. The driver buys services, crafts defenses, researches and casts spells, and physically reaches and activates the onward stone through ordinary gameplay.
+
+```sh
+node scripts/level-route.ts campaign-crystal-divide intended
+node scripts/level-route.ts campaign-crystal-divide alternate
+node scripts/level-route.ts region-upper alternate 2400
+node scripts/level-overhaul-browser.mjs --level=campaign-crystal-divide --play
+node scripts/level-overhaul-browser.mjs --level=region-upper --approach=alternate --play
+node scripts/level-overhaul-browser.mjs --standalone --approach=alternate --play
+node scripts/level-overhaul-browser.mjs --level=region-fungal,region-ancient --discovery-only
+node scripts/level-overhaul-browser.mjs --level=campaign-royal-deep --profile
+node scripts/level-overhaul-browser.mjs --layouts-only
+node scripts/level-overhaul-browser.mjs --level=campaign-fallen-city --dressing
+```
+
+The single-map Node runner starts the requested catalog entry through normal `startFreePlay` and accepts an optional third argument for the simulation time limit. Its reports go to `test-results/level-overhaul/routes/` and include support, discovery, hostile contact, hauling, source suppression and victory times, losses/replacements, needs journeys and departures. Haul records include origin, destination, cargo and journey time; `postLaunchHaul` is the first delivery after opening the route and may still carry local gold. Use the recorded locations when assessing remote supply. Use this runner while authoring one map instead of replaying unrelated levels. Starting a campaign-marked map independently does not test research carryover; use the full campaign flow for travel and arrival knowledge. Intended/alternate identify authored action examples, not a promise that one always finishes faster.
+
+The consolidated browser accepts `--level=<catalog-id>` or comma-separated IDs and `--approach=intended|alternate`; omit the level to review the whole catalog, or use `--standalone` for the seven non-campaign entries. The default review captures independent before/after maps with one neutral palette, checks an ordinary paid start, and verifies camera controls, minimap/full-map behavior, fog concealment and tile picking. `--play` adds an actual expedition with first-discovery, developed service, shoreline and objective views at normal and reverse angles, followed by physical activation and UI restart. `--discovery-only` follows the same paid actions until a water, lava or chasm bank is naturally visible, captures both angles, then stops; completion needs separate route evidence. `--layouts-only` emits only neutral comparisons. `--dressing` uses a separately labeled revealed preview for short dry-workings/masonry presentation checks; those captures are not paid-route evidence. Reports record runtime, failed-request and HTTP errors alongside screenshots under `test-results/level-overhaul/`. `npm run verify -- level-overhaul --browser=level-overhaul` combines simulation coverage with the default catalog browser review.
+
+`--profile` includes the full paid expedition and compares copies of its developed world with local regions present and removed, in that order and then reversed. Each copy starts with identical map, rooms, population, fog, jobs and camera. It measures 150 live frames after 90 warm-up frames and records hardware, scene workload, frame timing and simulation advancement. The original paid world is restored before activation/restart. This comparison measures the marginal cost of local atmosphere on the current map; evaluating the total cost of enlarged maps requires a separate matched baseline.
+
+Use `VISUAL_FOLDER` for a separate browser output directory. Keep other browser and CPU-heavy checks idle when profiling. Review the actual images and route tradeoffs against [level overhaul acceptance](level-overhaul.md#acceptance-and-evidence-for-every-redesigned-level): successful automation or generated images alone do not establish geographic identity, useful scale or readable atmosphere. Dated conclusions and retained limits belong in milestone history. Shape or region changes can start with focused `level-authoring` or `environment-regions` test filenames before their relevant visual review.
