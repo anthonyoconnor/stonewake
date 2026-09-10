@@ -2,7 +2,7 @@
 
 Working design for the dwarven stronghold game. Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
-**Planned redesign:** [Campaign level overhaul](level-overhaul.md) defines M35–M41: a new design for every campaign level, distinct geography and local atmosphere, and provisional larger map sizes that increase through the journey. This document describes current playable behavior until each replacement lands; its existing dimensions and route descriptions are not the redesign targets. Preserve the campaign rules below while applying the overhaul's design and acceptance criteria.
+**Planned redesign:** [Campaign and standalone level overhaul](level-overhaul.md) defines M35–M42: a new design for every campaign level, distinct geography and local atmosphere, provisional larger campaign map sizes, and updates to all seven additional standalone Free Play levels. Standalone maps may reuse campaign elements, combine them or have unique designs. This document describes current playable behavior until each replacement lands; its existing dimensions and route descriptions are not the redesign targets. Preserve the campaign and standalone availability rules below while applying the overhaul's design and acceptance criteria.
 
 ## Campaign structure
 

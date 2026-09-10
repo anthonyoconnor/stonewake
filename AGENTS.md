@@ -23,7 +23,7 @@ Completed milestones and dated verification records are in [archive/development-
 
 ## Current scope
 
-The existing game and subsequent graphics/room overhauls are implemented. The active level-redesign roadmap M35–M41, implementation status, audio listening review and deferred scope are in [development-plan.md](development-plan.md). Read [level-overhaul.md](level-overhaul.md) before redesigning a campaign level; it owns the geography, scale, atmosphere and acceptance requirements. New implementation follows the user's current request; old milestone authorizations are historical and do not start new work. Prior authorization and milestone specifications are retained in [the archive](archive/README.md).
+The existing game and subsequent graphics/room overhauls are implemented. The active level-redesign roadmap M35–M42, implementation status, audio listening review and deferred scope are in [development-plan.md](development-plan.md). Read [level-overhaul.md](level-overhaul.md) before redesigning a campaign or standalone level; it owns the geography, scale, atmosphere and acceptance requirements. New implementation follows the user's current request; old milestone authorizations are historical and do not start new work. Prior authorization and milestone specifications are retained in [the archive](archive/README.md).
 
 Preserve the permanent comparison renderers: `*-baseline.ts`, independent reference material caches, and `room-decoration-baseline.ts`. Use [graphics.md](graphics.md), [graphics-overhaul.md](graphics-overhaul.md), [room-overhaul.md](room-overhaul.md) and [arcana-overhaul.md](arcana-overhaul.md) for current visual direction and controls.
 

@@ -1,10 +1,10 @@
 # Current development notes
 
-The existing browser game is implemented. The active roadmap is a redesign of all five campaign levels for distinct geography, stronger environmental identity and larger useful spaces, especially later in the journey. Completed milestone specifications, authorization history, dated checks and superseded design drafts are in the [archive](archive/README.md); read them only when historical context is needed.
+The existing browser game is implemented. The active roadmap is a redesign of all five campaign levels and the seven additional standalone Free Play levels for distinct geography, stronger environmental identity and larger useful spaces, especially later in the campaign. Standalone designs may reuse campaign elements, combine them or establish unique identities. Completed milestone specifications, authorization history, dated checks and superseded design drafts are in the [archive](archive/README.md); read them only when historical context is needed.
 
 ## Active level redesign milestones
 
-The user requested this new milestone set after reviewing the shortfall in the previous biome/map work. [Campaign level overhaul](level-overhaul.md) owns the shared criteria, provisional dimensions, per-level requirements and acceptance evidence. The current playable maps remain in place; these milestones are planned, not implemented. Campaign order, gradual unlocks and the shared Hearthstone objective remain unchanged.
+The user requested this new milestone set after reviewing the shortfall in the previous biome/map work. [Campaign and standalone level overhaul](level-overhaul.md) owns the shared criteria, provisional dimensions, per-level requirements and acceptance evidence. The current playable maps remain in place; these milestones are planned, not implemented. Campaign order, gradual unlocks and the shared Hearthstone objective remain unchanged.
 
 | Milestone | Scope | Status |
 |---|---|---|
@@ -15,6 +15,7 @@ The user requested this new milestone set after reviewing the shortfall in the p
 | M39 | Crystal Divide: fractured spine, chasm routes and optional remote income | Planned; after M38 |
 | M40 | Royal Deep: large lava basin, peninsula districts and distinct crossing choices | Planned; after M39 |
 | M41 | Campaign-wide identity, pacing, scale and integration review | Planned; after all five replacements |
+| M42 | Redesign all seven standalone Free Play levels using shared elements, new combinations or unique geography | Planned; after M41 |
 
 Closure requires both functional verification and a recorded design review of geography, useful scale, fogged exploration and normal-zoom atmosphere. Passing route tests or producing screenshots alone is insufficient. Preserve old layouts as development comparisons during iteration and all permanent baseline renderers. Move completed evidence to the archive as work lands.
 

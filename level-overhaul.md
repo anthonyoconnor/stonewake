@@ -1,10 +1,10 @@
-# Campaign level overhaul
+# Campaign and standalone level overhaul
 
-Active milestone specifications for redoing all five campaign levels. The [development plan](development-plan.md#active-level-redesign-milestones) owns progress; this document owns redesign criteria, provisional size targets and milestone scope. The current playable maps remain documented in [Levels](levels.md) until their replacements are implemented.
+Active milestone specifications for redoing all five campaign levels and the seven additional standalone Free Play levels. The [development plan](development-plan.md#active-level-redesign-milestones) owns progress; this document owns redesign criteria, provisional size targets and milestone scope. The current playable maps remain documented in [Levels](levels.md) until their replacements are implemented.
 
 The user requested a new milestone set after reviewing the gap between the closed biome/map milestones and the delivered environments, and asked for larger levels, especially later in the campaign. This roadmap addresses unfinished geographic and environmental goals from M27–M29/M31. It does not erase their delivered systems or historical verification. The [Dungeon Keeper research](research/dungeon-keeper-level-variety.md) supplies rationale and references; the specifications below govern this work and supersede its suggested experimental implementation order.
 
-This is a planning baseline. No redesign milestone is implemented yet. Preserve the campaign order and unlock schedule while developing replacements in campaign order, so each stage establishes the next stage's pacing and scale.
+This is a planning baseline. No redesign milestone is implemented yet. Preserve the campaign order and unlock schedule while developing replacements in campaign order, so each stage establishes the next stage's pacing and scale. M42 then updates the separate standalone catalog, using campaign elements, new combinations or unique designs as appropriate.
 
 ## Shared design criteria
 
@@ -55,10 +55,10 @@ The campaign has no saves. Keep the main objective achievable within a practical
 
 - Preserve the single terrain layer, common floor height and substantial square excavation cells; continuously moving autonomous residents; shared gold; and sidebar information without floating world labels or bars.
 - Preserve the fixed Hearth with its current starting walking ring, normal crew/economy, separate concealed relay and physical activation. The surrounding landscape and anchor positions may change. Begin each level with player excavation, not free prebuilt service rooms.
-- Preserve the five-stage availability schedule. Border through Crystal require land approaches around their hazards; water/lava bridge construction belongs to Royal Deep. Chasms remain unbridgeable. Reclaimed rooms cannot bypass locked plans.
+- Preserve the five-stage campaign availability schedule. Campaign Border through Crystal require land approaches around their hazards; campaign water/lava bridge construction belongs to Royal Deep. Standalone levels retain their own starting catalogs, which already permit bridges and all current room plans. Chasms remain unbridgeable. Reclaimed rooms cannot bypass locked plans.
 - Keep authored deterministic layouts with editable definitions and stable level IDs. Add the smallest useful helpers for irregular areas, variable-width passages, terrain bands and transformed ruin placement; avoid a general procedural generator or a full map editor.
 - Carry room construction and ruin reclamation through the real gameplay services. Apply the [room checklist](room-development-checklist.md) to changed room/ruin arrangements, including automatic furnishings, floor capacity, access, irregular shapes and free construction on/off.
-- Retain old layouts as development comparison fixtures during the overhaul, outside the ordinary campaign catalog. Keep all permanent baseline renderers and independent material caches intact. Campaign and corresponding Free Play entries must use each completed replacement consistently; the seven deliberately retained prototype Free Play entries remain separate content.
+- Retain old layouts as development comparison fixtures during the overhaul, outside the ordinary campaign catalog. Keep all permanent baseline renderers and independent material caches intact. Campaign and corresponding Free Play entries must use each completed replacement consistently; M42 redesigns the seven additional standalone entries as separate content.
 - Use existing art and sound systems. Region-aware presentation helpers and a small landmark vocabulary are in scope when needed by these maps. New rooms, species, rival dungeon AI, victory systems, possession, game modes, persistence and a separate audio overhaul are outside this roadmap. Existing audio listening review remains pending.
 
 ## Milestones
@@ -73,7 +73,7 @@ Dependency: none of the new implementation milestones.
 - Remove coordinate-dependent assumptions from authoring/verification as needed. Settlement and route fixtures must follow each level's authored geography rather than a shared western rectangle. Preserve meaningful economic/access checks and test actual gameplay systems.
 - Implement only the reusable shape, ruin-transform and presentation-region support demonstrated as necessary by these briefs. Exercise it in a small real debug world, including terrain picking, discovery, room construction and cleanup.
 
-**Complete when:** five distinct briefs and reviewable sketches exist, baseline comparisons are reproducible, needed helpers work through the normal world systems, and each remaining milestone has a concrete map design to implement. This milestone prepares the work; it does not close any level redesign.
+**Complete when:** five distinct briefs and reviewable sketches exist, baseline comparisons are reproducible, needed helpers work through the normal world systems, and each campaign replacement has a concrete map design to implement. Standalone briefs are developed in M42. This milestone prepares the work; it does not close any level redesign.
 
 ### M36 — Border Foothold: sheltered basin and abandoned workings
 
@@ -144,9 +144,23 @@ Dependency: M36–M40.
 
 **Complete when:** the five-level journey meets both the functional and experiential criteria below, intended/alternate routes are demonstrated, major identity or pacing shortcomings are resolved, and any lesser retained limits are stated explicitly. Move completion records to the archive; do not leave successful test counts as a substitute for the design review.
 
+### M42 — Standalone Free Play level redesign
+
+Dependency: M41, using the campaign's completed authoring and environment improvements.
+
+- Update all seven standalone entries: the legacy Border Foothold, Emberwater Crossing, and the upper, fungal, ancient, crystal and volcanic regional maps. The five entries marked Campaign already receive the campaign replacements through M36–M41; they are checked for consistency here rather than redesigned again. Debug harnesses are not standalone levels.
+- Give each standalone map a brief, layout sketch and a clear reason to choose it. It may reuse campaign landforms, districts, ruins, materials, landmarks and habitat arrangements; combine elements from several regions; or use an original geography and theme. Reuse should produce a deliberately composed scenario with a meaningful difference in routes, resources, pressure or settlement planning, not merely another recolored campaign copy.
+- Apply the shared geography, atmosphere, discovery, room-access and useful-scale criteria. Choose and record provisional dimensions per standalone brief; increase useful space where it improves the scenario without forcing a campaign-like size progression across an unordered catalog. A focused crossing map may stay smaller than an expansive mixed-region expedition.
+- Rework Emberwater's water-and-lava crossing identity into coherent geography, and distinguish standalone Border Foothold from its campaign counterpart. Give each regional map a complete exploration and settlement arc rather than leaving it as a small encounter demonstration. Unique themes use the existing terrain, rooms, enemies and objective systems.
+- Preserve stable catalog IDs and independent starting availability: normal crew and economy, all existing standalone room/building plans, roles and research availability, but no already-researched spells or free service rooms. Research, recruitment, paid construction, hazards, source suppression and physical relay activation must work normally. Victory remains standalone completion with restart/menu; campaign progress neither unlocks nor changes these starts.
+- Replace the playable definitions and update names/descriptions, previews and representative art references where needed to describe the delivered maps. Preserve the old layouts as development comparisons during iteration. Review all seven alongside the campaign catalog so reused elements still leave a varied collection.
+- Demonstrate an intended and a meaningfully different alternate approach for every standalone map from its actual paid starting conditions. Reuse selectable verification flows for start/restart, economy, exploration, reclamation, combat, crossings where present and relay completion. Check independent session state and that shared definition/asset changes have not altered the completed campaign unintentionally; broaden campaign checks only for affected systems.
+
+**Complete when:** all seven standalone entries are updated, each has a documented scenario identity and reviewed old/new comparisons, shared functional and design acceptance passes for each, and the full Free Play catalog accurately presents the redesigned maps. Finish the work in reasonable per-map commits within this milestone. A refreshed menu, copied assets or a subset of updated maps does not close M42.
+
 ## Acceptance and evidence for every redesigned level
 
-Keep functional verification and design review separate in each milestone record. Both must pass before marking it complete.
+Keep functional verification and design review separate in each milestone record. Both must pass before marking it complete. For M42, assess routes against each standalone entry's own starting catalog and compare identity across both standalone and campaign maps; campaign unlock order and increasing stage sizes do not apply to standalone entries.
 
 | Review | Required evidence and decision |
 |---|---|
