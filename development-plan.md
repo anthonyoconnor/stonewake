@@ -10,9 +10,10 @@ M35–M42 are complete. The campaign grows from sheltered mining workings throug
 
 ## Remaining review
 
+- **Home rooms and corridors:** the user's clarified settlement requirement exposed a gap in the completed level checks: paid routes used broad excavated clearings with small room patches. A [twelve-map spatial audit](research/hearth-settlement-audit.md) now demonstrates separate room/corridor layouts on the existing terrain. Updating the paid examples and verifying construction, recruitment, needs/wages and completion with these layouts remains pending. The historical M35–M42 passes do not establish this additional criterion.
 - **Audio listening feedback:** procedural ambience, music and effects are implemented; playback, controls and cleanup have automated verification. Listening through quiet building, crowded work and combat remains pending. Use [audio-design.md](audio-design.md) and the recorded sample at `test-results/m30/work-combat.webm` when locally available. Do not infer listening approval from playback checks.
 
-No level redesign milestone remains open. Deferred concepts below are outside the completed roadmap.
+M35–M42 completion records remain historical; the follow-up settlement review above is current unfinished work. Deferred concepts below are outside that review.
 
 ## Current implementation status
 
