@@ -11,7 +11,8 @@ import { neighbors, type Tile } from '../game/types';
 import { isHazard } from '../game/terrain';
 import { roomLook } from '../content/rooms';
 import { roomFloors } from '../content/room-visuals';
-import { environmentPalette, environmentDetail, hasBiomeGrowth } from '../content/environment-visuals';
+import { environmentPalette, environmentDetail } from '../content/environment-visuals';
+import { environmentDecoration, type EnvironmentDecoration } from '../content/environment-regions';
 
 /** Small chamfers catch the light without moving the square gameplay footprint or top plane. */
 export function dressedBlock(
@@ -185,42 +186,8 @@ export function floorTransitions(view: GameScene, t: Tile) {
 /** Sparse cosmetic habitat growth and broken ruin trim; never adds occupancy or service slots. */
 export function biomeDetails(view: GameScene, t: Tile) {
   if (!t.known) return;
-  const palette = environmentPalette(view.world);
-  const wall = neighbors(view.world, t).find(
-    (n) => n.known && !['floor', 'water', 'lava', 'chasm'].includes(n.terrain),
-  );
-  if (hasBiomeGrowth(view.world, t) && wall) {
-    const dx = wall.x - t.x,
-      dz = wall.z - t.z;
-    for (let i = 0; i < 3; i++) {
-      const offset = (i - 1) * 0.16;
-      const x = t.x + dx * 0.36 + dz * offset,
-        z = t.z + dz * 0.36 + dx * offset;
-      if (view.world.biome === 'fungal') {
-        view.box(
-          'cave fungus stem',
-          x,
-          0.13,
-          z,
-          0.04,
-          0.26,
-          0.04,
-          view.material('cave fungus stem', '#aaa293'),
-        ).isPickable = false;
-        const cap = MeshBuilder.CreateSphere(
-          'cave fungus cap',
-          { diameter: 0.22 + (i % 2) * 0.1, segments: 5 },
-          view.scene,
-        );
-        cap.position.set(x, 0.26, z);
-        cap.scaling.y = 0.45;
-        cap.material = view.material('cave fungus cap', palette.growth, false, 0.22);
-        cap.parent = view.terrainRoot;
-        cap.isPickable = false;
-        view.includeGlow(cap);
-      } else view.crystal(x, 0.13, z, 0.28 + (i % 2) * 0.13, palette.growth);
-    }
-  }
+  const decoration = environmentDecoration(view.world, t);
+  if (decoration) drawEnvironmentCluster(view, t, decoration);
   if (t.ruin && (t.x + t.z) % environmentDetail.ruinDebrisModulo === 0) {
     const mat = view.material('ruin broken masonry', '#737d80', true);
     // The fragments sit flush at floor edges, so the walkway remains legible after reclamation.
@@ -240,6 +207,188 @@ export function biomeDetails(view: GameScene, t: Tile) {
       );
       m.rotation.y = offset;
       m.isPickable = false;
+    }
+  }
+}
+
+/** Each edge cluster merges into a few shared-material meshes with its owning tile. */
+function drawEnvironmentCluster(view: GameScene, t: Tile, decoration: EnvironmentDecoration) {
+  const { kind, edge, variant, authored } = decoration;
+  const palette = environmentPalette(view.world, t);
+  const dx = edge.x - t.x,
+    dz = edge.z - t.z;
+  const at = (offset: number, distance = 0.4) => ({
+    x: t.x + dx * distance + dz * offset,
+    z: t.z + dz * distance + dx * offset,
+  });
+  const wall = !isHazard(edge);
+  if (kind === 'fungal') {
+    const stems = view.material('habitat fungus stems', '#a297ac');
+    const caps = view.material(
+      `habitat fungus ${authored ? 'colony' : 'legacy'}`,
+      authored ? '#ae83c5' : palette.growth,
+      false,
+      0.16,
+    );
+    const pale = view.material('habitat fungus gills', '#badacb', false, 0.15);
+    for (let i = 0; i < 3; i++) {
+      const p = at((i - 1) * 0.2, 0.38);
+      const height = (authored ? 0.26 : 0.18) + ((i + variant) % 3) * (authored ? 0.17 : 0.05);
+      const stem = MeshBuilder.CreateCylinder(
+        'colony stalk',
+        { height, diameterTop: 0.035, diameterBottom: 0.075, tessellation: 5 },
+        view.scene,
+      );
+      stem.position.set(p.x, height / 2, p.z);
+      stem.material = stems;
+      stem.parent = view.terrainRoot;
+      stem.isPickable = false;
+      const cap = MeshBuilder.CreateSphere(
+        'colony cap',
+        { diameter: 0.23 + height * 0.35, segments: 6 },
+        view.scene,
+      );
+      cap.position.set(p.x, height, p.z);
+      cap.scaling.y = 0.36;
+      cap.material = i === 1 ? caps : pale;
+      cap.parent = view.terrainRoot;
+      cap.isPickable = false;
+      view.includeGlow(cap);
+    }
+    if (authored && wall && variant === 0) {
+      // The fine web hugs an existing wall, never stretches across a player passage.
+      const mat = view.material('habitat old silk', '#91a8a5');
+      const anchor = at(-0.38, 0.46);
+      for (let i = 0; i < 5; i++) {
+        const bottom = at(-0.27 + i * 0.15, 0.46);
+        const a = new Vector3(anchor.x, 0.77, anchor.z);
+        const b = new Vector3(bottom.x, 0.09, bottom.z);
+        const strand = MeshBuilder.CreateCylinder(
+          'wall silk strand',
+          { height: Vector3.Distance(a, b), diameter: 0.008, tessellation: 3 },
+          view.scene,
+        );
+        strand.position.copyFrom(Vector3.Center(a, b));
+        if (dx) strand.rotation.x = Math.atan2(b.z - a.z, b.y - a.y);
+        else strand.rotation.z = -Math.atan2(b.x - a.x, b.y - a.y);
+        strand.material = mat;
+        strand.parent = view.terrainRoot;
+        strand.isPickable = false;
+      }
+      for (let i = 1; i < 4; i++) {
+        const p = at(-0.1, 0.461);
+        view.box(
+          'wall silk cross strand',
+          p.x,
+          0.16 + i * 0.12,
+          p.z,
+          dx ? 0.009 : 0.42,
+          0.008,
+          dz ? 0.009 : 0.42,
+          mat,
+        ).isPickable = false;
+      }
+    }
+  } else if (kind === 'crystal') {
+    // Pale low quartz clusters have neither the dark matrix nor full-tile silhouette of income gems.
+    for (let i = 0; i < 3; i++) {
+      const p = at((i - 1) * 0.19, 0.4);
+      const height = 0.26 + ((i + variant) % 3) * (authored ? 0.21 : 0.08);
+      const crystal = view.crystal(p.x, height / 2, p.z, height, palette.growth);
+      crystal.rotation.z = dz ? 0 : (i - 1) * 0.18;
+      crystal.rotation.x = dx ? 0 : (i - 1) * 0.18;
+    }
+  } else if (kind === 'masonry' && wall) {
+    const stone = view.material('district pale masonry', '#989b95', true);
+    const dark = view.material('district carved recess', '#525c62');
+    const p = at(0, 0.475);
+    for (let row = 0; row < 3; row++)
+      dressedBlock(
+        view,
+        'district wall pilaster',
+        p.x,
+        0.22 + row * 0.38,
+        p.z,
+        dx ? 0.075 : 0.29,
+        0.35,
+        dz ? 0.075 : 0.29,
+        stone,
+        view.terrainRoot,
+        0.018,
+      ).isPickable = false;
+    dressedBlock(
+      view,
+      'district pilaster crown',
+      p.x,
+      1.26,
+      p.z,
+      dx ? 0.085 : 0.38,
+      0.12,
+      dz ? 0.085 : 0.38,
+      stone,
+      view.terrainRoot,
+      0.018,
+    ).isPickable = false;
+    const face = at(0, 0.428);
+    view.box(
+      'district narrow inset',
+      face.x,
+      0.63,
+      face.z,
+      dx ? 0.015 : 0.075,
+      0.47,
+      dz ? 0.015 : 0.075,
+      dark,
+    ).isPickable = false;
+    for (const offset of [-0.29, 0.27]) {
+      const fragment = at(offset, 0.38);
+      const chip = dressedBlock(
+        view,
+        'district fallen coping',
+        fragment.x,
+        0.045,
+        fragment.z,
+        0.17,
+        0.09,
+        0.13,
+        stone,
+        view.terrainRoot,
+        0.012,
+      );
+      chip.rotation.y = offset * 1.7;
+      chip.isPickable = false;
+    }
+  } else {
+    const damp = kind === 'damp';
+    const mat = view.material(
+      `habitat ${kind} edge`,
+      damp ? '#668578' : kind === 'scorched' ? '#484345' : '#ac9979',
+    );
+    for (let i = 0; i < 3; i++) {
+      const p = at((i - 1) * 0.23);
+      const chunk = MeshBuilder.CreateIcoSphere(
+        `${kind} bank fragment`,
+        { radius: 1, subdivisions: 1, flat: true },
+        view.scene,
+      );
+      chunk.position.set(p.x, damp ? 0.012 : 0.065, p.z);
+      chunk.scaling.set(dx ? 0.07 : 0.14, damp ? 0.018 : 0.055 + (i % 2) * 0.04, dz ? 0.07 : 0.14);
+      chunk.material = mat;
+      chunk.parent = view.terrainRoot;
+      chunk.isPickable = false;
+      if (damp && wall && i < 2) {
+        const streak = at((i - 0.5) * 0.31, 0.495);
+        view.box(
+          'damp wall mineral streak',
+          streak.x,
+          0.32,
+          streak.z,
+          dx ? 0.007 : 0.065,
+          0.61,
+          dz ? 0.007 : 0.065,
+          mat,
+        ).isPickable = false;
+      }
     }
   }
 }

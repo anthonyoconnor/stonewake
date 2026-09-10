@@ -1,5 +1,6 @@
 import { neighbors, tileAt, type World, type Point } from '../game/types.ts';
-import { environmentPalette, hasBiomeGrowth } from './environment-visuals.ts';
+import { environmentPalette } from './environment-visuals.ts';
+import { environmentDecoration } from './environment-regions.ts';
 
 export const lightingDefaults = {
   enabled: true,
@@ -37,16 +38,14 @@ export function lightingSources(w: World): LightSource[] {
   const sources: LightSource[] = [{ id: 'hearth', ...w.hearth, y: 2.1, color: '#7bdff5' }];
   for (const t of w.tiles) {
     if (!t.known) continue;
-    if (
-      hasBiomeGrowth(w, t) &&
-      neighbors(w, t).some((n) => n.known && !['floor', 'water', 'lava', 'chasm'].includes(n.terrain))
-    )
+    const growth = environmentDecoration(w, t);
+    if (growth && (growth.kind === 'fungal' || growth.kind === 'crystal'))
       sources.push({
         id: `growth-${t.x}-${t.z}`,
-        x: t.x,
-        z: t.z,
+        x: t.x + (growth.edge.x - t.x) * 0.36,
+        z: t.z + (growth.edge.z - t.z) * 0.36,
         y: 0.5,
-        color: environmentPalette(w).growth,
+        color: environmentPalette(w, t).growth,
       });
     if (t.terrain === 'lava' && (t.x + t.z) % 4 === 0)
       sources.push({ id: `lava-${t.x}-${t.z}`, x: t.x, z: t.z, y: 0.55, color: '#ff883b' });

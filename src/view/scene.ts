@@ -32,6 +32,7 @@ import { drawStartingTile, startingTerrainView, resetStartingTerrain } from './t
 import { isTerrainComparison, terrainComparisonSplit } from '../content/terrain-comparison';
 import { geologicalBank, alignStoneSurface } from './terrain-sculpt';
 import { environmentPalette } from '../content/environment-visuals';
+import { environmentMaterialVariant } from '../content/environment-regions';
 import { gameplayLighting } from '../content/lighting';
 import { SceneEffects } from './effects';
 import {
@@ -210,6 +211,7 @@ export class GameScene {
           t.reinforced,
           t.wallPlanned,
           t.room,
+          environmentMaterialVariant(this.world, t),
           this.roomFloorNames.get(id),
           t.ruin?.id,
           t.ruin?.room,
@@ -299,17 +301,18 @@ export class GameScene {
         ? roomById(t.room ?? t.ruin!.room)
         : undefined;
     const ruin = !!room && !t.room;
-    const palette = environmentPalette(this.world);
+    const palette = environmentPalette(this.world, t);
+    const environment = environmentMaterialVariant(this.world, t);
     const rawGround = type === 'floor' && !t.claimed && !room && !t.core;
     const mat = this.material(
       room
         ? (this.roomFloorNames?.get(key(t)) ?? `${ruin ? 'ruin-' : ''}floor-${room.id}`)
         : rawGround
-          ? `biome-${this.world.biome ?? 'upper'}-raw ground`
+          ? `biome-${environment}-raw ground`
           : t.known && t.reinforced
             ? 'reinforced wall'
             : ['dirt', 'rock'].includes(type)
-              ? `biome-${this.world.biome ?? 'upper'}-${type}`
+              ? `biome-${environment}-${type}`
               : type,
       room
         ? (roomLook(room.id).floor ?? room.color)

@@ -4,6 +4,7 @@ import type { MoraleCause, MoraleState } from './morale.ts';
 import type { CampaignState } from './campaign.ts';
 import type { BiomeId, EnemyHabitat } from '../content/habitats.ts';
 import type { RuinDefinition } from '../content/ruins.ts';
+import type { EnvironmentRegion } from '../content/environment-regions.ts';
 export type Terrain = 'floor' | 'dirt' | 'rock' | 'bedrock' | 'gold' | 'gem' | 'water' | 'lava' | 'chasm';
 export interface Point { x: number; z: number }
 export interface Tile extends Point {
@@ -35,9 +36,11 @@ export interface LevelDefinition {
   onwardHearth?: OnwardHearthDefinition;
   biome?: BiomeId;
   ruins?: RuinDefinition[];
+  environmentRegions?: EnvironmentRegion[];
 }
 export interface World {
   biome?: BiomeId;
+  environmentRegions?: EnvironmentRegion[];
   availability?: import('./availability.ts').ContentAvailability;
   lightingTest?: import('../content/lighting-lab.ts').LightingSettings;
   freePlay?: { levelId: string; buildings: string[]; knownSpells: string[] };

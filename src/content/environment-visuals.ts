@@ -1,4 +1,8 @@
-import type { World, Tile } from '../game/types.ts';
+import type { World, Tile, Point } from '../game/types.ts';
+import {
+  environmentRegionAt,
+  type EnvironmentRegionKind,
+} from './environment-regions.ts';
 
 /** Shared, editable presentation palette. Geology keeps its gameplay identity in every biome. */
 export const environmentPalettes = {
@@ -55,10 +59,51 @@ export const environmentPalettes = {
 };
 
 export const environmentDetail = { floorDebrisModulo: 7, growthModulo: 11, ruinDebrisModulo: 3 };
-export function environmentPalette(w: World) {
+/** Shared materials distinguish local places without recoloring rooms, resources or owned floor. */
+export const environmentRegionPalettes: Record<EnvironmentRegionKind, typeof environmentPalettes.upper> = {
+  dry: { ...environmentPalettes.upper, earth: '#9a805e', rock: '#89887c', ground: '#9b8665' },
+  damp: {
+    ...environmentPalettes.fungal,
+    earth: '#70765d',
+    rock: '#627776',
+    ground: '#697969',
+    growth: '#809e73',
+  },
+  fungal: {
+    ...environmentPalettes.fungal,
+    earth: '#746856',
+    rock: '#546d70',
+    ground: '#6f7058',
+    growth: '#8fbbd1',
+  },
+  masonry: {
+    ...environmentPalettes.ancient,
+    earth: '#897969',
+    rock: '#879099',
+    ground: '#9a998d',
+    growth: '#a3a69b',
+  },
+  crystal: {
+    ...environmentPalettes.crystal,
+    earth: '#777386',
+    rock: '#737f95',
+    ground: '#777b8c',
+    growth: '#c9b6e6',
+  },
+  scorched: {
+    ...environmentPalettes.volcanic,
+    earth: '#796255',
+    rock: '#56565d',
+    ground: '#6e625c',
+    growth: '#7d6254',
+  },
+};
+export function environmentPalette(w: World, p?: Point) {
+  const region = p && environmentRegionAt(w, p);
+  if (region) return environmentRegionPalettes[region.kind];
   return environmentPalettes[w.biome ?? 'upper'];
 }
-/** Decoration is seeded by position and only occupies the edge beside real, visible terrain. */
+/** Original predicate retained for permanent baseline renderers. Live regions use environmentDecoration. */
 export function hasBiomeGrowth(w: World, t: Tile) {
   return (
     t.known &&

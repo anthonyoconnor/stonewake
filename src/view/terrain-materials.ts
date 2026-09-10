@@ -6,6 +6,7 @@ const assets = new WeakMap<
   Map<string, { color: Texture; normal: DynamicTexture; ready: Promise<void> }>
 >();
 export function terrainMaterialAsset(name: string) {
+  if (name === 'biome-local_masonry-raw ground') return 'flagstone';
   const id = name.replace(/^biome-[^-]+-/, '').replace(/^ruin-/, '');
   // Room patterns carry gameplay identity and must not be replaced by the terrain sheet.
   if(id.startsWith('floor-'))return undefined;
