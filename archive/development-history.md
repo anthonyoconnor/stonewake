@@ -1,5 +1,15 @@
 # Completed development and history
 
+## 2026-09-09 — M35: concept-led level authoring groundwork
+
+Created the campaign direction concept before implementation and five coordinate briefs/neutral tile sketches in `research/level-redesign-briefs.md`. The briefs establish a sheltered mining basin, wet cavern lobes, buried city crossroads, a crescent chasm and a molten royal basin. The art gallery records exact built-in generation prompts and deviations needed to preserve the game's single floor plane and existing mechanics.
+
+Preserved all twelve previous playable definitions and starting catalogs as independent `baseline-*` comparison data in Level preview. Added tile-center ellipse/polygon/variable-width path/union helpers and rotated/mirrored ruin placement. Six optional local environment regions affect materials, sparse edge clusters and discovered-only light selection without changing terrain, fog, movement or room capacity. Permanent baseline renderers and their predicates remain unchanged.
+
+Verification: `npm run verify -- level-authoring` (typecheck and four tests), two level-preview tests, `npm run verify -- environment-regions` (typecheck and three tests), and four existing lighting-lab tests passed. Preview browser checks passed all catalog entries and full 3D load/return, plus the focused authoring fixture's normal/reverse views and real canvas ruin picking. Paid/free room checks exercise actual workers, irregular room building, capacity, furnishings and physically reclaimed rotated ruins. Captures: `test-results/level-preview/` (ignored generated evidence).
+
+Design review: the actual 24 × 22 fixture makes the cave/pool/waystation shapes, wall clusters and local materials readable from both camera directions, while returning restores the retained game. Its six deliberately packed region samples have abrupt boundaries and a small cross-like pool; this is a tool integration fixture, not evidence that a campaign atmosphere is finished. M36–M42 require individual old/new and normal-play reviews. No new elevation, terrain type, service, persistence or public editor was introduced.
+
 ## 2026-09-09 — Active documentation cleanup
 
 Moved the milestone tracker, specifications, authorization sequence, earlier graphics passes and superseded mixed design drafts under `archive/`. Shortened the README and active development notes; kept the remaining audio listening review explicit. Current rendering/lighting guidance now lives in `graphics.md`, alongside focused character/terrain, room and arcana guides. Preserved concept images, exact generation prompts, runtime asset provenance and permanent baseline renderer sources.

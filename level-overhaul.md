@@ -4,7 +4,11 @@ Active milestone specifications for redoing all five campaign levels and the sev
 
 The user requested a new milestone set after reviewing the gap between the closed biome/map milestones and the delivered environments, and asked for larger levels, especially later in the campaign. This roadmap addresses unfinished geographic and environmental goals from M27–M29/M31. It does not erase their delivered systems or historical verification. The [Dungeon Keeper research](research/dungeon-keeper-level-variety.md) supplies rationale and references; the specifications below govern this work and supersede its suggested experimental implementation order.
 
-This is a planning baseline. No redesign milestone is implemented yet. Preserve the campaign order and unlock schedule while developing replacements in campaign order, so each stage establishes the next stage's pacing and scale. M42 then updates the separate standalone catalog, using campaign elements, new combinations or unique designs as appropriate.
+Execution of M35–M42 is authorized. Preserve the campaign order and unlock schedule while developing replacements in campaign order, so each stage establishes the next stage's pacing and scale. M42 then updates the separate standalone catalog, using campaign elements, new combinations or unique designs as appropriate.
+
+## Concept art first
+
+The user's latest direction requires newly created concept art at the start of every milestone, before its implementation. M35 begins with an overall campaign direction sheet; M36–M40 each begin with an individual level concept; M41 begins with a campaign cohesion sheet; M42 begins with a concept for each of the seven standalone maps. Save images and exact prompts in [the overhaul concept gallery](concept-art/levels/overhaul/README.md), inspect them, and record the design direction and any incidental details that conflict with gameplay rules. Use the concepts during the milestone's layout and normal-zoom visual review. Creation and review are required; they do not introduce an additional permission checkpoint.
 
 ## Shared design criteria
 
@@ -31,7 +35,7 @@ This is a planning baseline. No redesign milestone is implemented yet. Preserve 
 - Include local contrast within each region: dry approaches against wet fungal banks, intact masonry against collapsed districts, dark fractures against crystal pockets, inhabited warmth against cold ruins. Use restrained authored presentation regions where useful, separate from terrain mechanics.
 - Place a few recognizable landmarks and clusters instead of uniform prop scatter. Give ruins coherent room groups and connecting spaces; their actual services must remain ordinary gameplay rooms.
 - Compose light around discovered spaces and important surfaces using the existing bounded source system. Preserve readability, fog boundaries and reduced motion. Darkness must not substitute for environment detail.
-- Use the approved concepts as material and form references. New layout sketches guide geography, not new terrain layers, room capacities or incidental mechanics. New image generation is optional, not a milestone dependency.
+- Use the approved concepts as material and form references. Begin every milestone with new concept art under the requirement above. Layout sketches and concept images guide geography, not new terrain layers, room capacities or incidental mechanics.
 
 ## Size and pacing
 

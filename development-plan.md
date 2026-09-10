@@ -4,14 +4,14 @@ The existing browser game is implemented. The active roadmap is a redesign of al
 
 ## Active level redesign milestones
 
-The user requested this new milestone set after reviewing the shortfall in the previous biome/map work. [Campaign and standalone level overhaul](level-overhaul.md) owns the shared criteria, provisional dimensions, per-level requirements and acceptance evidence. The current playable maps remain in place; these milestones are planned, not implemented. Campaign order, gradual unlocks and the shared Hearthstone objective remain unchanged.
+The user authorized execution of M35–M42, with newly generated concept art at the start of every milestone. [Campaign and standalone level overhaul](level-overhaul.md) owns the shared criteria, provisional dimensions, per-level requirements and acceptance evidence. Current progress is tracked below; campaign order, gradual unlocks and the shared Hearthstone objective remain unchanged.
 
 | Milestone | Scope | Status |
 |---|---|---|
-| M35 | Five distinct level briefs, comparison baselines and minimal authoring groundwork | Planned |
-| M36 | Border Foothold: sheltered basin and abandoned workings | Planned; after M35 |
-| M37 | Fungal Hollows: cavern basin, looping land routes and living colonies | Planned; after M36 |
-| M38 | Fallen City: buried streets and coherent reclaimable districts | Planned; after M37 |
+| M35 | Five distinct level briefs, comparison baselines and minimal authoring groundwork | Complete; evidence in archive |
+| M36 | Border Foothold: sheltered basin and abandoned workings | Both paid approaches pass; visual review in progress |
+| M37 | Fungal Hollows: cavern basin, looping land routes and living colonies | Concept created; replacement in development |
+| M38 | Fallen City: buried streets and coherent reclaimable districts | Concept created; replacement in development |
 | M39 | Crystal Divide: fractured spine, chasm routes and optional remote income | Planned; after M38 |
 | M40 | Royal Deep: large lava basin, peninsula districts and distinct crossing choices | Planned; after M39 |
 | M41 | Campaign-wide identity, pacing, scale and integration review | Planned; after all five replacements |
