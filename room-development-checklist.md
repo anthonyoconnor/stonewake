@@ -1,12 +1,12 @@
 # Room development checklist
 
-Use this checklist for every room added to the browser game, beginning with the Treasure Room's shared-system review in M5 and then the Dormitory (M6), Kitchen (M7), and Workshop (M8). It is the reusable room-adding procedure requested in the [development plan](development-plan.md). Implementation is authorized; see the development plan for progress.
+Use this checklist for every room addition or room-system change. It covers actual gameplay construction, automatic furnishings, capacity, access, irregular layouts and the free-construction flag. Read [Rooms](rooms.md) and [the content playbook](content-playbook.md) first.
 
 The current [room rules](rooms.md) define gameplay. The [room gallery](concept-art/rooms/README.md) and [approved terrain reference](concept-art/terrain/resource-terrain-v2.png) guide appearance; illustrated counts and footprints are not fixed templates. Keep unresolved sizes, costs, rates, and balance explicitly provisional.
 
 ## Adding a room
 
-- [ ] **Read its design.** Identify the room's purpose, services, eligible users/workers, outputs, attraction conditions, visual identity, and any dependencies that are not implemented yet. Record the milestone's functional scope and any temporary debug fixtures.
+- [ ] **Read its design.** Identify the room's purpose, services, eligible users/workers, outputs, attraction conditions, visual identity, and any dependencies that are not implemented yet. Record the authorized functional scope and any temporary debug fixtures.
 - [ ] **Register the room definition.** Supply a stable type identifier, name, icon, floor/wall treatments, cost, service and `capacityPerTile`. Define cosmetic furnishing variants independently. Menus and the room catalog should consume the definition instead of adding special cases for each room name.
 - [ ] **Use shared construction.** Support the same click/drag tile selection, placement preview, cancellation, validation, and expansion used by other rooms. Build only on eligible claimed floor; preserve terrain, core, and other occupied-space restrictions. Accept arbitrary footprints, including a fully functional single tile at the current default capacities.
 - [ ] **Handle cost consistently.** Show and charge the configured construction/expansion cost through the shared path. Respect the development free-build flag for every room. Zero cost does not make invalid floor or an unreachable room usable.
@@ -17,9 +17,9 @@ The current [room rules](rooms.md) define gameplay. The [room gallery](concept-a
 - [ ] **Connect attraction where applicable.** Describe requirements through reachable service capacity and spare accommodation/food support. Count existing residents before admitting more. Future dwarf types must be able to reuse the same services.
 - [ ] **Add sidebar feedback.** Include construction choice, selection details, current usable capacity, occupancy/stock as appropriate, and clear cost/space/access limitations. Keep labels, numbers, and progress information out of the world view.
 - [ ] **Add the room to the Room Debug View.** Make its implemented state clear and allow creation/expansion with the same grid controls and runtime systems as normal play. Verify the layouts below and inspect from several rotations and zoom levels.
-- [ ] **Verify, document, and commit.** Playtest the room's function in the current game and debug view, check relevant failure cases, and confirm existing room behavior still works after shared changes. Keep current provisional values and pending integrations in the development plan; move completed milestone details and dated verification to [development-history.md](development-history.md), reading past entries only when historical context is required. Keep related docs and art links current. Commit completed chunks and the milestone.
+- [ ] **Verify, document, and commit.** Playtest the room's function in the current game and debug view, check relevant failure cases, and confirm existing room behavior still works after shared changes. Keep current provisional values and pending integrations in the development plan; move historical specifications and dated verification to [development-history.md](archive/development-history.md), reading past entries only when historical context is required. Keep related docs and art links current. Commit completed chunks.
 
-- [ ] **Update the current inventory.** Update the [current implementation status](development-plan.md#current-implementation-status) in the same completed chunk, including related dwarf availability and remaining integrations. Distinguish normal play, debug-only access, placeholders and design-only content; a milestone completion entry does not replace this update.
+- [ ] **Update the current inventory.** Update the [current implementation status](development-plan.md#current-implementation-status) in the same completed chunk, including related dwarf availability and remaining integrations. Distinguish normal play, debug-only access, placeholders and design-only content; a historical completion entry does not replace this update.
 
 ## Layout checks
 

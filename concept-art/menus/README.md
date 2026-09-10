@@ -1,8 +1,8 @@
-# M25 menu concepts
+# Menu concepts
 
-User-approved designs for the M25 starting menu and Free Play selector, generated with the built-in image generation tool. M25 implements these menus with real controls and prepared scenic assets. M25.1 loading screens should share this visual language. [Generation prompts](prompts-v1.md).
+User-approved starting menu and Free Play designs, generated with the built-in image generation tool. Responsive controls, scenic backgrounds and matching loading screens are implemented. [Generation prompts](prompts-v1.md).
 
-Return to [all concept art](../README.md). Scope: [M25 completion](../../development-history.md#m25--starting-menu-and-free-play-level-selection) and [interface rules](../../gameplay-interface.md).
+Return to [all concept art](../README.md). Current behavior: [interface rules](../../gameplay-interface.md#starting-menu-and-loading-screens).
 
 ## Main menu
 
@@ -18,4 +18,4 @@ A scrollable list with thumbnails supports additional levels. The selected row u
 
 ## Implementation interpretation
 
-Implement these approved compositions, materials and lighting with actual accessible controls and responsive text during M25. Prepare matching background assets and interactive UI layers; preserve the approved designs. The scenic backgrounds are illustrative: elevated halls, stairs, waterfalls and the outdoor thumbnail do not change the single-layer underground gameplay or prescribe real map geometry. In-game hidden objectives still obey fog; menu illustrations are not live map previews. M33 owns the gameplay lighting implementation. Asset/settings details remain provisional.
+The implementation uses accessible controls and responsive text over prepared scenic assets. Preserve the approved composition, materials and lighting. Scenic halls, stairs, waterfalls and outdoor thumbnails do not add playable terrain layers or prescribe actual map geometry. Menu illustrations are not live map previews. [Graphics](../../graphics.md) describes gameplay lighting.

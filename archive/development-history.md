@@ -1,5 +1,13 @@
 # Completed development and history
 
+## 2026-09-09 — Active documentation cleanup
+
+Moved the milestone tracker, specifications, authorization sequence, earlier graphics passes and superseded mixed design drafts under `archive/`. Shortened the README and active development notes; kept the remaining audio listening review explicit. Current rendering/lighting guidance now lives in `graphics.md`, alongside focused character/terrain, room and arcana guides. Preserved concept images, exact generation prompts, runtime asset provenance and permanent baseline renderer sources.
+
+Audited the active rules and authoring guides against current definitions and services. Corrected the five-area campaign and Royal Deep bridge unlock, Stonehand/legacy Miner roles, specialist-only training and wages, hound rally eligibility, Hearth activation exclusions, current Sell controls, sparse room visuals, recruitment configuration, extension examples and deferred maintenance. Preserved the independently completed species-habitat behavior and its verification record.
+
+Documentation review covered 70 Markdown files and 1,068 local file/section links with no broken targets. `git diff --check` passed. No simulation tests, typecheck, browser test or production build was run for this documentation-only change. Historical snapshots retain superseded statements explicitly as history, not current requirements.
+
 ## 2026-09-09 — Species-specific natural enemy movement
 
 - Fixed stationary natural encounters in legacy Free Play by assigning habitat movement to every encounter member. Removed the campaign helper's group-wide behavior override so each creature keeps its own pattern.
@@ -7,7 +15,7 @@
 - Preserved fog, physical traversal, warning/raid timing, combat abilities and stationary debug fixtures. Updated the encounter regression to allow the existing asynchronous route recheck after a moving inhabitant is discovered.
 - Verified `npm run verify -- habitats`: source/test typecheck and all 31 focused enemy, encounter and habitat tests passed, including all ten species and every initial campaign/regional inhabitant moving through authored terrain. `node scripts/habitats-browser.mjs` passed visible-model position checks in five full-level previews; captures are in ignored `test-results/habitats/`. The browser flow is selectable with `--browser=habitats`.
 
-Read this file only when past context, original milestone requirements, verification evidence or earlier decisions are needed. It is not required reading for ordinary development. Start with [the active development plan](development-plan.md) and the relevant current design document.
+Read this file only when past context, original milestone requirements, verification evidence or earlier decisions are needed. It is not required reading for ordinary development. Start with [the active development notes](../development-plan.md) and the relevant current design document.
 
 This archive preserves completed milestone specifications and dated development records, including M5.1. Historical requirements and provisional values may have been superseded; current design documents and the user's latest decisions take precedence. Remaining limitations belong in the active plan so they do not require loading this archive.
 
@@ -21,7 +29,7 @@ Verification: all **five focused camera/settings tests passed**, and source/test
 
 ## 2026-09-09 — Character and terrain graphics overhaul
 
-Completed the user's request to revisit every character individually, keep each starting model for comparison, then generate new environment direction and iterate terrain and whole-level appearance. The [overhaul record](graphics-overhaul.md) links all sixteen reviewed concept sheets and describes the character-specific changes and remaining procedural limitations.
+Completed the user's request to revisit every character individually, keep each starting model for comparison, then generate new environment direction and iterate terrain and whole-level appearance. The [overhaul record](previous-docs/graphics-overhaul.md) links all sixteen reviewed concept sheets and describes the character-specific changes and remaining procedural limitations.
 
 The starting resident, enemy, scene, terrain and surface renderers were archived before editing in commit `6c4cf1b`. Six residents and ten enemies now use revised silhouettes, continuous/custom geometry, shaped clothing and equipment, clearer faces, organic armor and restrained material detail. Front/back/three-quarter comparisons drove multiple iterations, including winding/cap corrections, hair and face continuity, fitted animal scutes and more readable creature masks. Gameplay and animation rig interfaces remain intact.
 
@@ -71,7 +79,7 @@ Preserve the established large square cells, one full terrain height, and one co
 
 Open-space previews used to assess the prototype do not change the game's discovery rules. Keep pre-existing open space distinct from discovered space in level/world data; camera movement must not become a way to reveal concealed gameplay areas.
 
-References: [approved terrain image](concept-art/terrain/resource-terrain-v2.png), [terrain gallery](concept-art/terrain/README.md), [level gallery](concept-art/levels/README.md), and [room/structure gallery](concept-art/rooms/README.md).
+References: [approved terrain image](../concept-art/terrain/resource-terrain-v2.png), [terrain gallery](../concept-art/terrain/README.md), [level gallery](../concept-art/levels/README.md), and [room/structure gallery](../concept-art/rooms/README.md).
 
 Complete when the defined map loads in a browser, all listed terrain/resource types and the core are readable, and the layout can be changed through its definition without rewriting the renderer.
 
@@ -79,13 +87,13 @@ Complete when the defined map loads in a browser, all listed terrain/resource ty
 
 Add controls to scroll/pan across the map, zoom in and out, and rotate the overhead view around the viewed area.
 
-Use the [interface document](gameplay-interface.md) as the starting point for bindings: WASD or window-edge movement to pan, mouse wheel to zoom, and Left Ctrl+A/D, horizontal middle drag, or Q/E to orbit the viewed point without changing tilt. These bindings and camera limits can be tuned during the milestone. Keep navigation practical at different rotations and zoom levels, and preserve world-grid alignment.
+Use the [interface document](previous-docs/gameplay-interface.md) as the starting point for bindings: WASD or window-edge movement to pan, mouse wheel to zoom, and Left Ctrl+A/D, horizontal middle drag, or Q/E to orbit the viewed point without changing tilt. These bindings and camera limits can be tuned during the milestone. Keep navigation practical at different rotations and zoom levels, and preserve world-grid alignment.
 
 Complete when the player can navigate across the prototype, inspect the Hearthstone closely, and return to a broad layout view. Panning, rotation, and zoom must work together without losing the level or passing through the floor, and preserve any active discovery boundaries.
 
 ## M3 — Basic UI and minimap
 
-Build the basic screen composition from [Gameplay interface](gameplay-interface.md):
+Build the basic screen composition from [Gameplay interface](previous-docs/gameplay-interface.md):
 
 - A persistent left sidebar, with the gameplay view filling the remaining space.
 - A minimap at the top showing the actual known level layout and the camera's viewed area.
@@ -100,7 +108,7 @@ Complete when the sidebar and minimap occupy their documented positions, the min
 
 ## M4 — Miners, excavation, claiming, and treasure
 
-Add a small starting crew of Miners, using the [current Miner concept](concept-art/dwarfs/README.md) for visual direction. Keep the starting count, movement speed, mining time, resource yield, carrying amount, and storage capacity easy to tune.
+Add a small starting crew of Miners, using the [current Miner concept](../concept-art/dwarfs/README.md) for visual direction. Keep the starting count, movement speed, mining time, resource yield, carrying amount, and storage capacity easy to tune.
 
 ### Excavation and claiming
 
@@ -140,20 +148,20 @@ Additional dwarf types, other rooms, recruitment purchases, needs/pay, training,
 
 ## M5 — Shared room rules and room debugging view
 
-Implement the shared room rules in [Rooms](rooms.md), building on the M4 Treasure Room. Use the existing Treasure Room to verify the shared system before adding further room types.
+Implement the shared room rules in [Rooms](previous-docs/rooms.md), building on the M4 Treasure Room. Use the existing Treasure Room to verify the shared system before adding further room types.
 
 - Define room types through reusable data: stable identifier, icon, construction cost, floor/wall appearance, furnishing variants, footprints, access clearances, capacities, services, and worker requirements where applicable.
 - Support designation and expansion on claimed floor in arbitrary grid shapes, including single cells that may have no functional capacity yet.
 - Automatically fit furnishings at their actual scale, preserve entrances and circulation, and retain valid existing furnishings where practical. Changes to room geometry must update usable capacity and navigation without losing stored resources or resident assignments.
 - Identify rooms through floors and treatments on existing wall faces. Adjacent rooms do not create dividing walls automatically, and room decoration does not reinforce terrain.
 - Report usable capacity and reasons a room cannot function in the sidebar. Painted area alone does not provide beds, food, storage, work positions, or attraction capacity.
-- Apply the [room development checklist](room-development-checklist.md) to the Treasure Room and every subsequent room milestone. Keep shared fixes in the shared system.
+- Apply the [room development checklist](../room-development-checklist.md) to the Treasure Room and every subsequent room milestone. Keep shared fixes in the shared system.
 
 Add a **Room Debug View** with a catalog of all room types defined for the game. Every implemented room must be viewable; planned types may appear as clearly marked entries until their milestone adds them. Fixed structures remain identified separately from adaptable rooms.
 
 The view must let the developer select a room type and create or expand it by clicking/dragging squares exactly as in gameplay. Reuse the actual construction, validation, furnishing, navigation, and rendering systems. Provide a simple test area with claimed floor, surrounding walls, retained terrain, and bedrock so developers can inspect different layouts using the normal camera controls. Allow quick layout reset and switching room types without requiring saved layouts or a separate level editor.
 
-Use the [layout checks](room-development-checklist.md#layout-checks) to inspect small and large rooms, irregular footprints, narrow passages, obstacles, adjacent rooms, and expansion. Show capacity and access information in the sidebar. M5.1 adds the dedicated Debug menu entry and free-build control; the view itself is part of M5.
+Use the [layout checks](../room-development-checklist.md#layout-checks) to inspect small and large rooms, irregular footprints, narrow passages, obstacles, adjacent rooms, and expansion. Show capacity and access information in the sidebar. M5.1 adds the dedicated Debug menu entry and free-build control; the view itself is part of M5.
 
 Complete when the Treasure Room works through the shared rules in gameplay and the Room Debug View, the catalog lists defined room types with honest implementation status, and developers can create varied room footprints with the same grid gestures used in the game. Every new room can join the catalog through its definition.
 
@@ -169,7 +177,7 @@ Complete when the developer can open Debug from the left sidebar, enter the Room
 
 ## M6 — Dormitory
 
-Follow the [room development checklist](room-development-checklist.md) and the Dormitory rules and visual direction in [Rooms](rooms.md#accommodation-and-food), using the [room concept gallery](concept-art/rooms/README.md).
+Follow the [room development checklist](../room-development-checklist.md) and the Dormitory rules and visual direction in [Rooms](previous-docs/rooms.md#accommodation-and-food), using the [room concept gallery](../concept-art/rooms/README.md).
 
 - Add the Dormitory to normal construction choices and the Room Debug View.
 - Give it recognizable floors and existing-wall treatments, with beds and supporting furnishings placed automatically where their footprints and access fit.
@@ -180,7 +188,7 @@ Complete when a Dormitory passes the checklist, works in varied layouts, and min
 
 ## M7 — Kitchen
 
-Follow the [room development checklist](room-development-checklist.md) and [Kitchen rules](rooms.md#accommodation-and-food), using the [room concept gallery](concept-art/rooms/README.md).
+Follow the [room development checklist](../room-development-checklist.md) and [Kitchen rules](previous-docs/rooms.md#accommodation-and-food), using the [room concept gallery](../concept-art/rooms/README.md).
 
 - Add the Kitchen to normal construction choices and the Room Debug View.
 - Combine growing, preparation/cooking, brewing, and eating in this room, with appropriate automatic furnishings and recognizable floor/wall treatments.
@@ -192,7 +200,7 @@ Complete when the Kitchen passes the checklist, produces and serves food to mine
 
 ## M8 — Workshop
 
-Follow the [room development checklist](room-development-checklist.md) and [Workshop rules](rooms.md#work-and-training-facilities), using the [room concept gallery](concept-art/rooms/README.md).
+Follow the [room development checklist](../room-development-checklist.md) and [Workshop rules](previous-docs/rooms.md#work-and-training-facilities), using the [room concept gallery](../concept-art/rooms/README.md).
 
 - Add the Workshop to normal construction choices and the Room Debug View.
 - Automatically fit craft benches, anvils, assembly stations, and supporting fittings as space and access allow. Give it the documented distinctive floors and existing-wall treatments.
@@ -222,7 +230,7 @@ Implemented the five requested development-speed improvements after confirming t
 
 Shared factories cover the ordinary world, existing studios/yards/showcase, crowded food service, research interruption and locked-door hauling. They respect room costs and the free-construction flag, with explicit fixture stocks/needs. Opt-in bounded job histories report selection, rejected routes, cancellation, completion and waiting; inspectors include current routes/access/reservations. Shared test stepping helpers attach these diagnostics to condition timeouts. Scenarios are repeatable from the same source/session configuration; no saves or persistence were added.
 
-Split continuous movement, job selection, shared acquisition/release, validity and typed execution handlers into ordinary modules, preserving priority and gameplay behavior. Extracted furnishing geometry and spell-panel construction/updates from the central scene/sidebar. Added source-and-test typechecking, focused verification with import-based changed-file selection, test watch, scoped formatting, and repeatable browser/production checks. The complete workflow and file ownership map are in [Development tools](development-tools.md); companion instructions link to it.
+Split continuous movement, job selection, shared acquisition/release, validity and typed execution handlers into ordinary modules, preserving priority and gameplay behavior. Extracted furnishing geometry and spell-panel construction/updates from the central scene/sidebar. Added source-and-test typechecking, focused verification with import-based changed-file selection, test watch, scoped formatting, and repeatable browser/production checks. The complete workflow and file ownership map are in [Development tools](../development-tools.md); companion instructions link to it.
 
 Verification: all 89 simulation/input/scenario checks and source/test TypeScript checks pass. Browser checks verify paused scenario URLs, exact stepping, real construction/refunds, job diagnostics and extracted spell/furnishing views with no console/runtime errors. A final browser regression also verifies the free-construction command persists when returning from a test scenario to the ordinary stronghold. Production build and isolated preview checks pass: scenario URLs are ignored, and the development API and simulation panel are absent. Reviewed showcase and debug-panel screenshots; focused/watch scope selection, local documentation links and `git diff --check` pass. The existing Babylon bundle-size advisory remains. Scenario advancement is bounded to 600 simulated seconds per call; diagnostic history retains 300 events per world and 30 reported browser errors. The existing local development server is left running.
 
@@ -230,7 +238,7 @@ Prototype values remain provisional. Milestone commits are identifiable by their
 
 ### Targeted spells and autonomous combat — 2026-09-07
 
-Replaced the retired Hearth spells with the [implemented spell catalog](spells.md). Added pointer targeting with validation before payment, individual speed/shield/healing/debuff effects, blocked area damage and stun, a destructible temporary navigation barrier, and a timed shared rally. Reused Library research/preparation, stored gold, room access and movement. Warriors now fight autonomously through a capability; Raiders attack nearby dwarfs and spell barriers. Death releases jobs, beds and carried gold, and new residents retain unique identifiers. Combat values remain provisional; natural encounters/raids, Hearth defeat, guard scheduling and retreat remain pending.
+Replaced the retired Hearth spells with the [implemented spell catalog](../spells.md). Added pointer targeting with validation before payment, individual speed/shield/healing/debuff effects, blocked area damage and stun, a destructible temporary navigation barrier, and a timed shared rally. Reused Library research/preparation, stored gold, room access and movement. Warriors now fight autonomously through a capability; Raiders attack nearby dwarfs and spell barriers. Death releases jobs, beds and carried gold, and new residents retain unique identifiers. Combat values remain provisional; natural encounters/raids, Hearth defeat, guard scheduling and retreat remain pending.
 
 Added restrained rune, armor, barrier and impact geometry guided by the approved terrain and Warrior references, with combat/speed animation and sidebar-only health/effect feedback. The spell yard builds actual facilities and provides explicit debug preparation, spawning, wounding, pause/reset and return controls. Spell configuration values and descriptions derive from the same registry. Active effects keep cast-time values.
 
@@ -242,11 +250,11 @@ Removed redundant catalog counts, roster summaries, showcase inventories and spe
 
 ### Call to Arms spell design — 2026-09-07
 
-Added the eighth planned spell, [Call to Arms](spells.md#call-to-arms-behavior): all fighting dwarfs rally to a selected point for a limited period. Provisional values are 45 seconds initial research, 20 seconds repeat preparation, 25 gold per cast, 45 seconds duration including travel, and a 3-tile gathering radius. Documented capability-based responders, autonomous combat, blocked access, critical-needs exceptions, one active rally and early dismissal. Updated companion rally and Library references. Documentation only; no gameplay implementation or ongoing source work changed. Reviewed the scoped diff and checked whitespace and local links; runtime playtests remain for implementation.
+Added the eighth planned spell, [Call to Arms](../spells.md#call-to-arms-behavior): all fighting dwarfs rally to a selected point for a limited period. Provisional values are 45 seconds initial research, 20 seconds repeat preparation, 25 gold per cast, 45 seconds duration including travel, and a 3-tile gathering radius. Documented capability-based responders, autonomous combat, blocked access, critical-needs exceptions, one active rally and early dismissal. Updated companion rally and Library references. Documentation only; no gameplay implementation or ongoing source work changed. Reviewed the scoped diff and checked whitespace and local links; runtime playtests remain for implementation.
 
 ### Targeted spell catalog design — 2026-09-07
 
-Added [Spells](spells.md) with the seven user-approved concepts: individual Haste, enemy Slow, Stoneguard, Thunder Rune, Runic Barrier, Mending Rune and Rune of Reckoning. Defined provisional research/preparation times, gold costs, effect strengths/durations, targeting and reuse restrictions. Linked the catalog from README and the Library rules. Individual Haste is the intended successor to global Hearth Haste; Prospect's future remains open. These are documented designs only, with combat and targeting dependencies identified; the playable spell definitions remain unchanged. Checked documentation links and whitespace and reviewed the scoped diff. No simulation or browser checks were needed for this documentation-only change.
+Added [Spells](../spells.md) with the seven user-approved concepts: individual Haste, enemy Slow, Stoneguard, Thunder Rune, Runic Barrier, Mending Rune and Rune of Reckoning. Defined provisional research/preparation times, gold costs, effect strengths/durations, targeting and reuse restrictions. Linked the catalog from README and the Library rules. Individual Haste is the intended successor to global Hearth Haste; Prospect's future remains open. These are documented designs only, with combat and targeting dependencies identified; the playable spell definitions remain unchanged. Checked documentation links and whitespace and reviewed the scoped diff. No simulation or browser checks were needed for this documentation-only change.
 
 
 ### M1 — 2026-09-07
@@ -596,7 +604,7 @@ The user authorized these five milestones together. Their implementation was coo
 
 Dependencies: completed M10–M11 for encounter/core integration and M16 for enemies associated with hazardous terrain. Guarding and retreat are not required. This expanded scope is implemented and verified.
 
-Implement all ten enemies in the [current concept gallery](concept-art/enemies/README.md), retaining and extending the existing Goblin Raider:
+Implement all ten enemies in the [current concept gallery](../concept-art/enemies/README.md), retaining and extending the existing Goblin Raider:
 
 | Region | Required enemies |
 |---|---|
@@ -629,7 +637,7 @@ Complete when a browser playthrough reaches one onward Hearthstone, chooses to p
 
 ### M20 — Overall player interface and left control panel
 
-Dependencies: existing gameplay/UI systems; integrate M18 campaign actions when available. Reference [Gameplay interface](gameplay-interface.md) and its supplied layout/message references.
+Dependencies: existing gameplay/UI systems; integrate M18 campaign actions when available. Reference [Gameplay interface](previous-docs/gameplay-interface.md) and its supplied layout/message references.
 
 - Review the whole player interface, from finding actions and understanding resources/objectives to world selection, placement, targeting, inspection, messages, maps and restart/travel flows.
 - Tidy the left control panel with consistent grouping, spacing, icon sizes, selected/disabled states and expandable details. Remove redundant text and controls; keep frequent actions directly accessible and costs or short status visible where useful.
@@ -640,7 +648,7 @@ Complete when browser playtests cover building/selling, defense production/place
 
 ### M21 — Terrain and environment graphics update
 
-Dependencies: existing world rendering and completed M16 bridges; coordinate world previews with M20. Review the approved [terrain reference](concept-art/terrain/README.md), [room/structure concepts](concept-art/rooms/README.md), [regional concepts](concept-art/levels/README.md), their prompt records and [graphics pass notes](graphics-pass.md).
+Dependencies: existing world rendering and completed M16 bridges; coordinate world previews with M20. Review the approved [terrain reference](../concept-art/terrain/README.md), [room/structure concepts](../concept-art/rooms/README.md), [regional concepts](../concept-art/levels/README.md), their prompt records and [graphics pass notes](graphics-pass.md).
 
 - Improve terrain forms, materials and transitions for earth, rock, bedrock, embedded gold, gem columns, claimed floors, water, lava and chasms using the concepts as visual references.
 - Bring room floors, walls, cosmetic furnishings, doors/traps, bridges and Hearthstones into a consistent environment style. Improve model silhouettes, material definition, lighting and restrained environmental/fixture animation.
@@ -651,7 +659,7 @@ Complete when representative gameplay areas and the visual showcase demonstrate 
 
 ### M22 — Character models and animations update
 
-Dependencies: current four dwarf roles and combat/jobs; final enemy coverage includes all ten enemies in M17. Review the [dwarf concepts](concept-art/dwarfs/README.md), [enemy concepts](concept-art/enemies/README.md), their prompt records, [Characters](characters.md) and [graphics pass notes](graphics-pass.md).
+Dependencies: current four dwarf roles and combat/jobs; final enemy coverage includes all ten enemies in M17. Review the [dwarf concepts](../concept-art/dwarfs/README.md), [enemy concepts](../concept-art/enemies/README.md), their prompt records, [Characters](previous-docs/characters.md) and [graphics pass notes](graphics-pass.md).
 
 - Improve all four dwarf roles and all ten enemy models: proportions, silhouettes, faces/hair, clothing, armor, tools and materials. Preserve the established female Engineer and distinct Miner, Warrior and Runesmith appearances.
 - Improve walking, turning, idle, mining/construction, hauling, crafting, training, research, eating/resting, attacks, hit reactions and defeat where those activities exist. Cover M17 ranged/breaching actions without introducing new gameplay abilities.
@@ -808,7 +816,7 @@ Implemented the directly accessible combat harness with selectable defenders, al
 
 ### M25 — Starting menu and free-play level selection
 
-The user approved the [main-menu and Free Play concepts](concept-art/menus/README.md) as the menus to use for M25. Match their composition, carved stone/bronze controls, typography, warm lantern light and blue Hearthstone atmosphere; preserve Campaign/Free Play/Settings and the illustrated level-list/preview layout. Build responsive interactive controls and prepare background assets from this approved direction rather than substituting a different menu design. The menus are not yet implemented.
+The user approved the [main-menu and Free Play concepts](../concept-art/menus/README.md) as the menus to use for M25. Match their composition, carved stone/bronze controls, typography, warm lantern light and blue Hearthstone atmosphere; preserve Campaign/Free Play/Settings and the illustrated level-list/preview layout. Build responsive interactive controls and prepare background assets from this approved direction rather than substituting a different menu design. The menus are not yet implemented.
 
 - Launch into a starting menu with Campaign and Free Play. Campaign begins the authored journey; Free Play opens a list of playable levels with a short description and explicit start/back controls.
 - Populate the list from stable level metadata so adding a playable level does not require another menu implementation. Keep debug harnesses separate.
@@ -1000,7 +1008,7 @@ Completed the user's request to individually refine all nine current player spel
 
 The permanent `arcana-gallery` contains thirteen starting/refined pairs with item/state selection, independent play/pause/restart/step/speed controls, front/back/quarter turns, close individual inspection, overview and expandable concept references. Starting models and their material/geometry policy are archived separately; the prior character and terrain archives were preserved. Preview actors never enter simulation, and Return to stronghold restores the retained game. Gameplay costs, targeting, balance, traversal and services are unchanged; successful Stonehand creation now emits a cosmetic assembly event at the actual arrival square, while failed purchases emit none.
 
-Every item was compared with its sheet and iterated through paired multi-angle captures, revised close views and targeted final cleanup. Per-item records, assets, controls and practical limits are in [arcana-overhaul.md](arcana-overhaul.md), with detailed reviews in the spell, defense and Hearthstone concept folders. Final refinements resolved washed-out magic colors, obscured Mending crescents/lightning core, indistinct rally axes, thin spike silhouettes/protruding point bevels, crossbow arrowhead alignment and repeated crystal texture bands. Source review also checked frozen baseline fidelity, per-instance material ownership, glow membership, geometry merging, light masks and scene cleanup.
+Every item was compared with its sheet and iterated through paired multi-angle captures, revised close views and targeted final cleanup. Per-item records, assets, controls and practical limits are in [arcana-overhaul.md](previous-docs/arcana-overhaul.md), with detailed reviews in the spell, defense and Hearthstone concept folders. Final refinements resolved washed-out magic colors, obscured Mending crescents/lightning core, indistinct rally axes, thin spike silhouettes/protruding point bevels, crossbow arrowhead alignment and repeated crystal texture bands. Source review also checked frozen baseline fidelity, per-instance material ownership, glow membership, geometry merging, light masks and scene cleanup.
 
 Verification completed:
 

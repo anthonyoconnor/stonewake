@@ -14,11 +14,11 @@ The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel 
 
 ## Menus
 
-[View the M25 menu concepts](menus/README.md): a themed starting menu and an extensible Free Play level selector, with carved stone, bronze, warm lantern light and a blue Hearthstone glow. User-approved designs to use for M25; implementation remains planned. M25.1 loading screens share their theme. [Generation prompts](menus/prompts-v1.md).
+[View the menu concepts](menus/README.md): a themed starting menu and an extensible Free Play level selector, with carved stone, bronze, warm lantern light and a blue Hearthstone glow. These approved menus and matching loading screens are implemented. [Generation prompts](menus/prompts-v1.md).
 
 ## Dwarf characters
 
-[Dwarf attraction infographic](infographics/dwarf-attraction-v1.png) shows the shared support requirements, specialist room mappings and paid Miner exception using current prototype defaults. Its [generation prompt and rule sources](infographics/prompts.md) are saved alongside it.
+[Dwarf attraction infographic](infographics/dwarf-attraction-v1.png) is a historical illustration of the former paid-Miner roster. Its recruitment assumptions are superseded by Stonehands and Cave Hounds; use [Characters](../characters.md) for current rules. Its [generation prompt and rule sources](infographics/prompts.md) are saved alongside it.
 
 [View the complete dwarf gallery](dwarfs/README.md).
 
@@ -27,7 +27,7 @@ The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel 
 - [Warrior](dwarfs/warrior-v1.png)
 - [Runesmith, revised combined spell researcher](dwarfs/runesmith-v2.png)
 
-The gallery contains the current four-role roster shown above. Superseded sheets and concepts for removed or deferred roles have been removed. The [female Engineer prompt](dwarfs/prompts-v3.md), [merged-role prompts](dwarfs/prompts-v2.md), and [original prompts](dwarfs/prompts.md) are stored with the images in `dwarfs/`.
+The gallery contains the three specialist dwarfs and retained debug Miner shown above. Stonehands and Cave Hounds have their own galleries. Superseded sheets and concepts for removed or deferred roles have been removed. The [female Engineer prompt](dwarfs/prompts-v3.md), [merged-role prompts](dwarfs/prompts-v2.md), and [original prompts](dwarfs/prompts.md) are stored with the images in `dwarfs/`.
 
 ## Stonehands labor constructs
 
@@ -53,9 +53,11 @@ The gallery contains the current four-role roster shown above. Superseded sheets
 
 [View the room and structure gallery](rooms/README.md).
 
-Seven room sheets each explore compact, expanded, bent or irregular, and continuous bedrock-seam layouts: [Library](rooms/library-v3.png), [Kitchen](rooms/kitchen-v3.png), [Workshop](rooms/workshop-v3.png), [Training Room](rooms/training-room-v3.png), [Treasure Room](rooms/treasure-room-v3.png), [Dormitory](rooms/dormitory-v3.png), and [Guard Post](rooms/guard-post-v3.png). Their excavated footprints follow the square grid within the approved terrain's continuous earth and bedrock banks.
+Seven earlier room sheets (including the deferred Guard Post) each explore compact, expanded, bent or irregular, and continuous bedrock-seam layouts: [Library](rooms/library-v3.png), [Kitchen](rooms/kitchen-v3.png), [Workshop](rooms/workshop-v3.png), [Training Room](rooms/training-room-v3.png), [Treasure Room](rooms/treasure-room-v3.png), [Dormitory](rooms/dormitory-v3.png), and [Guard Post](rooms/guard-post-v3.png). Their excavated footprints follow the square grid within the approved terrain's continuous earth and bedrock banks.
 
 [Stone Hearth](rooms/stone-hearth-v2.png) and [Bridge](rooms/bridge-v2.png) sheets each explore four terrain or placement contexts. The Hearth remains the same fixed structure in every example. All sheets and their [terrain-style revision prompts](rooms/prompts-v3.md) are stored in `rooms/`.
+
+The [six current room concepts](rooms/overhaul/prompts.md) supersede these older sheets for floor and furnishing direction; [room presentation](../room-overhaul.md) records current behavior.
 
 The [terrain reference](rooms/terrain-grid-v3.png) distinguishes connected bedrock seams from individual unmined earth tiles left inside rooms. The current [terrain and room revision prompts](rooms/prompts-v3.md) are stored with the images. Superseded sheets are available in Git history.
 
@@ -70,3 +72,7 @@ The [terrain reference](rooms/terrain-grid-v3.png) distinguishes connected bedro
 - Volcanic depths: [Cinderling](enemies/cinderling-v1.png) and [Deepmaw](enemies/deepmaw-v1.png).
 
 Enemy concepts and their [generation prompts](enemies/prompts.md) are stored together in `enemies/`.
+
+## Spells, traps and Hearthstones
+
+Current individual references: [nine spells](spells/README.md), [two traps](defenses/README.md) and [onward Hearthstone](hearthstones/README.md). The starting Hearth uses its existing room/structure concept. [Arcana presentation](../arcana-overhaul.md) links all thirteen exhibits and runtime controls.

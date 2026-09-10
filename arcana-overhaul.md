@@ -1,6 +1,6 @@
 # Spells, traps and Hearthstones graphics overhaul
 
-The user's September 9 request covers all nine current player spells, both traps, and the settlement and onward Hearthstones. Each item has its own concept reference and a permanent starting/refined exhibit. This continues the [character and terrain overhaul](graphics-overhaul.md); its older archives remain unchanged.
+All nine player spells, both traps and both Hearthstones have individual concept references and permanent starting/current exhibits. This guide covers current presentation, controls and reference preservation.
 
 ## Concept references
 
@@ -42,16 +42,8 @@ Current models use the same factories in gameplay and the gallery. A successful 
 
 ## Verification and practical limits
 
-Every item was inspected from the front, back and three-quarter angle against its individual sheet, then refined and inspected close up. The [spell review](concept-art/spells/README.md), [trap review](concept-art/defenses/README.md) and [Hearth review](concept-art/hearthstones/README.md) record per-item changes. Initial captures in `test-results/arcana-gallery-first/` led to more distinct spell colors, stronger shield/axe/crescent silhouettes, wider forged spikes, a correctly aligned crossbow arrowhead, and mineral detail in the crystals. Full close views in `test-results/arcana-gallery-final/` led to the final visible lightning core, lighter loose stone, clean spike tips, and continuous crystal UVs, reviewed in `test-results/arcana-gallery-polish/`.
+Per-item visual reviews and completed integration records are [archived](archive/previous-docs/arcana-overhaul.md#verification-and-practical-limits). Use the shared factories for both gameplay and gallery models, preserve baseline materials, and verify actual casting/trigger cleanup when changing effects.
 
-Completed integration checks:
-
-- `npm run verify -- arcana`: source/test typecheck and 47 focused simulation tests passed during integration.
-- `npm run verify -- all --browser=arcana --production`: source/test typecheck, all 249 simulation tests including the authored campaign, the thirteen-pair browser check, production build and production isolation passed.
-- The browser check covers every exhibit's three states and multiple views, independent baseline materials, finite transforms, playback/stepping/speed/zoom, reduced motion, an unchanged gameplay world, return/reopen, actual successful spell casts and cleanup, and both traps firing in the working defense yard. It reported no browser errors.
-- After final visual-only corrections, source/test typecheck and the targeted five-exhibit browser run passed for Create Stonehand, Thunder Rune, Spike Trap and both Hearths, including the concept-image controls. The production build and isolation check passed again.
-- `node scripts/hearth-morale-browser.mjs m11`: normal hidden discovery, contested requests, physical onward activation, local victory, natural attacks and destruction of the main Hearth, frozen terminal actions, and area restart passed with no browser errors.
-
-The repeatable browser check is [arcana-gallery-browser.mjs](scripts/arcana-gallery-browser.mjs), selectable with `npm run verify -- arcana --browser=arcana`. Direct arguments select items for subsequent visual iterations, for example `node scripts/arcana-gallery-browser.mjs thunder-rune`. `ARCANA_CAPTURE_DIR` preserves separate iteration captures in ignored `test-results/`. Completed dated results are also recorded in [development history](development-history.md).
+The repeatable browser check is [arcana-gallery-browser.mjs](scripts/arcana-gallery-browser.mjs), selectable with `npm run verify -- arcana --browser=arcana`. Direct arguments select items for subsequent visual iterations, for example `node scripts/arcana-gallery-browser.mjs thunder-rune`. `ARCANA_CAPTURE_DIR` preserves separate iteration captures in ignored `test-results/`. Completed dated results are also recorded in [development history](archive/development-history.md).
 
 Procedural geometry can reproduce the sheets' silhouettes, material contrast, rune shapes and motion motifs; it does not reproduce painterly microdetail or volumetric smoke pixel for pixel. Physical-looking spell pieces remain cosmetic, except for the existing Runic Barrier gameplay obstruction. Their scale and glow must remain readable around units at the ordinary overhead camera distance.

@@ -49,7 +49,9 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `defenses` | Existing manufactured defenses and raider yard |
 | `spells` | Existing prepared-spell and Warrior combat yard |
 | `combat` | Selectable hound/specialist matchups, regional enemy groups and optional supplied support |
-| `lighting` | M33 furnished lighting experiment, pointer/source controls, comparison and sealed fog boundary |
+| `lighting` | Furnished lighting harness, pointer/source controls, comparison and sealed fog boundary |
+| `graphics-gallery` | Sixteen original/current resident and enemy pairs with synchronized animation playback |
+| `terrain-comparison` | Original/current terrain and all six rooms across five biome palettes |
 | `arcana-gallery` | Thirteen starting/refined spell, trap and Hearthstone pairs; state playback, close inspection and saved concept art |
 | `crowded-kitchen` | Six hungry miners sharing food and accommodation |
 | `research-interruption` | Runesmith, queued research, food and beds; interrupt via needs or research pause |
@@ -60,7 +62,7 @@ Room fixtures use tile-based service capacity. Kitchens need no initial food sto
 | `economy` | One resident of each type, spare support, first payday at 10 seconds and treasury access controlled by one door |
 | `hearth` | Defended mineable approach to a hidden onward stone; physical activation and local success |
 | `hearth-defeat` | Same gate/encounters with fewer supplied defenses; natural core destruction |
-| `crossings` | Ordinary starting economy; paid Miner-built water/lava crossings to the onward Hearthstone, plus an unbridgeable chasm |
+| `crossings` | Ordinary starting economy; paid worker-built water/lava crossings to the onward Hearthstone, plus an unbridgeable chasm |
 | `morale` | All four supported types behind a lockable treasury/exit route; reclaim support, recover or test departures |
 
 Room construction uses normal validation, furnishing and costs, including the free-room flag. Explicit test allowances, prepared charges, needs and initial stock are fixture setup. They are not gameplay rewards. Add a new named factory for a useful reproduction instead of copying its setup into a browser script and a separate test.
@@ -95,7 +97,7 @@ The default `changed` scope considers uncommitted changes. Clean trees and docum
 
 Scopes live in [verification.ts](scripts/verification.ts): audio, habitats, ruins, balance (full paid campaign routes and recurring-pressure recovery), work, pricing, workforce, characters, economy, movement, rooms, research, defenses, enemies, encounters, hearth, morale, campaign, bridges, development and verification. Any test filename also works. Explicit scopes check committed code too. `npm run test:all` runs every simulation/tooling test without typechecking; `npm run verify -- all` adds one typecheck.
 
-Browser checks are opt-in and independently selectable with `--browser=<name>`. Names: ruins, audio, animation, lighting, loading, menus, combat, camera, work, notifications, pricing, workforce, characters, models, rooms, movement, hounds, defenses, security, campaign, interface, smoke, integration. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface, notifications and campaign checks sequentially. The `ruins` browser check covers real canvas inspection and locked-plan details; `animation` covers real work/contact, enemy cleanup and reduced motion. Other subsystem browser scripts remain explicit tools for their owning changes.
+Browser checks are opt-in and independently selectable with `--browser=<name>`. The current names are registered in [verification.ts](scripts/verification.ts); they include subsystem checks plus `debug`, `level-preview`, `graphics-gallery`, `terrain-comparison`, `room-overhaul` and `arcana`. A bare `--browser` uses the explicit scope name when a matching browser check exists; it never substitutes a generic smoke check. `integration` runs startup smoke, interface, notifications and campaign checks sequentially. The `ruins` browser check covers real canvas inspection and locked-plan details; `animation` covers real work/contact, enemy cleanup and reduced motion. Other subsystem browser scripts remain explicit tools for their owning changes.
 
 The consolidated workforce browser script replaces the old dwarfs, characters, Stonehands and summon-miner scripts:
 
@@ -134,7 +136,8 @@ Tracing is opt-in via `enableDiagnostics(world)`, controller setup or stepping h
 | Typed job execution handlers | [jobs/work.ts](src/game/jobs/work.ts) |
 | Continuous movement and repathing | [movement.ts](src/game/movement.ts) |
 | Spell panel markup, actions and updates | [ui/spells.ts](src/ui/spells.ts) |
-| Furnishing geometry | [furnishing-models.ts](src/view/furnishing-models.ts) |
+| Current furnishing geometry | [room-furnishing-models.ts](src/view/room-furnishing-models.ts), [room-furnishing-detail.ts](src/view/room-furnishing-detail.ts) |
+| Original/fallback furnishing geometry | [furnishing-models.ts](src/view/furnishing-models.ts) |
 
 New job execution must satisfy the exhaustive handler table. Preserve the explicit scheduler priority when adding selection rules, and cover validation, cancellation and earned progress. Scene mesh lifecycle remains in `scene.ts`; drawing geometry does not mutate simulation state. These are ordinary modules, not a plugin or entity framework.
 
@@ -153,7 +156,7 @@ New job execution must satisfy the exhaustive handler table. Preserve the explic
 
 Stonehand verification: `node --test tests/stonehands.test.ts`, `node scripts/miners-browser.mjs --stonehands`, and `node scripts/workforce-browser.mjs pricing`. The Character Model Studio includes Stonehand and retained Miner silhouettes side by side.
 
-`node scripts/workforce-browser.mjs models` verifies the smaller silhouette against the retained Miner, captures close-up renders, ; construct-only details are checked by overview mode.
+`node scripts/workforce-browser.mjs models` verifies the smaller silhouette against the retained Miner, captures close-up renders; construct-only details are checked by overview mode.
 
 ## Cave Hound checks
 
@@ -169,4 +172,4 @@ The **M33 lighting test room** opens directly from Test harnesses or `?scenario=
 
 `npm run verify -- campaign` checks availability, authored layouts and bridges. `npm run verify -- balance` runs the full intended/alternate paid campaign, normal loss recovery, Library reuse, natural defeat and prolonged volcanic raids with paid source suppression. The shared player-action driver is `scripts/helpers/campaign-route.ts`; it grants no gold, units, discoveries, prepared charges or timer shortcuts. The browser campaign check uses that driver and the normal sidebar travel actions through all five stages.
 
-`npm run verify -- audio --browser=audio` checks original procedural cues, activation, volume/mute and restart/pause cleanup; recordings go to ignored `test-results/m30/`. `--browser=animation` selects character work/contact/pausing and ten-enemy gallery checks. M31/M33 artifact paths and current performance samples live in graphics-pass.md. Browser workloads are serial; freeze every imported TypeScript file, including the shared route helper, while they run.
+`npm run verify -- audio --browser=audio` checks original procedural cues, activation, volume/mute and restart/pause cleanup; recordings go to ignored `test-results/m30/`. `--browser=animation` selects character work/contact/pausing and ten-enemy gallery checks. Current rendering rules live in [graphics.md](graphics.md); dated performance samples and artifact records live in the archive. Browser workloads are serial; freeze every imported TypeScript file, including the shared route helper, while they run.

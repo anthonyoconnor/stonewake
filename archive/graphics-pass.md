@@ -1,6 +1,6 @@
 # Graphics and animation notes
 
-The subsequent [all-character and terrain overhaul](graphics-overhaul.md) records the current models, generated material maps, new cohesion concepts and permanent starting/refined comparison studios. Earlier milestone sections below describe their original implementation and verification; their old material and geometry limitations are historical.
+The subsequent [all-character and terrain overhaul](previous-docs/graphics-overhaul.md) records the current models, generated material maps, new cohesion concepts and permanent starting/refined comparison studios. Earlier milestone sections below describe their original implementation and verification; their old material and geometry limitations are historical.
 
 ## M31 environment refinement and M33 gameplay lighting
 
@@ -16,7 +16,7 @@ The terrain, all six implemented room sheets, Bridge, Fungal Caves and Volcanic 
 | Furnishing lighting missed merged furniture located away from the origin | Light masks now use each merged furnishing mesh's actual world bounding-box center. |
 | Narrow rooms, hazard edges and wall occlusion | Existing bridge pavers/corbels, below-floor shores, common wall height and automatic furniture footprints were retained after irregular-room and reverse-angle checks. Tall banks can still occlude a narrow passage from one side; camera rotation provides the alternate view. |
 
-Palette, decoration density and growth eligibility live in [environment-visuals.ts](src/content/environment-visuals.ts). Local light intensity, radius, glow, pointer behavior and budgets live in [lighting.ts](src/content/lighting.ts). These remain presentation settings and never alter room capacity, discovery, terrain movement or combat ranges.
+Palette, decoration density and growth eligibility live in [environment-visuals.ts](../src/content/environment-visuals.ts). Local light intensity, radius, glow, pointer behavior and budgets live in [lighting.ts](../src/content/lighting.ts). These remain presentation settings and never alter room capacity, discovery, terrain movement or combat ranges.
 
 Ordinary worlds use the shared M33 lighting service. Six reusable source slots select nearby discovered wall lamps, Hearths, lava, gems and appropriate biome growth. A separate prioritized pointer light follows the actual hovered surface as the camera moves, rotates or zooms. It disappears over UI, dialogs, menus, unknown tiles and outside the game. Resources retain their existing visibility through fog, but concealed resources and ruins do not create illuminating light pools. Tile-based terrain rays stop light after the first wall; this is occlusion for presentation, not a new sight or discovery system. Lights have no flicker, work with reduced motion, and are disposed and replaced during world transitions. The adjustable test harness retains its baseline comparison controls.
 
@@ -62,7 +62,7 @@ All four dwarf roles use the current character sheets and prompt records: ochre 
 
 Dwarf stride follows actual displacement, so feet do not keep stepping when a path stalls. Poses and shortest-path turns ease across job changes; mining/construction, claiming, hauling, crafting, practice, reading, eating/resting and Hearth activation derive from actual jobs. Combat swings follow attack cooldown events, brief physical recoil follows damage, and a defeated resident's last visible model falls and disappears after two simulation seconds. Departure does not produce a death animation. Reduced motion suppresses idle breathing, bounce, cargo sway and hit recoil. Static costume pieces merge within their animated pivots to limit draw calls; the rig remains procedural and independent of gameplay state.
 
-All ten enemy models are described in [Enemies](enemies.md): eight-legged spider, clawed plated burrower, mushroom/root brute, armored skeleton, monumental stone Sentinel, separated geode Elemental, spined reptilian Stalker, cracked coal Cinderling, broad-jawed Deepmaw and the armed Raider. Their moving limbs, turning, attacks, projectiles/control bursts, recoil and defeat follow simulation events. Enemy limbs retain locomotion between simulation ticks; reduced motion removes ambient modulation and decorative flights/bursts.
+All ten enemy models are described in [Enemies](../enemies.md): eight-legged spider, clawed plated burrower, mushroom/root brute, armored skeleton, monumental stone Sentinel, separated geode Elemental, spined reptilian Stalker, cracked coal Cinderling, broad-jawed Deepmaw and the armed Raider. Their moving limbs, turning, attacks, projectiles/control bursts, recoil and defeat follow simulation events. Enemy limbs retain locomotion between simulation ticks; reduced motion removes ambient modulation and decorative flights/bursts.
 
 `character-models` provides a clear floor for inspecting every dwarf from front/back. `showcase` exercises actual room work and needs, `spells` combat and control, and `enemy-roster` the ten enemy models. `node scripts/character-visuals-browser.mjs` captures these dwarf comparisons; `node scripts/enemies-browser.mjs` verifies/captures enemies. Baseline dwarf captures are retained in ignored `test-results/m22-before/`, with final front/back, activity and reduced-motion captures in `test-results/m22-after/`. Browser checks passed actual sleep/eat/train/mine/reinforce/claim/craft/research/construction poses, moving construction arms, paused poses, real enemy-caused death/disposal and reduced-motion breathing. A focused normal-economy mining/hauling run verified the moving gold-load pose. All runs reported no runtime errors. The ten-enemy/six-dwarf gallery rendered at roughly 20–30 FPS across headless samples; the six-resident/full-room showcase profile is recorded above. New enemy models were compared against their concept sheets; no historical Raider screenshot was captured.
 
@@ -76,18 +76,18 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 
 | Approved/current concept | Applied direction |
 |---|---|
-| [Resources and terrain](concept-art/terrain/resource-terrain-v2.png) | One continuous square terrain layer, dark bedrock, warm earth, branching embedded gold and blue/violet crystals on persistent columns |
-| [Stone Hearth](concept-art/rooms/stone-hearth-v2.png) | Faceted cool crystal, stone dais, brass circles, runes and restrained light pulse |
-| [Treasure Room](concept-art/rooms/treasure-room-v3.png) | Fitted vault paving, coin motifs and bands, brass-bound chests; visible gold follows actual stored amounts |
-| [Dormitory](concept-art/rooms/dormitory-v3.png) | Warm patterned stone, timber beds, pillows, folded woven blankets and individual resting poses |
-| [Kitchen](concept-art/rooms/kitchen-v3.png) | Mushroom motifs, red/cream growing beds, cooking hearths, tables and banded casks as cosmetic details; there are no ingredient, meal or ale inventories |
-| [Workshop](concept-art/rooms/workshop-v3.png) | Dark paving and brass gear motifs, tool boards, benches, anvils, assembly parts, reinforced door panels and trap mechanisms |
-| [Training Room](concept-art/rooms/training-room-v3.png) | Warm practice-lane paving, diamond emblems, reinforced-wall banners and targets, bound-straw dummies and larger weight benches |
-| [Library](concept-art/rooms/library-v3.png) | Blue book/rune inlays, reinforced-wall shelves, compact candlelit lecterns and larger reading desks with bookshelves |
-| [Miner](concept-art/dwarfs/miner-v1.png) | Broad ochre tunic, helmet lamp, clasped beard, curved pick, heavy boots and visible carrying satchel |
-| [Female Engineer](concept-art/dwarfs/engineer-v3.png) | Teal clothing, apron, twin braids, goggles, tool pack and hammer |
-| [Warrior](concept-art/dwarfs/warrior-v1.png) | Crimson tunic, layered steel shoulders and armor, dark beard, banded helmet, broad wooden shield and axe |
-| [Runesmith](concept-art/dwarfs/runesmith-v2.png) | Indigo robe and mantle, ivory borders, silver hair and beard, and an open rune book |
+| [Resources and terrain](../concept-art/terrain/resource-terrain-v2.png) | One continuous square terrain layer, dark bedrock, warm earth, branching embedded gold and blue/violet crystals on persistent columns |
+| [Stone Hearth](../concept-art/rooms/stone-hearth-v2.png) | Faceted cool crystal, stone dais, brass circles, runes and restrained light pulse |
+| [Treasure Room](../concept-art/rooms/treasure-room-v3.png) | Fitted vault paving, coin motifs and bands, brass-bound chests; visible gold follows actual stored amounts |
+| [Dormitory](../concept-art/rooms/dormitory-v3.png) | Warm patterned stone, timber beds, pillows, folded woven blankets and individual resting poses |
+| [Kitchen](../concept-art/rooms/kitchen-v3.png) | Mushroom motifs, red/cream growing beds, cooking hearths, tables and banded casks as cosmetic details; there are no ingredient, meal or ale inventories |
+| [Workshop](../concept-art/rooms/workshop-v3.png) | Dark paving and brass gear motifs, tool boards, benches, anvils, assembly parts, reinforced door panels and trap mechanisms |
+| [Training Room](../concept-art/rooms/training-room-v3.png) | Warm practice-lane paving, diamond emblems, reinforced-wall banners and targets, bound-straw dummies and larger weight benches |
+| [Library](../concept-art/rooms/library-v3.png) | Blue book/rune inlays, reinforced-wall shelves, compact candlelit lecterns and larger reading desks with bookshelves |
+| [Miner](../concept-art/dwarfs/miner-v1.png) | Broad ochre tunic, helmet lamp, clasped beard, curved pick, heavy boots and visible carrying satchel |
+| [Female Engineer](../concept-art/dwarfs/engineer-v3.png) | Teal clothing, apron, twin braids, goggles, tool pack and hammer |
+| [Warrior](../concept-art/dwarfs/warrior-v1.png) | Crimson tunic, layered steel shoulders and armor, dark beard, banded helmet, broad wooden shield and axe |
+| [Runesmith](../concept-art/dwarfs/runesmith-v2.png) | Indigo robe and mantle, ivory borders, silver hair and beard, and an open rune book |
 
 ## Activity and iteration
 
@@ -97,7 +97,7 @@ M9 was added after M8 completion on 2026-09-07, following the user's requested s
 
 `src/view/surfaces.ts` provides the room palette and generated paving, brass motifs, rough stone and timber textures. Scene geometry includes contact shadows, wall-foot shading, lanterns and fittings on existing walls. Room furnishings are entirely cosmetic: their footprint, presence and arrangement never alter service capacity, navigation, sight or projectile paths. Real terrain, doors and the Hearth retain their gameplay roles.
 
-Use **Debug → Load visual showcase** for a repeatable scene containing example rooms, test residents, stored and loose gold, excavation marks, production orders and queued spell research. The [configuration guide](configuration.md) identifies the source of the showcase contents. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
+Use **Debug → Load visual showcase** for a repeatable scene containing example rooms, test residents, stored and loose gold, excavation marks, production orders and queued spell research. The [configuration guide](../configuration.md) identifies the source of the showcase contents. The regular Room Layout Studio remains the place to inspect arbitrary shapes and expansion with normal construction tools.
 
 The result is a stylized procedural prototype, not a reproduction of the concept sheets' illustration detail. Sculpted meshes, authored texture sets, skeletal animation, recorded audio assets, advanced shadows and cinematic effects remain optional future art work. They are not prerequisites for rapid gameplay iteration.
 
@@ -123,23 +123,23 @@ These are editable prototype models; body proportions, decorative book marks, eq
 
 `src/view/defenses.ts` adds hinged timber, iron-banded and steel doors with visible locks and damage seams; low pressure plates with rising spikes; and compass-facing crossbows with short bolt flight animations. These models read health, passage, trigger and death state from the independent simulation. Workshop output props distinguish completed spikes, bolts and door panels. Shared vector icons identify the new placement tools; valid previews show fixture orientation and invalid previews include an X.
 
-The [Goblin Raider concept](concept-art/enemies/goblin-raider-v1.png) guides the debug attacker's long ears, olive skin, leather, scrap shield, crest and blade. Procedural legs and striking arms animate walking, door attacks, pinning and defeat. No world text, damage numbers or health/progress bars are used. The defense yard uses a wider approach around a one-square doorway and a steeper camera view so traps remain visible beside full-height terrain. These are the earlier prototype models; the current enemy roster and dwarf combat are described in [Enemies](enemies.md).
+The [Goblin Raider concept](../concept-art/enemies/goblin-raider-v1.png) guides the debug attacker's long ears, olive skin, leather, scrap shield, crest and blade. Procedural legs and striking arms animate walking, door attacks, pinning and defeat. No world text, damage numbers or health/progress bars are used. The defense yard uses a wider approach around a one-square doorway and a steeper camera view so traps remain visible beside full-height terrain. These are the earlier prototype models; the current enemy roster and dwarf combat are described in [Enemies](../enemies.md).
 
 ## Stonehand mechanical worker
 
-The approved [Stonehands v2 sheet](concept-art/stonehands/README.md) now guides a separate procedural model: about 0.53 tiles tall beside a roughly 0.95-tile dwarf, exposed narrow rods and pins, a single amber lamp eye, suspended rune tablet, small stone palms and an open basket. Shared walk/work/carry/hit/death poses drive its joints; it does not breathe, eat, sleep or train. The original Miner model remains available in the Character Model Studio for future reuse.
+The approved [Stonehands v2 sheet](../concept-art/stonehands/README.md) now guides a separate procedural model: about 0.53 tiles tall beside a roughly 0.95-tile dwarf, exposed narrow rods and pins, a single amber lamp eye, suspended rune tablet, small stone palms and an open basket. Shared walk/work/carry/hit/death poses drive its joints; it does not breathe, eat, sleep or train. The original Miner model remains available in the Character Model Studio for future reuse.
 
 ## Cave Hound companion
 
-The saved [Cave Hound concept](concept-art/cave-hounds/README.md) guides a separate quadruped model: stocky charcoal coat, sandy muzzle and brows, pointed ears, leather collar/harness, rune tag and small amber lamp. Four legs trot in diagonal pairs; the head dips for scouting/feeding, the jaw animates bites, the tail moves and the body settles for sleep. It uses actual movement, job and combat state, supports reduced motion, and shares the existing hit/death cleanup without world labels.
+The saved [Cave Hound concept](../concept-art/cave-hounds/README.md) guides a separate quadruped model: stocky charcoal coat, sandy muzzle and brows, pointed ears, leather collar/harness, rune tag and small amber lamp. Four legs trot in diagonal pairs; the head dips for scouting/feeding, the jaw animates bites, the tail moves and the body settles for sleep. It uses actual movement, job and combat state, supports reduced motion, and shares the existing hit/death cleanup without world labels.
 
 ## M33 lighting test room
 
-The implemented experiment uses subdued ambient and directional illumination, warm wall-lamp pools, a cool Hearth, orange lava and blue gem light. Existing emissive geometry supplies the restrained glow layer. Source, ambient, glow and pointer defaults live in [lighting.ts](src/content/lighting.ts); the sidebar changes only the current test world's settings. The Experimental lighting toggle compares the original brighter renderer, and leaving the harness restores the retained world's normal biome lighting.
+The implemented experiment uses subdued ambient and directional illumination, warm wall-lamp pools, a cool Hearth, orange lava and blue gem light. Existing emissive geometry supplies the restrained glow layer. Source, ambient, glow and pointer defaults live in [lighting.ts](../src/content/lighting.ts); the sidebar changes only the current test world's settings. The Experimental lighting toggle compares the original brighter renderer, and leaving the harness restores the retained world's normal biome lighting.
 
 The fixture contains ordinary paid/free room construction, automatic cosmetic furnishings, single-tile and irregular rooms, a narrow Library, a Kitchen with retained bedrock, working crafting/research queues, sample residents and dormant enemies. Water/lava crossings are explicit completed bridge fixtures. Preset camera views cover inhabited rooms, reinforced-wall lamps, the crossings and a concealed northern pocket. Resume uses the normal simulation; resetting reconstructs the paused fixture.
 
-[LabLighting](src/view/lighting-lab.ts) reuses six point-light slots for the nearest eligible visible sources and a separate pointer light. The pointer follows the actual hovered terrain surface, including when a stationary pointer's camera pans, rotates or zooms. Sidebar/UI hover, open dialogs, leaving the viewport and blur suppress it. Tile visibility and terrain rays restrict illuminated meshes; hidden lava/gems supply no lights, while gold/gem geometry retains its ordinary through-fog visibility. Lighting never changes discovery, routes or targeting. Settings have no flicker and work with reduced motion.
+[LabLighting](../src/view/lighting-lab.ts) reuses six point-light slots for the nearest eligible visible sources and a separate pointer light. The pointer follows the actual hovered terrain surface, including when a stationary pointer's camera pans, rotates or zooms. Sidebar/UI hover, open dialogs, leaving the viewport and blur suppress it. Tile visibility and terrain rays restrict illuminated meshes; hidden lava/gems supply no lights, while gold/gem geometry retains its ordinary through-fog visibility. Lighting never changes discovery, routes or targeting. Settings have no flicker and work with reduced motion.
 
 The same service now runs in ordinary campaign and Free Play worlds, with biome palettes and sparse local growth. Occlusion uses tile-based mesh inclusion rather than detailed shadows, and selecting nearby sources can change visible pools when the camera moves. The comparison harness remains available for later tuning. Full gameplay comparisons and verification are recorded above and in [development history](development-history.md).
 

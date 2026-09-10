@@ -1,14 +1,18 @@
+> Historical snapshot from the documentation cleanup. It may describe superseded behavior. Use the [active documentation](../../README.md) for development.
+
 # Game rules
 
-Guard Posts, assigned guard duties, general specialist retreat and structure maintenance are deferred. Current exclusions and remaining review are in [development notes](development-plan.md#known-limitations-and-deferred-scope).
+Roadmap scope: Guard Posts, assigned guard duties, general specialist retreat and door repairs/upgrades in place are deferred outside the active roadmap following removal of M12 and M15. Any descriptions below of those features remain proposals; they are not requirements for enemy, campaign or balance milestones.
 
-Current rules for a level-based dwarven stronghold management game inspired by Dungeon Keeper. Mining workers are Stonehands in ordinary play; the legacy dwarf Miner remains available in debug fixtures.
+Working design for a level-based dwarven stronghold management game inspired by Dungeon Keeper.
 
 Companion documents: [Characters](characters.md), [Rooms](rooms.md), [Levels](levels.md), and [Gameplay interface](gameplay-interface.md).
 
 ## Design status
 
-These rules describe the current browser game. Numerical values are provisional and editable; the owning companion document and source definition supply each system's balance. The [current inventory](development-plan.md#current-implementation-status) distinguishes ordinary play, debug-only content and deferred concepts. Development uses TypeScript + Babylon.js, with no saves, multiplayer or backend.
+This document records the agreed direction and the current working rules. Proposals and unresolved mechanics are identified explicitly. Numerical balance values are not final. The companion documents expand the inventories without committing to an implementation or a final campaign roster.
+
+The game will be playable in a web browser using **TypeScript + Babylon.js**. The [Development plan](development-plan.md) records completed M1–M10 and M13, including M5.1, the unfinished milestones, and guidelines for rapid iteration and extensible content. The room debugging view and free room construction flag support development; the flag waives room construction costs while preserving placement and capacity rules. Game saves, multiplayer, and production hardening are outside the current implementation scope. Authorization and progress are tracked in the development plan.
 
 ## 1. Player role and core loop
 
@@ -24,15 +28,15 @@ Layout management is the primary activity. The position and connections of rooms
 
 - Select grid areas for excavation.
 - Place rooms, doors, traps, and other available structures on the grid.
-- Create additional Stonehands using shared gold.
+- Purchase additional miners using stored gold.
 - Choose a call-to-arms location to guide available fighters toward an area.
 - Cancel the rally to let responders return to their normal routines.
 
 Dwarfs handle their movement, jobs, needs, and fighting autonomously. There is no possession, individual movement command, or direct troop control.
 
-The [Call to Arms spell](spells.md#call-to-arms-behavior) calls all fighting dwarfs to a selected point for a limited period. Responders walk there and fight autonomously. The spell document owns its balance values, responder eligibility, restrictions and expiry behavior.
+The [Call to Arms spell](../../spells.md#call-to-arms-behavior) calls all fighting dwarfs to a selected point for a limited period. Responders walk there and fight autonomously. The spell document owns its balance values, responder eligibility, restrictions and expiry behavior.
 
-Spells are accessed through the left sidebar. Available player-cast spells use a target selection when applicable; [Spells](spells.md) defines their effects, costs, research rules and casting restrictions. Dwarf behavior stays autonomous.
+Spells are accessed through the left sidebar. Available player-cast spells use a target selection when applicable; [Spells](../../spells.md) defines their effects, costs, research rules and casting restrictions. Dwarf behavior stays autonomous.
 
 ### Autonomous movement
 
@@ -41,7 +45,7 @@ The grid defines excavation and construction. Dwarfs and enemies move continuous
 - Movement can follow any clear direction, including diagonal routes across open rooms, without snapping from square to square.
 - Real terrain, the Hearth and doors constrain routes according to their gameplay state. Characters must not pass through these obstacles or squeeze diagonally between touching blocked corners. Room furnishings are cosmetic and never block movement or sight.
 - The space needed by a character determines where it can fit. There is no rule limiting a floor tile to one character.
-- Residents use soft separation but may overlap briefly to keep moving. Real terrain and gameplay obstacles remain solid.
+- Proposed crowd behavior: characters steer around one another, pass where there is room, and yield or queue at narrow openings. Wider passages should support better traffic flow.
 - Routes respond to excavation and door changes. Room boundaries and automatic furnishing changes do not obstruct movement.
 - A call to arms draws responders into accessible space around the rally location; it does not arrange them on individual grid squares or give the player direct movement control.
 
@@ -58,11 +62,11 @@ The agreed visual direction is stylized 3D with an elevated overhead view. The p
 - Each room type has recognizable floors and treatments on existing bordering wall faces, so its identity remains clear before it has enough space for furnishings.
 - Camera rotation and zoom never reveal unexplored chambers or hidden enemies that the discovery rules conceal.
 
-Controls use a fixed elevated tilt, horizontal orbit, view-relative panning and mouse-wheel zoom. Q/E, Left Ctrl+A/D and horizontal middle drag rotate; WASD and window edges pan. Home returns to the Hearth. Zoom has a far limit but no minimum inspection distance. See [input rules](gameplay-interface.md#excavation-selection-and-camera-controls).
+Proposed controls: smooth 360-degree horizontal rotation, mouse-wheel zoom, and a fixed elevated tilt that keeps room footprints easy to judge. Exact bindings, camera projection, tilt, and zoom limits remain to be selected during prototyping.
 
-Current art uses substantial stonework, distinct resident silhouettes, warm occupied rooms and cooler caves. See [rendering guidance](graphics.md) for models, lighting and preserved references.
+Proposed art treatment: substantial stonework, chunky dwarf silhouettes, warm occupied rooms, and cooler natural caves. Diggable ground, reinforced walls, bedrock, gold veins, and gem deposits need distinct shapes and surface treatments.
 
-Full-height terrain can obscure a narrow passage from one angle; rotate the camera for another view. There is no automatic foreground-wall fading system.
+Proposed visibility aid: lower or fade foreground walls when they obscure usable rooms and residents. This affects only the drawing of already visible areas; it does not remove defensive walls or expose unexplored spaces. The exact treatment needs checking from every rotation angle.
 
 ### Gameplay interface
 
@@ -80,7 +84,7 @@ Necessary messages appear as dismissible cards associated with icons above the q
 - Research and building unlocks carry forward under the current working design.
 - A room or dwarf type must remain useful after its introductory level.
 
-Each area begins with an already established Stone Hearth, three Stonehands and a small walking ring surrounded by earth. Hearth awakening is the arrival premise; there is no playable construction/awakening sequence. [Levels](levels.md#starting-area) owns the starting layout.
+The mining crew reaches a dormant Hearthstone, awakens it, and automatically erects a protective Stone Hearth during the arrival sequence. The player begins with the established core, a small open cavern, miners, and limited usable starting supplies.
 
 ## 4. Hearthstone and defeat
 
@@ -92,7 +96,7 @@ The Hearthstone is a magical crystal connected to the ancient dwarven runic trav
 - It does not require a separate power grid or energy-production system.
 - Enemies win by reaching and destroying it.
 
-Destruction of the starting core is the established defeat condition. The onward Hearthstone is the level's progression objective; it does not replace or relocate the starting core. Finding it must respect discovery, and merely seeing it across an impassable gap does not establish access. [Levels](levels.md#onward-hearthstone-objective) owns the objective and provisional activation rules. The starting core has a tunable 400 health and no repair, upgrade or relocation. Natural Raiders use physical melee reach, existing damage/cadence and line of sight; an adjacent dwarf takes priority. The onward stone is an indestructible reserved tile. Any eligible non-animal resident can activate it from adjacent floor for eight uninterrupted seconds after a sidebar request. Both defeat and local objective completion freeze gameplay and expose a restart; destruction wins a simultaneous activation. The five-area campaign runs from Border Foothold through Fungal Hollows, Fallen City and Crystal Divide to Royal Deep, carrying researched knowledge and building unlocks into fresh settlements; [Levels](levels.md#authored-campaign-and-travel) specifies carry/reset rules and the final endpoint.
+Destruction of the starting core is the established defeat condition. The onward Hearthstone is the level's progression objective; it does not replace or relocate the starting core. Finding it must respect discovery, and merely seeing it across an impassable gap does not establish access. [Levels](levels.md#onward-hearthstone-objective) owns the objective and provisional activation rules. The starting core has a tunable 400 health and no repair, upgrade or relocation. Natural Raiders use physical melee reach, existing damage/cadence and line of sight; an adjacent dwarf takes priority. The onward stone is an indestructible reserved tile. Any eligible resident can activate it from adjacent floor for eight uninterrupted seconds after a sidebar request. Both defeat and local objective completion freeze gameplay and expose a restart; destruction wins a simultaneous activation. Campaign travel now links Border Foothold to Emberwater Crossing, carrying research/building knowledge into a fresh local settlement; [Levels](levels.md#authored-campaign-and-travel) specifies carry/reset rules and the final endpoint.
 
 ## 5. Grid, excavation, and discovery
 
@@ -106,7 +110,7 @@ Destruction of the starting core is the established defeat condition. The onward
 - Individual squares or small groups of ordinary earth may remain unmined inside excavated rooms. They remain diggable, occupy no usable room floor, and block furniture placement and movement. Once mined, the new space can be claimed and designated for building.
 - Opening a passage can create a new path for enemies as well as dwarfs.
 
-Explored terrain remains known, while current enemy positions require resident/Hearth sight. Gold and gem locations are visible through fog without revealing surrounding terrain. Workers physically claim reachable floor before room construction; discovery alone does not grant ownership.
+Proposed visibility rule: explored terrain remains known, but current enemy positions require sight. Proposed territory rule: miners claim reachable floor before the player builds on it. Exact claiming and sight rules remain to be specified.
 
 Excavation can be planned into darkness. Hidden tiles accept the same marks regardless of their concealed contents. Miners work only discovered, reachable diggable targets; discovery automatically clears marks over existing open space or unmineable terrain. Unexplored plans do not reveal terrain, permit room construction, or grant visibility.
 
@@ -116,7 +120,7 @@ Miners share a work pool, reserving individual targets and spreading across kind
 
 Miners reinforce exposed ordinary walls around claimed territory when they have no higher-priority excavation, resource collection, or hauling work.
 
-Reinforcement has one visible state and increases Tunnel Burrower excavation time. Player excavation removes it using normal mining time. Bedrock is indestructible; there is no reinforcement upgrade tree. [Wall rules](rooms.md#reinforced-walls) own work times and eligibility.
+The proposed implementation has one visible reinforced state. Reinforcement makes walls harder for enemies capable of digging to breach. Bedrock remains completely indestructible. No reinforcement upgrade tree is planned.
 
 Work scheduling must allow genuinely spare miners to reinforce walls. Renewable mining must have limited worker capacity rather than reserving every idle miner indefinitely.
 
@@ -153,7 +157,7 @@ Other dwarf types are attracted by suitable facilities and a settlement able to 
 | Library | Runesmith | Researches spells |
 | Training Room | Warrior | Lets specialists train to increase its stats |
 
-Stonehands, Cave Hounds and these three specialists form the normal resident roster. The dwarf Miner is retained only for debug and comparison. Additional types and rooms can be introduced later through the shared definition systems described below.
+Together with directly purchased Miners, these specialists form the four dwarf types in the current gameplay scope. Additional types and rooms can be introduced later through the shared definition systems described below.
 
 - A qualifying room makes a specialist eligible to arrive.
 - Accommodation, food support and specialist capacity must support additional residents. These come from reachable room-floor area and each room's tunable capacity per tile.
@@ -165,9 +169,9 @@ The current prototype admits one unit at a time, using per-type cooldowns and a 
 
 ## 10. Needs, payday, and departure
 
-Engineers, Warriors, Runesmiths and retained debug Miners require pay, bedding, Kitchen support and the facilities appropriate to their role. Stonehands skip living needs, and Cave Hounds use their Dormitory dens for food/rest with no wages.
+All resident dwarfs, including miners, require pay, bedding, food, and the facilities appropriate to their role.
 
-All dwarfs share one payday every 120 game seconds from the start of the area. New arrivals join the next scheduled payday and receive their full current wage, with no back pay. Level 1 wages are 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths; Miners remain at 4 gold, and each additional specialist level adds 2 gold. Wages are explicit editable values in each character level row. Each payment uses the level reached when payday arrives; later level or configuration changes do not alter existing debt. Dwarfs physically visit an accessible Treasure Room or the starter Hearth treasury and spend one second collecting each payment; only then is gold deducted. The shared allowance and storage reachable from that dwarf fund the payment, so disconnected reserves cannot pay them remotely. Insufficient total gold and inaccessible treasury/gold are reported separately. Ordinary travel and queues have a 45-second grace before an overdue warning; pay dissatisfaction starts only while overdue wages lack sufficient accessible funding or a reachable treasury.
+All dwarfs share one payday every 120 game seconds from the start of the area. New arrivals join the next scheduled payday and receive their full current wage, with no back pay. Level 1 wages are 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths; Miners remain at 4 gold, and each additional specialist level adds 2 gold. Wages are explicit editable values in each character level row. Each payment uses the level reached when payday arrives; later level or configuration changes do not alter existing debt. Dwarfs physically visit an accessible Treasure Room or the starter Hearth treasury and spend one second collecting each payment; only then is gold deducted. The shared allowance and storage reachable from that dwarf fund the payment, so disconnected reserves cannot pay them remotely. Insufficient total gold and inaccessible treasury/gold are reported separately. Ordinary travel and queues have a 45-second grace before an overdue warning; M14 pay dissatisfaction starts only while overdue wages lack sufficient accessible funding or a reachable treasury.
 
 Immediate combat, carried-resource delivery and food/rest take priority over wages; due, funded wages precede training and ordinary work. Interrupted visits retain the debt, release their collection space and spend no gold. Reclaiming or blocking a treasury cancels access safely. Collection rechecks funds after travel so construction, spells and other collectors cannot double-spend them. Times and amounts are tunable prototype values.
 
@@ -179,7 +183,7 @@ Each unmet support requirement has its own clock: food, accommodation, pay and r
 
 A shortage has 120 seconds of grace, followed by a grouped warning and 180 further unresolved seconds before departure. Timers do not add together; the longest active shortage controls escalation. Restored support removes its active warning immediately and recovers accumulated grievance at two seconds per second. A dismissed warning stays dismissed at its current severity, reappears if it escalates, and can be reopened in Workforce. All values are tunable.
 
-Departing residents release jobs, including activation, and walk through the starting Hearth using ordinary movement. They ignore rally and do not pursue combat; enemies can still attack them. A blocked route waits and repaths without teleporting. Fixing the serious active cause before the resident reaches the exit cancels departure and resumes normal needs/work. Support allocation remains until actual exit so blocked residents retain support. At exit, carried gold drops onto the Hearth approach, reservations release, and population/attraction capacity update. Earned production/research progress remains; previously collected pay stays spent and unpaid claims leave with the resident. Stonehands do not depart from dissatisfaction; their destruction reduces the next creation price.
+Departing residents release jobs, including activation, and walk through the starting Hearth using ordinary movement. They ignore rally and do not pursue combat; enemies can still attack them. A blocked route waits and repaths without teleporting. Fixing the serious active cause before the dwarf reaches the exit cancels departure and resumes normal needs/work. Bed/food population allocation remains until actual exit so blocked residents retain support. At exit, carried gold drops onto the Hearth approach, reservations release, population and attraction capacity update, and Miner prices fall with the living Miner count. Earned production/research progress remains; previously collected pay stays spent and unpaid claims leave with the resident.
 
 ## 11. Production, research, and room usefulness
 
@@ -193,15 +197,15 @@ The player should see floor area, capacity per tile, total capacity and occupanc
 
 Engineers automatically manufacture doors and traps in the Workshop. Runesmiths automatically research spells in the Library. Each is a single combined specialist role. Separate equipment manufacture, enchanting, and shrine services are outside this simplified design.
 
-Engineers, Warriors and Runesmiths start at level 1 and advance through the Training Room. Stonehands, Cave Hounds and retained Miners stay at level 1 without training or XP. Floor area limits concurrent trainees, and each visit ends after gaining one level. The dwarf releases its slot and returns to ordinary activities, with a personal cooldown before training again. Training and successful melee hits share the next-level XP requirement. Training earns 1 XP per second; melee combat earns roughly twice that rate, including worker self-defense. Combat continues earning XP during the training cooldown. Earned XP survives interruptions; ordinary work grants no XP. The room attracts Warriors but is shared by all three specialists and provides no sleeping capacity. [Character levels and training](characters.md#character-levels-and-training) defines the level limit, per-type health, combat and work statistics, active training durations and cooldown. All balance values remain provisional.
+Every dwarf starts at character level 1 and can advance through the Training Room. Floor area limits concurrent trainees, and each visit ends after gaining one level. The dwarf releases its slot and returns to ordinary activities, with a personal cooldown before training again. Training and successful melee hits share the next-level XP requirement. Training earns 1 XP per second; melee combat earns roughly twice that rate, including worker self-defense. Combat continues earning XP during the training cooldown. Earned XP survives interruptions; ordinary work grants no XP. The room attracts Warriors but is shared by all types and provides no sleeping capacity. [Character levels and training](characters.md#character-levels-and-training) defines the level limit, per-type health, combat and work statistics, active training durations and cooldown. All balance values remain provisional.
 
-Every room must remain useful across strongholds. New populations need food, beds, and training; new layouts need manufactured defenses. The Library prototype prepares spells again after casting so it retains work after initial research. The Library and all research choices unlock at Crystal Divide; completed knowledge carries onward as paused, unprepared orders.
+Every room must remain useful across strongholds. New populations need food, beds, and training; new layouts need manufactured defenses. The Library prototype prepares spells again after casting so it retains work after initial research. Campaign research progression remains open.
 
-The [Library rules](rooms.md#training-room-and-library-prototype-rules) describe the research service; [Spells](spells.md) owns spell progression and casting costs. [Door and trap rules](rooms.md#doors-and-traps) define manufactured stock and immediate placement; balance remains tunable. No additional mined currency is established beyond gold from deposits and gem deposits.
+The [Library rules](rooms.md#training-room-and-library-prototype-rules) describe the research service; [Spells](../../spells.md) owns spell progression and casting costs. Exact defensive item handling and broader balance remain open. No additional mined currency is established beyond gold from deposits and gem deposits.
 
 ## 12. Defense and enemies
 
-- Doors, traps, reinforced walls, room locations, and route lengths form the defense system.
+- Doors, traps, reinforced walls, guard positions, room locations, and route lengths form the defense system.
 - Warriors pursue nearby enemies and fight autonomously, with Call to Arms providing area-level direction. Miners, Engineers and Runesmiths have weaker adjacent self-defense and never pursue or answer the rally merely because they can attack.
 - Creature types vary by underground region.
 - Enemies physically approach through the map and attempt to destroy the core.
@@ -212,7 +216,7 @@ Opening an unknown area can expose a new front. A shortcut that helps workers ca
 
 The current [door and trap rules](rooms.md#doors-and-traps) implement three increasing door tiers, Open/Closed/Locked access, a spike trap with damage and temporary pinning, and a directional bolt trap. Both traps reset automatically after cooldown and ignore friendly dwarfs. Shut doors block sight and delay enemies until broken; locked doors also block dwarf routes. Workshop manufacturing supplies player-placed fixtures.
 
-Defense, targeted spells, autonomous Warrior combat and worker self-defense face all ten implemented enemy types through authored encounters. Retained prototype Border Foothold contains a concealed camp and an eastern raid entrance; authored campaign maps have their own source definitions. [Levels](levels.md#attacks) owns activation, warning, repeat and source-clearing rules. Enemies navigate actual terrain independently of player discovery; this does not reveal their locations. They can break doors/barriers, attack dwarfs and destroy the starting Hearth using their defined melee or ranged attacks with clear sight. All ten enemy types and tunneling are implemented; [Enemies](enemies.md) specifies their behavior and terrain/control interactions. Assigned guard duties, specialist retreat and repairs remain deferred.
+Defense, targeted spells, autonomous Warrior combat and worker self-defense face all ten implemented enemy types through authored encounters. Border Foothold contains a concealed camp and an eastern raid entrance. [Levels](levels.md#attacks) owns activation, warning, repeat and source-clearing rules. Enemies navigate actual terrain independently of player discovery; this does not reveal their locations. They can break doors/barriers, attack dwarfs and destroy the starting Hearth using their defined melee or ranged attacks with clear sight. All ten enemy types and tunneling are implemented; [Enemies](../../enemies.md) specifies their behavior and terrain/control interactions. Assigned guard duties, specialist retreat and repairs remain deferred.
 
 ## 13. Layout consequences to preserve
 
@@ -220,16 +224,16 @@ Defense, targeted spells, autonomous Warrior combat and worker self-defense face
 |---|---|
 | Build treasure storage near a deposit | Shorter hauling journeys, potentially farther from residents collecting wages |
 | Place food and beds near workplaces | Less time spent traveling to satisfy needs |
-| Establish a Training Room near an entrance | Defenders training there are closer to the approach |
+| Establish a Training Room or Guard Post near an entrance | Defenders using those facilities are closer to the approach |
 | Expand a Kitchen or build another near a distant work area | More accessible food and eating capacity for a larger or dispersed population |
 | Provide more shared training capacity | More dwarfs can develop their stats, while training takes time away from their usual duties |
 | Open a new passage | Access to resources and rooms, with a possible new enemy route |
 | Leave ordinary walls intact | Opportunities for miners to reinforce and secure established districts |
-| Create another Stonehand | More terrain workers and a higher next creation price, without living upkeep |
+| Recruit another miner | Faster development, a higher next miner price, and additional upkeep |
 | Build more specialist capacity | Eligibility for more specialists, with increased support requirements |
 | Add room floor in any shape | Each new square contributes the same configured capacity; furnishings adapt visually |
 
-Preserve these layout consequences when extending or balancing the game.
+These are intended design effects to verify during playtesting, not claims about a built simulation.
 
 ## 14. Extensible character and room definitions
 
@@ -240,16 +244,24 @@ Development focuses on the [character](characters.md) and [room](rooms.md) catal
 - Define each room type as data with a stable identifier, service, capacity per tile, outputs, floor and wall treatments, and separate cosmetic furnishing variants. Reuse grid construction, room service slots, automatic visual furnishing and capacity feedback for new rooms.
 - Express attraction as configurable conditions referring to room services, usable capacity, and settlement support. Allow multiple dwarf types to use one room and a future dwarf to require several facilities; do not enforce a permanent one-room-to-one-dwarf pairing.
 - Let new definitions select reusable behaviors, with a clear place to add a new job or room service when necessary. Adding content that uses existing behaviors should not require changes throughout the simulation.
-- Have recruitment and construction menus, level definitions, and in-memory state refer to the registered type identifiers. Display names and concept-art filenames should not determine gameplay identity, and menus should not assume a fixed roster size.
+- Have recruitment and construction menus, level definitions, and saved state refer to the registered type identifiers. Display names and concept-art filenames should not determine gameplay identity, and menus should not assume a fixed roster size.
 
 Build these boundaries while implementing the core types. Additional types, exclusive rooms, a public modding system, and a content editor are outside the current gameplay scope. Existing levels must remain playable with their defined content as later types are introduced.
 
-## 15. Balance and remaining scope
+## 15. Outstanding design decisions
 
-Current rules above are implemented; numerical tuning and visual refinement remain iterative. [Development notes](development-plan.md) hold the remaining audio review, known limits and explicitly deferred features. Old campaign, camera, recruitment, guard and maintenance proposals are archived rather than treated as unresolved requirements.
-
-### Resource and construction details
+- Wage values, eating/rest intervals, and room capacities per tile.
+- Cosmetic furnishing footprints, compact and large variants, and visual arrangement rules for irregular rooms; these never change service capacity or routes.
+- Stonehand creation cost, starting crew, starting storage, and resource quantities.
+- Recovery if every miner is lost and the player cannot afford a replacement; no extra defeat rule or free replacement has been agreed.
+- Spell casting, research order, and Library use after available research is complete.
+- Balance of per-type level statistics, active training durations and personal cooldown; the level sequence and one-level-per-visit rule are established.
+- Rally response rules and guard scheduling.
+- Bedrock readability, sight and claiming details. Gold and gems are always visible on the minimap and full map; other discoveries still require exploration.
+- Reinforcement strength, core repairs, doors, traps, and bridges.
+- Campaign objectives, unlock order, enemy behavior, and attack pacing.
+- Camera projection, tilt, zoom limits, input bindings, and foreground wall treatment.
 
 Finite gold seams are mined into the miner's bag in small batches (currently 15 gold per half-second, with a 45-gold bag). The pillar stays solid and designated until its remaining gold reaches zero. A full bag is delivered to reachable treasury storage, then the miner returns to the unfinished seam; an exhausted or cancelled seam sends any partial bag for delivery. With no reachable storage space, extraction leaves gold at the seam. If storage fills during travel, miners try another chest or return undelivered gold to the extraction site. Gold never becomes spendable while carried or on the ground. Renewable gems extract the same 15-gold batch every half-second, retain their persistent column, and use the existing ground-pickup collection behavior.
 
-Current prototype controls include miner-built walls and reclaiming room tiles. Wall construction is deliberately slower than digging plus reinforcement; its default is 24 seconds. Reclaim refunds 50% of original paid cost, with no refund for free construction, and preserves displaced gold. Dwarfs prefer soft separation but may overlap briefly when necessary to keep moving; real terrain and gameplay obstacles remain solid while room furnishings are cosmetic. Shared balance values and the in-game editor are documented in [Configuration](configuration.md); additive room/dwarf implementation is documented in the [content playbook](content-playbook.md).
+Current prototype controls include miner-built walls and reclaiming room tiles. Wall construction is deliberately slower than digging plus reinforcement; its default is 24 seconds. Reclaim refunds 50% of original paid cost, with no refund for free construction, and preserves displaced gold. Dwarfs prefer soft separation but may overlap briefly when necessary to keep moving; real terrain and gameplay obstacles remain solid while room furnishings are cosmetic. Shared balance values and the in-game editor are documented in [Configuration](../../configuration.md); additive room/dwarf implementation is documented in the [content playbook](../../content-playbook.md).

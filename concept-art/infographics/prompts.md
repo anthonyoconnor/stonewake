@@ -1,5 +1,7 @@
 # Dwarf attraction infographic
 
+Historical provenance: this infographic predates the Stonehand/Cave Hound recruitment model. Its paid-Miner assumptions are superseded. Use [current character rules](../../characters.md) for gameplay; the exact prompt below records the original generation.
+
 Generated on 2026-09-08 with the built-in image generation tool.
 
 Output: [dwarf-attraction-v1.png](dwarf-attraction-v1.png).

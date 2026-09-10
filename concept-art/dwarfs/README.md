@@ -1,6 +1,6 @@
 # Dwarf character concept gallery
 
-Character concepts for the dwarven stronghold game, created with the built-in image generation tool. Each sheet contains a front three-quarter view, a rear view, and an overhead view to explore readability during play. The current set reflects the four core types: Miner, Engineer, Warrior, and Runesmith.
+Character concepts for the dwarven stronghold game, created with the built-in image generation tool. Each sheet contains a front three-quarter view, a rear view, and an overhead view to explore readability during play. The set depicts Engineer, Warrior and Runesmith specialists plus the retained debug Miner. Normal terrain labor uses Stonehands, and Cave Hounds supply early defense; those concepts have separate galleries.
 
 These are concept illustrations, not rigged 3D models or final specifications of proportions, clothing, or materials. The Engineer's female design is agreed; other appearance details remain proposals. Their appearance does not change the gameplay rules in [Characters](../../characters.md).
 

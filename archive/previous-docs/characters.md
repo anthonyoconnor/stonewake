@@ -1,8 +1,10 @@
+> Historical snapshot from the documentation cleanup. It may describe superseded behavior. Use the [active documentation](../../README.md) for development.
+
 # Characters
 
 Current character appearance and the retained sixteen-pair starting/refined gallery are documented in the [graphics overhaul](graphics-overhaul.md). Gameplay roles and numerical rules remain here.
 
-Assigned guard duties, general specialist retreat and Engineer door maintenance are deferred. Current motion and rendering limits are in [graphics.md](graphics.md).
+Roadmap scope: assigned guard duties, general specialist retreat and Engineer door repairs are deferred outside the active roadmap following removal of M12 and M15. References below remain design proposals. Character model and animation improvements are implemented and verified in [M22](../development-history.md#m22--character-models-and-animations-update); current appearance, timing and limits are described in [graphics notes](../graphics-pass.md).
 
 Working design for the dwarven stronghold game. Companion documents: [Rooms](rooms.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
@@ -10,19 +12,19 @@ Working design for the dwarven stronghold game. Companion documents: [Rooms](roo
 
 Normal campaign recruitment follows the [campaign brief](levels.md#campaign-brief-and-progression): Cave Hounds and Stonehands begin the journey; Warriors, Engineers and Runesmiths arrive in successive areas after their supporting plans unlock. Recruitment checks both knowledge and ordinary reachable room/food/bed support. Earlier roles remain available thereafter. Retained Miners stay outside normal campaign and Free Play catalogs; debug fixtures retain them.
 
-The [current implementation inventory](development-plan.md#current-implementation-status) distinguishes normal and debug-only residents. The rules below describe implemented behavior; deferred concepts do not join the playable roster.
+See the [current implementation inventory](development-plan.md#current-implementation-status) for all dwarf types, including debug-only availability and missing recruitment/work systems. The roster and rules below describe the intended design, not a list of completed features. Update the inventory whenever a dwarf or its supporting systems change.
 
 All dwarfs share one payday every 120 game seconds from the start of the area. New arrivals join the next scheduled payday and receive their full current wage, with no back pay. Level 1 wages are 4/7/8/10 gold for Miners/Engineers/Warriors/Runesmiths; Miners remain at 4 gold, and each additional specialist level adds 2 gold. Wages are explicit editable values in each character level row. Each payment uses the level reached when payday arrives; later level or configuration changes do not alter existing debt. Dwarfs spend one second collecting each due payment at a reachable Treasure Room or Hearth treasury; 45 seconds of overdue grace allows travel/queues. Current values are editable and provisional. [Payday rules](game-rules.md#10-needs-payday-and-departure) define access, interruption and funding behavior.
 
 ## Design status
 
-The recruitment, Stonehand creation, needs, autonomous control and specialist training rules below describe current behavior. The roster below defines the dwarf types in scope. Engineer is the working name for the combined workshop crafter, whose character design is female; Runesmith is the working name for the combined spell researcher. Room floor area supplies accommodation, food support and work/training capacity; furniture is cosmetic. Relative wages, detailed job behaviors, costs, need intervals and combat statistics remain balance choices.
+The recruitment, miner pricing, needs, autonomous control, merged specialist roles, and shared training rules below reflect the agreed design. The roster below defines the dwarf types in scope. Engineer is the working name for the combined workshop crafter, whose character design is female; Runesmith is the working name for the combined spell researcher. Room floor area supplies accommodation, food support and work/training capacity; furniture is cosmetic. Relative wages, detailed job behaviors, costs, need intervals and combat statistics remain balance choices.
 
 ## Stonehands
 
 Stonehands are the normal terrain workers: three start each area, and Create Stonehand assembles another at the Hearth for 50 gold + 25 per living Stonehand without research or preparation. Creation requires shared gold and a free, reachable claimed arrival square; failed attempts spend nothing. These small mechanical constructs have 30 health, no attacks, no food, beds, wages, morale, training or XP. They work whenever safe, reachable tasks exist, use the shared work pool and keep each assignment for 20 productive seconds, including resource ownership across delivery trips. About one worker per three available workers stays assigned to marked, reachable gold or gems (minimum one). Destruction drops carried gold and releases the job. Prices and health are provisional editable values. The original dwarf Miner and its model remain available in debug scenarios for a possible future basic fighter; that repurposing is not implemented.
 
-Approved visual direction: [small mechanical Stonehands v2](concept-art/stonehands/README.md). Their half-height frame has thin linkages, one amber lamp eye, a suspended rune tablet, small stone palms and a basket.
+Approved visual direction: [small mechanical Stonehands v2](../../concept-art/stonehands/README.md). Their half-height frame has thin linkages, one amber lamp eye, a suspended rune tablet, small stone palms and a basket.
 
 ## Cave Hounds and population balance
 
@@ -46,20 +48,20 @@ Stonehands and retained dwarf Miners flee visible nearby enemies or incoming dam
 
 ## Shared dwarf rules
 
-Current prototype: all dwarf types share autonomous movement, food and rest; only specialists use Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when reachable specialist rooms and shared accommodation/food support have spare capacity, following the cooldowns and staffing rules above. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Legacy Miner purchase helpers remain for regression fixtures; ordinary play uses Stonehands. Physical wage collection and sustained-need dissatisfaction/departure still apply to the four dwarf types. Assigned guard duties and general specialist retreat are deferred. The [shared need rules](game-rules.md#10-needs-payday-and-departure) define grace, role capacity, recovery and physical departure.
+Current prototype: all dwarf types share autonomous movement, food and rest; only specialists use Training Room progression. Engineers, Warriors and Runesmiths arrive through the Hearth when reachable specialist rooms and shared accommodation/food support have spare capacity, following the cooldowns and staffing rules above. Debug spawning remains available for isolated tests and bypasses arrival requirements. Normal arrivals are off by default in the Room Layout Studio; its **Test automatic specialist arrivals** toggle enables the same requirements for testing. Legacy Miner purchase helpers remain for regression fixtures; ordinary play uses Stonehands. Physical wage collection and sustained-need dissatisfaction/departure still apply to the four dwarf types. Assigned guard duties and specialist retreat remain pending. The [shared need rules](game-rules.md#10-needs-payday-and-departure) define grace, role capacity, recovery and physical departure.
 
 Every dwarf starts at character level 1. Miners remain at level 1 and do not train or earn XP; specialists can reach level 5 through Training Room practice and real combat. Each type has explicit level definitions for health, attack damage, attack interval, work speed, wages and the training time needed to reach the next level. Successful melee hits also grant experience; ordinary work does not. See [Character levels and training](#character-levels-and-training) for the rules and provisional values.
 
-Warriors pursue nearby enemies, fight autonomously and respond to Call to Arms. Mining workers flee danger; Engineers and Runesmiths retain weaker adjacent self-defense without pursuit or rally response. Cave Hounds patrol and answer settlement threat reports as described above. Combat uses normal authored encounters/raids as well as debug enemies. Runesmiths research spells selected in the sidebar and prepare them again after casting; [Spells](spells.md) owns spell effects and targeting.
+Warriors pursue nearby enemies, fight autonomously and respond to Call to Arms. Mining workers flee danger; Engineers and Runesmiths retain weaker adjacent self-defense without pursuit or rally response. Cave Hounds patrol and answer settlement threat reports as described above. Combat uses normal authored encounters/raids as well as debug enemies. Runesmiths research spells selected in the sidebar and prepare them again after casting; [Spells](../../spells.md) owns spell effects and targeting.
 
-- Engineers, Warriors, Runesmiths and retained debug Miners need regular pay, accessible bedding, Kitchen support and any facilities required by their role. Stonehands skip living support; Cave Hounds use dens and receive no wages.
+- All resident dwarfs, including purchased miners, need regular pay, accessible bedding, sufficient food, and any facilities required by their role.
 - Dwarfs choose work, eat, sleep, collect wages, and respond to threats autonomously. Players do not possess, move, or issue individual orders to them.
 - Dwarfs and enemies move continuously through halls and rooms in any clear direction. They do not snap to tile centers or occupy exclusive grid squares; obstacles and available physical clearance determine where they can go.
 - A call to arms rallies dwarfs with the `fight` capability, currently Warriors and Cave Hounds. Workers' adjacent self-defense does not make them rally responders.
 - Persistent unmet needs cause dissatisfaction and eventually departure through the Hearthstone. The interface must identify the actual problem before a dwarf leaves.
 - Attraction does not remove ongoing requirements: a specialist needs reachable room services after arriving. Capacity comes from floor tile count times the configured per-tile value, independent of furniture and room shape.
 - Temporary queues or a short interruption should not immediately trigger departure.
-- Every living resident uses one Dormitory accommodation slot, provisionally one per floor square. Stonehands are exempt. Visible beds do not determine capacity or resting access.
+- Every resident uses one Dormitory accommodation slot, provisionally one supported dwarf per square. All dwarf types use this shared accommodation; visible beds do not determine its capacity or resting access.
 - Every dwarf eats at a Kitchen. One large Kitchen or several reachable Kitchens must provide enough resident support, provisionally one dwarf per square. There are no ingredients, stored meals, ale inventories or food-production chains. Dwarfs still travel to eat and spend time there. Need frequency and visit duration remain tunable.
 - Engineers, Warriors and Runesmiths can train. Miners cannot train or level up. Room area limits simultaneous trainees; each visit grants at most one level, followed by a personal cooldown. Visual equipment is optional.
 - Wage tiers below are relative design targets, not final gold amounts. Every dwarf receives a positive wage on payday; recruitment costs are separate.
@@ -71,11 +73,11 @@ Warriors pursue nearby enemies, fight autonomously and respond to Call to Arms. 
 | Cave Hound | Patrols open routes and answers threat reports | Early melee defense and Call to Arms | Dormitory-only automatic arrival; regular cooldown and soft defense share | None | One den place | Fed at its Dormitory den | No special room |
 | Stonehand | Shared terrain work: mine, haul, claim, reinforce, walls and bridges | Fragile, cannot fight | Starting crew or Create Stonehand (50 + 25 per living Stonehand) | None | None | None | Hearth arrival and reachable storage |
 | Miner (legacy) | Excavates designated terrain, extracts resources, delivers gold, claims reachable ground, and reinforces walls when other work is complete | Opens routes and flees enemies or incoming damage | Retained for debug; future basic fighter role deferred | Low tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | None; works on terrain and needs access to treasure storage |
-| Engineer | Makes doors and traps in the Workshop | Supports defense through manufactured fixtures; adjacent self-defense without pursuit | Attracted by a working Workshop | Standard tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Workshop with available working capacity |
-| Warrior | Trains, pursues nearby enemies and responds to Call to Arms | Holds entrances and fights at close range | Attracted by a working Training Room | Standard tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Training Room with accessible training capacity, shared with the other specialists |
+| Engineer | Makes doors and traps in the Workshop; repairs and replacement mechanisms are proposed continuing jobs | Supports defense through manufactured fixtures; adjacent self-defense without pursuit | Attracted by a working Workshop | Standard tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Workshop with available working capacity |
+| Warrior | Trains, guards designated posts, and responds to nearby threats | Holds entrances and fights at close range | Attracted by a working Training Room | Standard tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Training Room with accessible training capacity, shared with the other specialists |
 | Runesmith | Researches spells in the Library | Researched spells and adjacent self-defense without pursuit | Attracted by a working Library | High tier; regular payday | One Dormitory accommodation slot | One Kitchen support slot; autonomous eating visits | Library with available research capacity |
 
-All specialists also depend on the shared treasure, food, and accommodation facilities. A Workshop alone does not make an unsupported settlement ready for Engineers. Engineer is the workshop-crafting type and Runesmith the research type; multiple supported residents can work concurrently in separate slots; separate equipment production, enchanting, and shrine service systems are not part of this simplified roster. Dedicated rooms for advanced dwarf types may be considered later.
+All specialists also depend on the shared treasure, food, and accommodation facilities. A Workshop alone does not make an unsupported settlement ready for Engineers. There is one workshop crafter and one spell researcher; separate equipment production, enchanting, and shrine service systems are not part of this simplified roster. Dedicated rooms for advanced dwarf types may be considered later.
 
 ## Character levels and training
 
@@ -83,7 +85,7 @@ All four types spawn at level 1. Miners have only that fixed level and never ear
 
 A dwarf can begin or resume practice when its cooldown has expired, its food/rest needs allow it, and a free reachable training slot is available. It practices until shared XP reaches the next level's requirement. On reaching that requirement, it gains exactly one level, releases the slot, leaves training and starts a personal **45-second cooldown**. Interrupted practice is retained on the dwarf and can resume in another Training Room. Cooldown holds no room capacity. Combat ignores the training cooldown and can grant a level during a fight without interrupting it. Any level gain restarts the training cooldown; surplus combat XP carries into the next level. A level-5 dwarf has no further training job or XP accumulation.
 
-Each row below gives the complete statistics at that level. **Training** is the time needed from zero XP at 1 XP per second; the same number is the shared XP requirement to enter that row, not a lifetime total; level 1 is free on arrival. Travel, meals, rest and cooldown do not count. Work speed is a multiplier on ordinary productive work, including research; it does not shorten training. Haste can temporarily accelerate work, attacks and practice. These values are provisional and editable in [character definitions](src/content/characters.ts) and **Debug → Game configuration**.
+Each row below gives the complete statistics at that level. **Training** is the time needed from zero XP at 1 XP per second; the same number is the shared XP requirement to enter that row, not a lifetime total; level 1 is free on arrival. Travel, meals, rest and cooldown do not count. Work speed is a multiplier on ordinary productive work, including research; it does not shorten training. Haste can temporarily accelerate work, attacks and practice. These values are provisional and editable in [character definitions](../../src/content/characters.ts) and **Debug → Game configuration**.
 
 ### Miner levels
 
@@ -139,21 +141,21 @@ Reinforcement is the exception to the productive assignment window: a worker fin
 
 A free, uncommitted miner fills missing resource coverage at its next job choice. Completing a gem batch or carrying a resource load to storage keeps the resource assignment staffed; these routine pauses do not redirect another miner from unfinished work. For dwarfs, food/rest, wages, combat and departure can still interrupt; Stonehands bypass those interruptions. Hearth activation can interrupt either worker type, and an uncommitted worker can provide cover. Newly marked resources may wait for an existing assignment or tile to finish. Travel and interruptions can cause mining gaps. Hidden, unmarked or unreachable deposits do not reserve workers. A lone available miner prioritizes resources and periodically collects a full gem load for delivery, so permanent deposits cannot prevent income from reaching storage. With no reachable storage, extracted resources remain at the site as before.
 
-## Specialist behavior
+## Specialist behavior proposals
 
 ### Engineer
 
-Uses the Workshop to manufacture the doors and traps selected by the player. This single role covers both metalworking and mechanism assembly. The player places completed stock through Defenses. The implemented spike and bolt traps reset automatically after cooldown, with no Engineer rearming or supply cost. Door repairs and fixture upkeep are deferred. They can also improve their own stats in the shared Training Room.
+Uses the Workshop to manufacture the doors and traps selected by the player. This single role covers both metalworking and mechanism assembly. The player places completed stock through Defenses. The implemented spike and bolt traps reset automatically after cooldown, with no Engineer rearming or supply cost. Door repairs and upkeep for future fixture types remain proposed work; Engineers should wait for safe access rather than repeatedly walk into an active battle to repair a door. They can also improve their own stats in the shared Training Room.
 
 The Engineer is a female dwarf. Her concept uses practical teal workwear, a protective leather apron, goggles, a metalworking hammer, and mechanism tools. This appearance choice leaves her recruitment, needs, work, and training rules unchanged.
 
 ### Warrior
 
-Warriors alternate between autonomous training, nearby enemy pursuit and ordinary needs. Call to Arms provides temporary area direction. Training Room location influences response time; its capacity is shared with Engineers and Runesmiths. Warriors sleep in Dormitories. Assigned posts and guard scheduling are deferred.
+The intended role alternates between training, guard duty, and ordinary needs. Guard Posts and the position of the Training Room will influence how quickly Warriors respond. The Training Room attracts Warriors but is available to all three specialist types. It provides training positions, while Warriors sleep in Dormitories like everyone else. [Character levels](#character-levels-and-training) improve Warrior combat statistics. Guarding remains pending; autonomous pursuit, melee combat and spell rally response are implemented.
 
 ### Runesmith
 
-Works at the Library to research spells. This is the stronghold's single research specialist. The player queues and pauses research; the Library prepares spells again after casting. See [Spells](spells.md) for the catalog and implementation status. Training improves its defined work and combat statistics. Runesmiths only fight enemies already in melee reach; they do not pursue or rally. Campaign availability follows [Levels](levels.md#campaign-brief-and-progression); separate personal spells, healing or morale duties are deferred.
+Works at the Library to research spells. This is the stronghold's single research specialist. The player queues and pauses research; the Library prepares spells again after casting. See [Spells](../../spells.md) for the catalog and implementation status. Training improves its defined work and combat statistics. Runesmiths only fight enemies already in melee reach; they do not pursue or rally. Campaign research remains open; separate personal spells, healing or morale duties are not assumed.
 
 ## Continuing usefulness
 
@@ -165,18 +167,38 @@ The roster above defines the initial gameplay scope. Future types should be adde
 
 ## Character concept art
 
-The [dwarf concept gallery](concept-art/dwarfs/README.md) contains the character references; superseded and deferred character images have been removed. The latest Engineer sheet depicts the agreed female character; the Runesmith sheet reflects the merged research role. Each sheet includes front, back, and overhead studies in the shared stylized 3D direction. Other appearance details remain visual proposals rather than changes to recruitment, needs, or combat rules. Exact prompts are retained with the images. All concept art is collected in the [concept-art folder](concept-art/README.md).
+The [dwarf concept gallery](../../concept-art/dwarfs/README.md) contains the character references; superseded and deferred character images have been removed. The latest Engineer sheet depicts the agreed female character; the Runesmith sheet reflects the merged research role. Each sheet includes front, back, and overhead studies in the shared stylized 3D direction. Other appearance details remain visual proposals rather than changes to recruitment, needs, or combat rules. Exact prompts are retained with the images. All concept art is collected in the [concept-art folder](../../concept-art/README.md).
 
-## Balance and limits
+## Decisions still open
 
-Creation prices, need intervals, recruitment weights/cooldowns and per-level statistics have explicit editable defaults. They remain tuning choices, not missing systems. Residents have definition-supplied names; personality mechanics are not implemented. See [development notes](development-plan.md#known-limitations-and-deferred-scope) for deferred roles and behavior.
+- Starting miner count, recruitment price curve, wage amounts, and payday interval.
+- Eating/rest intervals and room capacity per tile.
+- Balance of each type's level statistics, training durations and shared cooldown.
+- Broader spell balance and campaign research progression.
+- Playtest [Call to Arms](../../spells.md#call-to-arms-behavior) response priorities: Warriors answer, workers continue ordinary activity or adjacent self-defense, and critical survival needs can override the rally.
+- Whether individual dwarf names or personalities are included.
 
 ## Implementation playbook
 
-[Adding rooms and dwarf types](content-playbook.md) gives the concrete dwarf-registration steps, supported capabilities/models, debug spawn workflow and test requirements. All dwarf definitions join the debug catalog automatically; per-type walking speed is tunable. Soft crowd avoidance yields to path progress when necessary. Real terrain and gameplay obstacles remain solid; room furniture has no collision or sight effect. Miners can also construct planned walls, with a deliberately longer work duration.
+[Adding rooms and dwarf types](../../content-playbook.md) gives the concrete dwarf-registration steps, supported capabilities/models, debug spawn workflow and test requirements. All dwarf definitions join the debug catalog automatically; per-type walking speed is tunable. Soft crowd avoidance yields to path progress when necessary. Real terrain and gameplay obstacles remain solid; room furniture has no collision or sight effect. Miners can also construct planned walls, with a deliberately longer work duration.
 
-## Combat balance and test room
+## Combat balance and test room (M24)
 
-Debug → Test harnesses → Combat test room offers single hounds, pairs, packs of six, level-1 specialists and two/four level-3 Warriors against each species or mixed regional groups. Choose support, then Load / reset matchup. It starts paused; Return to stronghold preserves the retained world and prior pause state. Support supplies bolt traps or prepared Library spells; casting still charges normal gold. Stats, casualties and elapsed time stay in the sidebar.
+Debug → Test harnesses → Combat test room offers single hounds, pairs, packs of six, level-1 specialists and two/four level-3 Warriors against every species or mixed regional groups. Choose support, then Load / reset matchup. Tests start paused; Return to stronghold preserves its world and prior pause state. Support offers supplied bolt traps or prepared Library spells; casting charges normal gold. Stats, casualties and elapsed time stay in the sidebar. Construction, arrivals, training and manufacturing must still be earned during normal play.
 
-Normal construction, arrivals, training, manufacturing and research must be earned in ordinary play. Hounds provide early defense; trained Warriors, manufactured traps and Library spells support later armored and volcanic encounters. Group composition, access and preparation determine results. Historical measured matchups and tuning decisions are in [the archived character notes](archive/previous-docs/characters.md#combat-balance-and-test-room-m24). Use `npm run verify -- combat --browser=combat` when changing this system.
+Measured open-floor matchups use healthy units starting five tiles apart, normal movement, abilities and combat XP, no automatic recruitment and no player spells unless specified. These are reproducible examples, not guarantees for every layout:
+
+| Defenders | Opponents | Result |
+|---|---|---|
+| One hound | One Raider | Defeated in 5 seconds |
+| Two hounds | One Raider | Win in 8.2 seconds; one survivor at 40 health |
+| Two hounds | One Spider | Win in 6 seconds; both survive |
+| Six hounds | Brute + two Spiders | Win with four survivors |
+| Six hounds | Sentinel + two Guards | Defeated; armor and concentrated attacks resist the pack |
+| Six hounds | Deepmaw + two Cinderlings | Defeated in 11 seconds |
+| Four level-3 Warriors | Sentinel + two Guards | Win in 12.6 seconds; 295 total health remains |
+| Same Warriors + two bolt traps | Same ancient group | Win in 9.6 seconds; 388 total health remains |
+| Same Warriors + Reckoning and Stoneguard | Same ancient group | Win in 11.6 seconds; casting spends 75 gold |
+| Four level-3 Warriors | Deepmaw + two Cinderlings | Win in 9 seconds; all survive |
+
+Hound health, bite, speed, 30-second recruitment, den-only support and lack of an animal cap are retained. Reducing bite damage from 10 to 9 broke the early pair-versus-Raider role. Instead, Deepmaw's existing heavy bite is strengthened in the enemy definition. A six-hound settlement needs six paid den tiles and three minutes of arrivals; supported Warriors take additional Kitchen/Training Room investment, wages and practice, but use fewer residents for durable later defense. The normal recruitment tests cover expansion, losses, specialist reservation and full accommodation. Manufactured bolt traps cost 55 gold each plus staffed Workshop construction; Library spells need staffed research/preparation and casting funds. Focused checks produce the support through normal paid crafting/research. Campaign layouts and repeated pressure may change outcomes and are revisited in M27/M29/M19.

@@ -1,6 +1,8 @@
+> Historical snapshot from the documentation cleanup. It may describe superseded behavior. Use the [active documentation](../../README.md) for development.
+
 # Gameplay interface
 
-The player interface uses a compact, persistent left sidebar with four main categories: Rooms, Defenses, Spells and Workforce. It separates ordinary actions from development tools and makes unavailable actions explainable by keyboard as well as mouse. Inspection stays in the sidebar; notifications use a rail and temporary card anchored beside it.
+The player interface uses a compact, persistent left sidebar with four main categories: Rooms, Defenses, Spells and Workforce. The M20 update separates ordinary actions from development tools and makes unavailable actions explainable by keyboard as well as mouse. Inspection stays in the sidebar; notifications use a rail and temporary card anchored beside it.
 
 ## Current player interface
 
@@ -12,25 +14,25 @@ The player interface uses a compact, persistent left sidebar with four main cate
 - Notifications use a vertical rail on the right edge of the left sidebar. Icons slide outward with distinct information, warning and danger marks. Click an icon for one anchored detail card; Go to source locates a known fight, resident or place. Card × collapses details; Dismiss, icon ×, right-click or Delete removes the report from the rail. Help retains a bounded per-area history and can reopen details. New reports never steal the camera, focus or an open card. See the notification rules below.
 - The Hearth panel owns campaign briefings and activation. A persistent result card offers travel, restart or the campaign endpoint action supplied by the campaign state. Debug has a separate footer icon; room layouts, test residents/enemies, configuration and harness controls stay there or in an active test world.
 
-`node scripts/interface-browser.mjs` covers player flows; `scripts/campaign-browser.mjs` verifies real campaign activation, travel and endpoint controls. Before/after and compact-layout captures are kept in ignored `test-results/m20/`.
+`node scripts/interface-browser.mjs` covers the M20 player flows; `scripts/campaign-browser.mjs` verifies real campaign activation, travel and endpoint controls. Before/after and compact-layout captures are kept in ignored `test-results/m20/`.
 
-The Debug menu exposes three direct choices under **Before & after**: **Characters**, **Terrain & rooms**, and **Spells, traps & Hearthstones**. **Back to comparison** restores the current studio controls after opening another panel without reloading its world or changing the camera and preview. **Debug → Test harnesses → Additional test scenarios** retains grouped scenario loading, with pause/step/advance and resident diagnostics for gameplay test worlds. Display-only comparison rooms omit simulation advancement, diagnostics and test-actor setup. Production builds retain these visible review tools while omitting URL-driven scenario loading and the browser automation interface. See [Development tools](development-tools.md) for usage; detailed diagnostic text remains inside the left sidebar.
+The Debug menu exposes three direct choices under **Before & after**: **Characters**, **Terrain & rooms**, and **Spells, traps & Hearthstones**. **Back to comparison** restores the current studio controls after opening another panel without reloading its world or changing the camera and preview. **Debug → Test harnesses → Additional test scenarios** retains grouped scenario loading, with pause/step/advance and resident diagnostics for gameplay test worlds. Display-only comparison rooms omit simulation advancement, diagnostics and test-actor setup. Production builds retain these visible review tools while omitting URL-driven scenario loading and the browser automation interface. See [Development tools](../../development-tools.md) for usage; detailed diagnostic text remains inside the left sidebar.
 
 Working interface design for the dwarven stronghold game. Companion documents: [Game rules](game-rules.md), [Rooms](rooms.md), [Characters](characters.md), and [Levels](levels.md).
 
-The left-edge panning fix is implemented. Direction stays relative to the rotated view. `node scripts/camera-browser.mjs` checks actual outer edges, sidebar overlap, rotation, compact layouts, ordinary panel interaction, pointer leave, blur and full-map suppression. Menus use the same camera suppression as dialogs.
+The left-edge panning fix is implemented. Direction stays relative to the rotated view. `node scripts/camera-browser.mjs` checks actual outer edges, sidebar overlap, rotation, compact layouts, ordinary panel interaction, pointer leave, blur and full-map suppression. Future starting menus must retain the same camera suppression as dialogs.
 
 ## Starting menu and loading screens
 
-The starting menu uses the user-approved [main menu and Free Play designs](concept-art/menus/README.md): carved stone and bronze controls, warm lamps and the blue Hearthstone, with Campaign/Free Play/Settings on the main screen and a level list beside an illustrated preview in Free Play. Their composition is implemented with responsive, keyboard-accessible HTML controls. Campaign starts the five-area authored journey with gradual content unlocks. Free Play uses a scrollable catalog, selected outline/rune, illustrated preview, Start level and Back. Settings holds animation, edge-scrolling and audio preferences in memory. The sidebar ♪ button opens sound settings during a run without discarding it. The sidebar menu button and result card provide Return to menu; confirmation offers Keep playing or discard. Active-run restart also confirms, while terminal restarts start immediately. Mode changes reset all local state. Menus and discard confirmations pause simulation and suppress camera/world inputs.
+M25 uses the user-approved [main menu and Free Play designs](../../concept-art/menus/README.md): carved stone and bronze controls, warm lamps and the blue Hearthstone, with Campaign/Free Play/Settings on the main screen and a level list beside an illustrated preview in Free Play. Their composition is implemented with responsive, keyboard-accessible HTML controls. Campaign starts the five-area authored journey with gradual content unlocks. Free Play uses a scrollable catalog, selected outline/rune, illustrated preview, Start level and Back. Settings holds animation, edge-scrolling and audio preferences in memory. The sidebar ♪ button opens sound settings during a run without discarding it. The sidebar menu button and result card provide Return to menu; confirmation offers Keep playing or discard. Active-run restart also confirms, while terminal restarts start immediately. Mode changes reset all local state. Menus and discard confirmations pause simulation and suppress camera/world inputs.
 
-A lightweight inline HTML loading shell paints before the dynamic game bundle, with a stone/bronze/rune fallback while optional art loads. Startup, level entry, travel and restart yield browser frames, block world controls and wait for scene readiness plus a rendered frame before dismissal. Activity stages are indeterminate, with no minimum duration. Failed transitions keep Retry and Reload visible; failed startup offers Reload. Reduced motion stops the activity animation.
+M25.1 adds a lightweight themed loading shell before expensive game initialization to cover the reported blank startup, then consistent loading screens for level entry, travel and restart. Show truthful activity, retain the screen until the destination is rendered and usable, and provide a visible retry/reload path on failure. The initial shell must paint without waiting for the game bundle or large background images. Both are implemented. The inline HTML shell paints before the dynamic game bundle and uses a styled stone/bronze/rune fallback while optional art arrives. Initial startup and every world transition yield browser frames, keep simulation and world controls blocked, and wait for scene readiness plus a rendered frame before dismissal. Activity stages are indeterminate and have no minimum duration. Failed transitions retain the overlay with Retry and Reload; failed startup offers Reload to rebuild the engine cleanly. Reduced motion stops the activity animation.
 
 ## Underground lighting
 
-[Underground lighting](graphics.md#underground-lighting) provides moody ambient lighting, visible source glows with nearby surface illumination, and a soft light beneath the world pointer. Pointer light follows the hovered world surface and is hidden over UI or outside the viewport. It does not reveal unexplored terrain or hidden inhabitants, and must preserve tool/selection readability.
+[M33 lighting](../graphics-pass.md#m31-environment-refinement-and-m33-gameplay-lighting) provides moody ambient lighting, visible source glows with nearby surface illumination, and a soft light beneath the world pointer. Pointer light follows the hovered world surface and is hidden over UI or outside the viewport. It does not reveal unexplored terrain or hidden inhabitants, and must preserve tool/selection readability.
 
-Its test room is available under **Debug → Test harnesses → M33 lighting test room**. The sidebar provides a current-renderer comparison toggle, camera views, ambient/directional/source/glow controls, pointer controls, defaults and reset. It starts paused and uses the shared Pause/Resume and Return to stronghold controls; Rooms reopens these controls after inspection. Settings affect only this test world, and return restores the retained game and prior pause state. Ordinary campaign and Free Play worlds use biome palettes and bounded source/pointer lighting; test controls affect only the harness. See [the experiment and limits](graphics.md#lighting-test-room).
+Its test room is available under **Debug → Test harnesses → M33 lighting test room**. The sidebar provides a current-renderer comparison toggle, camera views, ambient/directional/source/glow controls, pointer controls, defaults and reset. It starts paused and uses the shared Pause/Resume and Return to stronghold controls; Rooms reopens these controls after inspection. Settings affect only this test world, and return restores the retained game and prior pause state. Ordinary campaign and Free Play worlds use biome palettes and bounded source/pointer lighting; test controls affect only the harness. See [the experiment and limits](../graphics-pass.md#m33-lighting-test-room).
 
 ## Agreed direction
 
@@ -38,7 +40,7 @@ Controls occupy a persistent sidebar on the left. The stylized 3D gameplay view 
 
 The gameplay view stays free of floating text, numbers, and progress bars. Rooms and characters communicate through their appearance and behavior. Detailed information belongs in the sidebar. Instructions, warnings, and other messages use dismissible cards associated with icons above a question-mark button.
 
-This document defines the interface, not additional simulation rules. The controls below describe the implemented interface; layout and artwork remain open to iteration.
+This document defines the interface, not additional simulation rules. Exact dimensions, icon artwork, key bindings, and message behavior described as proposals should be checked during prototyping.
 
 ## Screen layout
 
@@ -48,11 +50,11 @@ This document defines the interface, not additional simulation rules. The contro
 | Below minimap | Stored gold and a compact total dwarf count | Numbers are allowed here; further economic and population details open on demand |
 | Sidebar category row | Rooms, defenses, spells, and dwarfs | Icon buttons switch the contents of a single panel |
 | Main sidebar panel | Available choices, selected item details, or inspected room/dwarf information | Shows one focused view at a time rather than several overlapping windows |
-| Sidebar utility controls | Cancel tool, return to Hearthstone, and pause/settings | Stay easy to reach without opening a separate full-screen menu for routine play |
+| Sidebar utility controls | Excavation, call to arms, return to Hearthstone, and pause/settings | Stay easy to reach without opening a separate full-screen menu for routine play |
 | Lower sidebar edge beside the gameplay view | Question-mark button with message icons above it | Provides help and access to current or dismissed messages |
 | Right side | Overhead gameplay view | Supports panning, rotation, zoom, selection, and placement |
 
-The sidebar scales for desktop readability, keeping map and essential controls fixed while the choice panel scrolls. Use the compact browser checks when changing its dimensions.
+Proposed starting proportion: roughly one fifth of the width for the sidebar at a normal desktop aspect ratio. Scale the interface for readability rather than locking it to an exact pixel width. Keep the minimap and essential controls visible when the available panel space changes; scroll or page the choice grid inside the sidebar if needed.
 
 Use text sparingly in the left-hand in-game input panel. Prefer recognizable icons with direct activation and enabled/disabled states. Keep short costs/status only when useful; place labels, explanations and secondary controls in tooltips or expandable details. The separate construction toolbar is removed. Excavation and clearing marks use the default mouse behavior with no buttons. Rooms has a fixed final four-cell row: Bridge, Wall, an empty cell, and Sell in the lower-right corner. This row stays in place regardless of the selected tool. Sell replaces separate room-reclaim and bridge-removal controls, and also dismantles placed defenses. Room/deck refunds, full bridge-plan refunds, zero defense refunds and bridge removal protections remain unchanged.
 
@@ -63,10 +65,10 @@ The sidebar can use restrained dwarven stone, metal, and rune motifs. Borders an
 - Show explored passages, rooms, known terrain boundaries, and the Hearthstone with clear shapes and a limited color palette.
 - Neither map shows a camera footprint, orientation overlay or camera-center marker.
 - Press **M** or the expand icon beside the minimap to open a larger full map using the same colors and fog of war. The entire level fits at once with its aspect ratio preserved. M, Escape and the close button dismiss it; clicking a position recenters the camera and closes it. Simulation continues while the map is open; world camera inputs are suspended.
-- Clicking the minimap recenters the camera. There is no minimap drag-to-pan control.
+- Clicking a known position recenters the camera. Proposed behavior: dragging within the minimap pans the view.
 - Gold seams and gem deposits are always visible in the main view and on the minimap and full map, including beyond explored terrain, to draw players toward useful areas. Other unexplored ground, caves, enemies and the onward Hearthstone remain concealed. Resource markers do not discover tiles or permit remote mining; deposits still require a physically reachable, discovered work face. Exhausted gold disappears from the resource map; persistent gems remain.
 - Current enemy markers require visibility. Remembered terrain and current threats must not be confused.
-- Notification source actions can locate a known threat without revealing hidden positions.
+- An attack message may briefly emphasize its known location on the minimap, without adding a text label to the world.
 
 Keep both maps fixed to the map orientation. Exact map symbols, zoom controls, and handling of crowded markers remain visual design decisions.
 
@@ -124,13 +126,13 @@ Training Room and Library use the same construction controls as the other rooms.
 
 The Workforce panel shows each resident's type, activity, character level and maximum level, current/maximum health, attack damage and interval, work-speed bonus and food/rest state. It also shows the next level, its shared XP requirement, earned XP, training/combat earning rates and personal training cooldown, or a maximum-level message. Each training visit ends after one gained level and releases its room slot during cooldown. Specialists show their actual arrival requirements and missing support. There are no individual training or movement orders. [Character levels](characters.md#character-levels-and-training) owns the progression rules and balance tables.
 
-The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume and Pause controls, plus direct icon activation. Initial research is selected by the player; Runesmiths choose reachable Library slots autonomously. A cast is available only when prepared and affordable. Targeting follows the selected spell's definition. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active effect time stays in the sidebar. See [Spells](spells.md) for effects, costs, targeting and implementation status.
+The Spells panel lists editable spell definitions with their effects, research/preparation progress, Research/Resume and Pause controls, plus direct icon activation. Initial research is selected by the player; Runesmiths choose reachable Library slots autonomously. A cast is available only when prepared and affordable. Targeting follows the selected spell's definition. Failed casts explain the reason and spend no gold; after a successful cast, preparation queues again. Active effect time stays in the sidebar. See [Spells](../../spells.md) for effects, costs, targeting and implementation status.
 
-**Debug → Test harnesses → Load visual showcase** builds example rooms through normal gameplay construction and adds test residents, gold, craft orders and research orders. Kitchens provide room support without initial food stock. The [configuration guide](configuration.md) identifies the source of the showcase contents. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
+**Debug → Test harnesses → Load visual showcase** builds example rooms through normal gameplay construction and adds test residents, gold, craft orders and research orders. Kitchens provide room support without initial food stock. The [configuration guide](../../configuration.md) identifies the source of the showcase contents. The room catalog's example layouts and free-building flag also work for Training Room and Library. Return to stronghold restores the paused normal world in memory.
 
 The studio starts with automatic arrivals disabled. **Test automatic specialist arrivals** enables normal room/support checks in that test world. The Workforce panel reports time until the next check and the specific missing capacity for each type.
 
-Excavation is the default cursor action at startup and after right-click or Escape cancels another operation. The first tile determines the entire excavation gesture at pointer-down: an unmarked tile starts adding, and a marked tile starts removing. The action stays fixed across mixed selections, with matching cursor and preview; changes apply on release. Adding preserves existing marks, and removing leaves unmarked tiles unchanged. Single clicks still toggle their tile. Clicking an open floor or room inspects it. Marking diggable terrain uses a clear cell outline or surface treatment on the square grid. Bedrock cannot be designated for mining. The contextual cursor and surface outlines distinguish adding and clearing marks.
+Excavation is the default cursor action at startup and after right-click or Escape cancels another operation. The first tile determines the entire excavation gesture at pointer-down: an unmarked tile starts adding, and a marked tile starts removing. The action stays fixed across mixed selections, with matching cursor and preview; changes apply on release. Adding preserves existing marks, and removing leaves unmarked tiles unchanged. Single clicks still toggle their tile. Clicking an open floor or room inspects it. Marking diggable terrain uses a clear cell outline or surface treatment on the square grid. Bedrock cannot be designated for mining. The final highlight colors and pattern remain to be chosen.
 
 The world cursor communicates the action with a pickaxe for excavation, a pickaxe with a minus for clearing marks, the normal pointer over inspectable open floor, or the selected room icon for construction. Right-click/Escape restores the contextual excavation cursor and clears the room choice. Native sidebar pointers remain normal. Cursor artwork contains no text or costs.
 
@@ -138,7 +140,7 @@ Excavation can be planned into darkness. Hidden tiles accept the same marks rega
 
 Selection marks and placement previews are temporary action feedback. They may show which cells are affected and whether an action is valid, but contain no textual labels, numeric dimensions, or work-completion bars. The normal view does not need a bright permanent grid across every floor.
 
-Current mouse and keyboard bindings:
+Proposed mouse and keyboard defaults:
 
 | Input | Action |
 |---|---|
@@ -152,11 +154,11 @@ Current mouse and keyboard bindings:
 | Mouse wheel over the world | Zoom in or out |
 | Click the minimap | Recenter the camera |
 
-These bindings are implemented; there is no key-remapping UI. The sidebar provides Home and zoom icons; rotation uses the keyboard or middle drag. Closing, refreshing or leaving an active game requests browser confirmation to protect its in-memory session; Ctrl+W itself remains browser-controlled. Input over the sidebar must never excavate, build, or cast into the world behind it; scrolling a panel must not zoom the camera. Reselect marked tiles to remove excavation designations; previews distinguish adding from removing marks. There are no separate excavation or erase buttons.
+Bindings are proposals and should be remappable. The sidebar provides Home and zoom icons; rotation uses the keyboard or middle drag. Closing, refreshing or leaving an active game requests browser confirmation to protect its in-memory session; Ctrl+W itself remains browser-controlled. Input over the sidebar must never excavate, build, or cast into the world behind it; scrolling a panel must not zoom the camera. Reselect marked tiles to remove excavation designations; previews distinguish adding from removing marks. There are no separate excavation or erase buttons.
 
 Camera rotation preserves the world-grid alignment of selections. Workforce and enemies still move continuously within the free space rather than following selection squares. Camera motion never grants visibility through concealed terrain.
 
-Call to Arms uses a ground rally marker and an active sidebar state. Its one-active-rally limit, costs, duration, responder eligibility and Dismiss action are defined in [Spells](spells.md#call-to-arms-behavior). Responders move and fight autonomously.
+Call to arms uses a recognizable rally marker in the world and an active state on its sidebar button. The player can place or cancel the rally from these controls; responders move and fight autonomously. The proposed one-active-rally model remains in [Game rules](game-rules.md#2-player-control). Response rules, costs, and range remain open.
 
 Camera zoom has no minimum inspection distance: the wheel and sidebar buttons continue moving closer, including in the comparison studios. The far limit still applies. In the character gallery, Starting/Refined centers an individual model and Focus selected pair restores both. Its animation selector, play/pause, restart, frame-step and speed controls preview the original and revised rigs together without advancing gameplay.
 
@@ -199,10 +201,10 @@ Current notification behavior:
 - Filling accessible accommodation raises **Dormitory is full**. **Build Dormitory** opens Rooms and selects its construction tool. Freeing space clears it; filling again starts a fresh episode.
 - First natural recruitment of each resident type in an area produces an arrival report with its type icon, resident name and **Meet new arrival** action. Starting residents and debug spawns do not announce recruitment; later recruits of the same type do not repeat the introduction. This includes Cave Hounds and newly supported specialist dwarfs.
 - **Go to source** resolves resident/enemy targets live and opens inspection. Unknown origins have no coordinates; lost, departed, dead or hidden unit targets disable Locate with a short explanation. Camera location never reveals terrain.
-- Current conditions cover fighting, Hearth damage, warned/active/cleared encounter sources, sustained needs by cause, and full Dormitory accommodation. Combat and Hearth warnings resolve after the quiet intervals in [notificationSettings](src/game/notifications.ts); these do not alter combat or enemy awareness. The same settings own the history limit.
-- Brief ordinary queues should not produce alerts. Notify for meaningful, persistent problems using the current thresholds defined by the needs and notification systems.
+- Current conditions cover fighting, Hearth damage, warned/active/cleared encounter sources, sustained needs by cause, and full Dormitory accommodation. Combat and Hearth warnings resolve after the quiet intervals in [notificationSettings](../../src/game/notifications.ts); these do not alter combat or enemy awareness. The same settings own the history limit.
+- Brief ordinary queues should not produce alerts. Notify for meaningful, persistent problems using the thresholds eventually defined by the needs and production systems.
 
-All notification types use the same model, rail, card, dismissal, history and source resolution. Conditions are registered in [notification definitions](src/content/notifications.ts); one-time events call the shared service. Neither path requires a UI branch for the new type. See [Adding notifications](content-playbook.md#add-a-notification). `npm run verify -- notifications --browser=notifications` checks these flows; captures are in ignored `test-results/notifications/`.
+All notification types use the same model, rail, card, dismissal, history and source resolution. Conditions are registered in [notification definitions](../../src/content/notifications.ts); one-time events call the shared service. Neither path requires a UI branch for the new type. See [Adding notifications](../../content-playbook.md#add-a-notification). `npm run verify -- notifications --browser=notifications` checks these flows; captures are in ignored `test-results/notifications/`.
 
 Example message wording below illustrates placement and clarity; it does not define new thresholds or mechanics:
 
@@ -217,7 +219,7 @@ Example message wording below illustrates placement and clarity; it does not def
 | A spell becomes available | A new spell is ready. | Open spells |
 | The core is attacked | The Stone Hearth is under attack. | Locate Hearthstone |
 
-Objective briefings and activation status live in the Hearth panel. Reports use the notification rail and Help history; there is no permanent world-space objective checklist.
+Objective briefings, discovered-area explanations, and tutorial guidance use the same message system. Objectives remain available through the sidebar help/information view rather than a permanent text checklist over the world.
 
 The **Hearth** button beneath the gold/population totals opens starting-core health, the onward objective and current campaign briefing. The sidebar distinguishes undiscovered, unreachable, contested, awaiting an available resident, approaching, activating and complete. The stone has no mesh or location disclosure before normal discovery. After discovery, **Activate onward Hearthstone** requests an autonomous physical visit; interruptions reset work and retry the request. Local completion or core defeat shows a persistent sidebar result and **Restart area**, freezing ordinary gameplay while allowing inspection and camera movement. In a development scenario, restart reloads that same scenario. A completed campaign area offers travel to its named next area; the final area shows the resolved journey and **Begin a new journey**.
 
@@ -235,24 +237,24 @@ The preview modal's **Load full level** action opens the selected map in the act
 
 **Debug → Level preview** opens a read-only whole-level map with fog disabled. Its selector includes the current world and every Campaign/Free Play starting layout from the playable catalog. Red dots show all living enemies, including hidden/dormant inhabitants; hollow amber rings show uncleared encounter source positions, including entrances with no spawned enemies yet. Cyan diamonds locate both Hearthstones. Click the map or select an enemy from the expandable list for position/type details in the preview's left panel. Simulation and camera input pause while open; Escape or × closes it and restores the previous pause behavior. Previewing never discovers gameplay tiles, activates encounters or replaces the current world. The ordinary minimap and full map retain their fog rules.
 
-**Debug → Test harnesses → Room layouts** opens the room catalog and actual gameplay construction tools. Debug also supplies the shared **Free room construction** toggle. [Development tools](development-tools.md) describes the available harnesses and their controls.
+M5 adds a **Room Debug View** for inspecting all defined room types and testing implemented rooms in different layouts. M5.1 adds **Debug** as an option alongside the left-hand sidebar controls. Its panel provides access to the room view and a **Free room construction** toggle showing the current development flag state. These features are implemented; verification is recorded in the [development plan](development-plan.md).
 
 The room view offers a catalog, room selection, and a resettable test area. Planned room entries remain clearly marked until implemented. Create and expand a selected room with the same click/drag grid gestures, previews, validation, automatic furnishings, and camera controls as normal gameplay. Use the sidebar to inspect usable capacity, stock/occupancy where applicable, and access or layout problems. New room definitions feed the catalog automatically.
 
 When free construction is enabled, room previews show zero effective construction cost and construction/expansion does not deduct gold. Other placement and capacity rules remain active. Disabling the flag restores normal room costs. The control applies to both the game and the room view and requires no saved preference.
 
-Debug panel interactions must not reach the world behind the sidebar. Keep the world free of floating labels and statistics in this view as well; use terrain highlights, furnishings, and sidebar details to inspect layouts. Follow the [room development checklist](room-development-checklist.md) for consistent checks.
+Debug panel interactions must not reach the world behind the sidebar. Keep the world free of floating labels and statistics in this view as well; use terrain highlights, furnishings, and sidebar details to inspect layouts. Follow the [room development checklist](../../room-development-checklist.md) for consistent checks.
 
 ## Reference images
 
-- [Left sidebar and minimap reference](references/gameplay-interface/dungeon-keeper-sidebar.png): supplied by the user for the left/right composition, minimap, and icon categories.
-- [Message reference](references/gameplay-interface/dungeon-keeper-message.png): supplied by the user for messages associated with icons and a question-mark control.
+- [Left sidebar and minimap reference](../../references/gameplay-interface/dungeon-keeper-sidebar.png): supplied by the user for the left/right composition, minimap, and icon categories.
+- [Message reference](../../references/gameplay-interface/dungeon-keeper-message.png): supplied by the user for messages associated with icons and a question-mark control.
 
 These Dungeon Keeper screenshots are layout references. Their floating room status bars and numbers are excluded by the user's interface requirements. Text inside the screenshots is reference content, not an instruction to the player or a new requirement for this game.
 
-## Interface change checklist
+## Checks for the first playable interface
 
-- The player can find rooms, defenses, spells, resident counts, and Stonehand creation through the left sidebar.
+- The player can find rooms, defenses, spells, dwarf counts, and miner recruitment through the left sidebar.
 - Room placement supports arbitrary grid footprints and explains usable capacity without text over the room.
 - Normal play, hover, inspection, combat, and construction leave the world free of numbers and progress bars.
 - Messages explain the actual cause of a problem, can be dismissed and revisited, and do not form an uncontrolled stack.
@@ -265,8 +267,8 @@ The Stone Hearth includes one fixed treasury chest using the shared gold-storage
 
 ## Wall construction and room reclaim commands
 
-The Rooms **Wall** icon plans reinforced rock on clear claimed floor. Miners construct it from an adjacent square; plans stay walkable until complete. The initial build time is 24 seconds, always longer than normal excavation plus reinforcement. Start a drag on a wall plan to cancel plans; start on unplanned floor to add plans. Core, rooms, resource piles and facility approaches are protected. Right-click returns to excavation. The current cost is time only. Planned sites with no approach wait; closing a passage can cut off access.
+**Build walls** plans reinforced rock on clear claimed floor. Miners construct it from an adjacent square; plans stay walkable until complete. The initial build time is 24 seconds, always longer than normal excavation plus reinforcement. Start a drag on a wall plan to cancel plans; start on unplanned floor to add plans. Core, rooms, resource piles and facility approaches are protected. Right-click returns to excavation. The current cost is time only. Planned sites with no approach wait; closing a passage can cut off access.
 
-The Rooms **Sell** icon returns eligible room squares to claimed ground and immediately refunds the configured fraction of their original payment (default 50%, rounded down per tile). Free-built squares refund nothing. Capacity follows the remaining floor and decoration adapts; gold displaced by reduced storage remains on the ground for hauling. Training/research progress and completed crafted items remain intact. Reclaiming does not sell the Hearth. Prices and refunds appear in the sidebar.
+**Reclaim room tiles** returns eligible room squares to claimed ground and immediately refunds the configured fraction of their original payment (default 50%, rounded down per tile). Free-built squares refund nothing. Capacity follows the remaining floor and decoration adapts; gold displaced by reduced storage remains on the ground for hauling. Training/research progress and completed crafted items remain intact. Reclaiming does not sell the Hearth. Prices and refunds appear in the sidebar.
 
 Debug places the three **Before & after** studios first, with **Test harnesses**, current-world actions and shared session settings in separate groups. Additional scenarios have readable names grouped by purpose. Shared configuration and free construction explicitly affect both worlds. Harnesses start paused, replace the previous test world, and retain the stronghold in memory. Gameplay test panels expose Pause/Resume and Return to stronghold; comparison rooms use preview controls and offer Back to comparison from other panels. Returning to the stronghold restores its previous pause state. Restart stronghold is only shown in the ordinary game. Needs setup buttons describe their effect and required rooms.

@@ -2,7 +2,7 @@
 
 Ten first-pass enemy concepts covering the five underground regions in [Levels](../../levels.md). Created with the built-in image generation tool, using the dwarf sheets' stylized 3D art direction and front, rear, and overhead presentation.
 
-All ten enemies shown here are implemented and verified in [M17](../../development-history.md#m17--complete-enemy-roster-and-behavior), with improved models and animation in M22. [Enemies](../../enemies.md) defines their shipped behavior and provisional tuning. These sheets are visual references, not combat specifications or rigged models. The sheets do not share a common world scale, and their views are illustrative rather than exact modeling turnarounds. Creature sizes and abilities are defined in the editable roster; encounter frequency and balance remain provisional.
+All ten enemies are implemented with individually refined models and animation; [current graphics](../../graphics-overhaul.md) documents them. [Enemies](../../enemies.md) defines their shipped behavior and provisional tuning. These sheets are visual references, not combat specifications or rigged models. The sheets do not share a common world scale, and their views are illustrative rather than exact modeling turnarounds. Creature sizes and abilities are defined in the editable roster; encounter frequency and balance remain provisional.
 
 [Return to all concept art](../README.md).
 

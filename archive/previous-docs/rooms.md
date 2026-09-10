@@ -1,6 +1,8 @@
+> Historical snapshot from the documentation cleanup. It may describe superseded behavior. Use the [active documentation](../../README.md) for development.
+
 # Rooms and structures
 
-Guard Posts, assigned guard duties and structure maintenance are deferred. All six ordinary rooms, bridges, three door tiers and both traps are implemented.
+Roadmap scope: Guard Posts/guard duty and door repairs/upgrades in place are deferred outside the active roadmap following removal of M12 and M15. References below to these features remain design proposals, not scheduled implementation requirements. Existing doors and traps remain implemented.
 
 Working design for the dwarven stronghold game. Companion documents: [Characters](characters.md), [Levels](levels.md), [Game rules](game-rules.md), and [Gameplay interface](gameplay-interface.md).
 
@@ -18,11 +20,11 @@ The reusable waystation, foundry and archive arrangements can be translated with
 
 ## Implementation status
 
-The [current implementation inventory](development-plan.md#current-implementation-status) distinguishes playable structures from the disabled Guard Post placeholder. The rules below describe current services and placement.
+See the [current implementation inventory](development-plan.md#current-implementation-status) for all rooms and structures, including missing content and partial integrations. The catalog and rules below describe the intended design, not a list of completed features. Update the inventory whenever a room or its services change.
 
 ## Design status
 
-**Current visual direction:** the [room overhaul](room-overhaul.md) defines the current sparse furnishing arrangements. All six rooms have distinctive patterned floors and sparse adaptive furnishing. Treasure Rooms show sequential loose coin piles from actual stored wealth. Dormitories show bedding only for assigned residents, including distinct role beds and Hound dens. Kitchen, Workshop, Training Room and Library use small equipment sets with open floor. Their [six concepts and prompts](concept-art/rooms/overhaul/prompts.md) guide ongoing refinement.
+**Current visual direction:** the [room overhaul](../../room-overhaul.md) supersedes the earlier dense furnishing proposals below. All six rooms have distinctive patterned floors and sparse adaptive furnishing. Treasure Rooms show sequential loose coin piles from actual stored wealth. Dormitories show bedding only for assigned residents, including distinct role beds and Hound dens. Kitchen, Workshop, Training Room and Library use small equipment sets with open floor. Their [six concepts and prompts](../../concept-art/rooms/overhaul/prompts.md) guide ongoing refinement.
 
 The grid, adaptable room shapes, distinctive floors and walls, fixed Hearthstone, treasure storage, shared food and accommodation, doors, traps, and spell research are established parts of the design. Room capacity is floor area multiplied by a tunable value per tile. Furniture is entirely cosmetic: it never supplies capacity, blocks movement or sight, or makes a room unusable. The Workshop attracts Engineers and makes doors and traps; the Library attracts Runesmiths and researches spells; the Training Room attracts Warriors and lets specialists train. The Kitchen supports residents without food inventories or processing chains. Exact prices, rates, capacities and art arrangements remain balance and visual choices.
 
@@ -32,15 +34,15 @@ A Cave Hound uses one assigned Dormitory place as a den for eating and resting, 
 
 ## Training Room and Library prototype rules
 
-The Training Room costs 22 gold per square and provisionally supports one simultaneous trainee per square. Engineer, Warrior and Runesmith specialists can train autonomously, with or without visible equipment. A visit ends after gaining one character level: the dwarf releases its slot, returns to normal activities and starts its personal cooldown. Training requires a free reachable slot, adequate needs, the preceding level and the next level's active training time. Partial progress belongs to the dwarf and survives interruptions, expansion and room reclaim. [Character levels and training](characters.md#character-levels-and-training) owns the level limits, per-type health/combat/work statistics, training durations and cooldown. Successful melee hits contribute to the same XP total at roughly twice the training rate, even during training cooldown. Ordinary work grants no XP. Guard duty is deferred.
+The Training Room costs 22 gold per square and provisionally supports one simultaneous trainee per square. Engineer, Warrior and Runesmith specialists can train autonomously, with or without visible equipment. A visit ends after gaining one character level: the dwarf releases its slot, returns to normal activities and starts its personal cooldown. Training requires a free reachable slot, adequate needs, the preceding level and the next level's active training time. Partial progress belongs to the dwarf and survives interruptions, expansion and room reclaim. [Character levels and training](characters.md#character-levels-and-training) owns the level limits, per-type health/combat/work statistics, training durations and cooldown. Successful melee hits contribute to the same XP total at roughly twice the training rate, even during training cooldown. Ordinary work grants no XP. Guard duty remains future work.
 
-The Library costs 26 gold per square and provisionally supports one simultaneous researcher per square. Only residents with the `research` capability perform research. Select a spell in **Spells → Library research**; each order reserves one researcher and one reachable room slot. Different spells can progress simultaneously within the room's capacity. Pause/resume retains progress. Losing a slot or room access releases its worker without erasing research or prepared spells. Lecterns, shelves and desks are visual arrangements only.
+The Library costs 26 gold per square and provisionally supports one simultaneous researcher per square. Only residents with the `research` capability perform research. Select a spell in **Spells → Research**; each order reserves one researcher and one reachable room slot. Different spells can progress simultaneously within the room's capacity. Pause/resume retains progress. Losing a slot or room access releases its worker without erasing research or prepared spells. Lecterns, shelves and desks are visual arrangements only.
 
 Casting consumes a prepared spell and automatically queues its next preparation, giving the Library ongoing work. Casting uses shared gold; no extra currency is introduced. See [interface rules](gameplay-interface.md#training-research-and-arrival-controls) for controls.
 
-These costs, times, limits and bonuses are editable prototype values in [Game configuration](configuration.md). Both rooms use the normal layout, access, capacity, free-construction and reclaim systems. Their attraction services are `training` for Warriors and `research` for Runesmiths; arrivals also require spare shared food and bed capacity.
+These costs, times, limits and bonuses are editable prototype values in [Game configuration](../../configuration.md). Both rooms use the normal layout, access, capacity, free-construction and reclaim systems. Their attraction services are `training` for Warriors and `research` for Runesmiths; arrivals also require spare shared food and bed capacity.
 
-See the [spell design document](spells.md) for the spell catalog, balance values, targeting rules and implementation status. Keep spell catalog changes there; this document covers the Library's facilities and research service.
+See the [spell design document](../../spells.md) for the spell catalog, balance values, targeting rules and implementation status. Keep spell catalog changes there; this document covers the Library's facilities and research service.
 
 ## Placement and capacity
 
@@ -58,14 +60,14 @@ See the [spell design document](spells.md) for the spell catalog, balance values
 
 Provisional defaults are deliberately simple and can be balanced later:
 
-| Room | Gold per floor square | Capacity per floor square |
-|---|---:|---|
-| Treasure Room | 12 | 50 gold |
-| Dormitory | 16 | Accommodation for 1 living resident |
-| Kitchen | 20 | Food support for 1 dwarf |
-| Workshop | 24 | 1 simultaneous Engineer |
-| Training Room | 22 | 1 simultaneous eligible specialist trainee |
-| Library | 26 | 1 simultaneous researcher |
+| Room | Capacity per floor square |
+|---|---|
+| Treasure Room | 50 gold |
+| Dormitory | Accommodation for 1 resident |
+| Kitchen | Food support for 1 resident |
+| Workshop | 1 simultaneous Engineer |
+| Training Room | 1 simultaneous trainee, of any dwarf type |
+| Library | 1 simultaneous researcher |
 
 Capacity limits the service, not the number of characters allowed to walk through a room. Real terrain, the Hearth, doors and other gameplay obstacles still constrain routes. Room furniture never adds collision or blocks discovery, spell sight or projectiles.
 
@@ -114,9 +116,9 @@ Two rooms with the same tile count have the same capacity. Rectangles, thin stri
 
 ## Visual identity and furnishing plan
 
-The following table summarizes current visual identities; [room presentation](room-overhaul.md) owns detailed floor, material and furniture rules. Every growable room requires an identity that reads before it contains furniture, and furnishings that remain legible from all camera directions.
+The following art treatments and object sets are proposals. Every growable room requires an identity that reads before it contains furniture, and furnishings that remain legible from all camera directions.
 
-The [room concept gallery](concept-art/rooms/README.md) illustrates each growable room in compact, expanded, bent or irregular, and bedrock-seam layouts, plus a terrain reference and placement examples for the Stone Hearth and bridges. The sheets use the approved gold-and-gem terrain style: excavations within continuous earth and bedrock, a single terrain height, dense weathered materials, and warm practical lighting. Each room keeps its distinctive floor and wall treatment. These are visual studies, not mandatory footprints, capacity values, or upgrade tiers. Exact [revision prompts](concept-art/rooms/prompts-v3.md) are stored with the images.
+The [room concept gallery](../../concept-art/rooms/README.md) illustrates each growable room in compact, expanded, bent or irregular, and bedrock-seam layouts, plus a terrain reference and placement examples for the Stone Hearth and bridges. The sheets use the approved gold-and-gem terrain style: excavations within continuous earth and bedrock, a single terrain height, dense weathered materials, and warm practical lighting. Each room keeps its distinctive floor and wall treatment. These are visual studies, not mandatory footprints, capacity values, or upgrade tiers. Exact [revision prompts](../../concept-art/rooms/prompts-v3.md) are stored with the images.
 
 | Room or structure | Floor identity | Available wall faces | Furnishings or details added where space permits |
 |---|---|---|---|
@@ -141,7 +143,7 @@ The Stone Hearth is a fixed structure, and doors and traps retain their individu
 | Treasure Room | Stores delivered gold and provides wage collection points | None directly | Gold storage capacity; does not generate money |
 | Dormitory | Provides sleeping and resting space | Supports every resident type | Bed capacity and rest |
 | Kitchen | Provides shared food support and a place to eat | None directly; supports all arrivals | Resident support from floor area; enlarge it or build several to support the population |
-| Workshop | Makes the stronghold's defensive fixtures | Engineers | Doors and traps; maintenance is deferred |
+| Workshop | Makes the stronghold's defensive fixtures | Engineers | Doors and traps; repairs and replacement mechanisms are proposed ongoing work |
 | Training Room | Provides shared training for specialists | Warriors | Stat increases for the dwarfs using its accessible training positions |
 | Library | Houses spell research | Runesmiths | Research progress and researched spells |
 | Guard Post | Establishes a place for available defenders to gather and guard | None directly | Local defensive presence and quicker response |
@@ -157,23 +159,23 @@ Each square costs provisionally **20 shared gold and eight seconds of Miner work
 
 Bridges supply no room service capacity, attract nobody, and have no interior furnishings. Procedural deck joints and edge blocks adapt to neighboring tiles and are cosmetic. Rooms, walls, doors and traps cannot be built on bridge tiles. Ordinary rooms continue to use land-only construction and their normal capacity rules.
 
-Choose **Sell** to cancel plans or reclaim decks. Cancelled plans refund all paid gold; completed decks refund the normal room reclaim fraction. Free squares refund zero. The operation rejects occupied decks, loose gold, removal that cuts any living unit off from currently reachable land, and sections that would leave remaining decks/plans unsupported. Remove unsupported sections together. Removal restores the original hazard, invalidates paths, and cancels affected work on the next tick; no tile or payment is recreated by a stale job. Bridges have no damage, collapse or maintenance system in the current game.
+Choose **Sell** to cancel plans or reclaim decks. Cancelled plans refund all paid gold; completed decks refund the normal room reclaim fraction. Free squares refund zero. The operation rejects occupied decks, loose gold, removal that cuts any living unit off from currently reachable land, and sections that would leave remaining decks/plans unsupported. Remove unsupported sections together. Removal restores the original hazard, invalidates paths, and cancels affected work on the next tick; no tile or payment is recreated by a stale job. Bridges have no damage, collapse or maintenance system in M16.
 
-The **crossings / Emberwater Crossing** debug scenario starts with normal crew, allowance and resources. Its 28×18 layout requires water and lava crossings and has an unbridgeable chasm pocket. The larger retained Emberwater Free Play map is separate. The five-area campaign starts at Border Foothold and unlocks bridges on arrival at Royal Deep; see [Levels](levels.md#campaign-brief-and-progression).
+The **crossings / Emberwater Crossing** scenario starts with ordinary crew, allowance and resources. It requires a water crossing followed by lava to reach the onward Hearthstone; an optional chasm pocket demonstrates the unbridgeable rule. Load it through Debug → Additional test scenarios. Border Foothold starts the connected campaign; its first gate unlocks bridge construction and travel to the expanded campaign version of Emberwater. The standalone crossings scenario remains 28×18.
 
 ## Stone Hearth and Hearthstone
 
 The Hearthstone is the natural magical crystal. The Stone Hearth is the protective structure erected around it at the start of the level. Together they form the base's core.
 
-- The area begins with the protective structure already established; awakening is the arrival premise.
-- The structure has a fixed, map-defined location and footprint. The current core occupies a 3×3 footprint.
+- The starting mining crew awakens the crystal and establishes the protective structure automatically during the arrival sequence.
+- The structure has a fixed, map-defined location and footprint. A 3 by 3 footprint is a candidate, not a locked dimension.
 - It cannot be moved and has no upgrades.
 - Enemies must reach and attack it. Its destruction defeats the player.
 - New dwarfs emerge beside it and walk into the settlement.
 - Its connection to the ancient runic network explains arrivals without a surface corridor.
 - No separate power distribution, fuel, or electricity management system is required.
 
-The starting core has 400 health and no repair, upgrade or relocation.
+Core health and whether the damaged structure can be repaired remain open.
 
 Every level also contains a separate onward Hearthstone, usually in an enemy-held area or beyond a difficult terrain obstacle such as lava. It is an authored objective, not a player-built room or an upgrade to the starting core. The player must discover and reach it to open the route to the next area. It does not provide another recruitment point or treasury. [Levels](levels.md#onward-hearthstone-objective) defines implemented discovery, access and activation, with next-area travel and the final campaign endpoint defined in [campaign rules](levels.md#authored-campaign-and-travel). The starting core has 400 health and no repairs; the onward stone is indestructible and reserves its tile from construction.
 
@@ -199,13 +201,13 @@ Food support and accommodation must serve existing residents as well as qualify 
 
 ## Work and training facilities
 
-| Facility | Staffing and inputs | Output handling | What keeps it useful |
+| Facility | Staffing and inputs | Proposed output handling | What keeps it useful |
 |---|---|---|---|
-| Workshop | Engineer working time and gold | Manufactured items support player-selected door and trap placements | New defenses and replacement of destroyed fixtures |
+| Workshop | Engineer working time and gold | Manufactured items support player-selected door and trap placements | New defenses, repairs, and replacement mechanisms |
 | Training Room | Any eligible dwarf's active practice time and a free reachable training slot | One character level per visit, applying its defined health, combat and work statistics | Developing the fresh population in every stronghold, across all roles |
-| Library | Research-capable resident's time and accessible research position; casting costs shared gold | Initial research and one prepared charge per spell | Preparing spells again after casting; knowledge carries across campaign travel |
+| Library | Research-capable resident's time and accessible research position; casting costs shared gold | Initial research and one prepared charge per spell | Preparing spells again after casting; campaign progression remains open |
 
-The Workshop combines metalworking and mechanism assembly in one facility. The Library is the single spell-research facility. Gold, labor, room capacity, and food support the current game; separate equipment production, ore processing, and magical currencies are not established systems.
+The Workshop combines metalworking and mechanism assembly in one facility. The Library is the single spell-research facility. Gold, labor, room capacity, and food support this simplified draft; separate equipment production, ore processing, and magical currencies are not established systems.
 
 Training is available to Engineers, Warriors and Runesmiths. Miners do not train or gain experience or levels. The player supplies room capacity, and dwarfs train autonomously through their type's defined levels. [Characters](characters.md#character-levels-and-training) records advancement rules and balance. Capacity feedback shows occupied and available training positions; cooldown does not occupy a slot, and training provides no accommodation.
 
@@ -217,9 +219,9 @@ Room definitions describe their service, capacity per tile, price, eligible work
 
 ## Room development and debugging
 
-Use **Debug → Test harnesses → Room layouts** to build and inspect rooms through the actual gameplay systems. The shared free-construction toggle and current content inventory are described in [development notes](development-plan.md) and [development tools](development-tools.md).
+The [development plan](development-plan.md) schedules shared room support and a Room Debug View in M5, a sidebar Debug menu and free room construction flag in M5.1, then the Dormitory, Kitchen, and Workshop in M6–M8. These features are implemented; verification and prototype limitations are recorded in the development plan.
 
-Every room addition follows the [room development checklist](room-development-checklist.md), which covers definitions, placement, automatic furnishings, capacity, access, services, sidebar feedback, and varied layout checks. Apply it to shared-system changes as well as additions.
+Every room addition follows the [room development checklist](../../room-development-checklist.md), which covers definitions, placement, automatic furnishings, capacity, access, services, sidebar feedback, and varied layout checks. Review the existing Treasure Room against the same checklist when establishing shared room support.
 
 The Room Debug View lists all defined room types, distinguishes planned entries from implemented rooms, and lets developers create and expand implemented rooms by selecting grid squares just as in gameplay. It uses the game's actual placement, furnishing, navigation, and rendering systems so its results can reveal gameplay problems. A resettable test area supports irregular shapes, walls, retained terrain, and bedrock without needing a separate editor or saved layouts.
 
@@ -241,7 +243,7 @@ These are provisional balance values, editable in Crafting and Defenses configur
 
 All three door tiers have player-selected **Open**, **Closed**, and **Locked** modes. Open admits everyone. Closed lets dwarfs open the door while passing, then shuts after they clear it. Enemies can follow through while it is physically open. Locked prevents dwarfs opening it and immediately updates their routes; this can cut off work, food, beds or unexplored areas. An occupant already in the doorway may step clear before it physically shuts. Idle dwarfs move out of doorways. Shut doors stop discovery rays; changing a mode does not erase previously discovered terrain. Enemies can damage Closed or Locked doors until they break, removing the obstruction.
 
-Doors occupy one clear, claimed square between two opposite walls, with walkable approaches on the other sides. Traps use clear, claimed floor. Fixtures cannot overlap rooms, the Hearth or its treasury approach, other defenses, wall plans or loose gold. Cosmetic room furniture adds no separate exclusion or protected approach. Placement consumes exactly one completed item; invalid placement consumes none. Room/wall construction excludes fixture tiles. Dismantling removes a fixture with no refund; repairs and upgrades in place are deferred.
+Doors occupy one clear, claimed square between two opposite walls, with walkable approaches on the other sides. Traps use clear, claimed floor. Fixtures cannot overlap rooms, the Hearth or its treasury approach, other defenses, wall plans or loose gold. Cosmetic room furniture adds no separate exclusion or protected approach. Placement consumes exactly one completed item; invalid placement consumes none. Room/wall construction excludes fixture tiles. Dismantling removes a fixture with no refund; repairs and upgrades in place remain pending.
 
 Spikes trigger when an enemy crosses the pressure plate, including fast crossings. A lethal hit defeats it; a survivor cannot move or attack during the pin. Bolts fire automatically along the selected compass direction, hit one enemy, and do not pierce. Walls, the Hearth and physically shut doors block shots; cosmetic furniture does not. Both traps ignore dwarfs, cause no friendly fire, and **automatically reset after their cooldown**. They need no ammunition, replacement supplies or Engineer rearming. Cooldown starts when triggered; unused traps remain ready.
 
@@ -251,14 +253,24 @@ Defenses are available in normal strongholds against all ten authored enemy type
 
 Reinforcement is a miner terrain job, not a room or a paid upgrade tree. Available miners reinforce exposed earth walls bordering claimed territory after higher-priority excavation, resource, and hauling work.
 
-Reinforcement has one state on eligible dirt/rock and slows Tunnel Burrowers. Bedrock is indestructible. Current work, removal and breach rules are below.
+The proposed wall model has one visible reinforced state. Reinforced earth is harder for enemies capable of digging to breach; bedrock is completely indestructible. Reinforcement strength, time, and the treatment of reinforced walls when the player later excavates them remain to be finalized.
 
-## Construction, storage and reclaim details
+## Decisions still open
+
+- Per-tile room costs and capacities. Every floor square contributes equally, regardless of layout or furnishings.
+- Placement of compact and large furnishing variants in narrow, irregular, expanding, or divided rooms.
+- Visual arrangement of furniture after room changes; gold conservation and earned progress must remain independent of decoration.
+- Exact specialist attraction thresholds and migration rate.
+- Kitchen support per tile and the duration/frequency of eating visits.
+- Broader spell list and progression across levels; preparation after casting is the current continuing Library service.
+- Balance of the per-character level definitions, active training times and personal cooldown.
+- Door, trap, bridge, and core repair rules.
+- Room selling, refunds, and rebuilding damaged facilities.
 
 Room placement skips ineligible squares within a drag (terrain, hidden or unclaimed floor, the Hearthstone, and existing rooms). Eligible new squares are built and charged normally; existing rooms are preserved. Previews and price use the eligible subset. An entirely invalid selection builds nothing. The complete eligible subset must still be affordable unless free room construction is enabled.
 
 The Stone Hearth includes one fixed treasury chest using the shared gold-storage service. It starts empty and holds the normal construction cost of a 3×3 Treasure Room (currently 108 gold). It accepts miner deliveries and pays for construction/production through the shared balance, including when the starting allowance is exhausted. The fixed core treasury service protects its approach square. Inspect the Hearth for live stored gold/capacity. It is not a room upgrade or an extra starting grant.
 
-Current prototype reinforcement uses a single state per ordinary dirt/rock tile and takes six seconds of miner work beside reachable claimed floor. It costs no gold and follows mining, hauling and claiming work. Marking a wall for excavation cancels reinforcement; excavating a reinforced wall uses normal player mining time and removes its reinforced state. Resource seams and bedrock are not reinforced. Raw walls have no room fittings until reinforcement completes. Tunnel Burrowers take three times as long to excavate reinforced dirt/rock. Other enemies cannot excavate terrain; Sentinel and Deepmaw attacks apply their defined multipliers to doors and runic barriers. See [Enemies](enemies.md).
+Current prototype reinforcement uses a single state per ordinary dirt/rock tile and takes six seconds of miner work beside reachable claimed floor. It costs no gold and follows mining, hauling and claiming work. Marking a wall for excavation cancels reinforcement; excavating a reinforced wall uses normal player mining time and removes its reinforced state. Resource seams and bedrock are not reinforced. Raw walls have no room fittings until reinforcement completes. Tunnel Burrowers take three times as long to excavate reinforced dirt/rock. Other enemies cannot excavate terrain; Sentinel and Deepmaw attacks apply their defined multipliers to doors and runic barriers. See [Enemies](../../enemies.md).
 
-The Rooms **Sell** tool reclaims room tiles. Refunds use the original paid cost and `reclaimRatio` in tuning (initially 50%), so changing room prices or free-build mode cannot create a resale profit. Refunds are spendable immediately; gold displaced by reduced storage remains in the world for hauling. Capacity and reservations update with the remaining room floor. Constructed walls are reinforced rock built by miners on clear claimed floor; the initial 24-second duration is deliberately longer than digging plus reinforcement. They are not rooms and cost time only in this prototype.
+Room tiles can now be reclaimed using the Reclaim room tiles command. Refunds use the original paid cost and `reclaimRatio` in tuning (initially 50%), so changing room prices or free-build mode cannot create a resale profit. Refunds are spendable immediately; gold displaced by reduced storage remains in the world for hauling. Capacity and reservations update with the remaining room floor. Constructed walls are reinforced rock built by miners on clear claimed floor; the initial 24-second duration is deliberately longer than digging plus reinforcement. They are not rooms and cost time only in this prototype.

@@ -1,6 +1,6 @@
 # Room overhaul
 
-The 2026-09-09 user brief supersedes the earlier dense furnishing arrangements. Rooms should read through distinctive ground, a few recognizable furnishings and open floor. Six individual concepts were generated with the built-in imagegen tool before their respective implementation passes; [concepts and exact prompts](concept-art/rooms/overhaul/prompts.md) are retained in the project. Illustrated walls and fixed rectangles are not construction requirements.
+The current room direction uses sparse furnishing. Rooms should read through distinctive ground, a few recognizable furnishings and open floor. Six individual concepts were generated with the built-in imagegen tool before their respective implementation passes; [concepts and exact prompts](concept-art/rooms/overhaul/prompts.md) are retained in the project. Illustrated walls and fixed rectangles are not construction requirements.
 
 | Room | Current presentation |
 |---|---|
@@ -21,7 +21,7 @@ Beds derive from real accommodation assignments rather than initial floor constr
 
 Each connected room has a small presentation budget. Layout selection works locally on usable floor, preserves valid props where practical, and promotes compact fallback furniture when a larger footprint fits. Separate patches operate independently. Single tiles, strips, bends, retained earth and bedrock do not lose gameplay capacity when furniture cannot fit. Workshop props deliberately stop growing once its equipment set fits.
 
-The second visual pass brings material depth and silhouettes closer to the concepts: independent wood grain, woven cloth, leather, metal and stone finishes; shaped cushions and stitched bedding; stamped coin surfaces; substantial joinery and softer contact shadows. Edge furniture faces the room and reserves a free approach. Dining moves toward the perimeter, the Workshop retains a central assembly bench, and upright targets use spaced practice positions. These are layout preferences, not fixed room templates.
+Current materials and shapes follow the concepts: independent wood grain, woven cloth, leather, metal and stone finishes; shaped cushions and stitched bedding; stamped coin surfaces; substantial joinery and softer contact shadows. Edge furniture faces the room and reserves a free approach. Dining moves toward the perimeter, the Workshop retains a central assembly bench, and upright targets use spaced practice positions. These are layout preferences, not fixed room templates.
 
 Floor border bands follow exposed edges and inner corners of the actual connected footprint. Kitchen and Library use a single centerpiece across a fitting 3×3 patch, biased toward open floor, with a single-tile fallback for small or narrow areas. Material names use bounded edge/corner masks, two grain variants and motif offsets; no per-tile textures are allocated. Integrated shelf, rack, lectern and stove lights use the existing shared source budget, with their positions following the furniture orientation.
 

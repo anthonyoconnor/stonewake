@@ -11,3 +11,7 @@ Audio starts after a pointer or keyboard interaction, following [browser audio a
 Sources on undiscovered tiles are suppressed. Local cues attenuate by distance to the camera target and have no precise stereo bearing; critical warnings have no world coordinates. The score reacts only to visible recent attacks. Repeated cues are throttled globally, footsteps require traveled distance and room sounds occur less frequently than tools. At most twelve short voices and two ambience/score-bed sources run concurrently. Definitions own these tunable limits.
 
 Pause, menus, hidden tabs, loading and travel stop current sounds; resuming starts one fresh ambience pair and does not replay old events. World replacement clears event history. Outcome cues play once and stop ambience. The audio service closes its context during hot reload. Visual effects and audio both use simulation attack timestamps, so animation-speed or haste changes cannot move a hit sound away from its actual outcome.
+
+## Remaining listening review
+
+Playback activation, volume/mute and cleanup have automated verification. Listening through quiet building, crowded work and combat remains pending; no listening approval is recorded. The local work/combat sample is `test-results/m30/work-combat.webm` when available. Use `npm run verify -- audio --browser=audio` for playback/control changes; those checks do not replace listening feedback.
