@@ -298,6 +298,17 @@ function drawEnvironmentCluster(view: GameScene, t: Tile, decoration: Environmen
       crystal.rotation.z = dz ? 0 : (i - 1) * 0.18;
       crystal.rotation.x = dx ? 0 : (i - 1) * 0.18;
     }
+  } else if (kind === 'dry' && authored && wall) {
+    const wood = view.material('old mine timber', '#79512e');
+    const iron = view.material('old mine straps', '#424445', true);
+    for (const offset of [-0.33,0.33]) {
+      const p = at(offset,0.425);
+      view.box('mine timber post',p.x,0.57,p.z,dx?0.10:0.12,1.14,dz?0.10:0.12,wood).isPickable=false;
+      for (const height of [0.18,0.91])
+        view.box('mine post strap',p.x-dx*0.052,height,p.z-dz*0.052,dx?0.018:0.13,0.07,dz?0.018:0.13,iron).isPickable=false;
+    }
+    const cap=at(0,0.425);
+    view.box('mine timber cap',cap.x,1.18,cap.z,dx?0.12:0.87,0.14,dz?0.12:0.87,wood).isPickable=false;
   } else if (kind === 'masonry' && wall) {
     const stone = view.material('district pale masonry', '#989b95', true);
     const dark = view.material('district carved recess', '#525c62');

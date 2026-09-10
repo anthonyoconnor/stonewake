@@ -1,5 +1,15 @@
 # Completed development and history
 
+## 2026-09-10 — M36: Border Foothold sheltered workings
+
+Generated and inspected the individual Border concept before authoring its 40 × 32 replacement. A broken horseshoe of enduring geology protects a broad excavatable refuge; a bent northern mine branch and a separate southern waystation saddle replace the old straight divider. The relay remains northeast but now belongs to a watch cavern beyond the inner shoulder. Additional area provides protected room wings, the old mine, a coherent framed waystation and a distinct side den/source branch.
+
+Both ordinary paid routes pass with normal initial crew, 400 gold, first-stage availability, actual hound recruitment, physical hauling, source suppression and relay activation. Direct initial record: 294s completion, 308 gold, full core health, no losses/departures. Final alternate after framing the waystation: 266s, 308 gold, full core health, six reclaimed room tiles and no losses/departures. The earlier full alternate browser run observed one casualty followed by a normal replacement. The approaches differ in reveal direction and early usable services, rather than one being a strictly worse route. A transient low hound hunger reading on the final alternate recovered without departure; longest den-food job was 20.2s.
+
+Design review passed neutral old/new composition and actual fogged start, first discovery, developed settlement, watch, natural area and reclaimed waystation views from both camera angles. Review found and fixed two qualitative gaps: dry dressing had no actual timber geometry, and the waystation's masonry region was overwritten while its floor remnants sat in an unframed cave. Added sparse wall-hugging squared supports, retained dry/masonry structures on claimed non-room floor, and framed the waystation with two accessible thresholds. Growth still clears on claiming and real room construction clears all dressing. Source/test typecheck and four environment regressions passed; changed room access was rerun through the paid alternate simulation, with short 3D dressing/return checks for the final geometry.
+
+Evidence is in ignored `test-results/level-overhaul/campaign-border-foothold/` (neutral pair, intended/alternate fogged/developed captures, `dressing/` normal/reverse views) and `test-results/level-overhaul/routes/`. Gameplay retains one floor plane, ordinary free-build behavior and floor-area room services. Timber details remain prototype geometry, not full concept-art rail/furniture reproduction.
+
 ## 2026-09-09 — M35: concept-led level authoring groundwork
 
 Created the campaign direction concept before implementation and five coordinate briefs/neutral tile sketches in `research/level-redesign-briefs.md`. The briefs establish a sheltered mining basin, wet cavern lobes, buried city crossroads, a crescent chasm and a molten royal basin. The art gallery records exact built-in generation prompts and deviations needed to preserve the game's single floor plane and existing mechanics.

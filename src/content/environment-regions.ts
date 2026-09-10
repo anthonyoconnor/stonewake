@@ -38,10 +38,13 @@ export interface EnvironmentDecoration {
 
 /** One sparse cluster on a discovered bank or shore; no objects in open cave centers. */
 export function environmentDecoration(w: World, t: Tile): EnvironmentDecoration | undefined {
-  if (!t.known || t.terrain !== 'floor' || t.claimed || t.core || t.onward || t.room || t.ruin) return;
+  if (!t.known || t.terrain !== 'floor' || t.core || t.onward || t.room || t.ruin) return;
   const region = environmentRegionAt(w, t);
   const kind = region?.kind ?? (w.biome === 'fungal' || w.biome === 'crystal' ? w.biome : undefined);
   if (!kind) return;
+  // Claimed streets and old mine supports retain their structural identity. Living
+  // growth clears during reclamation; all dressing clears when a real room is built.
+  if (t.claimed && (!region || (kind !== 'dry' && kind !== 'masonry'))) return;
   const seed = ((t.x * 73856093) ^ (t.z * 19349663)) >>> 0;
   if (region) {
     // A low-frequency patch field gives colonies and bare stretches instead of uniform noise.

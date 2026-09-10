@@ -153,3 +153,19 @@ test('all regional treatments preserve real irregular room construction, capacit
       );
     }
 });
+
+test('reclaiming an authored mine or street preserves wall structures until room construction', () => {
+  for (const kind of ['dry','masonry'] as const) {
+    const w = knownWorld(kind);
+    const tile = w.tiles.find(t => environmentDecoration(w,t))!;
+    assert(tile);
+    const before = environmentDecoration(w,tile);
+    tile.claimed = true;
+    assert.deepEqual(environmentDecoration(w,tile),before,'Claiming preserves the visible old structure');
+    const accessible = [...reachable(w,w.hearth)].sort();
+    buildRoom(w,'kitchen',[tile]);
+    assert.equal(tile.room,'kitchen');
+    assert.equal(environmentDecoration(w,tile),undefined,'Player room equipment replaces old wall dressing');
+    assert.deepEqual([...reachable(w,w.hearth)].sort(),accessible);
+  }
+});
