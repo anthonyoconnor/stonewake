@@ -25,6 +25,7 @@ export function installDevelopment(
   replaceWorld: (world: World, id: ScenarioId) => void,
   refresh: () => void,
   sidebar: Sidebar,
+  exposeBrowserApi = true,
 ) {
   const controller = new DevelopmentController(getWorld, replaceWorld);
   let busy = false;
@@ -99,26 +100,32 @@ export function installDevelopment(
       }
     },
   };
-  window.strongholdDev = api;
+  if (exposeBrowserApi) window.strongholdDev = api;
   const error = (event: ErrorEvent) => report(event.error ?? event.message);
   const rejection = (event: PromiseRejectionEvent) => report(event.reason);
-  window.addEventListener('error', error);
-  window.addEventListener('unhandledrejection', rejection);
-  sidebar.onDevelopmentPanel = () => mountDevelopmentPanel(sidebar, api);
-  const params = new URLSearchParams(location.search),
-    scenario = params.get('scenario');
-  if (scenario) {
-    try {
-      api.load(scenario as ScenarioId);
-    } catch {
-      /* Error is readable through status(). */
-    }
+  if (exposeBrowserApi) {
+    window.addEventListener('error', error);
+    window.addEventListener('unhandledrejection', rejection);
   }
-  if (params.get('paused') === '1') controller.paused = true;
+  sidebar.onDevelopmentPanel = () => mountDevelopmentPanel(sidebar, api);
+  if (exposeBrowserApi) {
+    const params = new URLSearchParams(location.search),
+      scenario = params.get('scenario');
+    if (scenario) {
+      try {
+        api.load(scenario as ScenarioId);
+      } catch {
+        /* Error is readable through status(). */
+      }
+    }
+    if (params.get('paused') === '1') controller.paused = true;
+  }
   import.meta.hot?.dispose(() => {
-    window.removeEventListener('error', error);
-    window.removeEventListener('unhandledrejection', rejection);
-    delete window.strongholdDev;
+    if (exposeBrowserApi) {
+      window.removeEventListener('error', error);
+      window.removeEventListener('unhandledrejection', rejection);
+      delete window.strongholdDev;
+    }
     sidebar.onDevelopmentPanel = () => {};
   });
   return controller;

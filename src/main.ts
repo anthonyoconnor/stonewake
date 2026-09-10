@@ -271,8 +271,7 @@ export async function initializeGame(loading: LoadingScreen) {
     });
   };
   let uiTime = 0;
-  if (import.meta.env.DEV)
-    await import('./dev/browser').then(({ installDevelopment }) => {
+  await import('./dev/browser').then(({ installDevelopment }) => {
       development = installDevelopment(
         () => view.world,
         (next, id) => {
@@ -330,6 +329,7 @@ export async function initializeGame(loading: LoadingScreen) {
         },
         refresh,
         sidebar,
+        import.meta.env.DEV,
       );
     });
   view.engine.runRenderLoop(() => {
