@@ -1,5 +1,13 @@
 # Level overhaul generation provenance
 
+## M41 — Campaign cohesion review
+
+Built-in image generation. Input: `m35-campaign-direction-v1.png` (shared visual language). Output: `m41-campaign-cohesion-v1.png`. M40 has its own exact [prompt and interpretation](m40-prompt.md).
+
+```text
+Use case: stylized-concept. Asset type: M41 campaign cohesion review direction sheet for a dwarf dungeon-building game. Create one polished landscape concept sheet with FIVE EQUALLY SIZED isometric gameplay-scale environment windows on a quiet dark background, three across top and two centered below. Reference supplies the campaign's established square-cell rock/material language. Each window shows a normal-zoom place with generous playable room space and one recognizable large landform edge: 1 warm abandoned TIMBER MINE in a sheltered earth basin, squared timber wall supports and an L-shaped ruined service bay; 2 FUNGAL POOL cavern with irregular broad dry banks and purple/cyan colonies clustered only against selected wet walls, bare gravel stretches; 3 BURIED CITY crossroads, coherent connected worn-stone streets, roofless foundry service block, cave intrusion cutting a corner; 4 CRYSTAL CRESCENT chasm edge and a broad branch leading AROUND the end on solid land to a warm ruined archive, sparse pale lilac quartz, absolutely no bridge across chasm; 5 ROYAL LAVA peninsula district, monumental but room-scale ruined masonry beside a wide molten basin, one short low stone bridge to another bank. Same camera scale, same uniform rock-wall height and exactly one traversable floor plane in every window. Keep ordinary earth, stone, masonry, water, lava and mineral silhouettes readable under matching restrained light. Show how one game's art language can produce five different places through geography, local materials and clustered details, not five palette swaps. No huge scenic spires, no stairs, no multilevel ground, no labels, no UI, no floating text, no character focus, no watermark. This is a cohesive practical environment target for reviewing final game maps, not a set of elaborate separate fantasy paintings.
+```
+
 ## M39 — Crystal Divide
 
 Built-in image generation. Input: `m35-campaign-direction-v1.png` (style only). Output: `m39-crystal-divide-v1.png`.

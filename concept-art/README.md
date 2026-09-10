@@ -47,7 +47,7 @@ The gallery contains the three specialist dwarfs and retained debug Miner shown 
 
 ## Levels and underground regions
 
-[View the level and region gallery](levels/README.md). The five candidate strongholds are Border Foothold, Flooded Workings, Fallen City, Crystal Divide, and Royal Deep. Fungal Caves and Volcanic Depths have additional regional studies, covering all outlined terrain types. The approved gold-and-gem image supplies the shared terrain appearance. [Generation prompts](levels/prompts.md) are saved with the images.
+[View the level overhaul gallery](levels/overhaul/README.md) for the fourteen concept sheets created before M35–M42 implementation: campaign direction, five campaign maps, cohesion review and seven standalone scenarios. Exact prompts and interpretation notes accompany the images. The [earlier level and region gallery](levels/README.md) preserves prior studies, including the unimplemented Flooded Workings candidate. The approved gold-and-gem image supplies the shared terrain appearance.
 
 ## Rooms and structures
 

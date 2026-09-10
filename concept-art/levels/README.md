@@ -1,5 +1,7 @@
 # Level and region concept gallery
 
+These are the earlier environment studies. The [M35–M42 overhaul gallery](overhaul/README.md) contains the concept-first direction for the current campaign and standalone maps, with exact prompts and implementation notes.
+
 Environment concepts for the dwarf stronghold game, generated with the built-in image generation tool. The user selected the [gold seam and gem column image](../terrain/resource-terrain-v2.png) as the reference for the overall terrain appearance.
 
 Return to [all concept art](../README.md). Design: [Levels](../../levels.md), [Game rules](../../game-rules.md), and [Gameplay interface](../../gameplay-interface.md). Exact prompts and input roles are recorded in [prompts.md](prompts.md).

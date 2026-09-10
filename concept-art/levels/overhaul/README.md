@@ -1,37 +1,65 @@
 # Level overhaul concepts
 
-## M39 — Crystal Divide
+Every M35–M42 milestone begins with newly generated concept art. Individual maps are authored after their own concept is inspected. Built-in image generation produced these references; exact prompts are retained below. Current rules govern incidental art details: one floor plane, one full terrain-block height, no chasm bridges, and ordinary paid construction/reclamation.
 
-![Crystal Divide direction](m39-crystal-divide-v1.png)
-
-Use the long curved fracture, branching broad chambers, pale lilac edge colonies and warm archive against cold mineral ground. The single blue mineable seam is optional remote income. Ignore the image's incidental narrow spans across black space: the implemented routes go around the two ends of a crescent chasm on continuous land, with no chasm bridge or second height. The dry eastern refuge and western relay reverse the old campaign's usual starting orientation.
-
-## M38 — Fallen City
-
-![Fallen City direction](m38-fallen-city-v1.png)
-
-The connected avenues, substantial civic blocks, foundry court and ruined service district establish the city. Geological breaches interrupt the grid instead of providing a standard central divider. Omit the image's incidental elevated dais, scenic crystals and molten foundry decoration: all floor stays level and this stage uses finite gold and ancient inhabitants. The pictured walls guide terrain-block composition, while reclaimable services use existing rooms and ordinary claiming.
-
-Every M35–M42 milestone starts with newly generated concept art before implementation. These images set the feel and composition to work toward; current gameplay rules and approved excavation-scale references govern incidental details.
+The [campaign briefs](../../../research/level-redesign-briefs.md), [standalone briefs](../../../research/standalone-redesign-briefs.md) and [level overhaul](../../../level-overhaul.md) turn the concepts into practical geography and acceptance criteria.
 
 ## M35 — Campaign direction
 
-![Five-region direction](m35-campaign-direction-v1.png)
+![Campaign direction](m35-campaign-direction-v1.png)
 
-The shared direction is warm timber-framed workings, clustered fungal pools, coherent masonry streets, pale mineral fractures and royal lava precincts. Use their contrasting large shapes, materials and focal points. All playable surfaces remain on one plane; chasms have land routes around them, never constructed bridges. Do not copy isolated scenic spires as new terrain types or add extra floor levels from perspective details. Individual milestone concepts refine these rules before each map is rebuilt.
-
-Generated with the built-in image tool. Exact inputs and prompts: [prompts](prompts.md). Milestones: [level overhaul](../../../level-overhaul.md).
+Warm timber workings, wet fungal colonies, coherent masonry streets, pale mineral fractures and royal lava precincts establish five contrasting places. Use their large shapes and local materials rather than incidental towers, furniture counts or floor elevations.
 
 ## M36 — Border Foothold
 
-![Border Foothold direction](m36-border-foothold-v1.png)
+![Border Foothold](m36-border-foothold-v1.png)
 
-The protected broad basin, timber throats, bent workings and separate service bay set the target. The implementation keeps diggable ground around the small initial Hearth cavern so the player creates the settlement. Illustrated rails, doors and torches are atmosphere references rather than new systems or free starting defenses. Preserve thick rock shoulders and uneven mine branches; avoid the old full-height straight divider. All floors share one plane, including the waystation and watch cavern.
-
-The five coordinate briefs and neutral tile sketches are in [level redesign briefs](../../../research/level-redesign-briefs.md).
+A protected excavatable basin, bent timber workings and a separate framed waystation guide the replacement. Illustrated rails are atmosphere references; the actual starting rooms remain player-built.
 
 ## M37 — Fungal Hollows
 
-![Fungal Hollows direction](m37-fungal-hollows-v1.png)
+![Fungal Hollows](m37-fungal-hollows-v1.png)
 
-Use connected cavern lobes around substantial irregular pools, broad bare dry shores, and dense colonies confined to selected wet margins. The northwest refuge and southwest waystation contrast with the southeastern brood. The image's thin apparent water crossings are replaced by solid land around pool ends; this campaign stage has no bridges. Scenic rock spikes do not add obstacles or floor heights. The starting settlement remains player-built in excavatable ground.
+Connected broad lobes surround substantial irregular pools. Bare dry shelves contrast with selected wet colonies, a southwest waystation and southeastern brood. Apparent thin water crossings in the art become continuous land around pool ends; no bridges are required.
+
+## M38 — Fallen City
+
+![Fallen City](m38-fallen-city-v1.png)
+
+Avenues, civic blocks, foundry court and service district form a buried city network interrupted by geological breaches. Omit incidental elevated dais, scenic crystals and molten workshop decoration; rooms use existing services and physical claiming.
+
+## M39 — Crystal Divide
+
+![Crystal Divide](m39-crystal-divide-v1.png)
+
+An eastern refuge faces a curved fracture, branching chambers, pale lilac colonies and a warm northern archive. Ignore incidental narrow spans across black space: both real routes go around chasm ends. The isolated blue income gem is optional.
+
+## M40 — Royal Deep
+
+![Royal Deep](m40-royal-deep-v1.png)
+
+A broad molten basin, royal peninsulas, short exposed bridgehead and longer foundry approach guide the final campaign map. Apparent raised courts do not change the common floor/deck plane. [Exact prompt and interpretation](m40-prompt.md).
+
+## M41 — Campaign cohesion review
+
+![Campaign cohesion](m41-campaign-cohesion-v1.png)
+
+A shared excavation scale and restrained material language should hold together while each place remains recognizable from its landforms and districts. These close views guide atmosphere; the neutral whole-map comparisons separately assess geographic identity.
+
+## M42 — Independent Free Play collection
+
+Each composition has its own normal full-catalog start and two paid approach examples. They deliberately reuse established materials, rooms and habitats in different arrangements.
+
+| Concept | Geographic direction |
+|---|---|
+| [Mining Interchange](m42-border-interchange-v1.png) | Central mine spokes, western service loop and optional southeastern galleries |
+| [Emberwater Crossing](m42-emberwater-v1.png) | Three substantial banks at a cold-water and molten-stream confluence |
+| [Honeycomb Quarry](m42-upper-quarry-v1.png) | Broad extraction chambers between thick rock ribs |
+| [Overgrown Confluence](m42-overgrown-confluence-v1.png) | Three wet lobes and a buried civic crossing |
+| [Flooded Watch Districts](m42-flooded-districts-v1.png) | Broken watch courts, a service shore and a paid causeway |
+| [Prism Wells](m42-prism-wells-v1.png) | Central refuge, radial mineral chambers and an optional chasm recess |
+| [Ashen Caldera](m42-ashen-caldera-v1.png) | Inward conquest of a lava-ring citadel from two outside banks |
+
+Any incidental stairs, tall scenic spires or raised courts are excluded. Bridge decks stay level, isolated mineral scenery does not automatically provide income, and reclaimable art does not grant free starting services.
+
+Exact prompt sets: [M35–M39 and M41](prompts.md), [M40](m40-prompt.md), [M42 upper workings](m42-upper-prompts.md), [M42 crossings and mineral caves](m42-crossing-mineral-prompts.md), [M42 wetlands](m42-wetlands-prompts.md).
