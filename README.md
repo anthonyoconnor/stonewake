@@ -50,8 +50,8 @@ Map definitions use small shared shape helpers and local presentation regions fo
 
 | Document | Purpose |
 |---|---|
-| [Current development notes](development-plan.md) | Active milestones, implemented catalog, remaining review and known limits |
-| [Campaign and standalone level overhaul](level-overhaul.md) | M35–M42: distinct geography, larger map targets, environmental identity and standalone redesigns |
+| [Current development notes](development-plan.md) | Implemented catalog, remaining review and known limits |
+| [Campaign and standalone level overhaul](level-overhaul.md) | Geography, useful scale, environmental identity and level acceptance rules |
 | [Game rules](game-rules.md) | Core loop, terrain, resources, needs and shared constraints |
 | [Characters](characters.md) | Stonehands, hounds, specialists, recruitment, training and wages |
 | [Rooms and structures](rooms.md) | Costs, capacity, services, ruins, walls, bridges, doors and traps |

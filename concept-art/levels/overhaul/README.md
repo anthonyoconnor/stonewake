@@ -53,7 +53,7 @@ Each composition has its own normal full-catalog start and two paid approach exa
 | Concept | Geographic direction |
 |---|---|
 | [Mining Interchange](m42-border-interchange-v1.png) | Central mine spokes, western service loop and optional southeastern galleries |
-| [Emberwater Crossing](m42-emberwater-v1.png) | Three substantial banks at a cold-water and molten-stream confluence |
+| [Emberwater Crossing](m42-emberwater-v1.png) | Three substantial banks at a cold-water and molten-stream crossing |
 | [Honeycomb Quarry](m42-upper-quarry-v1.png) | Broad extraction chambers between thick rock ribs |
 | [Overgrown Confluence](m42-overgrown-confluence-v1.png) | Three wet lobes and a buried civic crossing |
 | [Flooded Watch Districts](m42-flooded-districts-v1.png) | Broken watch courts, a service shore and a paid causeway |

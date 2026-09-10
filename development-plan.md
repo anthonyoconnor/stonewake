@@ -1,29 +1,18 @@
 # Current development notes
 
-The existing browser game is implemented. The active roadmap is a redesign of all five campaign levels and the seven additional standalone Free Play levels for distinct geography, stronger environmental identity and larger useful spaces, especially later in the campaign. Standalone designs may reuse campaign elements, combine them or establish unique identities. Completed milestone specifications, authorization history, dated checks and superseded design drafts are in the [archive](archive/README.md); read them only when historical context is needed.
+The browser game and the M35–M42 level redesign are implemented. All five campaign levels and seven additional standalone Free Play levels have distinct geography, local environmental treatments and larger useful spaces. Completed milestone specifications, authorization history, dated checks and superseded design drafts are in the [archive](archive/README.md); read them only when historical context is needed.
 
-## Active level redesign milestones
+## Delivered level redesign
 
-The user authorized execution of M35–M42, with newly generated concept art at the start of every milestone. [Campaign and standalone level overhaul](level-overhaul.md) owns the shared criteria, provisional dimensions, per-level requirements and acceptance evidence. Current progress is tracked below; campaign order, gradual unlocks and the shared Hearthstone objective remain unchanged.
+M35–M42 are complete. The campaign grows from sheltered mining workings through wet cavern lobes, buried city streets and a crescent fracture to royal peninsulas around lava. Seven standalone scenarios reuse these materials in separate mine, quarry, crossing, wetland, mineral and caldera geographies. Campaign order, gradual unlocks and physical Hearthstone activation remain unchanged.
 
-| Milestone | Scope | Status |
-|---|---|---|
-| M35 | Five distinct level briefs, comparison baselines and minimal authoring groundwork | Complete; evidence in archive |
-| M36 | Border Foothold: sheltered basin and abandoned workings | Both paid approaches pass; visual review in progress |
-| M37 | Fungal Hollows: cavern basin, looping land routes and living colonies | Concept created; replacement in development |
-| M38 | Fallen City: buried streets and coherent reclaimable districts | Concept created; replacement in development |
-| M39 | Crystal Divide: fractured spine, chasm routes and optional remote income | Planned; after M38 |
-| M40 | Royal Deep: large lava basin, peninsula districts and distinct crossing choices | Planned; after M39 |
-| M41 | Campaign-wide identity, pacing, scale and integration review | Planned; after all five replacements |
-| M42 | Redesign all seven standalone Free Play levels using shared elements, new combinations or unique geography | Planned; after M41 |
-
-Closure requires both functional verification and a recorded design review of geography, useful scale, fogged exploration and normal-zoom atmosphere. Passing route tests or producing screenshots alone is insufficient. Preserve old layouts as development comparisons during iteration and all permanent baseline renderers. Move completed evidence to the archive as work lands.
+[Levels](levels.md) owns the current catalog and dimensions; [level overhaul](level-overhaul.md) owns authoring and acceptance requirements. The [fourteen concepts](concept-art/levels/overhaul/README.md) were created before their corresponding work. Paid intended/alternate approaches, campaign travel, ordinary-fog exploration, neutral identity comparisons, normal/reverse atmosphere reviews and developed active performance are recorded in [development history](archive/development-history.md). The original twelve layouts and permanent renderer baselines remain available for comparison.
 
 ## Remaining review
 
 - **Audio listening feedback:** procedural ambience, music and effects are implemented; playback, controls and cleanup have automated verification. Listening through quiet building, crowded work and combat remains pending. Use [audio-design.md](audio-design.md) and the recorded sample at `test-results/m30/work-combat.webm` when locally available. Do not infer listening approval from playback checks.
 
-The level redesign roadmap above is the current planned work. Deferred concepts below are not part of that roadmap.
+No level redesign milestone remains open. Deferred concepts below are outside the completed roadmap.
 
 ## Current implementation status
 
@@ -37,7 +26,7 @@ The game has a five-area authored campaign, twelve independent Free Play entries
 | Workshop | Implemented: floor-area concurrent Engineer capacity, attraction, staffed production of all three door tiers and both traps, shared finished stock for placement | Repairs and future fixture upkeep deferred |
 | Training Room | Implemented: floor-area concurrent trainee capacity, specialist levels 1–5 with defined practice requirements and health/combat/work values, one level per visit followed by a personal cooldown, and Warrior attraction | — |
 | Library | Implemented: floor-area concurrent researcher capacity, targeted spell research/preparation/casting and Runesmith attraction; catalog in [Spells](spells.md) | — |
-| Guard Post | Deferred; disabled catalog placeholder | Outside the active roadmap |
+| Guard Post | Deferred; disabled catalog placeholder | Outside current scope |
 | Stone Hearth | Implemented: fixed 400-health core, physical enemy attacks, defeat/restart, Stonehand creation/specialist arrivals and starter treasury | No repair, upgrades or relocation in current scope |
 | Onward Hearthstone | Implemented: hidden authored stone, physical access/security, eight-second autonomous activation, local completion and progression readiness | — |
 | Bridge | Implemented: paid worker construction over water/lava, shore support, shared traversal, refunds and protected removal; no service capacity or fixtures | Chasms intentionally unbridgeable |
@@ -67,11 +56,11 @@ Keep the original `*-baseline.ts` renderers, independent reference materials and
 
 ## Known limitations and deferred scope
 
-- The current campaign has functioning biome enemies, hazards, ruins and palettes, but repeats its overall start/objective placement, central divider and route structure. M35–M41 address the geographic and environmental shortfall; historical M29 route verification establishes playability of the old maps, not completion of this redesign.
+- The larger maps use ordinary needs, movement and recruitment, so opening multiple hostile routes at once can still overwhelm an unprepared settlement. Example paid routes demonstrate viable choices, not guaranteed success for arbitrary excavation. The complete campaign remains a substantial single sitting without saves.
 - Guard Posts and assigned guard duties, general specialist retreat, door repairs/upgrades in place, core repairs and structure maintenance are deferred. Mining-worker escape and hound patrol/response are implemented.
 - The legacy Miner is retained for debug and comparison; converting it into a basic fighter is deferred. Tunnel Badgers and Ranger remain concepts. Separate Smith, Priest, expedition leader, Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are outside the current roster/room design.
 - Economy, recruitment, combat and research values are tunable prototype choices. Authored intended/alternate campaign routes have verification, but arbitrary layouts are not guaranteed to succeed. No free replacement or additional defeat rule exists when all Stonehands are lost and funds cannot buy another.
-- Art is procedural. Finger/cloth articulation, exact furniture contact, detailed cast shadows and some close crowd intersections remain limited. Dense furnished scenes cost more than arrivals on integrated graphics; historical measurements are in the archive and require new measurement after rendering changes.
+- Art is procedural. Finger/cloth articulation, exact furniture contact, detailed cast shadows and some close crowd intersections remain limited. Dense developed scenes remain demanding on integrated graphics: final Royal samples ran around 28 FPS with real-time simulation on Intel Iris Plus. Earlier samples were much slower under varying machine conditions. Static lighting and visibility reuse reduce repeated work, but no overall frame-rate improvement is established; detailed conditions and limits are in the M41 archive record.
 - Wages with blocked access can repeat route queries. Current tested populations remain usable.
 - No game saves, accounts, multiplayer, cloud services or production release infrastructure. Reload loses the session.
 

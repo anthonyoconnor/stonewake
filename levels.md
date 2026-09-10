@@ -63,7 +63,7 @@ The ordinary game starts the five-area journey defined in `src/content/campaign.
 | Border Foothold | Establish a settlement and secure the upper watch | Travel to Fungal Hollows with Training Room plans |
 | Fungal Hollows | Train defenders and open branching nest approaches | Travel to Fallen City with Workshop plans |
 | Fallen City | Secure ruined districts and manufacture defenses | Travel to Crystal Divide with Library plans |
-| Crystal Divide | Prepare spells and secure remote crystal income | Travel to Royal Deep with stonebridge plans |
+| Crystal Divide | Prepare spells and choose a land route around the fracture; guarded mineral income is optional | Travel to Royal Deep with stonebridge plans |
 | Royal Deep | Build crossings and overcome the volcanic royal watch | Activate the final relay to complete the journey |
 
 The Hearth panel provides an area briefing. Discovering its onward stone reveals the local story detail without exposing hidden positions in advance. Activation must still satisfy physical reach and security; travel only becomes available after successful activation and never occurs automatically.

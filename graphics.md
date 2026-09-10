@@ -21,6 +21,8 @@ Ordinary Campaign and Free Play use subdued biome ambient light, six reusable lo
 
 Tile-based terrain rays and mesh masks limit illumination after walls. This is presentation occlusion, not gameplay sight or detailed cast shadows. Source selection follows the camera and can change which pools are visible. Settings have no flicker, support reduced motion, and clean up on world replacement.
 
+Terrain pieces share their tile's occlusion sample, while actors share their model root's sample. Static masks are reused until geometry or a light's position/range changes; actor masks refresh at the existing short cadence. Furnishings and Hearth pieces retain their individual sample positions. This preserves the light boundaries while avoiding repeated rays through unchanged terrain.
+
 Defaults and budgets live in [lighting definitions](src/content/lighting.ts); shared source selection and masking live in [lighting service](src/view/lighting-lab.ts). [Environment definitions](src/content/environment-visuals.ts) own biome palettes and sparse visible growth. Cosmetic furnishings never block light through gameplay navigation or alter service capacity.
 
 ## Local environment regions
@@ -55,6 +57,12 @@ Resident strides follow traveled distance. Jobs drive mining, reinforcement, cla
 Enemy bodies stay at their authoritative continuous positions. Pausing freezes simulation-driven turns and poses; display galleries have separate preview playback. Damage causes restrained recoil, death a brief fall and disposal; ordinary departure is not a death animation. Reduced motion suppresses decorative bobbing, tail motion, particles and pulses while retaining useful action poses.
 
 Model construction lives in resident/dwarf/enemy sculpt modules; scene lifecycle is in [scene.ts](src/view/scene.ts). Room models and floors use the files listed in [room presentation](room-overhaul.md#iteration-and-references). Static pieces merge within their material and animated pivot. Baseline/current materials must never share mutable caches.
+
+## Static scene visibility
+
+Finalized terrain and furniture freeze their world matrices and register with [static mesh candidates](src/view/static-mesh-candidates.ts). The candidate provider reuses their frustum results while the camera matrix, mesh world matrix and culling strategy stay unchanged. It compares actual camera matrix values because glow rendering can rewrite Babylon's matrix update marker without moving the camera. Register only completed, immutable geometry; moving residents, effects and other unregistered meshes keep ordinary per-frame evaluation.
+
+The provider walks the live mesh array in its original order, so new discovery, arrivals and disposal remain visible immediately. Camera movement invalidates the cached results; force-active meshes and disabled frustum clipping retain their normal behavior. Babylon still checks readiness, visibility, enabled state and active meshes. Picking uses the full scene. Replacing the world releases the old cache and result buffer. This reduces offscreen static work without freezing the active mesh list or changing resolution, antialiasing, glow or lighting quality.
 
 ## Verification and limits
 

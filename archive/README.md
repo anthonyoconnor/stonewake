@@ -7,6 +7,7 @@ Historical context only. Current behavior, remaining review and development inst
 | Record | Contents |
 |---|---|
 | [Development history](development-history.md) | Completed specifications, implementation decisions and dated verification |
+| [M35–M42 level overhaul specifications](previous-docs/level-overhaul.md) | Original dependencies, concept-first requirement, individual redesign scope and provisional size targets; current rules remain in the root guide |
 | [Earlier graphics passes](graphics-pass.md) | Initial graphics/animation audits, lighting integration and historical performance samples |
 | [Former development plan](previous-docs/development-plan.md) | Milestone-era status, detailed baseline and sound/music acceptance criteria |
 | [Former project instructions](previous-docs/project-instructions.md) | Prior milestone and overhaul authorization sequence |
@@ -63,6 +64,14 @@ This is the retired milestone tracker. All retained implementation milestones ar
 | M32 | Character animation and combat readability | Complete |
 | M33 | Underground lighting and pointer illumination | Complete |
 | M34 | Left-edge camera panning across the sidebar | Complete |
+| M35 | Concept-led level briefs, independent comparisons and authoring groundwork | Complete |
+| M36 | Border Foothold sheltered mining geography | Complete |
+| M37 | Fungal Hollows cavern basins and colonies | Complete |
+| M38 | Fallen City streets and reclaimable districts | Complete |
+| M39 | Crystal Divide fracture routes and optional mineral expeditions | Complete |
+| M40 | Royal Deep lava basin and peninsula districts | Complete |
+| M41 | Campaign identity, pacing, travel and active late-level performance review | Complete; integrated-GPU performance limits retained |
+| M42 | Seven distinct standalone Free Play redesigns | Complete |
 
 Later character/terrain, spell/trap/Hearth and room overhauls, comparison controls, debug navigation and level previews are recorded in development history. Their active controls and preservation rules remain in the current visual and development guides.
 
