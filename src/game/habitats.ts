@@ -12,15 +12,6 @@ export function tickHabitat(w: World, e: Enemy, dt: number, spikeAt: (w: World, 
   if (!h) { e.activity = 'Guarding camp'; return; }
   const walker: Walker = enemyById(e.type).lavaWalker ? 'enemy-lava' : 'enemy';
   const resting = h.behavior === 'sentry' ? 'Watching the hall' : h.behavior === 'nest' ? 'Resting at nest' : 'Watching territory';
-  if (h.behavior === 'sentry' && distance(e, h.home) < 0.05) {
-    e.activity = resting;
-    // Deliberate, restrained quarter-turns communicate watchfulness without aim jitter.
-    if (w.elapsed >= h.nextMoveAt) {
-      e.facing = (h.sequence++ % 4) * Math.PI / 2;
-      h.nextMoveAt = w.elapsed + h.pauseSeconds;
-    }
-    return;
-  }
   if (h.destination && distance(e, h.destination) < 0.05) {
     h.destination = undefined;
     h.nextMoveAt = w.elapsed + h.pauseSeconds;
@@ -28,16 +19,28 @@ export function tickHabitat(w: World, e: Enemy, dt: number, spikeAt: (w: World, 
   if (!h.destination) {
     e.activity = resting;
     if (w.elapsed < h.nextMoveAt) return;
-    if (distance(e, h.home) > h.radius || h.behavior === 'sentry' || (h.behavior === 'nest' && h.sequence % 2)) {
+    if (distance(e, h.home) > h.radius || ((h.behavior === 'sentry' || h.behavior === 'nest') && h.sequence % 2 && distance(e, h.home) > 0.1)) {
       h.destination = { ...h.home };
       h.sequence++;
     } else {
       const choices = (h.waypoints?.length ? h.waypoints : w.tiles)
-        .filter(p => distance(p, h.home) <= h.radius && distance(p, e) > 0.9 && !blocked(w, p, undefined, { walker }))
+        .filter(p => distance(p, h.home) <= h.radius && distance(p, e) > 0.9 && !blocked(w, p, undefined, { walker }) &&
+          !(w.enemies ?? []).some(other => other !== e && other.health > 0 && distance(p, other) < 0.65))
         .sort((a, b) => a.z - b.z || a.x - b.x);
+      // Patrols follow successive compass sectors; prowlers circle the perimeter.
+      // Spiders favour short darts, while free roam uses a varied deterministic stride.
+      const angle = (h.sequence + e.id) * Math.PI / (h.behavior === 'prowl' ? 4 : 2);
+      const anchor = { x: h.home.x + Math.sin(angle) * h.radius, z: h.home.z + Math.cos(angle) * h.radius };
+      if (h.behavior === 'patrol' || h.behavior === 'sentry' || h.behavior === 'prowl')
+        choices.sort((a, b) => distance(a, anchor) - distance(b, anchor));
+      if (h.behavior === 'skitter') {
+        const score = (p: Point) => Math.abs(distance(p, e) - 1.5) + ((p.x * 13 + p.z * 7 + h.sequence * 11) % 17) / 17;
+        choices.sort((a, b) => score(a) - score(b));
+      }
       // A deterministic stride varies local loops while keeping scenario resets repeatable.
       for (let i = 0; i < choices.length; i++) {
-        const p = choices[(h.sequence * 7 + e.id * 3 + i) % choices.length];
+        const offset = h.behavior === 'roam' || h.behavior === 'nest' ? h.sequence * 7 + e.id * 3 : 0;
+        const p = choices[(offset + i) % choices.length];
         const path = findPath(w, e, p, walker);
         if (!path || path.some(step => distance(step, h.home) > h.radius)) continue;
         h.destination = { x: p.x, z: p.z };
@@ -50,7 +53,9 @@ export function tickHabitat(w: World, e: Enemy, dt: number, spikeAt: (w: World, 
   const path = findPath(w, e, h.destination, walker);
   if (!path) { h.destination = undefined; h.nextMoveAt = w.elapsed + h.pauseSeconds; e.activity = resting; return; }
   let remaining = enemyById(e.type).speed * h.speedFraction * slowRate(w, e) * dt;
-  e.activity = h.behavior === 'patrol' ? 'Patrolling territory' : h.behavior === 'nest' ? 'Circling nest' : 'Roaming territory';
+  e.activity = h.behavior === 'patrol' ? 'Patrolling territory' : h.behavior === 'nest' ? 'Circling nest' :
+    h.behavior === 'sentry' ? 'Inspecting watch posts' : h.behavior === 'skitter' ? 'Skittering around nest' :
+    h.behavior === 'prowl' ? 'Prowling territory' : 'Roaming territory';
   for (const p of path) {
     if (remaining <= 0) break;
     const dist = distance(e, p);
@@ -60,7 +65,7 @@ export function tickHabitat(w: World, e: Enemy, dt: number, spikeAt: (w: World, 
     if (!clearLine(w, e, next, passageFrom(w, e, walker))) break;
     if ((w.enemies ?? []).some(other => other !== e && other.health > 0 && distance(next, other) < 0.55)) {
       h.destination = undefined;
-      h.nextMoveAt = w.elapsed + h.pauseSeconds;
+      h.nextMoveAt = w.elapsed + Math.min(0.5, h.pauseSeconds);
       break;
     }
     e.facing = Math.atan2(dx, dz);

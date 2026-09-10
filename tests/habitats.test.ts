@@ -6,6 +6,11 @@ import { encounterSummary, initializeEncounters, tickEncounters, type EncounterD
 import { tileAt, type World } from '../src/game/types.ts';
 import { visible, damageEnemy } from '../src/game/spell-effects.ts';
 import { addResidents } from '../src/game/simulation.ts';
+import { enemyDefinitions } from '../src/content/enemies.ts';
+import { createEnemyHabitat, type BiomeId } from '../src/content/habitats.ts';
+import { prototypeLevel } from '../src/content/levels.ts';
+import { authoredCampaignLevels } from '../src/content/campaign-levels.ts';
+import { enemyRegionIds, enemyRegionLevel } from '../src/content/enemy-regions.ts';
 
 function habitatWorld(def: Partial<EncounterDefinition> = {}) {
   return createWorld({ id: 'habitat', name: 'Habitat', width: 27, height: 17, hearth: { x: 3, z: 4 },
@@ -37,14 +42,68 @@ test('concealed species roam and nest through real local paths without discoveri
   assert.equal(w.encounters![0].waves, 0);
 });
 
-test('deliberate sentries turn while holding their authored square; sealed local routes do not excavate', () => {
+test('sentries inspect nearby watch posts and return home; sealed local routes do not excavate', () => {
   const w = habitatWorld({ roster: ['ancient-sentinel', 'tunnel-burrower'], habitat: { biome: 'ancient', radius: 3, behavior: 'sentry' } });
-  const start = w.enemies!.map(e => ({ x: e.x, z: e.z })), facing = w.enemies![0].facing;
-  advance(w, 5);
-  assert.deepEqual(w.enemies!.map(e => ({ x: e.x, z: e.z })), start);
-  assert.notEqual(w.enemies![0].facing, facing);
-  assert(w.enemies!.every(e => e.activity === 'Watching the hall'));
+  const e = w.enemies![0];
+  let moved = false, returned = false;
+  for (let i = 0; i < 80; i++) {
+    advance(w, 1);
+    const away = Math.hypot(e.x - e.habitat!.home.x, e.z - e.habitat!.home.z);
+    moved ||= away > 0.5;
+    returned ||= moved && away < 0.05;
+  }
+  assert(moved && returned, 'Watch circuits must include actual travel and a return to the station');
   assert(w.tiles.filter(t => t.x >= 7 && t.x <= 10).every(t => t.terrain !== 'floor'));
+});
+
+test('every species repeatedly moves before discovery with its own habitat cadence', () => {
+  for (const def of enemyDefinitions) {
+    const w = habitatWorld({ positions: [{ x: 17, z: 8 }], roster: [def.id], habitat: { biome: def.region as BiomeId } });
+    const e = w.enemies![0], h = e.habitat!;
+    const visited = new Set<string>();
+    let distanceTravelled = 0;
+    for (let i = 0; i < 60 * 20; i++) {
+      const previous = { x: e.x, z: e.z };
+      advance(w, 0.05);
+      distanceTravelled += Math.hypot(e.x - previous.x, e.z - previous.z);
+      visited.add(`${Math.round(e.x)},${Math.round(e.z)}`);
+      assert(Math.hypot(e.x - h.home.x, e.z - h.home.z) <= h.radius + 0.01, def.id);
+    }
+    assert(distanceTravelled > 4 && visited.size >= 3, `${def.id} must keep travelling, including heavy sentries`);
+    assert.equal(w.encounters![0].phase, 'dormant');
+  }
+});
+
+test('legacy Free Play camps roam by default and continue when a released raid has no route', () => {
+  const w = createWorld(prototypeLevel), start = w.enemies!.map(e => ({ x: e.x, z: e.z }));
+  advance(w, 6);
+  assert(w.enemies!.every((e, i) => Math.hypot(e.x - start[i].x, e.z - start[i].z) > 0.5));
+  for (const e of w.enemies!) e.dormant = false;
+  const before = w.enemies!.map(e => ({ x: e.x, z: e.z }));
+  advance(w, 10);
+  assert(w.enemies!.every((e, i) => Math.hypot(e.x - before[i].x, e.z - before[i].z) > 0.5));
+  assert.equal(w.hearthState!.health, w.hearthState!.maxHealth);
+});
+
+test('every starting inhabitant moves in authored campaign and regional Free Play terrain', () => {
+  for (const level of [...authoredCampaignLevels, ...enemyRegionIds.map(enemyRegionLevel)]) {
+    const w = createWorld(level), travelled = w.enemies!.map(() => 0);
+    for (let i = 0; i < 40 * 20; i++) {
+      const before = w.enemies!.map(e => ({ x: e.x, z: e.z }));
+      advance(w, 0.05);
+      w.enemies!.forEach((e, index) => travelled[index] += Math.hypot(e.x - before[index].x, e.z - before[index].z));
+    }
+    w.enemies!.forEach((e, index) => assert(travelled[index] > 2, `${level.id}: ${e.type} must move through actual level geometry`));
+  }
+});
+
+test('species profiles preserve authored overrides', () => {
+  const h = createEnemyHabitat({ biome: 'fungal', behavior: 'patrol', radius: 5, pauseSeconds: 2, speedFraction: 0.4 },
+    { x: 17, z: 8 }, 'cave-spider', 0, 0, true);
+  assert.equal(h.behavior, 'patrol');
+  assert.equal(h.radius, 5);
+  assert.equal(h.pauseSeconds, 2);
+  assert.equal(h.speedFraction, 0.4);
 });
 
 test('territorial inhabitants fight intruders after warning, then return to local activity without a settlement raid', () => {

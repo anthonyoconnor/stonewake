@@ -183,6 +183,7 @@ export function tickEnemies(
     if (!path) {
       e.activity = 'No route';
       e.digging = undefined;
+      if (!victim && e.habitat) tickHabitat(w, e, dt, spikeAt);
       continue;
     }
     e.activity = charging ? 'Charging' : 'Approaching';

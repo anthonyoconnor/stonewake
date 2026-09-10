@@ -1,5 +1,12 @@
 # Completed development and history
 
+## 2026-09-09 — Species-specific natural enemy movement
+
+- Fixed stationary natural encounters in legacy Free Play by assigning habitat movement to every encounter member. Removed the campaign helper's group-wide behavior override so each creature keeps its own pattern.
+- Added editable species profiles: patrol sectors for goblins/guards, short irregular spider darts, perimeter stalking, quick Cinderling roaming, den/lair excursions for burrowers and heavy beasts, and physical watch-post inspections/returns for sentinels and elementals. Blocked raiders continue local movement while checking for an approach; occupied destinations are skipped with a short retry after meeting an ally.
+- Preserved fog, physical traversal, warning/raid timing, combat abilities and stationary debug fixtures. Updated the encounter regression to allow the existing asynchronous route recheck after a moving inhabitant is discovered.
+- Verified `npm run verify -- habitats`: source/test typecheck and all 31 focused enemy, encounter and habitat tests passed, including all ten species and every initial campaign/regional inhabitant moving through authored terrain. `node scripts/habitats-browser.mjs` passed visible-model position checks in five full-level previews; captures are in ignored `test-results/habitats/`. The browser flow is selectable with `--browser=habitats`.
+
 Read this file only when past context, original milestone requirements, verification evidence or earlier decisions are needed. It is not required reading for ordinary development. Start with [the active development plan](development-plan.md) and the relevant current design document.
 
 This archive preserves completed milestone specifications and dated development records, including M5.1. Historical requirements and provisional values may have been superseded; current design documents and the user's latest decisions take precedence. Remaining limitations belong in the active plan so they do not require loading this archive.

@@ -39,7 +39,22 @@ Only Cinderlings can walk directly on lava. Other species need completed bridges
 
 ### Living habitats and territorial groups
 
-`src/content/habitats.ts` defines the upper-workings, fungal, ancient, crystal and volcanic habitat defaults, visible cues and counters. Level authors select a world's `biome`, and encounters opt into `habitat` with optional movement radius, pause duration, speed fraction and patrol waypoints. Goblins and Restless Guards patrol, spiders/stalkers/Cinderlings roam, Burrowers/Spore Brutes/Deepmaws circle and rest at nests, and Sentinels/Elementals deliberately watch and turn at their stations. Local movement uses ordinary traversable paths within its territory, without excavating, breaking doors, moving through bedrock or discovering terrain. Creatures maintain their existing species-specific combat and hazard abilities when attacking.
+Every natural encounter receives local movement, including older Free Play camps without an explicit `habitat`. `src/content/habitats.ts` owns editable species profiles and regional defaults. An encounter can override movement radius, pause duration, speed fraction and patrol waypoints; campaign camps preserve each species' profile instead of applying one movement pattern to their entire group.
+
+| Creature | Natural movement |
+|---|---|
+| Goblin Raider | Brisk circuits through successive patrol sectors, with short lookout pauses |
+| Tunnel Burrower | Short foraging excursions followed by returns to its den |
+| Cave Spider | Quick, irregular short darts around the nest with brief pauses |
+| Spore Brute | Slow, close excursions among the fungi, resting between trips |
+| Restless Guard | Measured patrol circuits with longer watch pauses |
+| Ancient Sentinel | Heavy, short inspections of nearby watch posts, returning to its station |
+| Crystal Elemental | Wider watch-post inspections with pauses to survey the cavern |
+| Crystalback Stalker | Slow perimeter prowling through closely spaced compass sectors |
+| Cinderling | Fast, varied roaming with very brief pauses, including traversable lava |
+| Deepmaw | Lumbering excursions and returns to its lair, with long rests |
+
+Local movement uses ordinary traversable paths within its territory, without excavating, breaking doors, moving through bedrock or discovering terrain. Occupied destinations are skipped and creatures choose another route shortly after meeting an ally. A released raider with no route to its target resumes local movement while continuing to check for an approach. Combat takes priority and retains existing species abilities, speeds and warning rules. Explicitly stationary debug samples remain controlled by their test fixtures.
 
 Habitat activity is separate from pressure. `pressure: 'territorial'` groups defend their authored area after the normal discovery warning, attack intruding residents, and return to local activity when targets leave. They do not march toward the settlement or regenerate after being cleared. `pressure: 'raid'` (the compatibility default) sources use their authored activation, warning, roster and cadence, releasing their inhabitants toward the Hearth or bringing in a physical entrance wave. A moving inhabitant becoming visible counts as discovering its source, while concealed activity remains absent from the normal sidebar and never reveals terrain.
 
@@ -47,7 +62,7 @@ An inhabitant attacked during its warning can defend itself locally immediately.
 
 Each recurring source waits until its whole previous group is defeated, then takes its configured recovery interval and a fresh full warning. A blocked entrance retains only one pending wave; each species must have a physical route (including eligible burrowing or lava traversal). Claiming an authored entrance permanently suppresses it, without deleting living attackers. Several sources can act independently, allowing organized patrol pressure, burrowing flanks and ranged/lava challenges at different timings. Not every habitat raids: local fungal nests and ancient guardians can instead guard optional ruins and resource approaches. Gold/gems and bedrock remain protected from burrowing.
 
-`tests/habitats.test.ts` checks pre-contact movement, deliberate sentries, concealed activity, local defense/return, independent recurring warnings/recovery, blocked waves, burrowing access and suppression. Existing encounter/enemy tests continue to cover real combat, route restrictions and every species' counters. Concrete map pressure and routes are owned by [Levels](levels.md).
+`npm run verify -- habitats` checks repeated pre-contact movement for all ten species, actual campaign/regional terrain, legacy Free Play roaming, sentry returns, concealed activity, local defense/return, independent recurring warnings/recovery, blocked waves, burrowing access and suppression, plus existing enemy/encounter combat regressions. Add `--browser=habitats` with the local server running to check visible moving models in five full-level previews. Concrete map pressure and routes are owned by [Levels](levels.md).
 
 Encounter definitions accept `roster`, one stable enemy ID per authored `positions` entry. Omitting it preserves Raider-only sources. Unknown IDs or mismatched counts are rejected. Mixed camps/nests create their inhabitants on actual unclaimed spawn squares, remain dormant until their declared trigger/warning, and clear after the group is defeated. Mixed raid waves wait for every member's physical approach; they neither teleport nor accumulate while blocked. Lava-capable and digging members use their own route abilities in that check. Source claiming stops reinforcements through the existing rules.
 

@@ -106,7 +106,7 @@ test('sealed raid waits without stacked waves; normal excavation discovers a cam
   until(w, () => camp.phase === 'warning', 30, 'Discover camp through excavation');
   assert.equal(tileAt(w, 12, 12)!.terrain, 'floor');
   assert.equal(camp.waves, 0);
-  assert.equal(entrance.waves, 1);
+  until(w, () => entrance.waves === 1, 2, 'Opened entrance releases its pending wave after the route recheck');
   until(w, () => camp.phase === 'cleared', 40, 'Warriors and defenses clear discovered camp');
   assert(
     w.defenses!.some((d) => d.triggeredAt > 0),

@@ -102,8 +102,8 @@ function spawnGroup(w: World, source: EncounterState, dormant: boolean) {
     const enemy = addEnemy(w, position, encounterTarget(w, position, routes, walker) ?? position, type)!;
     enemy.sourceId = source.definition.id;
     enemy.dormant = dormant;
-    if (source.definition.habitat)
-      enemy.habitat = createEnemyHabitat(source.definition.habitat, position, type, w.elapsed, i, source.definition.pressure === 'territorial');
+    enemy.habitat = createEnemyHabitat(source.definition.habitat ?? { biome: w.biome ?? 'upper' },
+      position, type, w.elapsed, i, source.definition.pressure === 'territorial');
     enemy.activity = dormant ? 'Guarding camp' : 'Approaching';
     group.push(enemy);
   }

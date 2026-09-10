@@ -1,7 +1,7 @@
 import type { Point } from '../game/types.ts';
 
 export type BiomeId = 'upper' | 'fungal' | 'ancient' | 'crystal' | 'volcanic';
-export type HabitatBehavior = 'roam' | 'patrol' | 'nest' | 'sentry';
+export type HabitatBehavior = 'roam' | 'patrol' | 'nest' | 'sentry' | 'skitter' | 'prowl';
 export interface HabitatDefinition {
   biome: BiomeId;
   behavior?: HabitatBehavior;
@@ -45,14 +45,23 @@ export const habitatDefinitions: Record<BiomeId, {
     counter: 'Defend bridges with trained fighters, traps and Library support; watch lava flanks.' },
 };
 
+/** Idle movement only; combat speeds and abilities remain in enemies.ts. */
+export const speciesHabitats: Record<string, Omit<HabitatDefinition, 'biome' | 'waypoints'>> = {
+  'goblin-raider': { behavior: 'patrol', radius: 4, pauseSeconds: 1.2, speedFraction: 0.65 },
+  'tunnel-burrower': { behavior: 'nest', radius: 2.5, pauseSeconds: 2.5, speedFraction: 0.55 },
+  'cave-spider': { behavior: 'skitter', radius: 3, pauseSeconds: 0.7, speedFraction: 0.9 },
+  'spore-brute': { behavior: 'nest', radius: 2, pauseSeconds: 4, speedFraction: 0.45 },
+  'restless-guard': { behavior: 'patrol', radius: 3, pauseSeconds: 2, speedFraction: 0.5 },
+  'ancient-sentinel': { behavior: 'sentry', radius: 1.5, pauseSeconds: 4, speedFraction: 0.45 },
+  'crystal-elemental': { behavior: 'sentry', radius: 2.5, pauseSeconds: 2.5, speedFraction: 0.6 },
+  'crystalback-stalker': { behavior: 'prowl', radius: 4, pauseSeconds: 1.5, speedFraction: 0.55 },
+  cinderling: { behavior: 'roam', radius: 4, pauseSeconds: 0.6, speedFraction: 0.85 },
+  deepmaw: { behavior: 'nest', radius: 3, pauseSeconds: 5, speedFraction: 0.5 },
+};
+
 export function createEnemyHabitat(def: HabitatDefinition, home: Point, type: string | undefined, elapsed: number, index: number, territorial: boolean): EnemyHabitat {
-  const defaults = habitatDefinitions[def.biome];
-  const speciesBehavior: Record<string, HabitatBehavior> = {
-    'goblin-raider': 'patrol', 'tunnel-burrower': 'nest', 'cave-spider': 'roam', 'spore-brute': 'nest',
-    'restless-guard': 'patrol', 'ancient-sentinel': 'sentry', 'crystal-elemental': 'sentry',
-    'crystalback-stalker': 'roam', cinderling: 'roam', deepmaw: 'nest',
-  };
-  return { home: { ...home }, behavior: def.behavior ?? speciesBehavior[type ?? 'goblin-raider'] ?? defaults.behavior,
+  const defaults = { ...habitatDefinitions[def.biome], ...speciesHabitats[type ?? 'goblin-raider'] };
+  return { home: { ...home }, behavior: def.behavior ?? defaults.behavior,
     radius: def.radius ?? defaults.radius, pauseSeconds: def.pauseSeconds ?? defaults.pauseSeconds,
     speedFraction: def.speedFraction ?? defaults.speedFraction, waypoints: def.waypoints?.map(p => ({ ...p })),
     nextMoveAt: elapsed + index * 0.3, sequence: index, territorial };

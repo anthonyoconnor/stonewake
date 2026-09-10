@@ -39,7 +39,7 @@ Last checked: **2026-09-09** against the current definitions, full simulation su
 | Timber / Reinforced / Steel doors | Implemented in normal play: manufacture, placement, increasing health, Open/Closed/Locked access, dwarf passage, sight blocking and breakage | Repairs and upgrades in place deferred |
 | Spike trap | Implemented in normal play: manufacture, placement, enemy damage, brief pinning and automatic cooldown reset | — |
 | Bolt trap | Implemented in normal play: manufacture, placement, directional first-target shots, line of sight and automatic cooldown reset | — |
-| All ten enemies | Implemented: editable regional roster, melee/ranged/breaching roles, terrain/control interactions, normal regional maps and encounter sources; visual/debug gallery | — |
+| All ten enemies | Implemented: species-specific local movement in campaign and Free Play, editable regional roster, melee/ranged/breaching roles, terrain/control interactions, encounter sources and visual/debug gallery | — |
 
 | Workforce type | Current status | Remaining integration |
 |---|---|---|

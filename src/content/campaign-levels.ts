@@ -8,7 +8,7 @@ const col = (x: number, z: number, count: number): Point[] => Array.from({length
 const rect = (x:number,z:number,width:number,depth:number):Point[] => Array.from({length:width*depth},(_,i)=>({x:x+i%width,z:z+Math.floor(i/width)}));
 const camp = (id:string,name:string,biome:BiomeId,positions:Point[],roster:string[],pressure:'raid'|'territorial'='territorial'): EncounterDefinition => ({
   id,name,kind:biome==='fungal'?'nest':'camp',positions,roster,activation:'discovery',delay:0,warningSeconds:18,clear:'defeat',
-  pressure,habitat:{biome,radius:3,behavior:biome==='ancient'?'sentry':biome==='fungal'?'nest':'patrol',pauseSeconds:3},
+  pressure,habitat:{biome},
   warning:`Disturbed inhabitants are stirring in ${name.toLowerCase()}. Prepare the opened approach.`,
 });
 const entrance = (id:string,biome:BiomeId,position:Point,roster:string[],delay:number):EncounterDefinition => ({
