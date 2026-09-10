@@ -6,11 +6,11 @@ import type { CameraControls } from '../view/controls';
 const colors:Record<string,string>={dirt:'#6f5a43',rock:'#91938a',bedrock:'#3c4d55',gold:'#dba949',gem:'#857ab9',floor:'#8b8067',water:'#286e86',lava:'#df5423',chasm:'#101323'};
 
 /** Resource deposits guide exploration on both maps without discovering their surroundings. */
-export function drawMap(canvas:HTMLCanvasElement,w:World){
+export function drawMap(canvas:HTMLCanvasElement,w:World,revealAll=false){
   const c=canvas.getContext('2d')!,sx=canvas.width/w.width,sz=canvas.height/w.height;
   c.fillStyle='#0c1319';c.fillRect(0,0,canvas.width,canvas.height);
-  for(const t of w.tiles)if(t.known||t.terrain==='gold'||t.terrain==='gem'){
-    c.fillStyle=!t.known?colors[t.terrain]:t.core?'#8de3e5':t.bridge?'#bdad86':t.room?roomDefinitions.find(r=>r.id===t.room)!.color:colors[t.terrain];
+  for(const t of w.tiles)if(revealAll||t.known||t.terrain==='gold'||t.terrain==='gem'){
+    c.fillStyle=!revealAll&&!t.known?colors[t.terrain]:t.core?'#8de3e5':t.bridge?'#bdad86':t.room?roomDefinitions.find(r=>r.id===t.room)!.color:colors[t.terrain];
     c.fillRect(t.x*sx,t.z*sz,sx+.4,sz+.4);
   }
   c.fillStyle='#efe5bd';

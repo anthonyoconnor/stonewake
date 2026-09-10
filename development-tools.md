@@ -35,6 +35,8 @@ Make all dwarfs tired/hungry sets every resident to 10% energy/food (adding Mine
 
 ## Shared scenarios
 
+**Debug → Level preview** inspects the current world and all registered playable starting layouts without loading a test world or revealing gameplay tiles. It shows hidden terrain, living enemies and encounter sources, and pauses play until closed. Run `node scripts/level-preview-browser.mjs` for focused visual/input/state checks, or add `--browser=level-preview` to a verification scope. Captures remain in `test-results/level-preview/`.
+
 Factories live in [scenarios.ts](src/content/scenarios.ts) and are used by the controller in both Node and the browser. The ordinary visual-showcase button also shares its resident, stock and job setup.
 
 Room fixtures use tile-based service capacity. Kitchens need no initial food stock, and cosmetic furnishings never determine whether a test room works.

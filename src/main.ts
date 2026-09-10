@@ -261,6 +261,7 @@ export async function initializeGame(loading: LoadingScreen) {
     await loading.run('Preparing a new stronghold…', async () => {
       world = mode === 'campaign' ? startCampaign(free) : startFreePlay(id!, free);
       sidebar.fullMap.element.close();
+      sidebar.levelPreview.element.close();
       sidebar.tuningDialog.element.close();
       await openLab(false);
       sidebar.onPause(false);
@@ -341,7 +342,7 @@ export async function initializeGame(loading: LoadingScreen) {
       return;
     }
     const dt = Math.min(0.25, view.engine.getDeltaTime() / 1000);
-    const menuBlocked = loading.busy || menu.open || soundDialog.element.open || !!document.querySelector('.discard-dialog[open]');
+    const menuBlocked = loading.busy || menu.open || soundDialog.element.open || sidebar.levelPreview.element.open || !!document.querySelector('.discard-dialog[open]');
     if (!sidebar.tuningDialog.open && !menuBlocked) controls.update(Math.min(0.05, dt));
     else {
       controls.keys.clear();

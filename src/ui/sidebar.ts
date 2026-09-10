@@ -19,6 +19,7 @@ import {tuning} from '../content/tuning';
 import {wallBuildDuration} from '../game/walls';
 import {TuningDialog} from './tuning-dialog';
 import { FullMap, drawMap } from './map';
+import { LevelPreview } from './level-preview';
 import type { GameScene } from '../view/scene';
 import type { CameraControls } from '../view/controls';
 import type {Selection} from './selection';
@@ -56,6 +57,7 @@ export class Sidebar {
   unitInspection:HTMLElement;
   tuningDialog=new TuningDialog();
   fullMap:FullMap;
+  levelPreview:LevelPreview;
   messages:MessageCenter;
   refreshActionHelp:()=>void=()=>{};
   lab=false;labType='treasure';labShape='Compact';
@@ -92,6 +94,7 @@ export class Sidebar {
     this.panel=this.root.querySelector('#panel')!;this.minimap=this.root.querySelector('#minimap')!;
     this.unitInspection=this.root.querySelector('#unit-inspection')!;
     this.fullMap=new FullMap(view,controls,this.root.querySelector<HTMLButtonElement>('#show-map')!);
+    this.levelPreview=new LevelPreview(view,controls);
     mountHearth(this);
     this.messages=new MessageCenter(this);
     this.refreshActionHelp=mountActionHelp(this.root);
@@ -136,6 +139,9 @@ export class Sidebar {
       this.panel.querySelector<HTMLInputElement>('#free-rooms')!.onchange=e=>{const value=(e.target as HTMLInputElement).checked;this.onFreeBuild(value);this.selection.draw();this.show('debug');};
       this.panel.querySelector<HTMLButtonElement>('#open-tuning')!.onclick=()=>this.tuningDialog.show();
       this.panel.querySelector<HTMLButtonElement>('#open-harnesses')!.onclick=()=>this.show('harnesses');
+      const preview=document.createElement('button');preview.id='open-level-preview';preview.className='wide';preview.textContent='Level preview';preview.title='Whole levels, hidden terrain and enemy positions';preview.setAttribute('aria-haspopup','dialog');
+      preview.onclick=()=>this.levelPreview.show();
+      this.panel.querySelector('#debug-comparisons')!.after(preview);
       const restart=this.panel.querySelector<HTMLButtonElement>('#restart');if(restart)restart.onclick=()=>this.onRestart();
     }else if(category==='harnesses'){
       this.panel.innerHTML='<p class="eyebrow">TEST HARNESSES</p><p class="muted">Open a fresh, paused test world. Your stronghold is retained in memory. Loading another harness or layout discards the current test world.</p><button id="debug-lab" class="wide">Room layouts</button><p class="muted">Empty claimed floor for constructing rooms and checking access and capacity.</p>';
