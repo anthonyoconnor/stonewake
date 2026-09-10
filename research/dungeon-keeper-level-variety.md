@@ -2,6 +2,8 @@
 
 Research and design proposals, 9 September 2026. These are options for discussion, not approved changes to the campaign or game rules.
 
+**Follow-up roadmap:** the user subsequently requested milestones to redo every level and make levels larger, especially later ones. [Campaign level overhaul](../level-overhaul.md) is now the active planning specification; its sequence, scope and size targets supersede the experiment order suggested in this research. The reference findings below remain research context.
+
 ## Main finding
 
 Our largest opportunity is to change the **shape of the strategic problem** from level to level. Then reinforce that difference with terrain silhouettes, architectural composition and local atmosphere.

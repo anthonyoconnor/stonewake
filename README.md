@@ -48,7 +48,8 @@ Read this file, [current development notes](development-plan.md) and the relevan
 
 | Document | Purpose |
 |---|---|
-| [Current development notes](development-plan.md) | Implemented catalog, remaining review, known limits and deferred scope |
+| [Current development notes](development-plan.md) | Active milestones, implemented catalog, remaining review and known limits |
+| [Campaign level overhaul](level-overhaul.md) | M35–M41: distinct level geography, larger map targets, environmental identity and acceptance criteria |
 | [Game rules](game-rules.md) | Core loop, terrain, resources, needs and shared constraints |
 | [Characters](characters.md) | Stonehands, hounds, specialists, recruitment, training and wages |
 | [Rooms and structures](rooms.md) | Costs, capacity, services, ruins, walls, bridges, doors and traps |

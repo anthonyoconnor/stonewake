@@ -1,12 +1,28 @@
 # Current development notes
 
-The existing browser game is implemented. There is no queued milestone implementation. Completed milestone specifications, authorization history, dated checks and superseded design drafts are in the [archive](archive/README.md); read them only when historical context is needed.
+The existing browser game is implemented. The active roadmap is a redesign of all five campaign levels for distinct geography, stronger environmental identity and larger useful spaces, especially later in the journey. Completed milestone specifications, authorization history, dated checks and superseded design drafts are in the [archive](archive/README.md); read them only when historical context is needed.
+
+## Active level redesign milestones
+
+The user requested this new milestone set after reviewing the shortfall in the previous biome/map work. [Campaign level overhaul](level-overhaul.md) owns the shared criteria, provisional dimensions, per-level requirements and acceptance evidence. The current playable maps remain in place; these milestones are planned, not implemented. Campaign order, gradual unlocks and the shared Hearthstone objective remain unchanged.
+
+| Milestone | Scope | Status |
+|---|---|---|
+| M35 | Five distinct level briefs, comparison baselines and minimal authoring groundwork | Planned |
+| M36 | Border Foothold: sheltered basin and abandoned workings | Planned; after M35 |
+| M37 | Fungal Hollows: cavern basin, looping land routes and living colonies | Planned; after M36 |
+| M38 | Fallen City: buried streets and coherent reclaimable districts | Planned; after M37 |
+| M39 | Crystal Divide: fractured spine, chasm routes and optional remote income | Planned; after M38 |
+| M40 | Royal Deep: large lava basin, peninsula districts and distinct crossing choices | Planned; after M39 |
+| M41 | Campaign-wide identity, pacing, scale and integration review | Planned; after all five replacements |
+
+Closure requires both functional verification and a recorded design review of geography, useful scale, fogged exploration and normal-zoom atmosphere. Passing route tests or producing screenshots alone is insufficient. Preserve old layouts as development comparisons during iteration and all permanent baseline renderers. Move completed evidence to the archive as work lands.
 
 ## Remaining review
 
 - **Audio listening feedback:** procedural ambience, music and effects are implemented; playback, controls and cleanup have automated verification. Listening through quiet building, crowded work and combat remains pending. Use [audio-design.md](audio-design.md) and the recorded sample at `test-results/m30/work-combat.webm` when locally available. Do not infer listening approval from playback checks.
 
-New work follows the user's current request. Deferred concepts below are not an implementation queue.
+The level redesign roadmap above is the current planned work. Deferred concepts below are not part of that roadmap.
 
 ## Current implementation status
 
@@ -50,6 +66,7 @@ Keep the original `*-baseline.ts` renderers, independent reference materials and
 
 ## Known limitations and deferred scope
 
+- The current campaign has functioning biome enemies, hazards, ruins and palettes, but repeats its overall start/objective placement, central divider and route structure. M35–M41 address the geographic and environmental shortfall; historical M29 route verification establishes playability of the old maps, not completion of this redesign.
 - Guard Posts and assigned guard duties, general specialist retreat, door repairs/upgrades in place, core repairs and structure maintenance are deferred. Mining-worker escape and hound patrol/response are implemented.
 - The legacy Miner is retained for debug and comparison; converting it into a basic fighter is deferred. Tunnel Badgers and Ranger remain concepts. Separate Smith, Priest, expedition leader, Forge, Brewery, Barracks, Ranger Lodge and Ancestral Shrine are outside the current roster/room design.
 - Economy, recruitment, combat and research values are tunable prototype choices. Authored intended/alternate campaign routes have verification, but arbitrary layouts are not guaranteed to succeed. No free replacement or additional defeat rule exists when all Stonehands are lost and funds cannot buy another.
