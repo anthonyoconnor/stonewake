@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+
+const authoringOnly = process.argv.includes('--authoring');
 
 const browser = await chromium.launch({ headless: true, channel: process.env.BROWSER_CHANNEL ?? 'msedge' });
 try {
@@ -16,14 +18,14 @@ try {
   await page.getByRole('button', { name: 'Level preview', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Level preview', exact: true });
   const ids = await page.locator('#preview-level option').evaluateAll(options => options.map(o => o.value));
-  const catalogIds = await page.evaluate(async () => (await import('/src/content/playable-levels.ts')).playableLevels.map(l => l.id));
+  const catalogIds = await page.evaluate(async () => (await import('/src/content/level-preview.ts')).levelPreviewEntries.map(l => l.id));
   assert.deepEqual([...ids].sort(), ['current', ...catalogIds].sort());
-  for (const id of ids) {
+  for (const id of authoringOnly ? ['authoring-shapes'] : ids) {
     await page.locator('#preview-level').selectOption(id);
     const result = await page.evaluate(async id => {
-      const { playableLevels } = await import('/src/content/playable-levels.ts');
+      const { levelPreviewEntries } = await import('/src/content/level-preview.ts');
       const { createWorld } = await import('/src/game/world.ts');
-      const w = id === 'current' ? window.strongholdDev.state() : createWorld(playableLevels.find(l => l.id === id).level);
+      const w = id === 'current' ? window.strongholdDev.state() : createWorld(levelPreviewEntries.find(l => l.id === id).level);
       const canvas = document.querySelector('#level-preview-map');
       const c = canvas.getContext('2d');
       const pixel = p => [...c.getImageData(Math.floor((p.x + .5) / w.width * canvas.width), Math.floor((p.z + .5) / w.height * canvas.height), 1, 1).data];
@@ -80,7 +82,7 @@ try {
   await page.setViewportSize({ width: 1440, height: 1000 });
   const beforeLoading = await page.evaluate(() => window.strongholdDev.state());
   const campaignSample = catalogIds.filter(id => id.startsWith('campaign-'))[1];
-  for (const id of ['current', 'emberwater-crossing', campaignSample]) {
+  for (const id of authoringOnly ? ['authoring-shapes'] : ['current', 'emberwater-crossing', campaignSample, 'baseline-campaign-border-foothold', 'authoring-shapes']) {
     await page.getByRole('button', { name: 'Debug', exact: true }).click();
     await page.getByRole('button', { name: 'Level preview', exact: true }).click();
     await page.locator('#preview-level').selectOption(id);
@@ -92,6 +94,7 @@ try {
     assert.equal(loaded.onwardHearth.discovered, true);
     assert.equal(await page.evaluate(() => window.strongholdDev.status().paused), true);
     if (id === 'current') assert.equal(loaded.allowance, beforeLoading.allowance);
+    else if (id.startsWith('baseline-') || id === 'authoring-shapes') assert.equal(loaded.freePlay, undefined, 'Comparisons stay outside ordinary sessions');
     else assert.equal(loaded.freePlay.levelId, id);
     const rendered = await page.evaluate(async () => {
       const source = await (await fetch('/src/view/scene.ts')).text();
@@ -109,6 +112,36 @@ try {
     assert(rendered.enemies, `${id}: actual enemy models are visible`);
     assert.deepEqual(rendered.center, [(loaded.width - 1) / 2, (loaded.height - 1) / 2]);
     await page.screenshot({ path: `test-results/level-preview/loaded-${id}.png` });
+    if (id === 'authoring-shapes') {
+      const clusters = await page.evaluate(async () => {
+        const { environmentDecoration } = await import('/src/content/environment-regions.ts');
+        const world = window.strongholdDev.state();
+        return world.tiles.flatMap(tile => {
+          const decoration = environmentDecoration(world, tile);
+          return decoration ? [{ x: tile.x, z: tile.z, kind: decoration.kind }] : [];
+        });
+      });
+      assert.deepEqual([...new Set(clusters.map(p => p.kind))].sort(), ['crystal', 'damp', 'dry', 'fungal', 'masonry', 'scorched']);
+      writeFileSync('test-results/level-preview/authoring-clusters.json', JSON.stringify(clusters, null, 2));
+      for (const [name, x, z, alpha] of [['waystation', 13, 6, -Math.PI / 3], ['pool', 18, 10, Math.PI / 2], ['reverse', 17, 11, Math.PI * .8]]) {
+        const point = await page.evaluate(async ({ x, z, alpha }) => {
+          const source = await (await fetch('/src/view/scene.ts')).text();
+          const { EngineStore, Matrix, Vector3 } = await import(source.match(/from ["']([^"']*@babylonjs_core[^"']*)["']/)[1]);
+          const scene = EngineStore.LastCreatedScene, camera = scene.activeCamera, engine = scene.getEngine();
+          camera.target.set(x, 0, z); camera.radius = 16; camera.beta = .58; camera.alpha = alpha;
+          scene.render();
+          const screen = Vector3.Project(new Vector3(x, .03, z), Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+          const rect = engine.getRenderingCanvas().getBoundingClientRect();
+          return { x: rect.x + screen.x * rect.width / engine.getRenderWidth(), y: rect.y + screen.y * rect.height / engine.getRenderHeight() };
+        }, { x, z, alpha });
+        if (name === 'waystation') {
+          await page.mouse.click(point.x, point.y);
+          await page.waitForFunction(() => document.querySelector('#room-summary')?.textContent.includes('Dormitory ruin'));
+        }
+        await page.mouse.move(300, 20);
+        await page.screenshot({ path: `test-results/level-preview/authoring-${name}.png` });
+      }
+    }
     await page.getByRole('button', { name: 'Resume simulation', exact: true }).click();
     await page.waitForFunction(elapsed => window.strongholdDev.state().elapsed > elapsed, loaded.elapsed);
     await page.getByRole('button', { name: 'Return to stronghold', exact: true }).click();

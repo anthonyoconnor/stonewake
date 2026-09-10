@@ -1,4 +1,4 @@
-import { playableLevels } from '../content/playable-levels';
+import { levelPreviewEntries } from '../content/level-preview';
 import { enemyById } from '../content/enemies';
 import { createWorld } from '../game/world';
 import type { World, Point } from '../game/types';
@@ -32,10 +32,10 @@ export class LevelPreview {
         <details><summary id="preview-enemy-count">Enemies</summary><div id="preview-enemies"></div></details>
       </section><div class="level-preview-map"></div></div>`;
     this.select = this.element.querySelector<HTMLSelectElement>('#preview-level')!;
-    for (const [label, campaign] of [['Campaign', true], ['Free Play prototypes', false]] as const) {
+    for (const label of ['Campaign', 'Standalone', 'Before overhaul', 'Authoring'] as const) {
       const group = document.createElement('optgroup');
       group.label = label;
-      for (const entry of playableLevels.filter(l => l.id.startsWith('campaign-') === campaign)) {
+      for (const entry of levelPreviewEntries.filter(l => l.group === label)) {
         group.append(new Option(entry.name, entry.id));
       }
       this.select.append(group);
@@ -72,7 +72,7 @@ export class LevelPreview {
 
   private load() {
     // Fresh authored previews never replace, tick or reveal the retained world.
-    this.world = this.select.value === 'current' ? this.view.world : createWorld(playableLevels.find(l => l.id === this.select.value)!.level);
+    this.world = this.select.value === 'current' ? this.view.world : createWorld(levelPreviewEntries.find(l => l.id === this.select.value)!.level);
     this.selected = undefined;
     const w = this.world;
     this.element.querySelector('#preview-summary')!.textContent = `${w.name} · ${w.width} × ${w.height}${this.select.value === 'current' ? ' · Current state' : ' · Starting layout'}`;
