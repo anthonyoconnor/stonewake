@@ -1,0 +1,52 @@
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+import { mkdirSync } from 'node:fs';
+
+const browser = await chromium.launch({ headless: true, channel: process.env.BROWSER_CHANNEL ?? 'msedge' });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  page.setDefaultTimeout(120000);
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.routeWebSocket(/.*/, () => {});
+  await page.goto(`${process.env.GAME_URL ?? 'http://127.0.0.1:5173'}/?scenario=stronghold&paused=1`);
+  await page.waitForFunction(() => window.strongholdDev?.version === 1);
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
+  const retained = await page.evaluate(() => window.strongholdDev.state());
+  await page.getByRole('button', { name: 'Debug', exact: true }).click();
+  await page.getByRole('button', { name: 'Level preview', exact: true }).click();
+  await page.locator('#preview-level').selectOption('hearthside-halls-built');
+  await page.waitForFunction(() => !document.querySelector('#preview-load-level').disabled);
+  assert.match(await page.locator('#preview-summary').textContent(), /Built with mined gold/);
+  mkdirSync('test-results/showcase', { recursive: true });
+  await page.screenshot({ path: 'test-results/showcase/map.png' });
+  await page.getByRole('button', { name: 'Load full level', exact: true }).click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
+  const loaded = await page.evaluate(() => window.strongholdDev.state());
+  assert.equal(loaded.name, 'Hearthside Halls');
+  assert.equal(loaded.tiles.filter(t => t.room).length, 166);
+  assert.equal(loaded.defenses.length, 6);
+  assert(loaded.tiles.every(t => t.known));
+  assert.equal(loaded.freeRoomBuilding, false);
+  assert.equal(await page.evaluate(() => window.strongholdDev.status().paused), true);
+  await page.screenshot({ path: 'test-results/showcase/whole-base.png' });
+  // Same familiar camera controls allow closer and opposite-angle room inspection.
+  await page.mouse.move(950, 480);
+  await page.mouse.wheel(0, -450);
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: 'test-results/showcase/rooms.png' });
+  await page.keyboard.down('e');
+  await page.waitForTimeout(1000);
+  await page.keyboard.up('e');
+  await page.screenshot({ path: 'test-results/showcase/rotated.png' });
+  await page.evaluate(() => window.strongholdDev.pause(false));
+  await page.waitForFunction(elapsed => window.strongholdDev.state().elapsed > elapsed + 1, loaded.elapsed);
+  await page.getByRole('button', { name: 'Return to stronghold', exact: true }).click();
+  await page.locator('#loading-screen').waitFor({ state: 'hidden' });
+  const returned = await page.evaluate(() => window.strongholdDev.state());
+  const { routesChanged: _a, ...a } = returned;
+  const { routesChanged: _b, ...b } = retained;
+  assert.deepEqual(a, b);
+  assert.deepEqual(errors, []);
+  console.log('PASS: paid built base in whole-map and 3D previews, six doors, camera inspection, resume and retained stronghold.');
+} finally { await browser.close(); }

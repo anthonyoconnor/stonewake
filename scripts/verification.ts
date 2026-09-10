@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export const groups: Record<string, string[]> = {
+  showcase: ['settlement-showcase', 'level-preview', 'session'],
   'level-overhaul': ['campaign-layouts', 'campaign-playthrough', 'campaign-pressure', 'standalone-playthrough', 'campaign', 'session', 'bridges'],
   standalone: ['campaign-layouts', 'standalone-playthrough', 'session'],
   'room-overhaul': ['room-decoration', 'rooms', 'food', 'reclaim', 'learning-rooms', 'lighting-lab', 'ruins', 'content-extension'],
@@ -28,6 +29,7 @@ export const groups: Record<string, string[]> = {
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  showcase: [['scripts/settlement-showcase-browser.mjs']],
   'level-overhaul': [['scripts/level-overhaul-browser.mjs']],
   habitats: [['scripts/habitats-browser.mjs']],
   'level-preview': [['scripts/level-preview-browser.mjs']],

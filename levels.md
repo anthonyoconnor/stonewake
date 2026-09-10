@@ -220,6 +220,22 @@ Starting resources, pressure cadence, source placement, activation timing and cr
 
 ## Free Play availability
 
+### Hearthside Halls building showcase
+
+This additional 46×40 map is a peaceful settlement study. **Free Play → Hearthside Halls** starts with the normal Stonehands, starting allowance, undiscovered terrain and no service rooms. **Debug → Level preview → Showcases → Hearthside Halls · Built base** shows the same map after ordinary player actions and simulation have built and populated the example. **Load full level** opens it fully revealed, paused and framed to the whole map; zoom, orbit or resume to inspect it. Returning restores the retained stronghold.
+
+The base has a central Hearth court and two parallel, two-tile-wide halls joined above and below it. Six one-tile doorways branch into enclosed rooms: 6×5 Treasury, Dormitory and Training chambers, 6×4 Workshop and Kitchen, and a 28-tile Library with a recessed corner. Solid dividing walls remain intact; no room is a route through to another. The northern mining gallery is separate from the living and working wings. Two southern 7×4 reserves remain solid and diggable for later expansion. A sealed eastern garden contains the onward Hearthstone; excavating east from the lower cross-hall opens a normal physical completion route. There are no hostile inhabitants or recurring attacks in this building study.
+
+The authored construction example marks only rooms, halls, entrances and mining spurs. Workers physically excavate, claim, mine and haul. It builds the Treasury first, then Workshop, Training Room, Library and Kitchen, and opens accommodation last so the services exist before recruiting a larger population. Normal Workshop orders manufacture the six Timber doors; a Library order attracts a Runesmith. Ordinary recruitment, training, meals, rest and wage collection populate the finished base. Players may choose a different order or buy more Stonehands through the ordinary Hearth action.
+
+The 74 finite gold seams plus the normal allowance fund the example using current prices; no free construction, injected gold, supplied rooms or spawned recruits are used. The replay runs six simulated minutes after completing the rooms to exercise support and wages. Dated costs, remaining gold and verification are in [development history](archive/development-history.md). Finite wealth supports continued building and wages but is not unlimited income. This example proves this map's buildability; it does not substitute for the pending settlement review of the existing twelve maps.
+
+The map and room/corridor coordinates live in `src/content/settlement-showcase.ts`; the repeatable player actions live in `src/content/settlement-showcase-build.ts`. `npm run verify -- showcase --browser=showcase` checks paid construction, funds conservation, access, automatic furniture, doors, normal residents, needs/wages, expansion ground, the free flag, relay completion, preview loading and return. The initial preview selection displays progress while building; subsequent selections reuse the example until page reload.
+
+### Starting availability
+
+**Hearthside Halls** additionally offers a peaceful building study with all ordinary standalone plans. Its finished example is available in Level Preview; ordinary Free Play starts empty like the other maps.
+
 The seven standalone scenarios offer all current normal room/building plans, roles, recipes and research availability. Five entries marked Campaign expose the authored campaign maps independently with the cumulative availability of that area. Each entry in `src/content/playable-levels.ts` owns its map, illustration, description and starting catalog. All start with no researched spells, the normal Stonehand crew and gold, natural recruitment, and no owned rooms, stock or prepared charges. Room support and Library research still apply. Campaign progress never changes these arrivals. Restart recreates the selected entry, including its initial knowledge; standalone victory offers restart or menu with no campaign travel.
 
 Stable catalog IDs survive the renamed scenarios. Their definitions and example paid routes live in the `src/content/standalone-*.ts` modules; they are separate from the legacy debug factories even where a scenario selector uses the same identifier.

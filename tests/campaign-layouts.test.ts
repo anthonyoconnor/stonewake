@@ -12,7 +12,7 @@ import { enemyDefinitions } from '../src/content/enemies.ts';
 import { tuning } from '../src/content/tuning.ts';
 
 test('every authored start conceals inhabitants and provides finite paid settlement space', () => {
-  for (const entry of playableLevels) {
+  for (const entry of playableLevels.filter(l => !l.buildingStudy)) {
     const w = startFreePlay(entry.id), plan = levelPlayPlan(entry.id);
     assert(plan, `${entry.id}: authored player plan`);
     const settlement = plan.settlement;
@@ -54,7 +54,7 @@ test('campaign preserves deliberate gem scarcity and introduces the complete inh
 });
 
 test('intended, alternate and suppression routes use each map’s actual arrival tools', () => {
-  for (const entry of playableLevels) for (const variant of ['intended', 'alternate'] as const) {
+  for (const entry of playableLevels.filter(l => !l.buildingStudy)) for (const variant of ['intended', 'alternate'] as const) {
     const w = startFreePlay(entry.id), plan = levelPlayPlan(entry.id)!;
     const origin = { x: w.agents[0].x, z: w.agents[0].z };
     assert(!neighbors(w, w.onwardHearth!).some(p => reachable(w, origin).has(key(p))), `${entry.id}: objective initially inaccessible`);

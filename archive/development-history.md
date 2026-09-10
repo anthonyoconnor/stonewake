@@ -1,5 +1,15 @@
 # Completed development and history
 
+## 2026-09-10 · Hearthside Halls paid base showcase
+
+Added a new 46×40 peaceful Free Play building study and its populated **Level preview → Showcases → Hearthside Halls · Built base** exhibit. Six enclosed chambers provide 166 room tiles, two-tile main corridors, six manufactured Timber doors, a separate mining gallery and two untouched southern expansion reserves. Approved Border Foothold art supplies the material reference and illustrative Free Play card; no renderer baselines changed.
+
+The exhibit is produced from the ordinary Free Play start by player excavation designations, physical Stonehand mining/hauling/claiming, paid room construction, Workshop manufacture, research orders and normal recruitment. No funds, rooms, residents or terrain are injected. The room suite costs 3,284 gold. At 1,244 simulated seconds (including six minutes after room completion), total spending is 3,567 gold, stored funds are 1,608, and 15 residents include the original three Stonehands plus all normal living roles. The map has 74 finite seams; their gold plus the normal allowance totals 7,060. Remaining value stays in terrain, loose gold or carried cargo; the conservation check accounts for every unit. Six doors are installed, normal meals/rest/wages occur, and no residents depart. A subsequent ordinary excavation and physical relay activation completes the map.
+
+Verification: source/test typecheck; focused showcase, session, level-preview and campaign-layout simulation checks; dedicated showcase browser check covering the 2D exhibit, fully revealed paused 3D world, room/door presence, camera zoom/orbit, resumed simulation and restoration of the retained stronghold. Inspected `test-results/showcase/map.png`, `whole-base.png` and `rooms.png`; room separation, circulation and expansion space read clearly. Captures are ignored local evidence. Treasury piles and Dormitory beds were checked through their live decoration service as well as static furnishings. Ordinary paid/free placement and unexcavated-ground rejection passed. The initial selection yields during replay to keep the preview responsive; its example is reused until reload.
+
+This new peaceful map does not close the pending paid settlement-layout review of the existing twelve maps or establish combat sustainability for a populated base.
+
 ## 2026-09-10 — M40: Royal Deep peninsula districts
 
 Created and inspected the Royal concept before its 72×60 replacement. A broad, winding lava basin separates a sheltered western settlement from an avenue, relay precinct and foundry peninsula. The north crossing costs four bridge tiles; the longer southern crossing costs twelve and leads through usable services. Both require a separate five-tile bridge spur to physically suppress the lava entrance. The guarded gem recess is optional, and finite income funds the objective.

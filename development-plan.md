@@ -17,7 +17,7 @@ M35–M42 completion records remain historical; the follow-up settlement review 
 
 ## Current implementation status
 
-The game has a five-area authored campaign, twelve independent Free Play entries, staged content unlocks, living regional inhabitants and recurring raids, reclaimable ruins, targeted spells, manufactured defenses and source/pointer lighting. [Levels](levels.md) owns availability and travel; the companion rule documents own behavior and provisional balance.
+The game has a five-area authored campaign, thirteen independent Free Play entries (including the peaceful Hearthside Halls building study), staged content unlocks, living regional inhabitants and recurring raids, reclaimable ruins, targeted spells, manufactured defenses and source/pointer lighting. [Levels](levels.md) owns availability and travel; the companion rule documents own behavior and provisional balance.
 
 | Room or structure | Current status | Remaining integration |
 |---|---|---|
@@ -47,6 +47,7 @@ The game has a five-area authored campaign, twelve independent Free Play entries
 
 ## Current presentation and inspection
 
+- **Hearthside Halls:** a new 46×40 peaceful Free Play map and a completed base under **Level preview → Showcases**. Ordinary paid excavation/construction produces six separate chambers, two-tile main halls, six manufactured doors and natural residents with working needs/wages. The same terrain and finite resources are available to the player; [Levels](levels.md#hearthside-halls-building-showcase) gives the build sequence. This independent showcase does not close the twelve existing maps' pending settlement acceptance review.
 - [Character and terrain graphics](graphics-overhaul.md): six resident and ten enemy models, generated terrain materials, and permanent original/current comparison studios.
 - [Room presentation](room-overhaul.md): six distinctive floors, sparse equipment, wealth-driven gold piles and resident-assigned bedding; capacity remains floor-based.
 - [Spells, traps and Hearthstones](arcana-overhaul.md): thirteen paired exhibits with state playback and concept references.

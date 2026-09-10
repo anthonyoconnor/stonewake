@@ -127,7 +127,7 @@ try {
   });
   await page.waitForFunction(() => window.levelReviewView);
   const catalog = await page.evaluate(async () =>
-    (await import('/src/content/playable-levels.ts')).playableLevels.map((l) => ({ id: l.id, name: l.name })),
+    (await import('/src/content/playable-levels.ts')).playableLevels.filter(l => !l.buildingStudy).map((l) => ({ id: l.id, name: l.name })),
   );
   const levels = catalog.filter(
     (l) => (!selectedIds || selectedIds.includes(l.id)) && (!standaloneOnly || !l.id.startsWith('campaign-')),

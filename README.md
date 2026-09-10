@@ -10,7 +10,7 @@ Use Node.js 24 or later. Run `npm install`, then `npm run dev` and open the loca
 
 ## Play
 
-Launch opens **Campaign / Free Play / Settings**. Campaign travels through Border Foothold, Fungal Hollows, Fallen City, Crystal Divide and Royal Deep, introducing rooms, specialists, defenses, research and bridges gradually. Its growing maps lead from a sheltered mining basin through pool caverns, buried streets and a crescent fracture to royal peninsulas around lava. Free Play offers these five layouts as independent starts plus seven distinct standalone scenarios. Settings and the in-game ♪ control manage session audio and animation preferences.
+Launch opens **Campaign / Free Play / Settings**. Campaign travels through Border Foothold, Fungal Hollows, Fallen City, Crystal Divide and Royal Deep, introducing rooms, specialists, defenses, research and bridges gradually. Its growing maps lead from a sheltered mining basin through pool caverns, buried streets and a crescent fracture to royal peninsulas around lava. Free Play offers these five layouts as independent starts plus seven distinct standalone scenarios and the peaceful Hearthside Halls building study. Settings and the in-game ♪ control manage session audio and animation preferences.
 
 Three Stonehands start each area. They mine, haul, claim and build autonomously, need no living support, and flee enemies. **Spells → Create Stonehand** purchases more with shared gold. Build a Dormitory for Cave Hounds, which defend and explore and use their dens for food/rest. Training Rooms, Workshops and Libraries attract Warriors, Engineers and Runesmiths once available and supported. Specialist dwarfs need reachable beds, Kitchen capacity and wages. The original Miner remains a debug-only role.
 
@@ -19,6 +19,8 @@ Rooms work from their floor area, including single tiles, narrow strips and irre
 The starting Hearth is fixed and destructible. Discovering the separate onward stone is only the first step: use the Hearth panel to request a resident's physical activation at a secure site. Victory offers explicit campaign travel or standalone restart/menu. Travel carries building unlocks and researched knowledge into a fresh settlement; residents, gold, prepared charges and local work reset. See [levels](levels.md) for the full rules.
 
 ## Controls
+
+**Base showcase:** open **Debug → Level preview → Showcases → Hearthside Halls · Built base → Load full level**. It displays six spacious chambers, two-tile main halls, six room doors, a separate gold gallery and unexcavated expansion ground. The first selection replays ordinary paid construction and displays progress; later selections reuse that example until reload. Inspect the whole map, zoom/orbit in 3D or resume its residents. **Free Play → Hearthside Halls** adds a peaceful building study on the same terrain with the normal crew and allowance, ready to build yourself. See the [layout and construction sequence](levels.md#hearthside-halls-building-showcase).
 
 | Action | Control |
 |---|---|
@@ -42,7 +44,7 @@ Read this file, [current development notes](development-plan.md) and the relevan
 
 **Debug → Before & after** opens **Characters**, **Terrain & rooms**, or **Spells, traps & Hearthstones**. Original renderers and independent materials are permanent references. Preview playback, camera controls and concept references support inspection; **Back to comparison** restores controls and **Return to stronghold** restores the retained game.
 
-**Debug → Level preview** shows the current world and groups named layouts into Campaign, Standalone, Before overhaul and Authoring. The twelve original layouts remain independent comparisons; a small authoring fixture exercises shapes, ruins and local environment treatments. The preview exposes hidden terrain and enemy/source positions without revealing the retained game. **Load full level** opens a fully revealed 3D test copy, paused and framed to the whole map. Returning restores the stronghold. Comparison layouts stay outside ordinary Free Play.
+**Debug → Level preview** shows the current world and groups named layouts into Showcases, Campaign, Standalone, Before overhaul and Authoring. The twelve original layouts remain independent comparisons; a small authoring fixture exercises shapes, ruins and local environment treatments. The preview exposes hidden terrain and enemy/source positions without revealing the retained game. **Load full level** opens a fully revealed 3D test copy, paused and framed to the whole map. Returning restores the stronghold. Comparison layouts stay outside ordinary Free Play.
 
 Map definitions use small shared shape helpers and local presentation regions for dry workings, damp margins, fungal colonies, masonry, crystal and scorched ground. Geometry, paid construction and hidden inhabitants still follow the ordinary game systems. [Development tools](development-tools.md#level-redesign-review) covers selectable paid-route, fogged browser and old/new layout checks; [level concepts](concept-art/levels/overhaul/README.md) records the direction and prompts.
 

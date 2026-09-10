@@ -20,7 +20,8 @@ try {
   const ids = await page.locator('#preview-level option').evaluateAll(options => options.map(o => o.value));
   const catalogIds = await page.evaluate(async () => (await import('/src/content/level-preview.ts')).levelPreviewEntries.map(l => l.id));
   assert.deepEqual([...ids].sort(), ['current', ...catalogIds].sort());
-  for (const id of authoringOnly ? ['authoring-shapes'] : ids) {
+  // The paid, developed exhibit has its own construction/preview check.
+  for (const id of authoringOnly ? ['authoring-shapes'] : ids.filter(id => id !== 'hearthside-halls-built')) {
     await page.locator('#preview-level').selectOption(id);
     const result = await page.evaluate(async id => {
       const { levelPreviewEntries } = await import('/src/content/level-preview.ts');

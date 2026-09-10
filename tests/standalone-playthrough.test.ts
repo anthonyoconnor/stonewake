@@ -5,7 +5,7 @@ import { startFreePlay, restartSession } from '../src/game/session.ts';
 import { simulateCampaignArea } from '../scripts/helpers/campaign-route.ts';
 import { goldTotal } from '../src/game/rooms.ts';
 
-for (const entry of playableLevels.filter(l => !l.id.startsWith('campaign-')))
+for (const entry of playableLevels.filter(l => !l.id.startsWith('campaign-') && !l.buildingStudy))
   for (const approach of ['intended', 'alternate'] as const)
     test(`${entry.id}: paid ${approach} standalone expedition, suppression and fresh restart`, () => {
       const w = startFreePlay(entry.id);

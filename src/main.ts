@@ -212,7 +212,7 @@ export async function initializeGame(loading: LoadingScreen) {
       await readyWorld();
     });
   };
-  sidebar.levelPreview.onLoadLevel = id => loadLevelPreview(createLevelPreviewWorld(id, view.world));
+  sidebar.levelPreview.onLoadLevel = (id, prepared) => loadLevelPreview(createLevelPreviewWorld(prepared ? 'current' : id, prepared ?? view.world));
   sidebar.onLab = (open, shape, type) => {
     void loading.run(open ? 'Preparing the test room…' : 'Returning to the stronghold…', async () => {
       try {

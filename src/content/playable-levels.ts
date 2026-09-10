@@ -4,8 +4,11 @@ import { recipes } from './recipes.ts';
 import { spellDefinitions } from './spells.ts';
 import type { ContentAvailability } from '../game/availability.ts';
 import type { LevelDefinition } from '../game/types.ts';
+import { showcaseLevel } from './settlement-showcase.ts';
 
 export interface PlayableLevel {
+  /** Peaceful building studies use construction evidence instead of combat-route acceptance. */
+  buildingStudy?: boolean;
   id: string; name: string; description: string; region: string; image: string;
   level: LevelDefinition; starting: ContentAvailability & { knownSpells: string[] };
 }
@@ -57,6 +60,10 @@ const campaignArt = [
 ];
 /** Playable content only; independent old-map comparisons stay in level-baselines.ts. */
 export const playableLevels: PlayableLevel[] = [
+  { id: showcaseLevel.id!, name: showcaseLevel.name, region: 'Peaceful base building', buildingStudy: true,
+    description: 'Build spacious chambers and connecting halls in a quiet mining refuge. Inspect the completed example under Debug → Level preview → Showcases.',
+    image: new URL('../../concept-art/levels/overhaul/m36-border-foothold-v1.png', import.meta.url).href,
+    level: showcaseLevel, starting: standaloneStarting() },
   ...standaloneLevels.map(level => ({
     id: level.id!, name: level.name, ...standalonePresentation[level.id!],
     level, starting: standaloneStarting(),

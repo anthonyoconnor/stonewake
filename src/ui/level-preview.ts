@@ -1,4 +1,6 @@
 import { levelPreviewEntries } from '../content/level-preview';
+import { showcaseBuiltId } from '../content/settlement-showcase';
+import { prepareBuiltShowcase } from '../content/settlement-showcase-build';
 import { enemyById } from '../content/enemies';
 import { createWorld } from '../game/world';
 import type { World, Point } from '../game/types';
@@ -10,11 +12,12 @@ import './level-preview.css';
 /** Read-only map inspection. Revealing pixels never discovers gameplay tiles. */
 export class LevelPreview {
   element = document.createElement('dialog');
-  onLoadLevel: (id: string) => void = () => {};
+  onLoadLevel: (id: string, prepared?: World) => void = () => {};
   private canvas = document.createElement('canvas');
   private select: HTMLSelectElement;
   private world?: World;
   private selected?: Point;
+  private loadVersion = 0;
 
   constructor(private view: GameScene, private controls: CameraControls) {
     this.element.id = 'level-preview-dialog';
@@ -32,7 +35,7 @@ export class LevelPreview {
         <details><summary id="preview-enemy-count">Enemies</summary><div id="preview-enemies"></div></details>
       </section><div class="level-preview-map"></div></div>`;
     this.select = this.element.querySelector<HTMLSelectElement>('#preview-level')!;
-    for (const label of ['Campaign', 'Standalone', 'Before overhaul', 'Authoring'] as const) {
+    for (const label of ['Showcases', 'Campaign', 'Standalone', 'Before overhaul', 'Authoring'] as const) {
       const group = document.createElement('optgroup');
       group.label = label;
       for (const entry of levelPreviewEntries.filter(l => l.group === label)) {
@@ -45,10 +48,11 @@ export class LevelPreview {
     this.element.querySelector('.level-preview-map')!.append(this.canvas);
     document.body.append(this.element);
     this.select.onchange = () => this.load();
-    this.element.querySelector('#preview-load-level')!.addEventListener('click', () => this.onLoadLevel(this.select.value));
+    this.element.querySelector('#preview-load-level')!.addEventListener('click', () => this.onLoadLevel(this.select.value, this.select.value === showcaseBuiltId ? this.world : undefined));
     this.element.querySelector('header button')!.addEventListener('click', () => this.element.close());
     this.element.addEventListener('keydown', e => e.stopPropagation());
     this.element.addEventListener('close', () => {
+      this.loadVersion++;
       this.world = undefined;
       this.controls.keys.clear();
       this.controls.pointer = undefined;
@@ -70,12 +74,33 @@ export class LevelPreview {
     this.load();
   }
 
-  private load() {
-    // Fresh authored previews never replace, tick or reveal the retained world.
-    this.world = this.select.value === 'current' ? this.view.world : createWorld(levelPreviewEntries.find(l => l.id === this.select.value)!.level);
+  private async load() {
+    const version = ++this.loadVersion, id = this.select.value;
+    const loadButton = this.element.querySelector<HTMLButtonElement>('#preview-load-level')!;
+    const summary = this.element.querySelector('#preview-summary')!;
+    loadButton.disabled = true;
+    this.world = undefined;
+    this.canvas.getContext('2d')!.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (id === showcaseBuiltId) {
+      summary.textContent = 'Building the paid showcase…';
+      try {
+        const built = await prepareBuiltShowcase(seconds => {
+          if (version === this.loadVersion) summary.textContent = `Building with mined gold… ${Math.floor(seconds / 60)} min simulated`;
+        });
+        if (version !== this.loadVersion) return;
+        this.world = structuredClone(built);
+      } catch (error) {
+        if (version === this.loadVersion) summary.textContent = String(error);
+        return;
+      }
+    } else {
+      // Fresh authored previews never replace, tick or reveal the retained world.
+      this.world = id === 'current' ? this.view.world : createWorld(levelPreviewEntries.find(l => l.id === id)!.level);
+    }
+    loadButton.disabled = false;
     this.selected = undefined;
     const w = this.world;
-    this.element.querySelector('#preview-summary')!.textContent = `${w.name} · ${w.width} × ${w.height}${this.select.value === 'current' ? ' · Current state' : ' · Starting layout'}`;
+    summary.textContent = `${w.name} · ${w.width} × ${w.height}${id === showcaseBuiltId ? ' · Built with mined gold · Six rooms, connecting halls and expansion space' : id === 'current' ? ' · Current state' : ' · Starting layout'}`;
     this.element.querySelector('#preview-position')!.textContent = '';
     const enemies = (w.enemies ?? []).filter(e => e.health > 0);
     this.element.querySelector('#preview-enemy-count')!.textContent = `Enemies (${enemies.length})`;
