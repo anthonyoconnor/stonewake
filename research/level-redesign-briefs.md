@@ -22,7 +22,7 @@ Hearth near (10,18), relay near (30,7). A broken horseshoe of rock protects the 
 ```
       H . .      broad dry shelf
       . . \   /     colony
-       lobe ~~~~~~~~  / 
+       lobe ~~~~~~~~  /
        r -- ~~ ~~~~~ -- brood
          \  ~~~~  /      O
           broad lower lobe
