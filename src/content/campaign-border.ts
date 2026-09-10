@@ -10,6 +10,12 @@ const workings = union(ellipse(23,8,5,3),path([{x:20,z:8},{x:27,z:5},{x:31,z:7}]
 const waystation = union(ellipse(25,23,6,4),path([{x:25,z:23},{x:32,z:20},{x:32,z:13}],2));
 const shoulder = polygon([{x:19,z:12},{x:24,z:13},{x:28,z:17},{x:25,z:19},{x:22,z:17},{x:20,z:17}]);
 const basinRim = polygon([{x:3,z:9},{x:6,z:7},{x:11,z:6},{x:12,z:9},{x:7,z:11},{x:5,z:18},{x:5,z:24},{x:11,z:27},{x:18,z:27},{x:19,z:30},{x:8,z:30},{x:2,z:25}]);
+// The protected rim clips the western treasury wing. Example player actions
+// exclude fixed rock; gold seams authored over the rim remain mineable.
+const fixedCells = new Set(union(basinRim, shoulder).map(p => `${p.x},${p.z}`));
+const openingGold = new Set(settlement.gold.map(p => `${p.x},${p.z}`));
+settlement.treasure = settlement.treasure.filter(p => !fixedCells.has(`${p.x},${p.z}`));
+settlement.development = settlement.development.filter(p => !fixedCells.has(`${p.x},${p.z}`) || openingGold.has(`${p.x},${p.z}`));
 
 /** M36: a protected earth basin with mine branches and a separate waystation saddle. */
 export const borderLevel: LevelDefinition = {

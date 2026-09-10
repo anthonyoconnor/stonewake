@@ -2,6 +2,8 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export const groups: Record<string, string[]> = {
+  'level-overhaul': ['campaign-layouts', 'campaign-playthrough', 'campaign-pressure', 'standalone-playthrough', 'campaign', 'session', 'bridges'],
+  standalone: ['campaign-layouts', 'standalone-playthrough', 'session'],
   'room-overhaul': ['room-decoration', 'rooms', 'food', 'reclaim', 'learning-rooms', 'lighting-lab', 'ruins', 'content-extension'],
   arcana: ['spells', 'stonehands', 'defenses', 'hearth', 'development'],
   audio: ['audio'],
@@ -26,6 +28,7 @@ export const groups: Record<string, string[]> = {
   development: ['development', 'verification'], verification: ['verification'],
 };
 export const browserChecks: Record<string, string[][]> = {
+  'level-overhaul': [['scripts/level-overhaul-browser.mjs']],
   habitats: [['scripts/habitats-browser.mjs']],
   'level-preview': [['scripts/level-preview-browser.mjs']],
   'room-overhaul': [['scripts/room-overhaul-browser.mjs']],
