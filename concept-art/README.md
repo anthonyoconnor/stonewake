@@ -14,7 +14,7 @@ The comparison explores stylized 3D, a voxel diorama, painterly 2.5D, and pixel 
 
 ## Menus
 
-[Left sidebar concepts](sidebar/README.md) explore three unapproved control-panel treatments: Carved Stronghold, Forgemaster's Console and Rune Slate. Selection is pending.
+[Left sidebar concepts](sidebar/README.md) include the selected and implemented Carved Stronghold treatment, plus the Forgemaster's Console and Rune Slate alternatives. The implementation follows the user's additional text-reduction direction.
 
 [View the menu concepts](menus/README.md): a themed starting menu and an extensible Free Play level selector, with carved stone, bronze, warm lantern light and a blue Hearthstone glow. These approved menus and matching loading screens are implemented. [Generation prompts](menus/prompts-v1.md).
 

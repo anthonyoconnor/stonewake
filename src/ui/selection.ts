@@ -4,7 +4,7 @@ import { isHazard } from '../game/terrain.ts';
 import {TransformNode} from '@babylonjs/core';
 import {type Point,tileAt} from '../game/types.ts';
 import type {GameScene} from '../view/scene';
-import {pickTile} from '../view/tile-picking';
+import {pickTile} from '../view/tile-picking.ts';
 import {designate} from '../game/simulation.ts';
 import {buildRoom,roomQuote} from '../game/rooms.ts';
 import {planWalls,wallEligible,wallBuildDuration} from '../game/walls.ts';
@@ -41,7 +41,7 @@ export class Selection {
           const unit=targetAt(view.world,'dwarf-haste',end)??targetAt(view.world,'enemy-slow',end);
           if(unit)this.onUnitInspect(unit);else this.inspect(end);
         }
-        else if(this.tool==='dig'||this.tool==='erase'){designate(view.world,points,this.dragAdds??false);this.onChange(this.tool==='dig'?'Excavation updated.':'Excavation marks removed.');}
+        else if(this.tool==='dig'||this.tool==='erase'){designate(view.world,points,this.dragAdds??false);this.onChange('');}
         else if(this.tool==='bridge')this.onChange(planBridges(view.world,points));
         else if(this.tool==='wall')this.onChange(planWalls(view.world,points,this.dragAdds??true));
         else if(this.tool==='sell')this.onChange(sellTiles(view.world,points));
@@ -69,7 +69,7 @@ export class Selection {
       const mat=this.view.material(error?'spell invalid':`spell ${spell.id}`,error?'#e08172':spell.color,false,.45);
       const radius=spell.radius??.55;
       for(let i=0;i<24;i++){const angle=i/24*Math.PI*2,m=this.view.box('spell target',p.x+Math.cos(angle)*radius,.07,p.z+Math.sin(angle)*radius,.13,.025,.13,mat,this.preview);m.isPickable=false;}
-      if(feedback)this.onChange(`${spell.name} · ${error||'Click to cast'} · ${spell.cost} gold`);return;
+      if(feedback)this.onChange(error||'Choose a target.');return;
     }
     if(this.tool==='bridge'){
       const cells=this.rectangle(this.start??this.hover,this.hover),q=bridgeQuote(this.view.world,cells);
@@ -92,7 +92,7 @@ export class Selection {
     if(this.tool==='sell'){
       const cells=this.rectangle(this.start??this.hover,this.hover);
       for(const p of cells){if(!sellable(this.view.world,p))continue;const m=this.view.box('sell preview',p.x,.04,p.z,.95,.025,.95,this.view.material('sell preview','#e5ae75',false,.4),this.preview);m.isPickable=false;}
-      if(feedback)this.onChange('Sell rooms / bridges / defenses · Unsafe bridge removal is blocked.');return;
+      if(feedback)this.onChange('');return;
     }
     const cells=this.rectangle(this.start??this.hover,this.hover),room=!['dig','erase','wall'].includes(this.tool),quote=room?roomQuote(this.view.world,this.tool,cells):undefined;
     for(const p of cells){const t=tileAt(this.view.world,p.x,p.z);if(!t||(!t.known&&room))continue;
@@ -100,7 +100,7 @@ export class Selection {
       const adding=valid&&(!!quote||this.tool==='wall'&&(this.dragAdds??!t.wallPlanned)||this.tool==='dig'&&(this.dragAdds??!t.designated));
       const m=this.view.box('selection',p.x,t.known&&(t.terrain==='floor'||isHazard(t))?.025:1.515,p.z,.95,.02,.95,this.view.material(adding?'preview yes':'preview no',adding?'#8ce3bb':'#e08172',false,.4),this.preview);m.material!.alpha=.42;m.isPickable=false;
     }
-    if(quote&&feedback){const def=roomById(this.tool);this.onChange(`${quote.tiles.length} buildable squares · ${quote.cost} gold · +${quote.addedCapacity} ${def?.service==='storage'?'gold storage':'dwarf capacity'} · ${quote.reason}`);}
-    if(this.tool==='wall'&&feedback)this.onChange(`Build walls on clear claimed floor · ${wallBuildDuration()} seconds each · Start on a plan to cancel it.`);
+    if(quote&&feedback){const def=roomById(this.tool);this.onChange(quote.valid?`${quote.tiles.length} tiles · ${quote.cost} ◆ · +${quote.addedCapacity} ${def?.service==='storage'?'storage':'capacity'}`:quote.reason);}
+    if(this.tool==='wall'&&feedback)this.onChange(`Clear claimed floor · ${wallBuildDuration()}s / wall`);
   }
 }

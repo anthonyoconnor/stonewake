@@ -1,5 +1,13 @@
 # Completed development and history
 
+## 2026-09-10 · Carved Stronghold sidebar and text audit
+
+Implemented the user's selected sidebar concept A with the existing slate texture, narrow bronze framing, carved category emblems, recessed controls and blue selection outlines/corner runes. Added a persistent pause/resume icon. Preserved the sidebar width, world space, real HTML controls, keyboard help, minimap, shared gold and ordinary gameplay systems.
+
+Removed map/category/resource captions, grid dimensions, slogans, default excavation/defense introductions, duplicated tool labels, redundant workforce text, empty threat/fixture reports, repeated Hearth health, decorative-furniture reminders and repeated hover instructions. Secondary production/research/resident/source panels use icon disclosures; selected effects and explanations expand on demand. Invalid placement shows its reason without zero-valued totals. The [interface text budget](../gameplay-interface.md#sidebar-text-budget) records the purpose and visibility of retained text.
+
+Verification: `npm run verify -- selection` passed source/test typecheck and both selection tests. The first attempt exposed a pre-existing extensionless tile-picking import in Selection; adding `.ts` restored Node's test loading. `node scripts/interface-browser.mjs` passed keyboard/unavailable help, ordinary build/sell/cancel, map/fog isolation, pause/resume, manufacturing/placement, research/casting, inspection and real Hearth defeat/restart at 1440×900, 1024×768 and 800×600. Screenshots in ignored `test-results/m20/` and `test-results/sidebar/` were visually reviewed; additional normal-world captures checked all four categories, capacity help and Hearth activation access. No production build or unrelated simulation suites were run.
+
 ## 2026-09-10 · Large-level rendering and cursor optimization
 
 Profiled the developed Royal level and implemented spatial terrain batching, thin-instance fog patches and accelerated tile picking. Opaque terrain sharing a material batches only outside local point-light pools; transparent/emissive pieces, furniture and actors keep their existing draws. Batches rebuild when affected terrain or light membership changes. Original geometry remains available for exact per-tile selection, and all batches dispose on world replacement. Independent fog instance buffers prevent patches from overwriting each other. The permanent terrain comparison bypasses batching, and no baseline renderer was edited.

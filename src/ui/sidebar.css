@@ -1,0 +1,137 @@
+/* Carved Stronghold: live HTML controls over the existing project slate texture.
+   Narrow bronze joints preserve the original world/panel width. */
+#sidebar {
+  --ink: #eee6d6;
+  --muted: #aaa99f;
+  --gold: #d9b779;
+  --line: #b49a623d;
+  --stone: linear-gradient(115deg, #171e23ed, #10161cef), url('/art/terrain/slate.png') center / 390px;
+  background: var(--stone);
+  border-right: 5px ridge #8c7550;
+  border-left: 5px ridge #8c7550;
+  box-shadow: inset 0 0 0 2px #080c10, inset 7px 0 0 #b4a18438, 7px 0 20px #0009;
+  color: var(--ink);
+  padding: 0 3px;
+}
+#sidebar::before, #sidebar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(135deg, transparent 19px, #c0a477 20px, #4c3d29 23px, #baa078 24px, transparent 25px) left top / 40px 40px no-repeat,
+    linear-gradient(225deg, transparent 19px, #c0a477 20px, #4c3d29 23px, #baa078 24px, transparent 25px) right top / 40px 40px no-repeat;
+}
+#sidebar::before { top: 0; }
+#sidebar::after { bottom: 0; transform: rotate(180deg); }
+#sidebar .brand { justify-content: center; gap: 7px; padding: 16px 8px 13px; background: transparent; border-bottom: 3px double #8a75504d; }
+#sidebar .brand h1 { font: 600 21px Georgia, serif; letter-spacing: 1.8px; color: #e1cda6; text-shadow: 0 2px 1px #000, 0 -1px 0 #f5e3b14d; }
+#sidebar .crest { font-size: 29px; color: #cbb07d; }
+#sidebar .map-section { position: relative; padding: 12px 12px 9px; }
+#sidebar #show-map { position: absolute; top: 18px; right: 18px; z-index: 1; width: 29px; height: 29px; padding: 0; font-size: 23px; }
+#sidebar #minimap { border: 3px ridge #9e885b; background: #090e13; box-shadow: 0 0 0 1px #05080b, 0 3px 5px #0009; }
+#sidebar .reserves { margin: 0 12px; border: 1px solid #aa92614d; background: #0b1117aa; box-shadow: inset 0 1px #ddd1b31a; }
+#sidebar .reserves > div { padding: 7px 3px; gap: 10px; }
+#sidebar .reserves .action-icon { width: 24px; height: 24px; }
+#sidebar .reserves strong { font-size: 24px; color: #e8d6ae; }
+#sidebar button, #sidebar .selected-action {
+  border-radius: 2px;
+  border: 1px solid #8f7b55;
+  background: linear-gradient(145deg, #293039e8, #0b1118f2), url('/art/terrain/slate.png') center / 200px;
+  box-shadow: inset 0 0 0 2px #080d12, inset 0 3px 0 2px #e0d2b522, 0 2px 3px #0007;
+  color: #e7d9ba;
+}
+#sidebar button:hover { border-color: #d7ba83; background-color: #55462d; filter: brightness(1.13); }
+#sidebar button:focus-visible, #sidebar summary:focus-visible, #sidebar [tabindex="0"]:focus-visible {
+  outline: 2px solid #a2e6ff;
+  outline-offset: 3px;
+}
+#sidebar button.active, #sidebar button[aria-pressed=true] {
+  border-color: #8ad9f4;
+  color: #d9f2ff;
+  background: linear-gradient(145deg, #1f3948, #10212d);
+  box-shadow: inset 0 0 0 2px #09121b, inset 0 0 0 3px #67bad28c, 0 0 7px #6dcff54a;
+}
+#sidebar .room-choice.active::before, #sidebar .categories button.active::before {
+  content: '◇';
+  position: absolute;
+  right: 3px;
+  top: 0;
+  color: #b3f2ff;
+  font: bold 14px Georgia;
+  text-shadow: 0 0 5px #5bc6ff;
+}
+#sidebar button[aria-disabled=true], #sidebar button:disabled { opacity: .38; }
+#sidebar .room-choice[aria-disabled=true]::after { content: none; }
+#sidebar .hearth-link { margin: 8px 12px 0; padding: 5px 9px; min-height: 30px; text-align: center; white-space: pre; color: #c3e9f7; border-color: #548c9c; background: linear-gradient(#173348, #0b1e2b); font: 13px Georgia; }
+#sidebar .hearth-link[data-state=lost] { border-color: #c16d57; color: #f3b39d; }
+#sidebar .hearth-link[data-state=ready], #sidebar .hearth-link[data-state=found] { border-color: #a0e8ff; box-shadow: inset 0 0 0 2px #07151c, 0 0 8px #68cdf34d; }
+#sidebar .categories { padding: 10px 12px; gap: 6px; border-bottom: 3px double #96794766; }
+#sidebar .categories button { display: grid; place-items: center; position: relative; min-width: 0; height: 46px; padding: 6px; }
+#sidebar .categories .action-icon { width: 31px; height: 31px; }
+#sidebar .panel { padding: 12px; scrollbar-color: #776749 #111820; }
+#sidebar .room-grid { gap: 8px; margin: 10px 0; }
+#sidebar .room-grid:first-of-type { margin-top: 0; }
+#sidebar .room-choice { padding: 5px; }
+#sidebar .selected-action { min-height: 54px; padding: 7px; gap: 7px; margin-bottom: 12px; }
+#sidebar .selected-action > div { min-width: 0; }
+#sidebar .selected-action strong { font-size: 16px; color: #e7d8b9; }
+#sidebar .selected-action .action-icon { width: 34px; height: 34px; }
+#sidebar .room-price { color: #d1c19f; }
+#sidebar .room-price b { font-size: 17px; }
+#sidebar .construction-tools { border-top: 3px double #96794766; padding-top: 12px; margin-top: 12px; }
+#sidebar .production, #sidebar .population-details { margin-top: 12px; border-top: 1px solid var(--line); }
+#sidebar .icon-disclosure { display: flex; align-items: center; gap: 8px; min-height: 34px; width: 100%; padding: 4px 3px; list-style: none; }
+#sidebar .icon-disclosure::-webkit-details-marker { display: none; }
+#sidebar .icon-disclosure::before { content: '▸'; color: #b9a374; font-size: 13px; }
+#sidebar details[open] > .icon-disclosure::before { content: '▾'; }
+#sidebar .icon-disclosure .action-icon { width: 27px; height: 27px; }
+#sidebar #build-defenses[open] > summary { display: none; }
+#sidebar .panel p:empty, #sidebar #dwarf-filter:empty { display: none; }
+#sidebar .tool-status { padding: 5px 12px; background: #0b1119b8; border-top: 3px double #8a75504d; min-height: 38px; }
+#sidebar #active-tool { display: flex; align-items: center; min-width: 30px; font-size: 24px; }
+#sidebar #active-tool::before { content: none; }
+#sidebar #active-tool .action-icon { width: 28px; height: 28px; }
+#sidebar #cancel-tool { color: #db9c85; }
+#sidebar .feedback { margin: 0 12px; color: #d8c7a5; }
+#sidebar .camera-tools { padding: 7px 12px; gap: 7px; background: #0b11195e; }
+#sidebar .camera-tools button { height: 31px; padding: 0; }
+#sidebar > footer { padding: 8px 12px 13px; gap: 7px; background: transparent; }
+#sidebar > footer button { width: 32px; height: 30px; font-size: 18px; }
+#sidebar > footer [data-category=debug] { order: 5; margin-left: auto; color: #a89f8b; }
+#sidebar #action-help { bottom: 104px; background: #111922f7; border: 1px solid #b49b6c; color: #f1e0be; }
+#sidebar .panel select { background: #101720; border-color: #8c7955; color: #e5d8bc; }
+#sidebar .dwarf-activity td button { background: linear-gradient(145deg, #303137, #151a20); }
+#sidebar .dwarf-activity td button.empty { color: #817f79; border-color: #595548; }
+#sidebar .dwarf-activity td button[aria-pressed=true] { background: #203847; }
+#sidebar .notification-open, #sidebar #notification-history { border-radius: 0 5px 5px 0; background: linear-gradient(135deg, #3e3930, #101923); }
+#sidebar #notification-card { background: linear-gradient(135deg, #262a2ffa, #101923fa); border-radius: 2px; }
+@media (max-width: 850px) {
+  #sidebar .brand h1 { font-size: 17px; letter-spacing: 1px; }
+  #sidebar .brand { gap: 4px; }
+  #sidebar .room-grid { gap: 5px; }
+  #sidebar .room-choice { padding: 3px; }
+  #sidebar > footer { gap: 5px; }
+  #sidebar > footer button { width: 29px; }
+}
+@media (max-height: 800px) {
+  #sidebar .brand { padding-top: 9px; padding-bottom: 7px; }
+  #sidebar .map-section { padding-top: 8px; padding-bottom: 7px; }
+  #sidebar #show-map { top: 14px; }
+  #sidebar .categories { padding-top: 7px; padding-bottom: 7px; }
+  #sidebar .categories button { height: 39px; }
+  #sidebar .categories .action-icon { width: 27px; height: 27px; }
+  #sidebar .panel { padding-top: 9px; padding-bottom: 9px; }
+}
+@media (max-height: 650px) {
+  #sidebar .brand { padding-top: 7px; padding-bottom: 4px; }
+  #sidebar .reserves > div { padding: 3px; }
+  #sidebar .reserves strong { font-size: 20px; }
+  #sidebar .hearth-link { margin-top: 5px; min-height: 26px; padding: 3px; }
+  #sidebar .categories button { height: 34px; }
+  #sidebar .tool-status { min-height: 32px; padding-top: 2px; padding-bottom: 2px; }
+  #sidebar .camera-tools { padding-top: 4px; padding-bottom: 4px; }
+  #sidebar > footer { padding-top: 5px; padding-bottom: 8px; }
+}

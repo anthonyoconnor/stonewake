@@ -36,10 +36,22 @@ try {
   await panel('Rooms');
   assert.equal(await page.locator('.categories [data-category="debug"],#open-lab,[data-room="guard"]').count(), 0);
   assert(await page.locator('footer [data-category="debug"]').isVisible());
+  assert(!(await page.locator('#selected-action').isVisible()), 'Default excavation needs no duplicate action card');
+  assert.doesNotMatch(await page.locator('#sidebar').innerText(), /THE HEARTH IS ALIGHT|TERRAIN & RESOURCES|Known threats|RECLAIM THE DEEP/);
+  assert.equal(await page.locator('.categories').innerText(), '');
+  await page.locator('#open-hearth').focus();
+  assert.match(await page.locator('#action-help').textContent(), /health.*Find the onward stone/);
+  assert.equal(await page.locator('#pause-game').getAttribute('aria-label'), 'Resume');
+  await page.locator('#pause-game').click();
+  assert.equal((await page.evaluate(() => window.strongholdDev.status())).paused, false);
+  await page.locator('#pause-game').click();
+  assert.equal((await page.evaluate(() => window.strongholdDev.status())).paused, true);
   await snap('after');
 
   // Unavailable actions are readable using keyboard focus and cannot activate.
   await panel('Defenses');
+  assert(!(await page.locator('#encounter-status').isVisible()), 'No empty threat report');
+  await snap('sidebar-defenses');
   const unavailable = page.locator('[data-defense="spike-trap"]');
   assert(await unavailable.isDisabled()); await unavailable.focus();
   assert.match(await page.locator('#action-help').textContent(), /later campaign area/);

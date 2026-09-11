@@ -1,6 +1,5 @@
 import type {Sidebar} from './sidebar';
 import {defenseDefinitions,defenseById,defenseDirections} from '../content/defenses';
-import {recipeById} from '../content/recipes';
 import {defenseAt,isDoor,doorIsOpen,doorOccupied} from '../game/doors';
 import {defenseToolStatus,setDoorMode,removeDefense,addRaider} from '../game/defenses';
 import {addResidents} from '../game/simulation';
@@ -10,10 +9,9 @@ import {actionAvailability} from './action-help';
 import {enemyById} from '../content/enemies';
 const feedback=(s:Sidebar,message:string)=>{s.root.querySelector('#feedback')!.textContent=message;};
 export function showDefenses(s:Sidebar){
-  s.panel.innerHTML=`<div id="defense-inspector"></div><details id="build-defenses" open><summary>Build defenses</summary><div id="selected-defense" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Defense choices">${defenseDefinitions.map(d=>`<button data-defense="${d.id}" class="room-choice" aria-label="${d.name}" title="${d.name}">${actionIcon(d.id)}</button>`).join('')}</div><p id="defense-description" class="muted"></p><div id="bolt-facing-controls"><label>Bolt facing<select id="defense-facing">${defenseDirections.map((d,i)=>`<option value="${i}" ${i===s.selection.rotation?'selected':''}>${d.name}</option>`).join('')}</select></label><p class="muted">R rotates a bolt before placement.</p></div><button id="inspect-defense" class="wide">Inspect placed defense</button></details><details><summary>Placed defenses</summary><div id="placed-defenses"></div></details>`;
+  s.panel.innerHTML=`<div id="defense-inspector"></div><details id="build-defenses" open><summary class="icon-disclosure" title="Build defenses" aria-label="Build defenses">${actionIcon('guard')}</summary><div id="selected-defense" class="selected-action" aria-live="polite"></div><div class="room-grid" role="group" aria-label="Defense choices">${defenseDefinitions.map(d=>`<button data-defense="${d.id}" class="room-choice" aria-label="${d.name}" title="${d.name}">${actionIcon(d.id)}</button>`).join('')}</div><details id="defense-details"><summary>Details</summary><p id="defense-description" class="muted"></p></details><div id="bolt-facing-controls"><label title="Bolt facing · R rotates before placement">Bolt facing<select id="defense-facing">${defenseDirections.map((d,i)=>`<option value="${i}" ${i===s.selection.rotation?'selected':''}>${d.name}</option>`).join('')}</select></label></div></details><details id="placed-defense-list"><summary>Placed defenses</summary><div id="placed-defenses"></div></details>`;
   s.panel.querySelectorAll<HTMLButtonElement>('[data-defense]').forEach(b=>b.onclick=()=>{if(!defenseToolStatus(s.view.world,b.dataset.defense!).available)return;s.selection.selected=undefined;s.selection.setTool(b.dataset.defense!);updateDefenses(s);});
   s.panel.querySelector<HTMLSelectElement>('#defense-facing')!.onchange=e=>{s.selection.rotation=Number((e.target as HTMLSelectElement).value);s.selection.draw();};
-  s.panel.querySelector<HTMLButtonElement>('#inspect-defense')!.onclick=()=>s.selection.setTool('inspect');
   if(s.view.world.defenseTest){
     const test=document.createElement('section');test.className='spell-card';test.innerHTML='<h3>Test yard</h3><p class="muted">Test stock is supplied. Raiders follow the corridor and break shut doors. This test does not include dwarf combat or Hearth damage.</p><div class="lab-actions"><button id="send-raider">Send test raider</button><button id="send-hauler">Send dwarf for gold</button></div><div id="test-enemies"></div><button id="reset-defense-yard" class="wide">Reset defense yard</button>';s.panel.append(test);
     test.querySelector<HTMLButtonElement>('#send-raider')!.onclick=()=>{const w=s.view.world;addRaider(w,w.defenseTest!.spawn,w.defenseTest!.target);updateDefenses(s);};
@@ -33,8 +31,10 @@ export function updateDefenses(s:Sidebar){
   }
   const selectedDef=defenseById(s.selection.tool);
   const header=s.panel.querySelector<HTMLElement>('#selected-defense')!;
-  const recipe=selectedDef&&recipeById(selectedDef.id)!;
-  const summary=selectedDef? actionIcon(selectedDef.id)+`<div><strong>${selectedDef.name}</strong><span class="room-price"><b>${w.outputs[selectedDef.id]??0}</b> in stock</span><span class="room-price">${recipe!.cost} gold · ${recipe!.seconds}s work</span></div>`:actionIcon('bolt-trap')+'<div><strong>Build defenses</strong><span class="room-price">Choose a door or trap</span></div>';
+  header.hidden=!selectedDef;
+  s.panel.querySelector<HTMLElement>('#defense-details')!.hidden=!selectedDef;
+  s.panel.querySelector<HTMLElement>('#placed-defense-list')!.hidden=!(w.defenses??[]).length;
+  const summary=selectedDef? actionIcon(selectedDef.id)+`<div><strong>${selectedDef.name}</strong><span class="room-price"><b>${w.outputs[selectedDef.id]??0}</b> in stock</span></div>`:actionIcon('bolt-trap')+'<div><strong>Build defenses</strong><span class="room-price">Choose a door or trap</span></div>';
   if(header.dataset.summary!==summary){header.dataset.summary=summary;header.innerHTML=summary;}
   s.panel.querySelector<HTMLElement>('#bolt-facing-controls')!.hidden=selectedDef?.kind!=='bolt';
   s.panel.querySelector('#defense-description')!.textContent=selectedDef?selectedDef.description+(selectedDef.health?` ${selectedDef.health} health.`:` ${selectedDef.damage} damage.`)+(selectedDef.cooldown?` Cooldown: ${selectedDef.cooldown}s.`:'')+(selectedDef.pinSeconds?` Pins for ${selectedDef.pinSeconds}s.`:''):'';
@@ -42,7 +42,7 @@ export function updateDefenses(s:Sidebar){
   const d=s.selection.selected&&defenseAt(w,s.selection.selected),def=d&&defenseById(d.type);
   if(inspector.dataset.id!==String(d?.id)){
     inspector.dataset.id=String(d?.id);if(d){s.panel.querySelector<HTMLDetailsElement>('#build-defenses')!.open=false;s.panel.scrollTop=0;}
-    inspector.innerHTML=d?`<article class="spell-card"><h3>${def!.name}</h3><p id="fixture-status" class="muted"></p>${isDoor(d)?'<div class="door-modes" role="group" aria-label="Door state">'+(['open','closed','locked'] as const).map(mode=>`<button data-door-mode="${mode}">${mode[0].toUpperCase()+mode.slice(1)}</button>`).join('')+'</div><p class="muted">Open: everyone passes.<br>Closed: dwarfs open it and it closes behind them.<br>Locked: dwarfs cannot open it.</p>':''}<button id="dismantle-defense" class="wide">Dismantle · no refund</button></article>`:'';
+    inspector.innerHTML=d?`<article class="spell-card"><h3>${def!.name}</h3><p id="fixture-status" class="muted"></p>${isDoor(d)?'<div class="door-modes" role="group" aria-label="Door state">'+(['open','closed','locked'] as const).map(mode=>`<button data-door-mode="${mode}" title="${mode==='open'?'Everyone may pass':mode==='closed'?'Residents open it and close it behind them':'Residents cannot open it'}">${mode[0].toUpperCase()+mode.slice(1)}</button>`).join('')+'</div>':''}<button id="dismantle-defense" class="wide">Dismantle · no refund</button></article>`:'';
     inspector.querySelectorAll<HTMLButtonElement>('[data-door-mode]').forEach(b=>b.onclick=()=>{feedback(s,setDoorMode(w,d!.id,b.dataset.doorMode as DoorMode));updateDefenses(s);});
     const remove=inspector.querySelector<HTMLButtonElement>('#dismantle-defense');if(remove)remove.onclick=()=>{feedback(s,removeDefense(w,d!.id));updateDefenses(s);};
   }

@@ -1,10 +1,11 @@
+import { actionIcon } from './icons';
 import type { Sidebar } from './sidebar';
 import { encounterSummary, advanceEncounter } from '../game/encounters';
 
 export function mountEncounterPanel(sidebar: Sidebar, debug = false) {
-  const section = document.createElement('section');
+  const section = document.createElement(debug ? 'section' : 'details');
   section.className = 'spell-card';
-  section.innerHTML = `<h3>${debug ? 'Encounter diagnostics' : 'Known threats'}</h3><div id="${debug ? 'encounter-debug' : 'encounter-status'}" class="muted"></div>`;
+  section.innerHTML = `${debug ? '<h3>Encounter diagnostics</h3>' : '<summary class="icon-disclosure" title="Discovered hostile sources" aria-label="Discovered hostile sources">'+actionIcon('guard')+'</summary>'}<div id="${debug ? 'encounter-debug' : 'encounter-status'}" class="muted"></div>`;
   if (debug) {
     const help = document.createElement('p');
     help.className = 'muted';
@@ -35,6 +36,6 @@ export function updateEncounters(sidebar: Sidebar) {
       element.append(p);
     }
   };
-  const panel = sidebar.panel.querySelector('#encounter-status'); if (panel) render(panel, reports);
+  const panel = sidebar.panel.querySelector('#encounter-status'); if (panel) { panel.parentElement!.hidden=!reports.length; render(panel, reports); }
   const debug = sidebar.panel.querySelector('#encounter-debug'); if (debug) render(debug, encounterSummary(w, true));
 }

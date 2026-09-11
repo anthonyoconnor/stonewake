@@ -23,7 +23,7 @@ export function mountHearth(sidebar: Sidebar) {
 
 export function showHearth(sidebar: Sidebar) {
   sidebar.panel.innerHTML =
-    '<p class="eyebrow">THE ANCIENT NETWORK</p><h2 id="journey-title">Keep the Hearth alight.</h2><p id="campaign-briefing"></p><h3>Starting Stone Hearth</h3><p id="core-health"></p><h3>Onward Hearthstone</h3><p id="onward-status" role="status"></p><button id="activate-hearth" class="wide">Activate onward Hearthstone</button><details class="campaign-details"><summary>Journey &amp; activation</summary><p id="campaign-discovery"></p><p>A dwarf must reach the stone and secure it without interruption. Defend the starting Hearth to keep this area alive.</p><p id="campaign-carry"></p></details>';
+    '<h2 id="journey-title"></h2><p id="onward-status" role="status"></p><button id="activate-hearth" class="wide">Activate onward Hearthstone</button><details class="campaign-details"><summary>Journey &amp; activation</summary><p id="campaign-briefing"></p><p id="campaign-discovery"></p><p>A dwarf must reach the stone and secure it without interruption. Defend the starting Hearth to keep this area alive.</p><p id="campaign-carry"></p></details>';
   sidebar.panel.querySelector<HTMLButtonElement>('#activate-hearth')!.onclick = () => {
     sidebar.root.querySelector('#feedback')!.textContent = requestHearthActivation(sidebar.view.world);
     sidebar.update();
@@ -33,19 +33,20 @@ export function showHearth(sidebar: Sidebar) {
 export function updateHearth(sidebar: Sidebar) {
   const w = sidebar.view.world,
     s = hearthSummary(w), journey = campaignSummary(w);
-  sidebar.root.querySelector('#open-hearth')!.textContent =
-    `◇ Hearth ${s.maxHealth ? Math.ceil(s.health) + ' / ' + s.maxHealth : '· Test world'} · ${w.outcome === 'defeat' ? 'Lost' : s.ready ? 'Area complete' : s.discovered ? 'Onward stone found' : 'Find the onward stone'}`;
-  const health = sidebar.panel.querySelector('#core-health');
+  const link=sidebar.root.querySelector<HTMLButtonElement>('#open-hearth')!;
+  const objective=w.outcome==='defeat'?'Hearth lost':s.ready?'Area complete':s.discovered?'Onward stone found':'Find the onward stone';
+  link.textContent='◇ '+(s.maxHealth?Math.ceil(s.health)+' / '+s.maxHealth:'—')+(s.ready?'  ✓':s.discovered?'  →':'');
+  link.title='Hearth · '+(s.maxHealth?Math.ceil(s.health)+' / '+s.maxHealth+' health':'Test world')+' · '+objective;
+  link.setAttribute('aria-label',link.title);
+  link.dataset.state=w.outcome==='defeat'?'lost':s.ready?'ready':s.discovered?'found':'searching';
   const title = sidebar.panel.querySelector('#journey-title');
-  if (title) title.textContent = journey ? `${w.name} · ${journey.stage} / ${journey.total}` : 'Keep the Hearth alight.';
+  if (title) title.textContent = journey ? `${w.name} · ${journey.stage} / ${journey.total}` : w.name;
   const briefing = sidebar.panel.querySelector<HTMLElement>('#campaign-briefing');
   if (briefing) { briefing.hidden = !journey; briefing.textContent = journey?.briefing ?? ''; }
   const discovery = sidebar.panel.querySelector('#campaign-discovery');
   if (discovery) discovery.textContent = journey && s.discovered ? journey.discovery : 'Explore to discover the next runic connection.';
   const carry = sidebar.panel.querySelector('#campaign-carry');
   if (carry) carry.textContent = journey ? `${journey.knownSpells} researched spells carried into this area. Travel retains completed research and building unlocks; a fresh crew, economy and unprepared spells await. Restart area restores its arrival state.` : '';
-  if (health)
-    health.textContent = `${Math.ceil(s.health)} / ${s.maxHealth} health${w.outcome === 'defeat' ? ' · Destroyed' : ''}`;
   const onward = sidebar.panel.querySelector('#onward-status');
   if (onward)
     onward.textContent = s.ready
@@ -75,10 +76,4 @@ export function updateHearth(sidebar: Sidebar) {
   travel.textContent = journey?.nextName ? `Travel to ${journey.nextName}` : 'Travel onward';
   travel.title = 'Leave this settlement behind and begin the next area with a fresh crew. Research knowledge and building unlocks carry forward.';
   terminal.querySelector<HTMLButtonElement>('#restart-campaign')!.hidden = !journey?.complete;
-  sidebar.root.querySelector('footer span')!.textContent =
-    w.outcome === 'defeat'
-      ? 'THE HEARTH HAS FALLEN'
-      : s.ready
-        ? 'THE PASSAGE IS READY'
-        : 'THE HEARTH IS ALIGHT';
 }

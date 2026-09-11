@@ -1,8 +1,8 @@
 # Sidebar concepts
 
-Three options awaiting user selection, generated with the built-in image generation tool. These explore the left control panel's appearance; the game has not been changed. [Exact prompts and reference roles](prompts-v1.md).
+The user selected **A — Carved Stronghold**, now implemented with the user's further text-reduction direction. B and C remain comparison options. The boards were generated with the built-in image generation tool. [Exact prompts and reference roles](prompts-v1.md).
 
-Each board contains an enlarged panel, an illustrated gameplay inset and button state studies. Generated values and incidental controls are illustrative, not new gameplay requirements. Preserve the current compact icon-based interaction and [interface rules](../../gameplay-interface.md) when implementing a selected direction.
+Each board contains an enlarged panel, an illustrated gameplay inset and button state studies. Generated values and incidental controls are illustrative, not new gameplay requirements. The current compact icon-based implementation and [text audit](../../gameplay-interface.md#sidebar-text-budget) take precedence over incidental concept labels and values.
 
 ## A — Carved Stronghold
 

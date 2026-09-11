@@ -22,11 +22,11 @@ const filters = new WeakMap<Sidebar, { type: string; activity?: string }>();
 
 export function showDwarfs(s: Sidebar) {
   filters.delete(s);
-  s.panel.innerHTML = `<p class="eyebrow">WORKFORCE ACTIVITY <span id="activity-total"></span></p>
+  s.panel.innerHTML = `
     <table class="dwarf-activity" aria-label="Workforce by role and activity"><thead><tr><th scope="col"><span class="sr-only">Role</span></th>${activities.map(a => `<th scope="col" title="${a.help}">${actionIcon(a.icon)}<span class="sr-only">${a.name}</span></th>`).join('')}</tr></thead>
     <tbody>${characterDefinitions.map(c => `<tr><th scope="row"><button data-dwarf-role="${c.id}" title="${c.name}: show all" aria-label="${c.name}: show all">${actionIcon(roleIcons[c.id] ?? 'guard')}</button></th>${activities.map(a => `<td><button data-dwarf-count="${c.id}:${a.id}" aria-pressed="false">0</button></td>`).join('')}</tr>`).join('')}</tbody></table>
-    <p class="activity-hint">Choose a count to inspect workers.</p><p id="dwarf-filter" class="eyebrow"></p><div id="residents-list"></div>
-    <details class="population-details"><summary>Pay & wellbeing</summary><div id="population-management"><div id="arrival-status" class="muted"></div></div></details>`;
+    <p id="dwarf-filter" class="eyebrow"></p><div id="residents-list"></div>
+    <details class="population-details"><summary class="icon-disclosure" title="Arrivals, wages and wellbeing" aria-label="Arrivals, wages and wellbeing">${actionIcon('category-dwarfs')}</summary><div id="population-management"><div id="arrival-status" class="muted"></div></div></details>`;
   s.panel.querySelectorAll<HTMLButtonElement>('[data-dwarf-count], [data-dwarf-role]').forEach(b => b.onclick = () => {
     const [type, activity] = (b.dataset.dwarfCount ?? b.dataset.dwarfRole!).split(':');
     filters.set(s, { type, activity });
@@ -36,9 +36,7 @@ export function showDwarfs(s: Sidebar) {
 
 export function updateDwarfs(s: Sidebar): Resident[] {
   const w = s.view.world, filter = filters.get(s);
-  const total = s.panel.querySelector('#activity-total');
-  if (!total) return [];
-  total.textContent = String(w.agents.length);
+  if (!s.panel.querySelector('.dwarf-activity')) return [];
   s.panel.querySelectorAll<HTMLButtonElement>('[data-dwarf-count]').forEach(b => {
     const [type, activity] = b.dataset.dwarfCount!.split(':');
     const count = w.agents.filter(a => a.type === type && dwarfActivity(a) === activity).length;

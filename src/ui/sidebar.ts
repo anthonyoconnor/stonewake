@@ -1,3 +1,4 @@
+import './sidebar.css';
 import { roomAllowed, buildingAllowed, recipeAllowed, availabilityReason } from '../game/availability';
 import { ruinStatus } from '../game/ruins';
 import { showDwarfs, updateDwarfs } from './dwarfs';
@@ -49,7 +50,6 @@ import {actionAvailability,mountActionHelp} from './action-help';
 import {MessageCenter} from './messages';
 import {enemyById,enemyDefinitions} from '../content/enemies';
 import {defenseById} from '../content/defenses';
-const glyphs:Record<string,string>={rooms:'▦',defenses:'♜',spells:'✧',dwarfs:'♟',dig:'⚒',home:'⌂',debug:'⌘'};
 const effectLabels:Record<string,string>={'spider-web':'Webbed','spore-cloud':'Spore cloud'};
 const constructionTools=`<button class="room-choice" data-tool="bridge" title="Build bridges" aria-label="Build bridges">${actionIcon('bridge')}</button><button class="room-choice" data-tool="wall" title="Build walls" aria-label="Build walls">${actionIcon('wall')}</button><span aria-hidden="true"></span><button class="room-choice" data-tool="sell" title="Sell rooms, bridges or defenses" aria-label="Sell">${actionIcon('sell')}</button>`;
 export class Sidebar {
@@ -76,16 +76,16 @@ export class Sidebar {
   constructor(public view:GameScene,public controls:CameraControls,public selection:Selection) {
     this.root=document.createElement('aside');this.root.id='sidebar';this.root.setAttribute('aria-label','Stronghold controls');
     this.root.innerHTML=`
-      <header class="brand"><span class="crest">◇</span><div><h1>STONEWAKE</h1><p>RECLAIM THE DEEP</p></div></header>
-      <section class="map-section"><div class="eyebrow"><span>${view.world.name}</span><button id="show-map" aria-label="Show full map" title="Show full map (M)" aria-keyshortcuts="M" aria-haspopup="dialog">⛶</button></div><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas><div class="map-caption"><span>TERRAIN & RESOURCES</span><span>48 × 48</span></div></section>
-      <div class="reserves"><div><span class="gold-symbol">◆</span><strong id="gold-total">0</strong><small>GOLD</small></div><div><span>♟</span><strong id="dwarf-total">0</strong><small>WORKFORCE</small></div></div>
-      <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs'].map(id=>`<button data-category="${id}" aria-label="${id==='dwarfs'?'Workforce':id[0].toUpperCase()+id.slice(1)}" title="${id==='dwarfs'?'Workforce':id[0].toUpperCase()+id.slice(1)}" aria-controls="panel"><span>${glyphs[id]}</span><small>${id==='dwarfs'?'workforce':id}</small></button>`).join('')}</nav>
+      <header class="brand"><span class="crest" aria-hidden="true">◇</span><h1>STONEWAKE</h1></header>
+      <section class="map-section"><button id="show-map" aria-label="Show full map" title="Show full map (M)" aria-keyshortcuts="M" aria-haspopup="dialog">⛶</button><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas></section>
+      <div class="reserves"><div tabindex="0" title="Gold available" aria-label="Gold available"><span class="gold-symbol" aria-hidden="true">◆</span><strong id="gold-total">0</strong></div><div tabindex="0" title="Residents" aria-label="Residents">${actionIcon('category-dwarfs')}<strong id="dwarf-total">0</strong></div></div>
+      <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs'].map(id=>`<button data-category="${id}" aria-label="${id==='dwarfs'?'Workforce':id[0].toUpperCase()+id.slice(1)}" title="${id==='dwarfs'?'Workforce':id[0].toUpperCase()+id.slice(1)}" aria-controls="panel">${actionIcon('category-'+id)}</button>`).join('')}</nav>
       <div id="panel" class="panel" tabindex="-1"></div>
       <section id="unit-inspection" class="feedback" aria-label="Selected character" hidden><button id="close-inspection" aria-label="Close character inspection" title="Close character inspection">×</button><div id="unit-inspection-text"></div></section>
-      <div class="tool-status"><span id="active-tool"></span><button id="cancel-tool" aria-label="Cancel active tool" title="Cancel active tool (Escape / right-click)">×</button></div>
-      <div id="feedback" class="feedback" role="status">Choose a task for your stronghold.</div>
+      <div class="tool-status"><span id="active-tool" tabindex="0"></span><button id="cancel-tool" aria-label="Cancel active tool" title="Cancel active tool (Escape / right-click)">×</button></div>
+      <div id="feedback" class="feedback" role="status"></div>
       <div class="camera-tools"><button data-camera="home" aria-label="Return to Hearthstone" title="Return to Hearthstone (Home)">⌂</button><button data-camera="in" aria-label="Zoom in" title="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out" title="Zoom out">−</button></div>
-      <footer><button id="help" aria-label="Help" title="Field guide and message history">?</button><span>THE HEARTH IS ALIGHT</span><button id="open-menu" aria-label="Main menu" title="Return to main menu">☰</button><button data-category="debug" aria-label="Debug" title="Development settings and test harnesses">⌘</button></footer>`;
+      <footer><button id="pause-game" aria-label="Pause" title="Pause simulation">Ⅱ</button><button id="help" aria-label="Help" title="Field guide and message history">?</button><button id="open-menu" aria-label="Main menu" title="Return to main menu">☰</button><button data-category="debug" aria-label="Debug" title="Development settings and test harnesses">⌘</button></footer>`;
     document.querySelector('#app')!.prepend(this.root);
     this.root.addEventListener('click',e=>{
       if(!this.view.world.outcome||!(e.target instanceof Element))return;
@@ -107,6 +107,7 @@ export class Sidebar {
       switch(b.dataset.camera){case'home':controls.home();break;case'in':controls.zoom(.8);break;case'out':controls.zoom(1.25);}
     });
     this.root.querySelector<HTMLButtonElement>('#help')!.onclick=()=>this.show('help');
+    this.root.querySelector<HTMLButtonElement>('#pause-game')!.onclick=()=>{this.onPause(!this.isPaused());this.update();};
     this.root.querySelector<HTMLButtonElement>('#open-menu')!.onclick=()=>this.onMenu();
     this.root.querySelector<HTMLButtonElement>('#cancel-tool')!.onclick=()=>selection.setTool('dig');
     this.root.querySelector<HTMLButtonElement>('#close-inspection')!.onclick=()=>{this.inspectedUnit=undefined;this.update();};
@@ -184,7 +185,7 @@ export class Sidebar {
       const guide=document.createElement('p');guide.className='muted';guide.textContent='Spell yard: prepared spells and combat targets. Defense yard: stock, doors and trap tests. Showcase: furnished rooms with residents and work queues.';this.panel.append(guide);
     }
     if(['rooms','lab','defenses'].includes(category)){
-      const production=document.createElement('details');production.className='production';production.innerHTML=`<summary>Workshop production</summary><div class="room-grid" role="group" aria-label="Production recipes">${recipes.map(r=>`<button class="room-choice recipe-choice" data-recipe="${r.id}" aria-label="Queue ${r.name.toLowerCase()} · ${r.cost} gold" title="Queue ${r.name.toLowerCase()} · ${r.cost} gold · ${r.seconds}s Engineer work">${actionIcon(r.id)}<small>${r.cost} ◆</small></button>`).join('')}</div><div id="craft-orders"></div><div id="craft-outputs"></div><details><summary>Workers &amp; access</summary><div id="craft-status" class="muted"></div></details>`;this.panel.append(production);
+      const production=document.createElement('details');production.className='production';production.innerHTML=`<summary class="icon-disclosure" title="Workshop production" aria-label="Workshop production">${actionIcon('workshop')}</summary><div class="room-grid" role="group" aria-label="Production recipes">${recipes.map(r=>`<button class="room-choice recipe-choice" data-recipe="${r.id}" aria-label="Queue ${r.name.toLowerCase()} · ${r.cost} gold" title="Queue ${r.name.toLowerCase()} · ${r.cost} gold · ${r.seconds}s Engineer work">${actionIcon(r.id)}<small>${r.cost} ◆</small></button>`).join('')}</div><div id="craft-orders"></div><div id="craft-outputs"></div><details><summary>Workers &amp; access</summary><div id="craft-status" class="muted"></div></details>`;this.panel.append(production);
       production.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>b.onclick=()=>{queueCraft(this.view.world,b.dataset.recipe!);this.root.querySelector('#feedback')!.textContent=recipeAllowed(this.view.world,b.dataset.recipe!)?`${recipeById(b.dataset.recipe!)!.name} queued for an Engineer.`:availabilityReason(this.view.world,'recipes',b.dataset.recipe!);this.update();});
     }
     if(['lab','debug'].includes(category)&&!comparison){
@@ -224,16 +225,20 @@ export class Sidebar {
     const id=this.selection.tool,room=roomDefinitions.find(r=>r.id===id);
     const w=this.view.world;
     const toolName=room?.name??spellDefinitions.find(s=>s.id===id)?.name??defenseById(id)?.name??({dig:'Excavate',inspect:'Inspect',wall:'Build walls',sell:'Reclaim',bridge:'Build bridges'}[id]??id);
-    this.root.querySelector('#active-tool')!.textContent=toolName;
+    const activeTool=this.root.querySelector<HTMLElement>('#active-tool')!;
+    activeTool.title=toolName;activeTool.setAttribute('aria-label',toolName);
+    if(activeTool.dataset.tool!==id){activeTool.dataset.tool=id;activeTool.innerHTML=(id==='inspect'?'<span aria-hidden="true">⌖</span>':actionIcon(id))+'<span class="sr-only">'+toolName+'</span>';}
     this.root.querySelector<HTMLButtonElement>('#cancel-tool')!.hidden=id==='dig'||!!w.outcome;
     this.panel.querySelectorAll<HTMLButtonElement>('[data-tool]').forEach(b=>{const locked=['bridge','wall'].includes(b.dataset.tool!)&&!buildingAllowed(w,b.dataset.tool!);actionAvailability(b,!w.outcome&&!locked,w.outcome?'Area ended':locked?availabilityReason(w,'buildings',b.dataset.tool!):b.dataset.tool==='bridge'?`Build bridges · ${w.freeRoomBuilding?0:bridgeSettings.cost} gold / square · Water and lava only`:b.dataset.tool==='wall'?`Build walls · ${wallBuildDuration()} seconds each`:`Sell rooms, bridges or defenses · ${Math.round(tuning.reclaimRatio*100)}% room and deck refund`);b.classList.toggle('active',b.dataset.tool===id);b.setAttribute('aria-pressed',String(b.dataset.tool===id));});
     this.root.querySelectorAll<HTMLButtonElement>('[data-room]').forEach(b=>{const selected=b.dataset.room===id,r=roomDefinitions.find(r=>r.id===b.dataset.room)!;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));const price=w.freeRoomBuilding?0:r.cost;actionAvailability(b,r.implemented&&!w.outcome&&roomAllowed(w,r.id)&&goldTotal(w)>=price,`${r.name} · ${price} gold / square · ${w.outcome?'Area ended':!r.implemented?'Deferred':!roomAllowed(w,r.id)?availabilityReason(w,'buildings',r.id):goldTotal(w)<price?'Needs more gold':r.description}`);});
     this.panel.querySelectorAll<HTMLButtonElement>('[data-recipe]').forEach(b=>{const recipe=recipeById(b.dataset.recipe!)!;actionAvailability(b,!w.outcome&&recipeAllowed(w,recipe.id),`${recipe.name} · ${recipe.cost} gold · ${availabilityReason(w,'recipes',recipe.id)||'Queue for an Engineer'}`);});
     const header=this.panel.querySelector<HTMLElement>('#selected-action');if(!header)return;
+    header.hidden=!room&&!['bridge','wall','sell'].includes(id);
+    header.title=room?room.description+' '+room.capacityPerTile+' '+(room.service==='storage'?'gold storage':'resident capacity')+' / tile':'';header.tabIndex=0;
     const price=room?(this.view.world.freeRoomBuilding?0:room.cost):undefined,signature=id+':'+this.view.world.freeRoomBuilding+':'+bridgeSettings.cost+':'+bridgeSettings.seconds+':'+price+':'+room?.capacityPerTile+':'+tuning.reclaimRatio+':'+wallBuildDuration();
     if(header.dataset.selection===signature)return;header.dataset.selection=signature;
-    if(id==='bridge'){header.innerHTML=actionIcon('bridge')+`<div><strong>Build bridges</strong><span class="room-price">${this.view.world.freeRoomBuilding?0:bridgeSettings.cost} gold / square · ${bridgeSettings.seconds}s work</span></div>`;return;}
-    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='sell'?'Sell':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()} seconds / wall</span>`:id==='sell'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% rooms/decks · Plans 100% · Defenses 0%</span>`:''):`<span class="room-price"><b>${price}</b> gold / square</span><span class="room-price">${room!.capacityPerTile} ${room!.service==='storage'?'gold storage':'dwarf capacity'} / square</span>`}</div>`;
+    if(id==='bridge'){header.innerHTML=actionIcon('bridge')+`<div><strong>Bridge</strong><span class="room-price">${this.view.world.freeRoomBuilding?0:bridgeSettings.cost} ◆ / tile · ${bridgeSettings.seconds}s</span></div>`;return;}
+    header.innerHTML=actionIcon(id)+`<div><strong>${room?.name??(id==='erase'?'Clear excavation':id==='inspect'?'Inspect':id==='wall'?'Build walls':id==='sell'?'Sell':'Excavate')}</strong>${price===undefined?(id==='wall'?`<span class="room-price">${wallBuildDuration()}s / wall</span>`:id==='sell'?`<span class="room-price">${Math.round(tuning.reclaimRatio*100)}% rooms/decks · Plans 100% · Defenses 0%</span>`:''):`<span class="room-price"><b>${price}</b> ◆ / tile</span>`}</div>`;
   }
   drawMap(){
     drawMap(this.minimap,this.view.world);
@@ -245,14 +250,16 @@ export class Sidebar {
     updateGraphicsGallery(this);
     updateArcanaGallery(this);
     const pause=this.panel.querySelector<HTMLButtonElement>('#toggle-simulation');if(pause)pause.textContent=this.isPaused()?'Resume simulation':'Pause simulation';
+    const pauseGame=this.root.querySelector<HTMLButtonElement>('#pause-game')!;
+    pauseGame.textContent=this.isPaused()?'▶':'Ⅱ';pauseGame.title=this.isPaused()?'Resume simulation':'Pause simulation';pauseGame.setAttribute('aria-label',this.isPaused()?'Resume':'Pause');pauseGame.setAttribute('aria-pressed',String(this.isPaused()));
     const state=this.panel.querySelector('#simulation-state');if(state)state.textContent=this.isPaused()?'Paused · setup actions work; resume to observe behavior.':'Running';
     updateDefenses(this);
     updateEconomy(this);
     updateEncounters(this);updateHearth(this);updateMorale(this);
     this.messages.update();
     this.updateSelection();this.drawMap();const w=this.view.world;
-    this.root.querySelector('.map-section .eyebrow span')!.textContent=w.name;
-    this.root.querySelector('.map-caption span:last-child')!.textContent=`${w.width} × ${w.height}`;
+    this.minimap.title=w.name+' · Click to move camera';
+    this.root.querySelector('#show-map')!.setAttribute('title',w.name+' · Show full map (M)');
     this.root.querySelector('#gold-total')!.textContent=String(goldTotal(w));this.root.querySelector('#dwarf-total')!.textContent=String(w.agents.length);
     const residents=updateDwarfs(this);
     const list=this.root.querySelector('#residents-list');
@@ -276,7 +283,7 @@ export class Sidebar {
       }
     }}
     list?.querySelectorAll<HTMLButtonElement>('[data-locate-dwarf]').forEach(b=>b.onclick=()=>{const a=w.agents.find(a=>a.id===Number(b.dataset.locateDwarf));if(a){this.controls.center(a.x,a.z);this.inspectedUnit={kind:'dwarf',id:a.id};this.update();this.unitInspection.scrollIntoView({block:'nearest'});}});
-    const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${recruitmentSummary(w)}</p><p>Hounds provide early defense. Supported Warriors take a larger share of later arrivals; support staff follow queued work.</p>${characterDefinitions.filter(c=>c.recruitment).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b> · ${c.recruitment!.seconds}s cooldown<br>${attractionStatus(w,c.id)}</p>`).join('')}`;
+    const arrivals=this.panel.querySelector('#arrival-status');if(arrivals)arrivals.innerHTML=`<p>${recruitmentSummary(w)}</p>${characterDefinitions.filter(c=>c.recruitment).map(c=>`<p><b>${c.name} · ${w.agents.filter(a=>a.type===c.id).length}</b> · ${c.recruitment!.seconds}s cooldown<br>${attractionStatus(w,c.id)}</p>`).join('')}`;
     const summary=this.root.querySelector('#room-summary');if(summary){
       const p=this.selection.selected??(this.lab?w.tiles.find(t=>t.room===this.selection.tool):undefined);
       summary.textContent='';
@@ -295,9 +302,6 @@ export class Sidebar {
           else if(room.service==='dining')summary.textContent+=`Supports ${usable} dwarf${usable===1?'':'s'} · ${assigned} assigned · ${occupied} eating. `;
           else summary.textContent+=`${occupied} occupied · ${Math.max(0,usable-occupied)} available. `;
           if(usable<s.capacity)summary.textContent+=`${s.capacity-usable} capacity unreachable. `;
-          if(room.service==='training')summary.textContent+=`Specialists gain one level per visit, then wait ${tuning.trainingInterval} seconds before training again. `;
-          if(room.service==='research')summary.textContent+='Choose research in the Spells panel. ';
-          summary.textContent+='Furniture is decorative.';
         }
       }
     }
