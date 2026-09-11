@@ -1,3 +1,4 @@
+import { actionIcon } from './ui/icons';
 import { paintedFrame, type LoadingScreen } from './ui/loading';
 import { tuning } from './content/tuning';
 import { MainMenu, confirmDiscard } from './ui/menu';
@@ -61,7 +62,7 @@ export async function initializeGame(loading: LoadingScreen) {
   document.addEventListener('keydown', unlockAudio);
   const soundDialog = createAudioDialog(() => audio.applySettings());
   const soundButton = document.createElement('button');
-  soundButton.id = 'sound-settings'; soundButton.textContent = '♪'; soundButton.title = 'Sound settings'; soundButton.setAttribute('aria-label', 'Sound settings');
+  soundButton.id = 'sound-settings'; soundButton.innerHTML = actionIcon('ui-sound'); soundButton.title = 'Sound settings'; soundButton.setAttribute('aria-label', 'Sound settings');
   soundButton.onclick = () => soundDialog.show(); sidebar.root.querySelector('footer')!.append(soundButton);
   if (import.meta.env.DEV) Object.assign(view, { audio });
   window.addEventListener('pagehide', () => audio.suspend());

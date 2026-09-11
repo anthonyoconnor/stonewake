@@ -18,7 +18,7 @@ export function mountHearth(sidebar: Sidebar) {
   terminal.querySelector<HTMLButtonElement>('#restart-area')!.onclick = () => sidebar.onRestartArea();
   terminal.querySelector<HTMLButtonElement>('#travel-onward')!.onclick = () => sidebar.onTravel();
   terminal.querySelector<HTMLButtonElement>('#restart-campaign')!.onclick = () => sidebar.onRestart();
-  sidebar.root.querySelector('.camera-tools')!.before(terminal);
+  sidebar.root.querySelector('.utility-tools')!.before(terminal);
 }
 
 export function showHearth(sidebar: Sidebar) {

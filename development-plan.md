@@ -47,7 +47,7 @@ The game has a five-area authored campaign, thirteen independent Free Play entri
 
 ## Current presentation and inspection
 
-- **Left controls:** approved Carved Stronghold styling, icon-only navigation and secondary disclosures, blue selection outlines/runes, and a persistent pause control. Redundant captions, slogans, empty threat reports and default tool cards are removed. [Interface text budget](gameplay-interface.md#sidebar-text-budget) records why the remaining text is visible.
+- **Left controls:** Carved Stronghold artwork matched with dedicated basalt/bronze skins, layered chamfered sockets, larger embossed SVG pictograms and paired utility rows; icon-only navigation and secondary disclosures, blue selection outlines/runes, and a persistent pause control. Redundant captions, slogans, empty threat reports and default tool cards are removed. [Interface text budget](gameplay-interface.md#sidebar-text-budget) records why the remaining text is visible.
 
 - **Hearthside Halls:** a new 46×40 peaceful Free Play map and a completed base under **Level preview → Showcases**. Ordinary paid excavation/construction produces six separate chambers, two-tile main halls, six manufactured doors and natural residents with working needs/wages. The same terrain and finite resources are available to the player; [Levels](levels.md#hearthside-halls-building-showcase) gives the build sequence. This independent showcase does not close the twelve existing maps' pending settlement acceptance review.
 - [Character and terrain graphics](graphics-overhaul.md): six resident and ten enemy models, generated terrain materials, and permanent original/current comparison studios.

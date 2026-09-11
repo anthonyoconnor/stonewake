@@ -1,5 +1,11 @@
 # Completed development and history
 
+## 2026-09-10 · Sidebar concept fidelity revision
+
+Rebuilt the sidebar after the user requested a closer match to approved concept A. Added dedicated generated basalt/bronze frame and socket materials, live chamfered vector rims, broad relief-style icons, framed resource counters, a blue Hearth strip and paired utility rows. The sidebar is slightly wider to give the ornament and controls room. Production assets and exact generation prompts are documented in [the asset notes](../public/art/sidebar/README.md); the concept board itself remains a reference. The previous text cleanup, accessible action labels and expandable secondary information remain in place.
+
+Verification: `npm run verify -- selection --browser=interface` passed source/test typecheck, both selection tests and the focused gameplay/interface browser suite at 1440×900, 1024×768 and 800×600. Visually compared successive screenshots with the approved board, refined overly noisy socket textures and reviewed selected controls and compact result/inspection layouts. A final close-button positioning correction passed `node scripts/interface-browser.mjs --outcome-only`. No production build or unrelated suites were run.
+
 ## 2026-09-10 · Carved Stronghold sidebar and text audit
 
 Implemented the user's selected sidebar concept A with the existing slate texture, narrow bronze framing, carved category emblems, recessed controls and blue selection outlines/corner runes. Added a persistent pause/resume icon. Preserved the sidebar width, world space, real HTML controls, keyboard help, minimap, shared gold and ordinary gameplay systems.

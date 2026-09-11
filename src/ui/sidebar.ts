@@ -76,16 +76,16 @@ export class Sidebar {
   constructor(public view:GameScene,public controls:CameraControls,public selection:Selection) {
     this.root=document.createElement('aside');this.root.id='sidebar';this.root.setAttribute('aria-label','Stronghold controls');
     this.root.innerHTML=`
-      <header class="brand"><span class="crest" aria-hidden="true">◇</span><h1>STONEWAKE</h1></header>
+      <header class="brand"><span class="crest" aria-hidden="true">◇</span><h1>Stonewake</h1></header>
       <section class="map-section"><button id="show-map" aria-label="Show full map" title="Show full map (M)" aria-keyshortcuts="M" aria-haspopup="dialog">⛶</button><canvas id="minimap" width="240" height="170" aria-label="Minimap: click to move camera"></canvas></section>
-      <div class="reserves"><div tabindex="0" title="Gold available" aria-label="Gold available"><span class="gold-symbol" aria-hidden="true">◆</span><strong id="gold-total">0</strong></div><div tabindex="0" title="Residents" aria-label="Residents">${actionIcon('category-dwarfs')}<strong id="dwarf-total">0</strong></div></div>
+      <div class="reserves"><div tabindex="0" title="Gold available" aria-label="Gold available">${actionIcon('gold-total')}<strong id="gold-total">0</strong></div><div tabindex="0" title="Residents" aria-label="Residents">${actionIcon('resident-total')}<strong id="dwarf-total">0</strong></div></div>
       <nav class="categories" aria-label="Stronghold panels">${['rooms','defenses','spells','dwarfs'].map(id=>`<button data-category="${id}" aria-label="${id==='dwarfs'?'Workforce':id[0].toUpperCase()+id.slice(1)}" title="${id==='dwarfs'?'Workforce':id[0].toUpperCase()+id.slice(1)}" aria-controls="panel">${actionIcon('category-'+id)}</button>`).join('')}</nav>
       <div id="panel" class="panel" tabindex="-1"></div>
       <section id="unit-inspection" class="feedback" aria-label="Selected character" hidden><button id="close-inspection" aria-label="Close character inspection" title="Close character inspection">×</button><div id="unit-inspection-text"></div></section>
-      <div class="tool-status"><span id="active-tool" tabindex="0"></span><button id="cancel-tool" aria-label="Cancel active tool" title="Cancel active tool (Escape / right-click)">×</button></div>
       <div id="feedback" class="feedback" role="status"></div>
-      <div class="camera-tools"><button data-camera="home" aria-label="Return to Hearthstone" title="Return to Hearthstone (Home)">⌂</button><button data-camera="in" aria-label="Zoom in" title="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out" title="Zoom out">−</button></div>
-      <footer><button id="pause-game" aria-label="Pause" title="Pause simulation">Ⅱ</button><button id="help" aria-label="Help" title="Field guide and message history">?</button><button id="open-menu" aria-label="Main menu" title="Return to main menu">☰</button><button data-category="debug" aria-label="Debug" title="Development settings and test harnesses">⌘</button></footer>`;
+      <div class="utility-tools"><div class="tool-status"><span id="active-tool" tabindex="0"></span><button id="cancel-tool" aria-label="Cancel active tool" title="Cancel active tool (Escape / right-click)">×</button></div>
+      <div class="camera-tools"><button data-camera="home" aria-label="Return to Hearthstone" title="Return to Hearthstone (Home)">${actionIcon('ui-home')}</button><button data-camera="in" aria-label="Zoom in" title="Zoom in">＋</button><button data-camera="out" aria-label="Zoom out" title="Zoom out">−</button></div></div>
+      <footer><button id="pause-game" aria-label="Pause" title="Pause simulation">Ⅱ</button><button id="help" aria-label="Help" title="Field guide and message history">?</button><button id="open-menu" aria-label="Main menu" title="Return to main menu">☰</button><button data-category="debug" aria-label="Debug" title="Development settings and test harnesses">⚙</button></footer>`;
     document.querySelector('#app')!.prepend(this.root);
     this.root.addEventListener('click',e=>{
       if(!this.view.world.outcome||!(e.target instanceof Element))return;
