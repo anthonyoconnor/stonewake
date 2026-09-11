@@ -64,6 +64,16 @@ Finalized terrain and furniture freeze their world matrices and register with [s
 
 The provider walks the live mesh array in its original order, so new discovery, arrivals and disposal remain visible immediately. Camera movement invalidates the cached results; force-active meshes and disabled frustum clipping retain their normal behavior. Babylon still checks readiness, visibility, enabled state and active meshes. Picking uses the full scene. Replacing the world releases the old cache and result buffer. This reduces offscreen static work without freezing the active mesh list or changing resolution, antialiasing, glow or lighting quality.
 
+## Terrain batching
+
+[Terrain batches](src/view/terrain-batches.ts) combine nearby opaque terrain with the same material into small spatial patches. Terrain affected by local point lights, emissive pieces, transparent geometry, furnishings and moving models retain their individual draws. When a light boundary or terrain changes, only affected batches are rebuilt. This preserves wall occlusion, pointer illumination, room floor patterns and authored regional materials.
+
+Unexplored cells use thin-instance patches with independent instance buffers, reducing per-cell active-mesh work. Both paths retain original tile meshes as exact selection targets: gameplay and pointer picking use the explicit tile-metadata predicate independently of render visibility. Batch meshes never participate in picking. Discovery replaces the appropriate patch before rendering, and world replacement disposes all batches and restores retained meshes. The terrain comparison studio bypasses batching; permanent baseline renderers remain independent.
+
+The visibility provider skips originals currently represented by batches. This trades some additional static geometry/buffer memory for fewer draw submissions and active-mesh checks, without changing resolution, antialiasing, glow, simulation frequency or map content. The batch `enabled` field supports developer comparisons; it is not a gameplay quality setting. Use the `terrain-batches` browser scope for pixel, picking and lifecycle comparisons.
+
+[Tile picking](src/view/tile-picking.ts) first rejects meshes outside one world-space cursor ray's bounding-box test, then uses Babylon's original precise picking for the remaining tiles. A small conservative bound margin accommodates matrix rounding without changing the final triangle test. Selection and pointer lighting share this path, avoiding thousands of unnecessary ray transformations while retaining original tile IDs and surface positions.
+
 ## Verification and limits
 
 Use the focused browser scopes documented in [development tools](development-tools.md): graphics-gallery, terrain-comparison, room-overhaul, arcana, lighting or animation according to the change. Level changes use selectable whole-map comparisons, ordinary fogged play and normal/reverse-angle views through the [level review flow](development-tools.md#level-redesign-review). Revealed dressing inspection is separate from paid gameplay evidence. The level profiler compares identical developed worlds with local atmosphere present and removed; its results isolate that presentation cost. Environment profiling uses one browser workload and a stable source tree; avoid HMR, other browser loads and CPU-heavy checks while measuring.

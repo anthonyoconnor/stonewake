@@ -1,5 +1,41 @@
 # Completed development and history
 
+## 2026-09-10 · Large-level rendering and cursor optimization
+
+Profiled the developed Royal level and implemented spatial terrain batching, thin-instance fog patches and accelerated tile picking. Opaque terrain sharing a material batches only outside local point-light pools; transparent/emissive pieces, furniture and actors keep their existing draws. Batches rebuild when affected terrain or light membership changes. Original geometry remains available for exact per-tile selection, and all batches dispose on world replacement. Independent fog instance buffers prevent patches from overwriting each other. The permanent terrain comparison bypasses batching, and no baseline renderer was edited.
+
+The moving-pointer trace identified repeated per-mesh picking-ray construction as the main lighting-update cost, rather than light-mask resynchronization. The shared cursor path now rejects distant tile bounding boxes before running Babylon's original precise ray/triangle test. A conservative bounding margin preserves edge hits; final tile IDs and hit points match the original picker. Simulation frequency, resolution, antialiasing, stencil, retained drawing buffer, glow, level content and gameplay rules are unchanged.
+
+Paused framebuffer/picking comparisons cover the lighting chamber, reverse/zoomed views, pointer/camera movement, lighting disable/restore, Royal arrival, discovery/fog restoration, fully revealed Royal and the permanent comparison. Royal arrival is pixel-identical; the full preview differs by more than eight channel values at only twelve pixels of 1,144,000, with a mean channel error of 0.000114/255. Twenty screen picks per condition match the original targets and surfaces with batching both off and on. Batch light membership and materials match every source member; no stale/double-drawn members or leaked batches were found.
+
+| Paused view | Active meshes, original → optimized | Draw calls, original → optimized |
+|---|---:|---:|
+| Royal arrival | 1,088 → 330 | 351 → 352 |
+| Developed Royal | 1,592 → 926 | 1,071 → 976 |
+| Fully revealed Royal overview | 5,360 → 1,425 | 5,970 → 2,035 |
+| Permanent terrain comparison | 1,985 → 1,985 | 2,066 → 2,066 |
+
+Final live measurement used the same paid Royal fixture at 901s (15 residents, 47 room tiles, 1,545 known tiles), SHA-256 `62f08ea55a7f4c0a015fd1bf51ddd12011a1ae47b57f906693768e7fffe97d2f`. Hardware: Intel Core i5-1035G4 / Iris Plus through ANGLE D3D11, Windows 10.0.26200, headless Edge 152.0.4191.66; viewport 1440×1000, canvas 1144×1000, scaling 1. Camera target (14,0,18), radius 27, alpha −π/4 and beta 0.62. Source was frozen and other verification jobs were idle. Each window restored the same world, warmed for 90 paused frames and ran 10 seconds of normal simulation. Control windows disabled batching and restored the exact original picker with a browser-only module hook.
+
+| View / optimization | Mean frame | Window p95 | Active-mesh evaluation |
+|---|---:|---:|---:|
+| Stationary / off, first | 46.41 ms | 77.2 ms | 11.54 ms |
+| Stationary / on, first | 46.45 ms | 82.7 ms | 9.84 ms |
+| Stationary / on, second | 57.44 ms | 102.9 ms | 10.99 ms |
+| Stationary / off, last | 63.80 ms | 109.2 ms | 14.46 ms |
+| Pointer + orbit / off, first | 69.47 ms | 99.5 ms | 16.34 ms |
+| Pointer + orbit / on, first | 56.64 ms | 90.9 ms | 11.36 ms |
+| Pointer + orbit / on, second | 56.94 ms | 92.4 ms | 11.52 ms |
+| Pointer + orbit / off, last | 72.56 ms | 124.9 ms | 16.37 ms |
+
+Average moving-pointer frame time fell **71.02 → 56.79 ms (20%)**, and active evaluation fell **16.36 → 11.44 ms (30%)**. Stationary mean frame time fell only **55.11 → 51.95 ms (6%)**, with pronounced machine slowdown across the windows; stationary p95 did not materially improve. All windows kept the ordinary simulation clock within 0.15s of wall time. These results establish less rendering/input work and a measured interaction improvement, not sustained 60 FPS. Dense developed scenes remain demanding on integrated graphics. Earlier diagnostic sessions had substantially different frame rates and are not interchangeable baselines.
+
+Evidence: ignored `test-results/terrain-batches/final/report.json`, `test-results/terrain-batches/arrival/report.json` and their original/batched framebuffer captures; diagnostic CPU traces in `test-results/optimization/`. The selectable browser check and reproduction command are documented in [development tools](../development-tools.md#terrain-performance-comparisons). Final source/test typecheck and 14 focused lighting/room simulation tests passed; the existing lighting browser passed moving actors, wall occlusion, fog changes, compact controls, 15 candidate-provider parity cases, reset and retained-world restoration.
+
+The interface browser passed real canvas building/reclaiming, canceled drags, defense placement, spell targeting, inspection, compact layouts and restart. Its stale starter-area assumptions were corrected: unavailable traps explain the later campaign unlock, and construction chooses a visible eligible floor rather than one hidden behind a foreground wall. Both original and accelerated pickers agreed on that occlusion. Four verification-tool tests and browser-script syntax checks passed. Final diff review/whitespace checks passed; generated captures and dependencies remain uncommitted.
+
+The interface browser passed real canvas building/reclaiming, canceled drags, defense placement, spell targeting, inspection, compact layouts and restart. Its stale starter-area assumptions were corrected: unavailable traps explain the later campaign unlock, and construction chooses a visible eligible floor rather than one hidden behind a foreground wall. Both original and accelerated pickers agreed on that occlusion. Four verification-tool tests and browser-script syntax checks passed. Final diff review/whitespace checks passed; generated captures and dependencies remain uncommitted.
+
 ## 2026-09-10 · Hearthside Halls paid base showcase
 
 Added a new 46×40 peaceful Free Play building study and its populated **Level preview → Showcases → Hearthside Halls · Built base** exhibit. Six enclosed chambers provide 166 room tiles, two-tile main corridors, six manufactured Timber doors, a separate mining gallery and two untouched southern expansion reserves. Approved Border Foothold art supplies the material reference and illustrative Free Play card; no renderer baselines changed.

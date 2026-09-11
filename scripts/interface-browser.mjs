@@ -42,7 +42,7 @@ try {
   await panel('Defenses');
   const unavailable = page.locator('[data-defense="spike-trap"]');
   assert(await unavailable.isDisabled()); await unavailable.focus();
-  assert.match(await page.locator('#action-help').textContent(), /Workshop/);
+  assert.match(await page.locator('#action-help').textContent(), /later campaign area/);
   await page.keyboard.press('Enter');
   assert.equal(await page.locator('#active-tool').textContent(), 'Excavate');
   const beforeCamera = await camera();
@@ -54,7 +54,19 @@ try {
   // Build and reclaim using ordinary player icons and actual canvas gestures.
   await panel('Rooms');
   w = await state();
-  const tile = w.tiles.find(t => t.known && t.claimed && t.terrain === 'floor' && !t.core && !t.room && !t.onward && Math.hypot(t.x - w.hearth.x, t.z - w.hearth.z) > 2 && Math.hypot(t.x - w.hearth.x, t.z - w.hearth.z) < 4);
+  const candidates = w.tiles.filter(t => t.known && t.claimed && t.terrain === 'floor' && !t.core && !t.room && !t.onward && Math.hypot(t.x - w.hearth.x, t.z - w.hearth.z) > 2 && Math.hypot(t.x - w.hearth.x, t.z - w.hearth.z) < 4);
+  // Authored terrain can hide the first eligible floor behind a foreground
+  // wall. Use an actually visible square for the real canvas gesture.
+  let tile;
+  for (const candidate of candidates) {
+    const screen = await point(candidate.x, candidate.z);
+    const visible = await page.evaluate(({screen,candidate}) => {
+      const scene=window.uiBabylon.EngineStore.LastCreatedScene,r=document.querySelector('#world').getBoundingClientRect();
+      const hit=scene.pick(screen.x-r.x,screen.y-r.y,m=>!!m.metadata?.tile)?.pickedMesh?.metadata?.tile;
+      return hit?.x===candidate.x&&hit?.z===candidate.z;
+    },{screen,candidate});
+    if(visible){tile=candidate;break;}
+  }
   assert(tile); const spent = w.spent;
   await page.locator('[data-room="kitchen"]').click(); await clickTile(tile.x, tile.z);
   w = await state(); assert.equal(w.tiles[tile.z * w.width + tile.x].room, 'kitchen'); assert.equal(w.spent, spent + 20);

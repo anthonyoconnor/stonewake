@@ -17,6 +17,7 @@ import {
 } from '../content/lighting';
 import { environmentPalette } from '../content/environment-visuals';
 import { tileAt } from '../game/types';
+import { pickTile } from './tile-picking';
 
 // Babylon resynchronizes every scene mesh on every setEnabled call, even if unchanged.
 function enableLight(light: Light, enabled: boolean) {
@@ -36,6 +37,9 @@ export class LabLighting {
   cursor?: { x: number; y: number };
   pointerActive = false;
   activeSources = 0;
+  /** Changes only when terrain batching must reconsider local illumination. */
+  meshMaskRevision = 0;
+  private enabledKey = '';
   private sky;
   private rim;
   private hearth;
@@ -148,10 +152,10 @@ export class LabLighting {
       if (pickKey !== this.pickKey) {
         this.pickKey = pickKey;
         this.hovered = false;
-        const hit = v.scene.pick(
+        const hit = pickTile(
+          v.scene,
           this.cursor.x - bounds.left,
           this.cursor.y - bounds.top,
-          (m) => !!m.metadata?.tile,
         );
         const p = hit?.pickedPoint,
           t = hit?.pickedMesh?.metadata?.tile;
@@ -237,14 +241,24 @@ export class LabLighting {
         if (
           included.length !== light.includedOnlyMeshes.length ||
           included.some((mesh, i) => mesh !== light.includedOnlyMeshes[i])
-        )
+        ) {
           light.includedOnlyMeshes = included;
+          this.meshMaskRevision++;
+        }
         // Babylon treats an empty inclusion list as all meshes; disable empty lights.
         enableLight(light, light.includedOnlyMeshes.length > 0);
       }
     }
     this.activeSources = this.sources.filter((light) => light.isEnabled()).length;
     this.pointerActive = this.pointer.isEnabled();
+    this.recordEnabledLights();
+  }
+  private recordEnabledLights() {
+    const key = [...this.sources, this.pointer, this.hearth].map(light => light.isEnabled()).join(':');
+    if (key !== this.enabledKey) {
+      this.enabledKey = key;
+      this.meshMaskRevision++;
+    }
   }
   private visibleMeshes(groups: LightMeshGroup[], light: PointLight) {
     const w = this.view.world, from = { x: light.position.x, z: light.position.z };
@@ -265,6 +279,7 @@ export class LabLighting {
     for (const light of [...this.sources, this.pointer]) enableLight(light, false);
     this.pointerActive = false;
     this.activeSources = 0;
+    this.recordEnabledLights();
   }
   dispose() {
     this.restore();

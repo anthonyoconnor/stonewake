@@ -2,6 +2,7 @@ import { createStoneHearthModel, updateStoneHearthModel } from './hearth-models'
 import { isHazard, hazardDefinitions } from '../game/terrain';
 import { LabLighting } from './lighting-lab';
 import { StaticMeshCandidates } from './static-mesh-candidates';
+import { TerrainBatches } from './terrain-batches';
 import { drawFurnishingModel, type FurnishingDisplay } from './furnishing-models';
 import { drawRoomFurnishing } from './room-furnishing-models';
 import { liveRoomDecorations, type LiveRoomDecoration } from '../game/room-decoration';
@@ -60,6 +61,7 @@ export class GameScene {
   /** Display-only enemy visibility for fully loaded debug levels. */
   showAllEnemies?: boolean;
   labLighting?: LabLighting;
+  terrainBatches?: TerrainBatches;
   mainHearth?: ReturnType<typeof createStoneHearthModel>;
   engine: Engine;
   scene: Scene;
@@ -85,6 +87,7 @@ export class GameScene {
     const candidates = new StaticMeshCandidates(this.scene);
     staticCandidates.set(this, candidates);
     this.scene.getActiveMeshCandidates = candidates.get;
+    this.terrainBatches = new TerrainBatches(this, mesh => candidates.finalizeMesh(mesh));
     this.scene.clearColor = Color4.FromHexString('#101821ff');
     this.camera = new ArcRotateCamera(
       'camera',
@@ -703,6 +706,7 @@ export class GameScene {
       });
     this.labLighting ??= new LabLighting(this);
     this.labLighting.update(this.world.lightingTest ?? gameplayLighting(this.world));
+    this.terrainBatches?.update();
     this.scene.render();
   }
   async ready() {
@@ -710,6 +714,7 @@ export class GameScene {
     await this.scene.whenReadyAsync();
   }
   setWorld(world: World) {
+    this.terrainBatches?.reset();
     staticCandidates.get(this)!.reset();
     this.showAllEnemies = false;
     resetStartingTerrain(this);

@@ -17,10 +17,12 @@ export class StaticMeshCandidates {
 
   finalize(node: TransformNode) {
     node.freezeWorldMatrix();
-    for (const mesh of node.getChildMeshes()) {
-      mesh.freezeWorldMatrix();
-      this.staticMeshes.add(mesh);
-    }
+    for (const mesh of node.getChildMeshes()) this.finalizeMesh(mesh);
+  }
+
+  finalizeMesh(mesh: AbstractMesh) {
+    mesh.freezeWorldMatrix();
+    this.staticMeshes.add(mesh);
   }
 
   reset() {
@@ -50,6 +52,7 @@ export class StaticMeshCandidates {
     // Walking the live array preserves Babylon's order and immediately handles
     // creation/disposal, including the shared fog source and its instances.
     for (const mesh of scene.meshes) {
+      if (!mesh.isVisible) continue;
       if (this.staticMeshes.has(mesh) && mesh.isWorldMatrixFrozen && !mesh.alwaysSelectAsActiveMesh) {
         const world = mesh.getWorldMatrix().updateFlag;
         let cached = this.visibility.get(mesh);

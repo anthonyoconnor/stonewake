@@ -42,6 +42,7 @@ export const browserChecks: Record<string, string[][]> = {
   audio: [['scripts/audio-browser.mjs']],
   animation: [['scripts/character-visuals-browser.mjs'], ['scripts/enemies-browser.mjs']],
   lighting: [['scripts/lighting-browser.mjs']],
+  'terrain-batches': [['scripts/terrain-batches-browser.mjs']],
   loading: [['scripts/loading-browser.mjs']],
   menus: [['scripts/menu-browser.mjs']],
   combat: [['scripts/combat-browser.mjs']],

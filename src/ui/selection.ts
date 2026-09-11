@@ -4,6 +4,7 @@ import { isHazard } from '../game/terrain.ts';
 import {TransformNode} from '@babylonjs/core';
 import {type Point,tileAt} from '../game/types.ts';
 import type {GameScene} from '../view/scene';
+import {pickTile} from '../view/tile-picking';
 import {designate} from '../game/simulation.ts';
 import {buildRoom,roomQuote} from '../game/rooms.ts';
 import {planWalls,wallEligible,wallBuildDuration} from '../game/walls.ts';
@@ -24,7 +25,7 @@ export class Selection {
     this.preview=new TransformNode('preview',view.scene);
     this.updateCursor();
     const canvas=view.canvas;
-    const pick=(e:PointerEvent)=>{const r=canvas.getBoundingClientRect();const hit=view.scene.pick(e.clientX-r.left,e.clientY-r.top,m=>!!m.metadata?.tile);const p=hit?.pickedMesh?.metadata?.tile as Point|undefined;return p&&(tileAt(view.world,p.x,p.z)?.known||this.tool!=='inspect')?p:undefined;};
+    const pick=(e:PointerEvent)=>{const r=canvas.getBoundingClientRect();const hit=pickTile(view.scene,e.clientX-r.left,e.clientY-r.top);const p=hit?.pickedMesh?.metadata?.tile as Point|undefined;return p&&(tileAt(view.world,p.x,p.z)?.known||this.tool!=='inspect')?p:undefined;};
     canvas.addEventListener('pointerdown',e=>{if(e.button===2){this.setTool('dig');return;}if(e.button!==0)return;this.start=pick(e);const tile=this.start&&tileAt(view.world,this.start.x,this.start.z);this.dragAdds=this.start&&['dig','erase','wall'].includes(this.tool)?this.tool==='wall'?!tile?.wallPlanned:this.tool==='dig'&&!tile?.designated:undefined;this.hover=this.start;this.draw();canvas.setPointerCapture(e.pointerId);});
     canvas.addEventListener('pointermove',e=>{this.hover=pick(e);this.draw();});
     canvas.addEventListener('pointerup',e=>{
