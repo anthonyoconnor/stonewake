@@ -30,7 +30,35 @@ try {
     return { x: r.x + p.x * r.width / engine.getRenderWidth(), y: r.y + p.y * r.height / engine.getRenderHeight() };
   }, { x, z });
   const clickTile = async (x, z) => { const p = await point(x, z); await page.mouse.click(p.x, p.y); };
-  const snap = async name => { await page.mouse.move(650, 500); await page.screenshot({ path: `${artifacts}/${name}.png` }); };
+  const checkFrame = async () => {
+    const faults = await page.evaluate(() => {
+      const side = document.querySelector('#sidebar').getBoundingClientRect();
+      // The skin's carved side rails occupy the outer 11%; leave air beyond
+      // the stone, including for selected outlines and keyboard focus rings.
+      const left = side.left + side.width * .11 + 6, right = side.right - side.width * .11 - 6;
+      const faults = [];
+      for (const e of document.querySelectorAll('#sidebar button, #sidebar .icon-disclosure, #minimap, .reserves > div')) {
+        if (e.closest('#notification-rail, #notification-card') || !e.getClientRects().length) continue;
+        const r = e.getBoundingClientRect();
+        if (r.left < left - 1 || r.right > right + 1) faults.push(`${e.id || e.className}: overlaps carved rail`);
+      }
+      const map = document.querySelector('#minimap').getBoundingClientRect();
+      for (const e of document.querySelectorAll('#panel > .room-grid, #selected-action, #panel > .production > summary')) {
+        if (!e.getClientRects().length) continue;
+        const r = e.getBoundingClientRect();
+        if (Math.abs(r.left - map.left) > 1 || Math.abs(r.right - map.right) > 1) faults.push(`${e.id || e.className}: control column shifted`);
+      }
+      if (document.querySelector('.tool-status').getClientRects().length) {
+        const width = document.querySelector('#sidebar > footer button').getBoundingClientRect().width;
+        for (const e of document.querySelectorAll('#active-tool, #cancel-tool, .camera-tools button, #sidebar > footer button')) {
+          if (e.getClientRects().length && Math.abs(e.getBoundingClientRect().width - width) > 1) faults.push(`${e.id || e.className}: utility column width changed`);
+        }
+      }
+      return faults;
+    });
+    assert.deepEqual(faults, [], 'Controls stay inside the artwork and align even when the panel scrolls');
+  };
+  const snap = async name => { await page.mouse.move(650, 500); await checkFrame(); await page.screenshot({ path: `${artifacts}/${name}.png` }); };
   let w;
   if(!process.argv.includes('--outcome-only')){
   await panel('Rooms');
@@ -47,6 +75,9 @@ try {
   await page.locator('#pause-game').click();
   assert.equal((await page.evaluate(() => window.strongholdDev.status())).paused, true);
   await snap('after');
+  await page.locator('[data-room="dormitory"]').click(); await snap('room-selected');
+  await page.locator('.production > summary').click(); await snap('room-production');
+  await page.locator('.production > summary').click(); await page.locator('#cancel-tool').click();
 
   // Unavailable actions are readable using keyboard focus and cannot activate.
   await panel('Defenses');
@@ -159,6 +190,10 @@ try {
       if (await final.count()) { await final.scrollIntoViewIfNeeded(); assert(await final.isVisible()); }
     }
     await panel('Rooms'); await snap(`compact-${viewport.width}`);
+    await page.locator('[data-room="dormitory"]').click();
+    await page.locator('.production > summary').click();
+    await page.locator('[data-recipe]').last().scrollIntoViewIfNeeded();
+    await snap(`compact-expanded-${viewport.width}`);
   }
   }
   // A real failed defense keeps both the result and post-result unit inspection usable.

@@ -1,5 +1,11 @@
 # Completed development and history
 
+## 2026-09-10 · Sidebar frame clearance and alignment
+
+Corrected controls overlapping the artwork after the user's screenshot identified the reserved frame area as insufficient. The sidebar now measures its inset from the skin's carved rails, keeps all major groups on one inner column, reserves a separate scrollbar lane and leaves the bottom corner braces clear. Tightened the gap below navigation, fitted the wordmark and counters to the available space, and used equal utility columns so hiding Cancel leaves the neighboring controls in place. The theme, text budget and game behavior remain unchanged.
+
+Verification: `npm run verify -- selection --browser=interface` passed source/test typecheck, both selection tests and the interface browser suite. Added rendered frame-clearance and column-alignment assertions to the existing browser flow, with selected and expanded production screenshots at desktop and compact sizes. Visual review covered 1440×900, 1024×768, 800×600 and compact defeat/inspection. A final focused browser check verified equal utility widths, square category buttons and aligned grids after small sizing refinements. No build or unrelated suites were run.
+
 ## 2026-09-10 · Sidebar concept fidelity revision
 
 Rebuilt the sidebar after the user requested a closer match to approved concept A. Added dedicated generated basalt/bronze frame and socket materials, live chamfered vector rims, broad relief-style icons, framed resource counters, a blue Hearth strip and paired utility rows. The sidebar is slightly wider to give the ornament and controls room. Production assets and exact generation prompts are documented in [the asset notes](../public/art/sidebar/README.md); the concept board itself remains a reference. The previous text cleanup, accessible action labels and expandable secondary information remain in place.

@@ -2,19 +2,23 @@
    nine-sliced sockets and live vector icons scale independently. */
 #sidebar {
   --ink: #eee5d3; --muted: #aaa89d; --gold: #dfc08a; --line: #9f8b5b55;
-  padding: 5px 17px 11px;
+  /* The carved rails occupy 11% of the skin on each side. All controls
+     share a six-pixel inner gutter beyond this reserved frame area. */
+  --frame-inset: calc(var(--side) * .11 + 4px);
+  --control-gap: 8px;
+  padding: 10px var(--frame-inset) 38px;
   border: 0;
   background: #101418 url('/art/sidebar/frame-v2.png') center / 100% 100% no-repeat;
   box-shadow: 6px 0 18px #000b;
   color: var(--ink);
 }
 #sidebar .brand {
-  height: 65px; padding: 2px 7px 12px; gap: 7px;
+  height: 60px; padding: 2px 6px 12px; gap: 6px;
   position: relative; justify-content: center; flex-shrink: 0;
   background: none; border: 0;
 }
 #sidebar .brand h1 {
-  margin: 0; font: small-caps 600 31px/1 Georgia, serif; letter-spacing: -.7px;
+  margin: 0; font: small-caps 600 26px/1 Georgia, serif; letter-spacing: -.7px;
   color: #dfc79e; text-shadow: 0 -1px #f9e6c2, 1px 2px 1px #050608, 0 3px 3px #000;
   transform: scaleY(1.17);
 }
@@ -23,7 +27,7 @@
   color: #b69c6c; text-align: center; font: 13px Georgia; letter-spacing: -1px;
   text-shadow: 1px 1px #000;
 }
-#sidebar .crest { font: 41px/.9 Georgia; color: #d1b580; text-shadow: 1px 2px 1px #000; }
+#sidebar .crest { font: 32px/.9 Georgia; color: #d1b580; text-shadow: 1px 2px 1px #000; }
 #sidebar .map-section { position: relative; padding: 5px 6px 8px; }
 #sidebar #minimap {
   border: 6px solid transparent;
@@ -63,10 +67,10 @@
 #sidebar .room-choice[aria-disabled=true]::after { content: none; }
 #sidebar .room-choice[aria-disabled=true] .action-icon, #sidebar .room-choice:disabled .action-icon { filter: grayscale(1) brightness(.7); }
 #sidebar .action-icon { filter: drop-shadow(1px 2px 1px #000); }
-#sidebar .reserves { margin: 0 6px; gap: 5px; border: 0; background: none; }
-#sidebar .reserves > div { padding: 1px 8px; gap: 13px; height: 40px; }
-#sidebar .reserves strong { font: 27px/1 Georgia; color: #eee0c1; }
-#sidebar .reserves .action-icon { width: 26px; height: 26px; }
+#sidebar .reserves { margin: 0 6px; gap: var(--control-gap); border: 0; background: none; }
+#sidebar .reserves > div { min-width: 0; padding: 1px 4px; gap: 5px; height: 40px; }
+#sidebar .reserves strong { font: 22px/1 Georgia; font-variant-numeric: tabular-nums; color: #eee0c1; }
+#sidebar .reserves .action-icon { width: 20px; height: 20px; flex-shrink: 0; }
 #sidebar .hearth-link {
   margin: 5px 6px 0; min-height: 33px; padding: 1px 6px;
   font: 15px/1 Georgia; text-align: center; white-space: pre;
@@ -80,13 +84,19 @@
 }
 #sidebar .hearth-link[data-state=lost] { background: #572b25; color: #ffc6b3; }
 #sidebar .hearth-link[data-state=ready], #sidebar .hearth-link[data-state=found] { filter: brightness(1.2); }
-#sidebar .categories { margin: 0; padding: 8px 6px 9px; gap: 7px; border: 0; }
-#sidebar .categories button { display: grid; place-items: center; min-width: 0; height: 60px; padding: 4px; }
-#sidebar .categories .action-icon { width: 35px; height: 35px; }
-#sidebar .panel { padding: 5px 6px 10px; scrollbar-color: #8b7756 #11171b; scrollbar-gutter: auto; }
-#sidebar .room-grid { gap: 7px; margin: 10px 0; }
-#sidebar .room-grid:first-of-type { margin-top: 0; }
-#sidebar .room-choice { padding: 2px; }
+#sidebar .categories { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 10px 6px; gap: var(--control-gap); border: 0; }
+#sidebar .categories button { display: grid; place-items: center; min-width: 0; aspect-ratio: 1; padding: 3px; }
+#sidebar .categories .action-icon { width: 35px; max-width: 100%; height: auto; aspect-ratio: 1; }
+#sidebar .panel {
+  /* Reserve a scroll lane without narrowing or shifting the control grid. */
+  width: calc(100% + 6px); padding: 4px 6px 10px;
+  scrollbar-color: auto; scrollbar-gutter: stable; scrollbar-width: auto;
+}
+#sidebar .panel::-webkit-scrollbar { width: 6px; }
+#sidebar .panel::-webkit-scrollbar-track { background: #11171b; }
+#sidebar .panel::-webkit-scrollbar-thumb { background: #8b7756; border: 1px solid #11171b; }
+#sidebar .room-grid { gap: var(--control-gap); margin: 0 0 10px; }
+#sidebar .room-choice { min-width: 0; padding: 2px; }
 #sidebar .room-choice .action-icon { width: 100%; height: auto; }
 #sidebar .selected-action { min-height: 57px; padding: 5px 7px; gap: 9px; margin: 0 0 10px; border-width: 7px; border-image-width: 7px; }
 #sidebar .selected-action > div { display: flex; flex-wrap: wrap; gap: 3px 11px; align-items: center; flex: 1; min-width: 0; }
@@ -110,29 +120,30 @@
 #sidebar .icon-disclosure .action-icon { width: 20px; height: 20px; }
 #sidebar #build-defenses[open] > summary { display: none; }
 #sidebar .panel p:empty, #sidebar #dwarf-filter:empty { display: none; }
-#sidebar .utility-tools { display: flex; gap: 6px; padding: 7px 6px 0; }
-#sidebar .tool-status { display: flex; width: 88px; gap: 5px; padding: 0; min-height: 36px; border: 0; background: none; }
+#sidebar .utility-tools { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 8px 6px 0; }
+#sidebar .tool-status { display: grid; grid-column: span 2; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; gap: 6px; padding: 0; min-height: 36px; border: 0; background: none; }
 #sidebar #active-tool, #sidebar #cancel-tool {
-  display: flex; align-items: center; justify-content: center; width: 40px; height: 36px;
+  display: flex; flex: 1; width: 100%; min-width: 0; align-items: center; justify-content: center; height: 36px;
   border: 4px solid transparent; border-image: url('/art/sidebar/bevel-v2.svg') 12% / 4px / 0 stretch;
 }
 #sidebar #active-tool { font-size: 22px; background: #131a1d; background-clip: padding-box; }
 #sidebar #active-tool::before { content: none; }
 #sidebar #active-tool .action-icon { width: 27px; height: 27px; }
 #sidebar #cancel-tool { color: #cb856d; font-size: 26px; }
-#sidebar .camera-tools { flex: 1; gap: 5px; padding: 0; border: 0; background: none; }
+#sidebar .camera-tools { display: grid; grid-column: span 3; grid-template-columns: repeat(3, minmax(0, 1fr)); min-width: 0; gap: 6px; padding: 0; border: 0; background: none; }
+#sidebar:has(.level-outcome:not([hidden])) .camera-tools { grid-column: 1 / -1; }
 #sidebar .camera-tools button { height: 36px; min-width: 0; padding: 0; font: 24px/1 Georgia; }
 #sidebar .camera-tools .action-icon { width: 24px; height: 24px; margin: auto; }
 #sidebar .feedback { margin: 0 6px; padding: 5px 0; color: #d8c7a5; }
 #sidebar > footer { padding: 5px 6px 2px; gap: 6px; background: none; border: 0; }
-#sidebar > footer button { flex: 1; height: 36px; width: auto; font: 23px/1 Georgia; }
+#sidebar > footer button { flex: 1; min-width: 0; padding: 0; height: 36px; width: auto; font: 23px/1 Georgia; }
 #sidebar #pause-game { order: 0; }
 #sidebar #sound-settings { order: 1; }
 #sidebar #sound-settings .action-icon { width: 24px; height: 24px; margin: auto; }
 #sidebar #open-menu { order: 2; }
 #sidebar #help { order: 3; }
 #sidebar > footer [data-category=debug] { order: 4; margin-left: 0; color: #d9c49c; }
-#sidebar #action-help { bottom: 96px; background: #0d151bf7; border: 1px solid #b49b6c; color: #f1e0be; }
+#sidebar #action-help { left: calc(var(--frame-inset) + 6px); right: calc(var(--frame-inset) + 6px); bottom: 122px; background: #0d151bf7; border: 1px solid #b49b6c; color: #f1e0be; }
 #sidebar .panel select { background: #101720; border-color: #8c7955; color: #e5d8bc; }
 #sidebar .dwarf-activity td button { border-color: transparent; }
 #sidebar .dwarf-activity td button.empty { color: #817f79; border-color: transparent; }
@@ -141,26 +152,21 @@
 #sidebar #notification-card { background: #11171bf7; border-radius: 2px; }
 #sidebar .level-outcome { margin: 5px 6px; }
 @media(max-width:850px) {
-  #sidebar { padding-left: 14px; padding-right: 14px; }
-  #sidebar .brand h1 { font-size: 24px; }
-  #sidebar .crest { font-size: 32px; }
-  #sidebar .room-grid, #sidebar .categories { gap: 5px; }
+  #sidebar { --control-gap: 6px; }
+  #sidebar .brand h1 { font-size: 21px; }
+  #sidebar .crest { font-size: 26px; }
   #sidebar .categories button { padding: 1px; }
   #sidebar .categories .action-icon { width: 29px; height: 29px; }
   #sidebar .selected-action { padding-left: 3px; padding-right: 3px; gap: 5px; }
   #sidebar .selected-action strong { font-size: 14px; }
   #sidebar .selected-action .action-icon { width: 26px; height: 26px; }
-  #sidebar .utility-tools { gap: 4px; }
-  #sidebar .tool-status { width: 73px; gap: 4px; }
-  #sidebar #active-tool, #sidebar #cancel-tool { width: 34px; }
-  #sidebar .camera-tools { gap: 4px; }
+  #sidebar .utility-tools, #sidebar .tool-status, #sidebar .camera-tools, #sidebar > footer { gap: 4px; }
 }
 @media(max-height:800px) {
   #sidebar .brand { height: 54px; }
   #sidebar #minimap { height: 106px; }
-  #sidebar .categories button { height: 49px; }
   #sidebar .reserves > div { height: 35px; }
-  #sidebar .reserves strong { font-size: 23px; }
+  #sidebar .reserves strong { font-size: 20px; }
 }
 @media(max-height:650px) {
   #sidebar .brand { height: 43px; padding-bottom: 7px; }
@@ -169,10 +175,10 @@
   #sidebar .map-section { padding-top: 4px; padding-bottom: 5px; }
   #sidebar #show-map { top: 13px; width: 22px; height: 22px; font-size: 17px; }
   #sidebar .reserves > div { height: 29px; }
-  #sidebar .reserves strong { font-size: 20px; }
+  #sidebar .reserves strong { font-size: 17px; }
+  #sidebar .reserves .action-icon { width: 18px; height: 18px; }
   #sidebar .hearth-link { min-height: 27px; font-size: 12px; }
   #sidebar .categories { padding-top: 6px; padding-bottom: 6px; }
-  #sidebar .categories button { height: 38px; }
   #sidebar .categories .action-icon { width: 26px; height: 26px; }
   #sidebar .utility-tools { padding-top: 4px; }
   #sidebar > footer button, #sidebar .camera-tools button, #sidebar #active-tool, #sidebar #cancel-tool { height: 31px; }
