@@ -29,7 +29,7 @@ The starting Hearth is fixed and destructible. Discovering the separate onward s
 | Cancel and return to excavation | Right click or Escape |
 | Inspect | Click open floor, rooms, residents or fixtures; details stay in the left sidebar |
 | Pan | WASD or the outer window edges, including the far-left edge over the sidebar |
-| Orbit | Q/E, Left Ctrl+A/D, or horizontal middle-mouse drag |
+| Orbit | Q/E, Left Shift+A/D, or horizontal middle-mouse drag |
 | Zoom / return home | Mouse wheel / Home |
 | Navigate maps | Click minimap; M or its expand icon opens the full map; click to recenter and close |
 | Pause / sound / main menu | Sidebar controls; returning to the menu confirms discarding the run |

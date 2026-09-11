@@ -37,7 +37,7 @@ test('camera inputs preserve pan orientation and orbit around a fixed target',()
     let before=pose();controls.update(.1);assert(camera.target.equals(before.target));
     emit(win,'pointermove',{clientX:1,clientY:1,pointerType:'mouse'});controls.update(.1);assert(camera.target.equals(before.target),'Sidebar edges do not pan the world');
     for(const [code,sign] of [['KeyA',-1],['KeyD',1]] as const){
-      before=pose();emit(win,'keydown',{code:'ControlLeft'});emit(win,'keydown',{code});controls.update(.1);emit(win,'keyup',{code});emit(win,'keyup',{code:'ControlLeft'});
+      before=pose();emit(win,'keydown',{code:'ShiftLeft'});emit(win,'keydown',{code});controls.update(.1);emit(win,'keyup',{code});emit(win,'keyup',{code:'ShiftLeft'});
       const after=pose();assert(after.target.equals(before.target));assert((after.alpha-before.alpha)*sign>0);near(after.beta,before.beta);near(after.radius,before.radius);
     }
     before=pose();emit(canvas,'pointerdown',{button:1,pointerId:1,clientX:600});

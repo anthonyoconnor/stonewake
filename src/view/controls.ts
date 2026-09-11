@@ -13,7 +13,7 @@ export class CameraControls {
       if(document.querySelector('dialog[open]'))return;
       if(e.target instanceof Element&&e.target.closest('input,select,textarea,button,summary,[contenteditable],dialog'))return;
       const k=e.code;
-      if(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','Home','ControlLeft'].includes(k)){
+      if(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','Home','ShiftLeft'].includes(k)){
         e.preventDefault();this.keys.add(k);
         if(k==='Home')this.home();
       }
@@ -58,7 +58,7 @@ export class CameraControls {
     if(document.querySelector('dialog[open]'))return;
     const speed=this.view.camera.radius*tuning.panSpeed*dt;
     const horizontal=Number(this.keys.has('KeyD'))-Number(this.keys.has('KeyA'));
-    const orbit=this.keys.has('ControlLeft');
+    const orbit=this.keys.has('ShiftLeft');
     let r=orbit?0:horizontal;
     let f=Number(this.keys.has('KeyW'))-Number(this.keys.has('KeyS'));
     if(presentation.edgeScrolling&&this.pointer&&!this.drag){

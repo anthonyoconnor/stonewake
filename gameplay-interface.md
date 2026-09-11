@@ -148,7 +148,7 @@ Current mouse and keyboard bindings:
 | Left click with a fixture, targeted spell, or rally tool active | Apply the selected action at a valid position |
 | Right click or Escape | Cancel an active preview/tool and return to excavation |
 | WASD or mouse at a window edge | Pan relative to the view, preserving angle and zoom |
-| Left Ctrl + A / D, horizontal middle-mouse drag, or Q / E | Orbit around the viewed point at a fixed tilt |
+| Left Shift + A / D, horizontal middle-mouse drag, or Q / E | Orbit around the viewed point at a fixed tilt |
 | Mouse wheel over the world | Zoom in or out |
 | Click the minimap | Recenter the camera |
 
